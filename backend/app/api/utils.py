@@ -4,8 +4,13 @@ from app.config import settings
 import jwt
 from fastapi import HTTPException
 import shutil
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+serializer = URLSafeTimedSerializer(
+    secret_key=settings.JWT_SECRET_KEY
+)
 
 
 def hash_password(password: str) -> str:
@@ -34,3 +39,17 @@ def encode_token(token: str) -> dict:
 def save_file(file, path):
     with open(path, "bw+") as new_file:
         shutil.copyfileobj(file, new_file)
+
+
+def create_url_safe_token(data: dict, expiration=3600):
+    return serializer.dumps(data)
+
+
+def decode_url_safe_token(token: str, max_age=3600):
+    try:
+        token_data = serializer.loads(token, max_age=max_age)
+        return token_data
+    except SignatureExpired:
+        raise HTTPException(status_code=400, detail="Token has expired")
+    except BadSignature:
+        raise HTTPException(status_code=400, detail="Invalid token")
