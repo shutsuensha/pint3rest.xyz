@@ -4,9 +4,11 @@
 - writes frontend for API
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
-- fastapi catch
+- fastapi cache
 - celery, redis
 - test
+- api documentation
+- full rest api for every route
 - dockerfile backend, dockerfile frontend, docker-compose
 - deploy, nginx, ci/cd
 - describe repo
