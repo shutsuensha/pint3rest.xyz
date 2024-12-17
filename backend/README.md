@@ -2,6 +2,7 @@
 - API: users, pins, tags, comments, likes, boards
 - writes frontend for API
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
+- sqlalchemy work with session, models related, N+1
 - custom error, middleward - loguru
 - fastapi catch
 - celery, redis - schedule send email reklama
