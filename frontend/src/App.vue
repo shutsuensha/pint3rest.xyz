@@ -1,10 +1,9 @@
 <script setup>
 
+import Navbar from './components/Navbar.vue';
+
 </script>
 
-
 <template>
-  <div class="text-2xl">
-    This text will use the Poppins font globally!
-  </div>
+  <Navbar />
 </template>

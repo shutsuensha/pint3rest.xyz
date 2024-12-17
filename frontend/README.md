@@ -2,7 +2,7 @@
 - vue-routes
 - tailwind css
 - flowbite
-- icons
+- primeicons
 - spinner
 - axios
 - animation
