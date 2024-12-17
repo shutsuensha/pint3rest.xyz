@@ -7,6 +7,8 @@
 - celery, redis - schedule send email reklama
 - add templates for email
 - test
+- api documentation
+- full rest api for every route
 - dockerfile backend, dockerfile frontend, docker-compose
 - deploy, nginx, ci/cd
 - describe repo
