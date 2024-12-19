@@ -24,6 +24,7 @@ alembic revision --autogenerate -m "init"
 alembic upgrade head
 
 ### Redis
+sudo systemctl start redis-server
 redis-cli -h localhost -p 6379
 
 ### Celery

@@ -169,7 +169,7 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
 
 
 @router.post("/upload/{id}", response_model=UserOut)
-async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
+async def upload_image(id: int, db: db, file: UploadFile):
 
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
