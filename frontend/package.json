@@ -9,16 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@yeger/vue-masonry-wall": "^5.0.16",
     "flowbite": "^2.5.2",
+    "masonry-flow": "^0.2.2",
+    "masonry-layout": "^4.2.2",
     "primeicons": "^7.0.0",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-masonry": "^0.16.0",
+    "vue-masonry-css": "^1.0.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.0.1",
+    "vite": "^6.0.3",
     "vite-plugin-vue-devtools": "^7.6.5"
   }
 }

@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted } from 'vue'
 import { initTooltips } from 'flowbite'
+import NavbarProfileAfter from './NavbarProfileAfter.vue'
+import NavbarProfileBefore from './NavbarProfileBefore.vue'
 
 
 onMounted(() => {
@@ -23,10 +25,7 @@ onMounted(() => {
 
       <!-- Profile -->
       <div data-tooltip-target="tooltip-profile" class="flex items-center rounded-md hover:bg-gray-200 p-1.5 mr-6">
-        <div class="rounded-full bg-gray-200 flex items-center justify-center cursor-pointer">
-          <img src="https://i.pinimg.com/736x/91/6b/36/916b36a2cddb4217473874e192d41f8f.jpg" alt="profile"
-            class="h-9 w-9 rounded-full" />
-        </div>
+        <NavbarProfileAfter />
       </div>
 
       <div id="tooltip-profile" role="tooltip"
