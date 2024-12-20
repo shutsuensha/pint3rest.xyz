@@ -3,7 +3,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
 from datetime import date
 
-
+pins_tags = Table(
+    "pins_tags",
+    Base.metadata,
+    Column("pin_id", ForeignKey("pins.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
+)
 
 class UsersOrm(Base):
     __tablename__ = "users"
@@ -31,3 +36,11 @@ class PinsOrm(Base):
     href: Mapped[str | None] = mapped_column(String(200), default=None)
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
+
+
+class TagsOrm(Base):
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
