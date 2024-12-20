@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
 from datetime import date
 
+
 pins_tags = Table(
     "pins_tags",
     Base.metadata,
@@ -44,3 +45,18 @@ class TagsOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+
+
+class CommentsOrm(Base):
+    __tablename__ = "comments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    
+    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id"), default=None)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id"), default=None)
+
+    content: Mapped[str | None] = mapped_column(String(400), default=None)
+    created_at: Mapped[date] = mapped_column(default=date.today)
+
+    image: Mapped[str | None] = mapped_column(String(200), default=None)
