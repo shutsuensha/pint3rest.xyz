@@ -8,6 +8,7 @@ class PinOut(BaseModel):
     description: str | None = None
     href: str | None = None
     image: str | None = None
+    rgb: str | None = None
 
 
 class PinIn(BaseModel):

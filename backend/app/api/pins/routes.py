@@ -3,7 +3,7 @@ from app.api.dependencies import db, user_id, filter
 from .schemas import PinOut, PinIn, FilterParams
 from app.database.models import PinsOrm
 from sqlalchemy import insert, select, update
-from app.api.utils import save_file
+from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
 
@@ -38,12 +38,21 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"app/media/pins/{unique_filename}"
     save_file(file.file, image_path)
+
+    if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
+        rgb = get_primary_color(image_path)
     
+    if file.content_type in ["video/mp4", "video/webm", "video/avi"]:
+        new_unique_filename = f"{uuid.uuid4()}.jpg"
+        new_image_path = f"app/media/pins/{new_unique_filename}"
+
+        extract_first_frame(image_path, new_image_path)
+        rgb = get_primary_color(new_image_path)
 
     pin = await db.scalar(
         update(PinsOrm)
         .where(PinsOrm.id == id)
-        .values(image = image_path)
+        .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})")
         .returning(PinsOrm)
     )
     await db.commit()

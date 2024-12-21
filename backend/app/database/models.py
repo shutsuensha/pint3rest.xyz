@@ -38,6 +38,8 @@ class PinsOrm(Base):
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
+    rgb: Mapped[str | None] = mapped_column(String(100), default=None)
+
 
 class TagsOrm(Base):
     __tablename__ = "tags"
