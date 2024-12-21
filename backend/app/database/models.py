@@ -60,3 +60,13 @@ class CommentsOrm(Base):
     created_at: Mapped[date] = mapped_column(default=date.today)
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
+
+
+class LikesOrm(Base):
+    __tablename__ = 'likes'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    
+    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id"), default=None)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id"), default=None)

@@ -1,12 +1,10 @@
 ## Next
-- API: users, pins, tags, comments, likes, boards
-- writes frontend for API
+- primary color on post pin
+- likes, boards, saves users pins
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
-- sqlalchemy work with session, models related, N+1
 - custom error, middleward - loguru
-- fastapi catch
+- fastapi cache
 - celery, redis - schedule send email reklama
-- add templates for email
 - test
 - api documentation
 - full rest api for every route
