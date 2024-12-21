@@ -1,6 +1,5 @@
 ## Next
-- primary color on post pin
-- likes, boards, saves users pins
+- boards, saves users pins
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
@@ -11,6 +10,7 @@
 - dockerfile backend, dockerfile frontend, docker-compose
 - deploy, nginx, ci/cd
 - describe repo
+- primiry color mb in celery?
 
 ### Web server
 uvicorn app.main:app --reload
