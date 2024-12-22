@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.dependencies import db, user_id, filter
 from .schemas import PinOut, PinIn, FilterParams
-from app.database.models import PinsOrm
-from sqlalchemy import insert, select, update
+from app.database.models import PinsOrm, UsersOrm, users_pins
+from sqlalchemy import insert, select, update, delete
 from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
@@ -75,3 +75,51 @@ async def get_pin_by_id(user_id: user_id, id: int, db: db):
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
     return pin
+
+
+@router.get('/user_created_pins/{id}', response_model=list[PinOut])
+async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filter):
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+
+    pins = await db.scalars(select(PinsOrm).where(PinsOrm.user_id == id).offset(filter.offset).limit(filter.limit))
+    return pins
+
+
+@router.post('/user_saved_pins/{pin_id}', status_code=status.HTTP_201_CREATED)
+async def user_save_pin(pin_id: int, user_id: user_id, db: db):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+
+    await db.execute(insert(users_pins).values(user_id=user_id, pin_id=pin_id))
+    await db.commit()
+    return {'status', 'ok'}
+
+
+@router.delete('/user_saved_pins/{pin_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def user_delete_saved_pin(pin_id: int, user_id: user_id, db: db):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+
+    await db.execute(delete(users_pins).where(users_pins.c.user_id == user_id, users_pins.c.pin_id == pin_id))
+    await db.commit()
+    return {'status', 'ok'}
+
+
+@router.get('/user_saved_pins/{id}', response_model=list[PinOut])
+async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filter):
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+
+    result = await db.execute(select(users_pins).where(users_pins.c.user_id == id))
+    rows = result.all()
+    pins = []
+    for row in rows:
+        pin_id = row[1]
+        pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+        pins.append(pin)
+    return pins

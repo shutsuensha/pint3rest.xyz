@@ -11,6 +11,13 @@ pins_tags = Table(
     Column("tag_id", ForeignKey("tags.id"), primary_key=True),
 )
 
+users_pins = Table(
+    "users_pins",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("pin_id", ForeignKey("pins.id"), primary_key=True),
+)
+
 class UsersOrm(Base):
     __tablename__ = "users"
 
