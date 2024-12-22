@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile
-from app.api.dependencies import db, user_id, filter
-from .schemas import PinOut, PinIn, FilterParams
-from app.database.models import PinsOrm, UsersOrm, users_pins
-from sqlalchemy import insert, select, update, delete
+from app.api.dependencies import db, user_id, filter, filter_with_value
+from .schemas import PinOut, PinIn
+from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags
+from sqlalchemy import insert, select, update, delete, or_
 from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
@@ -15,6 +15,36 @@ router = APIRouter(prefix="/pins", tags=["pins"])
 async def get_pins(user_id: user_id, db: db, filter: filter):
     pins = await db.scalars(select(PinsOrm).offset(filter.offset).limit(filter.limit))
     return pins
+
+
+@router.get('/tag/{tag_name}', response_model=list[PinOut])
+async def get_pins_by_tag(tag_name: str, user_id: user_id, db: db, filter: filter):
+    tag = await db.scalar(select(TagsOrm).where(TagsOrm.name == tag_name))
+    if tag is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tag not found")
+
+    result = await db.execute(select(pins_tags).where(pins_tags.c.tag_id == tag.id))
+    rows = result.all()
+    pins = []
+    for row in rows:
+        pin_id = row[0]
+        pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+        pins.append(pin)
+    return pins[filter.offset:filter.offset+filter.limit]
+
+
+@router.get('/search', response_model=list[PinOut])
+async def search_pins(filter_with_value: filter_with_value, user_id: user_id, db: db):
+    pins = await db.scalars(select(PinsOrm).where(
+            or_(
+                PinsOrm.title.ilike(f"%{filter_with_value.value}%"),
+                PinsOrm.description.ilike(f"%{filter_with_value.value}%")    
+            )
+        ).offset(filter_with_value.offset).limit(filter_with_value.limit)
+    )
+
+    return pins
+
 
 
 @router.post('/', response_model=PinOut, status_code=status.HTTP_201_CREATED)

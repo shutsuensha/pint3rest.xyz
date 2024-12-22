@@ -20,3 +20,7 @@ class PinIn(BaseModel):
 class FilterParams(BaseModel):
     offset: int = 0
     limit: int = 10
+
+
+class FilterWithValue(FilterParams):
+    value: str
