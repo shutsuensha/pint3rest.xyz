@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
-from app.api.dependencies import user_id, db
-from .schemas import TagsIn
+from app.api.dependencies import user_id, db, filter
+from .schemas import TagsIn, TagOut
 from app.database.models import PinsOrm, TagsOrm, pins_tags
 from sqlalchemy import select, insert
 
@@ -23,10 +23,15 @@ async def create_tags_on_pin(db: db, user_id: user_id, tags_model: TagsIn):
         else:
             await db.execute(insert(pins_tags).values(pin_id=pin.id, tag_id=tag.id))
             await db.commit()
+
+@router.get('/', response_model=list[TagOut])
+async def get_all_tags(db: db, user_id: user_id):
+    tags = await db.scalars(select(TagsOrm))
+    return tags
     
 
 @router.get('/{pin_id}')
-async def get_related_pins(db: db, user_id: user_id, pin_id: int):
+async def get_related_pins(db: db, user_id: user_id, pin_id: int, filter: filter):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
@@ -48,4 +53,4 @@ async def get_related_pins(db: db, user_id: user_id, pin_id: int):
             if pin_db.id not in pins and pin.id != pin_db.id:
                 pins[pin_db.id] = pin_db
     
-    return pins
+    return [pin for pin in pins.values()][filter.offset:filter.offset+filter.limit]
