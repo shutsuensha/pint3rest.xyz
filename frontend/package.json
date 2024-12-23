@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@yeger/vue-masonry-wall": "^5.0.16",
+    "aos": "^2.3.4",
+    "axios": "^1.7.9",
     "flowbite": "^2.5.2",
     "masonry-flow": "^0.2.2",
     "masonry-layout": "^4.2.2",
     "primeicons": "^7.0.0",
     "vue": "^3.5.13",
     "vue-masonry": "^0.16.0",
-    "vue-masonry-css": "^1.0.3"
+    "vue-masonry-css": "^1.0.3",
+    "vue-spinner": "^1.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

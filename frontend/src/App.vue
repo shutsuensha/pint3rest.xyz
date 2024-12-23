@@ -1,13 +1,26 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 
-import Navbar from './components/Navbar.vue';
-import Aside from './components/Aside.vue';
-import Pins from './components/Pins.vue';
+import NotAuth from './components/NotAuth/NotAuth.vue';
+import Auth from './components/Auth/Auth.vue';
 
+const has_token = ref(null)
+
+onMounted(() => {
+  const accessToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('access_token='))
+    ?.split('=')[1];
+
+  if (accessToken) {
+    has_token.value = true
+  } else {
+    has_token.value = false
+  }
+});
 </script>
 
 <template>
-  <Navbar />
-  <Aside />
-  <Pins />
+  <Auth v-if="has_token" />
+  <NotAuth v-else />
 </template>
