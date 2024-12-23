@@ -8,10 +8,9 @@
 - animation
 - toasts
 - after registration/login - vue animation celebrity
-- pinterest not auth - from youtube css animation
 
 ### TO-DO
-анимация появления картинок
+signup full
 
 ### Frontend server
 npm run dev

@@ -20,7 +20,7 @@ function changeBgColor1() {
 }
 
 function changeBgColor2() {
-  bg.value = 'bg-lime-100'
+  bg.value = 'bg-green-100'
 }
 
 function changeDefaultColor() {
@@ -62,17 +62,17 @@ onMounted(async () => {
           <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
         </div>
       </div>
-      <div v-if="bg === 'bg-lime-100'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-green-100'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2" data-aos="fade-up">
           <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div class="text-center">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Our Platform</h1>
+        <h1 :class="`text-3xl font-bold text-black mb-6`">Welcome to Our Platform</h1>
         <div class="space-x-4">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @mouseleave="changeDefaultColor"
-            class="hover:-translate-y-2 px-6 py-3 bg-red-300 text-black font-semibold rounded-3xl transition hover:bg-red-600 hover:text-white">
+            class="hover:-translate-y-2 px-6 py-3 bg-red-400 text-black font-semibold rounded-3xl transition hover:bg-red-600 hover:text-white">
             Sign Up
           </button>
           <!-- Login Button -->
