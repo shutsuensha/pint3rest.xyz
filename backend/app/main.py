@@ -15,6 +15,9 @@ app.include_router(like_router)
 app.include_router(auth_router)
 
 
-@app.get('/carousel/{id}')
+@app.get('/index/notauth/images/{id}')
 async def get_image(id: int):
-    return FileResponse(f'app/media/carousel/{id}.jpg')
+    if id <= 10:
+        return FileResponse(f'app/media/carousel/{id}.jpg')
+    else:
+        return FileResponse(f'app/media/carousel/{id}.gif')
