@@ -1,16 +1,19 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useToast } from "vue-toastification";
 
+
+const toast = useToast();
 
 const bg = ref('bg-gray-100')
 
 const loading = ref(true)
 const color = ref('red')
-const size = ref('50px')
+const size = ref('100px')
 
 const textWelcome = ref('Welcome to Our Platform 🩸')
 
@@ -18,7 +21,96 @@ const images = ref([])
 
 const showSignUp = ref(false)
 
+const imageFile = ref(null);
 const imagePreview = ref(null)
+
+const showErrorModal = ref(false)
+const errorMessage = ref('')
+
+const formSignUp = reactive({
+  username: '',
+  password: '',
+  email: '',
+});
+
+const emit = defineEmits(['login'])
+
+const showSignUpLoader = ref(false)
+
+async function submitSignUp() {
+  const username = formSignUp.username
+  const password = formSignUp.password
+  const email = formSignUp.email
+
+  if (!username.trim()) {
+    toast.warning('Please, enter Username', { position: "top-center", bodyClassName: ["cursor-pointer"] });
+    return
+  }
+
+  if (!password.trim()) {
+    toast.warning('Please, enter Password', { position: "top-center", bodyClassName: ["cursor-pointer"] });
+    return
+  }
+
+  if (!imageFile.value) {
+    toast.warning('Please, Upload Profile Image', { position: "top-center", bodyClassName: ["cursor-pointer"] });
+    return
+  }
+
+  showSignUpLoader.value = true
+
+  try {
+
+    const response = await axios.post('/api/users/register', {
+      username: username,
+      password: password
+    })
+
+    const user_id = response.data.id
+
+    try {
+      const formData = new FormData();
+      formData.append('file', imageFile.value);
+
+      const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      try {
+        const response = await axios.post('/api/users/login', {
+          username: username,
+          password: password
+        })
+        const access_token = response.data.access_token
+
+        showSignUpLoader.value = false
+        showSignUp.value = false
+
+        emit('login', access_token)
+      } catch (error) {
+        showSignUpLoader.value = false
+        showErrorModal.value = true
+        showSignUp.value = false
+        errorMessage.value = 'Unknown error, try later'
+      }
+    } catch (error) {
+      showSignUpLoader.value = false
+      showErrorModal.value = true
+      showSignUp.value = false
+      errorMessage.value = 'Error uploading image, try registration again'
+    }
+
+  } catch (error) {
+    if (error.response.status === 409) {
+      showSignUpLoader.value = false
+      showErrorModal.value = true
+      showSignUp.value = false
+      errorMessage.value = 'User already exists'
+    }
+  }
+}
 
 
 function changeBgColor1() {
@@ -39,6 +131,7 @@ function changeDefaultColor() {
 function handleImageUpload(event) {
   const file = event.target.files[0];
   if (file) {
+    imageFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       imagePreview.value = e.target.result; // Update the preview data
@@ -87,19 +180,21 @@ onMounted(async () => {
             <span class="sr-only">Close modal</span>
           </button>
         </div>
+        <ClipLoader v-if="showSignUpLoader" :color="color" :size="size"
+        class="flex items-center justify-center h-96 font-extrabold" />
         <!-- Modal body -->
-        <div class="p-5">
-          <form class="space-y-4" action="#">
+        <div v-else class="p-5">
+          <form class="space-y-4" @submit.prevent="submitSignUp">
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input type="text" name="username" id="username" autocomplete="off"
+              <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
                 class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
-              <input type="password" name="password" id="password" placeholder="••••••••"
+              <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••"
                 class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <div>
@@ -112,12 +207,12 @@ onMounted(async () => {
             <div>
               <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email
                 (Optional)</label>
-              <input type="text" name="email" id="email" autocomplete="off"
+              <input v-model="formSignUp.email" type="text" name="email" id="email" autocomplete="off"
                 class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
             <button type="submit"
-              class="w-full text-white bg-red-500 hover:bg-red-600 focus:ring-4  font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
+              class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
               Already have an account? <a href="#" class="text-red-500 hover:underline">Login</a>
@@ -130,6 +225,26 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
+  <div v-if="showErrorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-gray-500"> {{ errorMessage }} </h3>
+          <button @click="showErrorModal = false; showSignUp = true" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <ClipLoader v-if="loading" :color="color" :size="size"
     class="flex items-center justify-center h-screen font-extrabold" />
@@ -154,7 +269,7 @@ onMounted(async () => {
         </div>
       </div>
       <div class="text-center">
-        <h1 class="text-5xl  font-bold text-black mb-6">{{ textWelcome }}</h1>
+        <h1 class="text-4xl  font-bold text-black mb-6">{{ textWelcome }}</h1>
         <div class="space-x-4">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @mouseleave="changeDefaultColor" @click="showSignUp = true"

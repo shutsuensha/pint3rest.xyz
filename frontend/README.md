@@ -7,7 +7,6 @@
 - axios
 - animation
 - toasts
-- after registration/login - vue animation celebrity
 
 ### TO-DO
 signup full

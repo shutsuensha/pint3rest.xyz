@@ -1,10 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import JSConfetti from 'js-confetti'
+
+const confetti = new JSConfetti()
+
+
 
 import NotAuth from './components/NotAuth/NotAuth.vue';
 import Auth from './components/Auth/Auth.vue';
 
 const has_token = ref(null)
+const access_token = ref(null)
+
+
 
 onMounted(() => {
   const accessToken = document.cookie
@@ -14,6 +22,7 @@ onMounted(() => {
 
   if (accessToken) {
     has_token.value = true
+    access_token.value = accessToken
   } else {
     has_token.value = false
   }
@@ -22,5 +31,5 @@ onMounted(() => {
 
 <template>
   <Auth v-if="has_token" />
-  <NotAuth v-else />
+  <NotAuth v-else @login="(token) => { access_token = token; has_token = true; confetti.addConfetti() }" />
 </template>
