@@ -17,4 +17,5 @@ class UserOut(BaseModel):
 
 class PasswordResetRequestModel(BaseModel):
     username: str
+    email: EmailStr
     password: str

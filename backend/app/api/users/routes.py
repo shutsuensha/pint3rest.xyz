@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile
+from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Request
 from .schemas import UserIn, UserOut, PasswordResetRequestModel
 from app.api.dependencies import db, user_id
 from sqlalchemy import insert, select, update
@@ -8,9 +8,14 @@ import uuid
 from fastapi.responses import FileResponse
 from app.config import settings
 from app.celery.tasks import send_email
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+
 
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+templates = Jinja2Templates(directory="app/templates")
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -29,14 +34,11 @@ async def register_user(user_in: UserIn, db: db):
         token = create_url_safe_token({"username": user_in.username})
         link = f"http://{settings.DOMAIN}/users/verify/{token}"
 
-        html_message = f"""
-        <h1>Verify your Email</h1>
-        <p>Please click this <a href="{link}">link</a> to verify your account {user.username}</p>
-        """
+        context = {"username": user.username, "link": link}
 
         emails = [user_in.email]
         subject = "Verify Your email"
-        send_email.delay(emails, subject, html_message)
+        send_email.delay(emails, subject, context, "mail_verification.html")
     else:
         user = await db.scalar(
             insert(UsersOrm)
@@ -47,8 +49,8 @@ async def register_user(user_in: UserIn, db: db):
     return user
 
 
-@router.get("/verify/{token}", response_model=UserOut)
-async def verify_user_account(token: str, db: db):
+@router.get("/verify/{token}", response_class=HTMLResponse)
+async def verify_user_account(request: Request, token: str, db: db):
     token_data = decode_url_safe_token(token)
     user_username = token_data.get("username")
 
@@ -65,34 +67,38 @@ async def verify_user_account(token: str, db: db):
     )
     await db.commit()
 
-    return user
+    return templates.TemplateResponse(
+        request=request, name="success_verification.html", context={"user": user}
+    )
 
 
 @router.post("/password-reset-request")
 async def password_reset_request(reset_model: PasswordResetRequestModel, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == reset_model.username))
     if not user:
-        raise HTTPException(status_code=409, detail="user not found")
+        raise HTTPException(status_code=404, detail="user not found")
     if not user.email:
-        raise HTTPException(status_code=403, detail="user email not found")
+        raise HTTPException(status_code=403, detail=f"{reset_model.username} does not have email, u cant do password reset :(")
+    if reset_model.email != user.email:
+        raise HTTPException(status_code=400 , detail=f"enter your email for account {user.username}")
+    
     
     token = create_url_safe_token({"username": user.username, "password": reset_model.password})
     link = f"http://{settings.DOMAIN}/users/password-reset-confirm/{token}"
 
-    html_message = f"""
-    <h1>Reset Your Password</h1>
-    <p>Please click this <a href="{link}">link</a> to Reset Your Password for account {user.username}</p>
-    """
+
     subject = "Reset Your Password"
 
-    send_email.delay([user.email], subject, html_message)
+    context = {"username": user.username, "link": link, "new_password": reset_model.password}
+
+    send_email.delay([user.email], subject, context, "mail_password_reset.html")
 
 
     return {"message": "password reset link is send to your email"}
 
 
-@router.get("/password-reset-confirm/{token}")
-async def reset_account_password(token: str, db: db):
+@router.get("/password-reset-confirm/{token}", response_class=HTMLResponse)
+async def reset_account_password(request: Request, token: str, db: db):
     token_data = decode_url_safe_token(token)
 
     username = token_data.get("username")
@@ -109,7 +115,9 @@ async def reset_account_password(token: str, db: db):
     )
     await db.commit()
 
-    return {"message": "password updated"}
+    return templates.TemplateResponse(
+        request=request, name="success_password_reset.html", context={"user": user}
+    )
     
 
 @router.post("/login")
@@ -132,7 +140,7 @@ async def login_user(user_in: UserIn, response: Response, db: db):
         subject = "Verify Your email"
         send_email.delay(emails, subject, html_message)
 
-        raise HTTPException(status_code=403 , detail="user not verified, verification link is send to email")
+        raise HTTPException(status_code=403 , detail=f"Verification link is send to {user.email}")
         
 
     access_token = create_access_token({"user_id": user.id})

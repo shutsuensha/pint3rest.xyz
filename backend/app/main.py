@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+
 from app.api.users.routes import router as auth_router
 from app.api.pins.routes import router as pin_router
 from app.api.tags.routes import router as tag_router
@@ -13,6 +14,7 @@ app.include_router(tag_router)
 app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(auth_router)
+
 
 
 @app.get('/index/notauth/images/{id}')
