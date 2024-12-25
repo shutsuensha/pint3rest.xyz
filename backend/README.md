@@ -10,6 +10,7 @@
 - deploy, nginx, ci/cd
 - describe full api in readme do table
 - describe repo
+- models relations, sqlalchemy work with session example, models on_delete;
 
 
 ### Web server
