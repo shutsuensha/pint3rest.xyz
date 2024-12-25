@@ -21,6 +21,7 @@ const images = ref([])
 
 const showSignUp = ref(false)
 const showLogin = ref(false)
+const showPasswordReset = ref(false)
 
 const imageFile = ref(null);
 const imagePreview = ref(null)
@@ -30,6 +31,9 @@ const errorMessageSignup = ref('')
 
 const showErrorModalLogin = ref(false)
 const errorMessageLogin = ref('')
+
+const showErrorModalPasswordReset = ref(false)
+const errorMessagePasswordReset = ref('')
 
 const formSignUp = reactive({
   username: '',
@@ -43,11 +47,18 @@ const formLogin = reactive({
   password: ''
 });
 
+const formPasswordReset = reactive({
+  username: '',
+  email: '',
+  password: ''
+});
+
 
 const emit = defineEmits(['login'])
 
 const showSignUpLoader = ref(false)
 const showLoginLoader = ref(false)
+const showPasswordResetLoader = ref(false)
 
 async function submitSignUp() {
   const username = formSignUp.username
@@ -71,55 +82,104 @@ async function submitSignUp() {
 
   showSignUpLoader.value = true
 
-  try {
-
-    const response = await axios.post('/api/users/register', {
-      username: username,
-      password: password
-    })
-
-    const user_id = response.data.id
-
+  if (!email.trim()) {
     try {
-      const formData = new FormData();
-      formData.append('file', imageFile.value);
 
-      const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post('/api/users/register', {
+        username: username,
+        password: password
+      })
+
+      const user_id = response.data.id
 
       try {
-        const response = await axios.post('/api/users/login', {
-          username: username,
-          password: password
-        })
-        const access_token = response.data.access_token
+        const formData = new FormData();
+        formData.append('file', imageFile.value);
 
-        showSignUpLoader.value = false
-        showSignUp.value = false
+        const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
-        emit('login', access_token)
+        try {
+          const response = await axios.post('/api/users/login', {
+            username: username,
+            password: password
+          })
+          const access_token = response.data.access_token
+
+          showSignUpLoader.value = false
+          showSignUp.value = false
+
+          emit('login', access_token)
+        } catch (error) {
+          showSignUpLoader.value = false
+          showErrorModalSignup.value = true
+          showSignUp.value = false
+          errorMessageSignup.value = 'Unknown error, try later'
+        }
       } catch (error) {
         showSignUpLoader.value = false
         showErrorModalSignup.value = true
         showSignUp.value = false
-        errorMessageSignup.value = 'Unknown error, try later'
+        errorMessageSignup.value = 'Error uploading image, try registration again'
+      }
+
+    } catch (error) {
+      if (error.response.status === 409) {
+        showSignUpLoader.value = false
+        showErrorModalSignup.value = true
+        showSignUp.value = false
+        errorMessageSignup.value = 'User already exists'
+      }
+    }
+  } else {
+    try {
+      const response = await axios.post('/api/users/register', {
+        username: username,
+        password: password,
+        email: email
+      })
+
+      const user_id = response.data.id
+
+      try {
+        const formData = new FormData();
+        formData.append('file', imageFile.value);
+
+        const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        showSignUpLoader.value = false
+        showSignUp.value = false
+        showLogin.value = true
+
+        toast.success(`Verification Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+        toast.success(`After verification u can Login in ${username} account`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+
+      } catch (error) {
+        showSignUpLoader.value = false
+        showErrorModalSignup.value = true
+        showSignUp.value = false
+        errorMessageSignup.value = 'Error uploading image, try registration again'
       }
     } catch (error) {
-      showSignUpLoader.value = false
-      showErrorModalSignup.value = true
-      showSignUp.value = false
-      errorMessageSignup.value = 'Error uploading image, try registration again'
-    }
-
-  } catch (error) {
-    if (error.response.status === 409) {
-      showSignUpLoader.value = false
-      showErrorModalSignup.value = true
-      showSignUp.value = false
-      errorMessageSignup.value = 'User already exists'
+      if (error.response.status === 409) {
+        showSignUpLoader.value = false
+        showErrorModalSignup.value = true
+        showSignUp.value = false
+        errorMessageSignup.value = 'User already exists'
+      }
+      if (error.response.status === 422) {
+        showSignUpLoader.value = false
+        showErrorModalSignup.value = true
+        showSignUp.value = false
+        errorMessageSignup.value = 'Enter correct email, please'
+      }
     }
   }
 }
@@ -158,6 +218,78 @@ async function submitLogin() {
       showErrorModalLogin.value = true
       showLogin.value = false
       errorMessageLogin.value = error.response.data.detail
+    }
+    if (error.response.status === 403) {
+      showLoginLoader.value = false
+      showErrorModalLogin.value = true
+      showLogin.value = false
+      errorMessageLogin.value = 'You need verify your account to login'
+      toast.success(`${error.response.data.detail}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      toast.success(`After verification on can Login in ${username} account`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+    }
+  }
+}
+
+
+async function submitPasswordReset() {
+  const username = formPasswordReset.username
+  const password = formPasswordReset.password
+  const email = formPasswordReset.email
+
+  if (!username.trim()) {
+    toast.warning('Please, enter Username', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+    return
+  }
+
+  if (!email.trim()) {
+    toast.warning('Please, enter Email', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+    return
+  }
+
+  if (!password.trim()) {
+    toast.warning('Please, enter new Password', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+    return
+  }
+
+  showPasswordResetLoader.value = true
+
+  try {
+    const response = await axios.post('/api/users/password-reset-request', {
+      username: username,
+      email: email,
+      password: password
+    })
+
+    toast.success(`Password Reset Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+    
+    showPasswordResetLoader.value = false
+    showPasswordReset.value = false
+    showLogin.value = true
+
+  } catch (error) {
+    if (error.response.status === 422) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = 'Enter Correct Email'
+    }
+    if (error.response.status === 404) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = 'user not found'
+    }
+    if (error.response.status === 403) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = error.response.data.detail
+    }
+    if (error.response.status === 400) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = error.response.data.detail
     }
   }
 }
@@ -265,7 +397,8 @@ onMounted(async () => {
               class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
-              Already have an account? <a @click="showSignUp = false; showLogin = true" href="#" class="text-red-500 hover:underline">Login</a>
+              Already have an account? <a @click="showSignUp = false; showLogin = true" href="#"
+                class="text-red-500 hover:underline">Login</a>
             </div>
           </form>
         </div>
@@ -311,12 +444,65 @@ onMounted(async () => {
             <button type="submit"
               class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Log
               In</button>
-            <div class="text-sm font-medium text-gray-500 "> 
-              Dont have an account? <a @click="showLogin = false; showSignUp = true" href="#" class="text-red-500 hover:underline">Sign Up</a>
+            <div class="text-sm font-medium text-black ">
+              Dont have an account? <a @click="showLogin = false; showSignUp = true" href="#"
+                class="text-red-500 hover:underline">Sign Up</a>
             </div>
             <div class="flex">
-              <a href="#" class="text-sm text-red-500 hover:underline">Lost Password?</a>
+              <a @click="showLogin = false; showPasswordReset = true" href="#"
+                class="text-sm text-red-500 hover:underline">Lost Password?</a>
             </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showPasswordReset" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-3xl">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <h3 class="text-lg  font-semibold text-gray-900">
+            Password Reset >< </h3>
+              <button @click="showPasswordReset = false" type="button"
+                class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 14 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+                <span class="sr-only">Close modal</span>
+              </button>
+        </div>
+        <ClipLoader v-if="showPasswordResetLoader" :color="color" :size="size"
+          class="flex items-center justify-center h-96 font-extrabold" />
+        <!-- Modal body -->
+        <div v-else class="p-5">
+          <form class="space-y-4" @submit.prevent="submitPasswordReset">
+            <div>
+              <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
+              <input v-model="formPasswordReset.username" type="text" name="username" id="username" autocomplete="off"
+                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                placeholder="akinak1337" />
+            </div>
+            <div>
+              <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email</label>
+              <input v-model="formPasswordReset.email" type="text" name="email" id="email" autocomplete="off"
+                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                placeholder="akinak1337@gmail.com" />
+            </div>
+            <div>
+              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
+                New Password</label>
+              <input v-model="formPasswordReset.password" type="password" name="password" id="password"
+                placeholder="••••••••"
+                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+            </div>
+            <button type="submit"
+              class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Reset
+              Password</button>
           </form>
         </div>
       </div>
@@ -332,7 +518,7 @@ onMounted(async () => {
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
-          <h3 class="mb-5 text-lg font-normal text-gray-500"> {{ errorMessageSignup }} </h3>
+          <h3 class="mb-5 text-lg font-normal text-black"> {{ errorMessageSignup }} </h3>
           <button @click="showErrorModalSignup = false; showSignUp = true" type="button"
             class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
             Ok, understand
@@ -353,6 +539,26 @@ onMounted(async () => {
           </svg>
           <h3 class="mb-5 text-lg font-normal text-gray-500"> {{ errorMessageLogin }} </h3>
           <button @click="showErrorModalLogin = false; showLogin = true" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showErrorModalPasswordReset"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-gray-500"> {{ errorMessagePasswordReset }} </h3>
+          <button @click="showErrorModalPasswordReset = false; showPasswordReset = true" type="button"
             class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
             Ok, understand
           </button>
