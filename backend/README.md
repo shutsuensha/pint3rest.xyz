@@ -11,7 +11,10 @@
 - describe full api in readme do table
 - describe repo
 - models relations, sqlalchemy work with session example, models on_delete;
-
+- oauth2/jwt secure
+- access_token/refresh_token
+- admin role/api
+- secure jwt in frontend
 
 ### Web server
 uvicorn app.main:app --reload
