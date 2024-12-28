@@ -591,7 +591,7 @@ onMounted(async () => {
         </div>
       </div>
       <div class="text-center">
-        <h1 class="text-4xl  font-bold text-black mb-6">{{ textWelcome }}</h1>
+        <h1 class="text-4xl  text-black mb-6">{{ textWelcome }}</h1>
         <div class="space-x-4">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @mouseleave="changeDefaultColor" @click="showSignUp = true"

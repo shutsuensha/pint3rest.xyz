@@ -1,5 +1,15 @@
 <script setup>
 import logo from '@/assets/logo.png';
+import { onMounted } from 'vue';
+
+
+defineProps({
+  access_token: String
+})
+
+onMounted({
+
+})
 </script>
 
 
@@ -9,7 +19,7 @@ import logo from '@/assets/logo.png';
     <!-- Icons -->
     <div class="flex-grow flex flex-col items-center space-y-8 text-xl mt-2">
       <div class="cursor-pointer rounded-full hover:bg-gray-200 p-3 items-center">
-        <img :src="logo" alt="Logo" class="w-7 h-7 rounded-full">
+        <img :src="logo" alt="Logo" class="w-10 h-10 rounded-full">
       </div>
       <div data-tooltip-target="tooltip-home" data-tooltip-placement="right"
         class="cursor-pointer rounded-md hover:bg-gray-200 p-3 flex items-center">
