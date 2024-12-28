@@ -11,6 +11,9 @@
 - deploy, nginx, ci/cd
 - describe repo
 - primiry color mb in celery?
+- celery results
+- rabbitmq
+- google one tap, python socialу
 
 
 ### Web server
