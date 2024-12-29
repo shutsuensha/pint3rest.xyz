@@ -8,6 +8,8 @@ from app.api.tags.routes import router as tag_router
 from app.api.comments.routes import router as comment_router
 from app.api.likes.routes import router as like_router
 
+from .middlewares import register_middleware
+
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -19,6 +21,8 @@ app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(auth_router)
 
+
+register_middleware(app)
 
 
 @app.get('/index/notauth/images/{id}')
