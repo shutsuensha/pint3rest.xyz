@@ -5,7 +5,7 @@
 
 <template>
   <nav class=" fixed top-0 left-0 w-full bg-white z-20">
-    <div class="flex items-center justify-between px-6 py-4">
+    <div class="flex items-center justify-between px-6 py-3">
       <!-- Search Bar -->
       <div class="relative flex-1 ml-20 mr-2">
         <input type="text" placeholder="Поиск"

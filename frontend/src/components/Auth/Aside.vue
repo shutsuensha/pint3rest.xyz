@@ -12,7 +12,7 @@ const emit = defineEmits(['logout'])
 
 const props = defineProps({
   me: Object,
-  meImage: Object
+  meImage: String
 })
 
 
