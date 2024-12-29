@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/components": "^12.2.0",
     "@yeger/vue-masonry-wall": "^5.0.16",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
