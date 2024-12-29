@@ -1,14 +1,33 @@
 <script setup>
-import logo from '@/assets/logo.png';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import axios from 'axios'
+import { RouterLink, useRoute } from 'vue-router';
 
+const isActiveLink = (routePath) => {
+  const route = useRoute();
+  return route.path === routePath;
+};
 
-defineProps({
-  access_token: String
+const emit = defineEmits(['logout'])
+
+const props = defineProps({
+  me: Object,
+  meImage: Object
 })
 
-onMounted({
 
+async function logout() {
+  try {
+    await axios.post('/api/users/logout')
+    emit('logout')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+onMounted(async () => {
 })
 </script>
 
@@ -17,63 +36,33 @@ onMounted({
   <nav class="fixed top-0 left-0 h-full w-20 flex flex-col items-center space-y-12 z-30 border-r py-4">
 
     <!-- Icons -->
-    <div class="flex-grow flex flex-col items-center space-y-8 text-xl mt-2">
-      <div class="cursor-pointer rounded-full hover:bg-gray-200 p-3 items-center">
-        <img :src="logo" alt="Logo" class="w-10 h-10 rounded-full">
-      </div>
-      <div data-tooltip-target="tooltip-home" data-tooltip-placement="right"
-        class="cursor-pointer rounded-md hover:bg-gray-200 p-3 flex items-center">
-        <i class="pi pi-home"></i>
-      </div>
-      <div data-tooltip-target="tooltip-create" data-tooltip-placement="right"
-        class="cursor-pointer rounded-md hover:bg-gray-200 p-3 flex items-center">
-        <i class="pi pi-plus-circle"></i>
-      </div>
-      <div data-tooltip-target="tooltip-updates" data-tooltip-placement="right"
-        class="cursor-pointer rounded-md hover:bg-gray-200 p-3 flex items-center">
+    <div class="flex-grow flex flex-col items-center text-xl">
+      <RouterLink :to="`/user/${me.username}`" 
+        class="transition-transform duration-100 transform hover:scale-110 cursor-pointer rounded-full p-2 items-center">
+        <img :src="meImage" alt="me profile" class="w-10 h-10 object-cover rounded-full" />
+      </RouterLink>
+      <RouterLink to="/" 
+        :class="['transition-transform', 'duration-100', 'transform', 'hover:scale-150', 'cursor-pointer', 'rounded-md', 'p-6', 'flex', 'items-center']">
+        <i :class="[isActiveLink('/') ? 'text-red-600 font-bold' : 'text-black', 'pi', 'pi-home']"></i>
+      </RouterLink>
+      <RouterLink to="/create-pin" 
+        class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-6 flex items-center">
+        <i :class="[isActiveLink('/create-pin') ? 'text-red-600 font-bold' : 'text-black', 'pi', 'pi-plus-circle']"></i>
+      </RouterLink>
+      <div 
+        class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-6 flex items-center">
         <i class="pi pi-bell"></i>
       </div>
-      <div data-tooltip-target="tooltip-messages" data-tooltip-placement="right"
-        class="cursor-pointer rounded-md hover:bg-gray-200 p-3 flex items-center">
+      <div 
+        class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-6 flex items-center">
         <i class="pi pi-envelope"></i>
       </div>
     </div>
 
     <!-- Last Link -->
-    <div data-tooltip-target="tooltip-settings" data-tooltip-placement="right"
-      class="cursor-pointer rounded-md hover:bg-gray-200 p-3 text-xl mb-4 flex items-center">
-      <i class="pi pi-cog"></i>
+    <div @click="logout" 
+      class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-5 text-xl mb-4 flex items-center">
+      <i class="pi pi-sign-out"></i>
     </div>
   </nav>
-
-  <div id="tooltip-home" role="tooltip"
-    class="absolute z-30 invisible inline-block px-3 py-2 text-xs font-medium text-white  bg-black rounded-md tooltip">
-    Главная
-    <div class="tooltip-arrow" data-popper-arrow></div>
-  </div>
-
-  <div id="tooltip-create" role="tooltip"
-    class="absolute z-30 invisible inline-block px-3 py-2 text-xs font-medium text-white  bg-black rounded-md tooltip">
-    Создать
-    <div class="tooltip-arrow" data-popper-arrow></div>
-  </div>
-
-  <div id="tooltip-updates" role="tooltip"
-    class="absolute z-30 invisible inline-block px-3 py-2 text-xs font-medium text-white  bg-black rounded-md tooltip">
-    Обновления
-    <div class="tooltip-arrow" data-popper-arrow></div>
-  </div>
-
-  <div id="tooltip-messages" role="tooltip"
-    class="absolute z-30 invisible inline-block px-3 py-2 text-xs font-medium text-white  bg-black rounded-md tooltip">
-    Сообщения
-    <div class="tooltip-arrow" data-popper-arrow></div>
-  </div>
-
-  <div id="tooltip-settings" role="tooltip"
-    class="absolute z-30 invisible inline-block px-3 py-2 text-xs font-medium text-white  bg-black rounded-md tooltip">
-    Настройки
-    <div class="tooltip-arrow" data-popper-arrow></div>
-  </div>
-
 </template>
