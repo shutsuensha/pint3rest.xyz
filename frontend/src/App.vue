@@ -28,9 +28,22 @@ onMounted(() => {
     has_token.value = false
   }
 });
+
+function logout() {
+  has_token.value = false; 
+  access_token.value = null; 
+  toast.success('see u next time 🫡🫡🫡', { bodyClassName: ["cursor-pointer", "text-center"] })
+}
+
+function login(token) {
+  access_token.value = token; 
+  has_token.value = true; 
+  confetti.addConfetti();
+  toast.success('congratulations 😽🥳', { bodyClassName: ["cursor-pointer", "text-center"] })
+}
 </script>
 
 <template>
-  <Auth v-if="has_token" :access_token="access_token" @logout="has_token = false; access_token = null; toast.success('successfully logout')"/>
-  <NotAuth v-else @login="(token) => { access_token = token; has_token = true; confetti.addConfetti();toast.success('successfully login')}" />
+  <Auth v-if="has_token" :access_token="access_token" @logout="logout()"/>
+  <NotAuth v-else @login="(token) => {login(token)}" />
 </template>
