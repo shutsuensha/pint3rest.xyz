@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.dependencies import db, user_id, filter, filter_with_value
 from .schemas import PinOut, PinIn
 from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags
-from sqlalchemy import insert, select, update, delete, or_
+from sqlalchemy import insert, select, update, delete, or_, desc
 from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
@@ -13,7 +13,13 @@ router = APIRouter(prefix="/pins", tags=["pins"])
 
 @router.get('/', response_model=list[PinOut])
 async def get_pins(user_id: user_id, db: db, filter: filter):
-    pins = await db.scalars(select(PinsOrm).offset(filter.offset).limit(filter.limit))
+    pins = await db.scalars(
+        select(PinsOrm)
+        .offset(filter.offset)
+        .limit(filter.limit)
+        .order_by(desc(PinsOrm.id))  # Order by `id` in descending order
+    )
+
     return pins
 
 
