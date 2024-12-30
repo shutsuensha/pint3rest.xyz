@@ -31,3 +31,8 @@ async def get_image(id: int):
         return FileResponse(f'app/media/carousel/{id}.jpg')
     else:
         return FileResponse(f'app/media/carousel/{id}.gif')
+
+
+@app.get('/not-found')
+async def get_image():
+    return FileResponse(f'app/media/not-found/1.jpg')
