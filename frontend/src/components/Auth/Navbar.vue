@@ -1,15 +1,31 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
 
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 0;
+};
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
-
 <template>
-  <nav class=" fixed top-0 left-0 w-full bg-white z-20">
+  <nav :class="['fixed top-0 left-20 w-full bg-white z-20', isScrolled ? 'shadow-lg' : '']">
     <div class="flex items-center justify-between px-6 py-3">
       <!-- Search Bar -->
-      <div class="relative flex-1 ml-20 mr-2">
-        <input type="text" placeholder="Поиск"
-          class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-3xl block w-full py-3 px-10 focus:ring-red-500 focus:border-red-500 hover:bg-gray-100" />
+      <div class="relative flex-1 mr-20">
+        <input
+          type="text"
+          placeholder="Поиск"
+          class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-xl block w-full py-3 px-10 outline-none border-none focus:ring-0"
+        />
         <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
           <i class="pi pi-search text-gray-600"></i>
         </div>

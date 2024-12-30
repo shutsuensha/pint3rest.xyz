@@ -1,16 +1,32 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import axios from 'axios'
+import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
+
+const image = ref(null)
+
+const loading = ref(true)
+const color = ref('red')
+const size = ref('100px')
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/not-found`, { responseType: 'blob' });
+    const blobUrl = URL.createObjectURL(response.data);
+    image.value = blobUrl
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
-  <section class="text-center flex flex-col justify-center items-center h-96">
-    <i class="pi pi-exclamation-triangle text-yellow-500 text-7xl mb-5"></i>
-    <h1 class="text-6xl font-bold mb-4">404 Not Found</h1>
-    <p class="text-xl mb-5">This page does not exist</p>
-    <RouterLink
-      to="/"
-      class="text-white bg-green-700 hover:bg-green-900 rounded-md px-3 py-2 mt-4"
-      >Go Back</RouterLink
-    >
+  <section class="text-center flex flex-col justify-center items-center h-screen">
+    <h1 class="text-4xl font-bold mb-4">404</h1>
+    <ClipLoader v-if="loading" :size="size" :color="color" />
+    <img v-else class="h-96 rounded-xl" :src="image"
+      alt="not found image">
   </section>
 </template>

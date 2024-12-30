@@ -8,7 +8,17 @@ const pins = ref([]);
 const offset = ref(0);
 const limit = ref(10);
 
+
+
+const isPinsLoading = ref(false)
+
 const loadPins = async () => {
+
+  if (isPinsLoading.value) {
+    return
+  }
+
+  isPinsLoading.value = true
   try {
     const response = await axios.get('/api/pins/', {
       params: { offset: offset.value, limit: limit.value },
@@ -16,10 +26,9 @@ const loadPins = async () => {
     });
 
     // Append new pins to the existing ones
-    pins.value.push(...response.data);
-    offset.value += limit.value;  // Increase the offset for the next request
+    pins.value.push({pins: response.data, showAllPins: false});
 
-    console.log(pins.value);
+    offset.value += limit.value;
   } catch (error) {
     console.log(error);
   }
@@ -47,8 +56,15 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="mt-20 ml-20">
-    <div class="grid grid-cols-5 gap-5 px-5">
-      <Pin v-for="pin in pins" :key="pin.id" :pin="pin"/>
+    <div v-for="pinGroup in pins" :key="pinGroup.id" class="grid grid-cols-5 gap-5 px-5 mb-4">
+      <Pin
+        v-for="pinem in pinGroup.pins"
+        :key="pinem.id"
+        :pin="pinem"
+        :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
+        @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false }"
+        :showAllPins="pinGroup.showAllPins"
+      />
     </div>
   </div>
 </template>

@@ -3,6 +3,9 @@ import { ref, reactive } from "vue";
 import { useToast } from "vue-toastification";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
+import router from '@/router';
+
+
 
 const mediaFile = ref(null);
 const mediaPreview = ref(null);
@@ -82,6 +85,7 @@ async function submitPin() {
       });
 
       sendingPin.value = false
+      router.push('/');
     } catch (error) {
       console.log(error)
     }
