@@ -8,3 +8,4 @@
 - learn how to earn stars github
 - screenshots for every page
 - learn how to format readme project describe
+- do github profile
