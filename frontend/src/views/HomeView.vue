@@ -9,7 +9,6 @@ const offset = ref(0);
 const limit = ref(10);
 
 
-
 const isPinsLoading = ref(false)
 
 const loadPins = async () => {

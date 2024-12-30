@@ -32,14 +32,14 @@ onMounted(() => {
 function logout() {
   has_token.value = false; 
   access_token.value = null; 
-  toast.success('see u next time 🫡🫡🫡', { bodyClassName: ["cursor-pointer", "text-center"] })
+  toast.success('ꜱᴇᴇ ᴜ ɴᴇxᴛ ᴛɪᴍᴇ ', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
 function login(token) {
   access_token.value = token; 
   has_token.value = true; 
   confetti.addConfetti();
-  toast.success('congratulations 😽🥳', { bodyClassName: ["cursor-pointer", "text-center"] })
+  toast.success('𝓦𝓮𝓵𝓬𝓸𝓶𝓮 𝓫𝓪𝓬𝓴 😽🥳', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 </script>
 

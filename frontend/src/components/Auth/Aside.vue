@@ -2,9 +2,6 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios'
 import { RouterLink, useRoute } from 'vue-router';
-import { initPopovers } from 'flowbite'
-
-
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -31,7 +28,6 @@ async function logout() {
 
 
 onMounted(async () => {
-  initPopovers();
 })
 </script>
 
@@ -62,23 +58,10 @@ onMounted(async () => {
 
     <!-- Profile Link -->
     <div class="flex items-center justify-center">
-      <RouterLink :to="`/user/${me.username}`" data-popover-target="popover-user-profile" data-popover-placement="right"
-        class="cursor-pointer rounded-full p-2">
-        <img :src="meImage" alt="me profile" class="w-10 h-10 object-cover rounded-full border-2 border-red-500" />
+      <RouterLink :to="`/user/${me.username}`"
+      :class="[isActiveLink(`/user/${me.username}`) ? '' : 'transition-transform duration-100 transform hover:scale-125 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
+        <img :src="meImage" alt="me profile" :class="[isActiveLink(`/user/${me.username}`) ? 'border-black' : 'border-gray-400', 'w-10' ,'h-10' ,'object-cover', 'rounded-full', 'border-2']" />
       </RouterLink>
-      <div data-popover id="popover-user-profile" role="tooltip"
-        class="flex flex-col items-center absolute z-10 invisible w-32 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0">
-        <div class="p-3 text-center">
-          <!-- Centered Image -->
-          <img class="w-10 h-10 rounded-full mx-auto"
-            src="https://i.pinimg.com/736x/35/2b/6e/352b6eca3197fed60e0c5282a537e1a0.jpg" alt="Jese Leos">
-          <!-- Centered Username -->
-          <p class="mt-2 text-sm font-normal">
-            <a href="#" class="hover:underline"> @username</a>
-          </p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
     </div>
 
     <!-- Last Link -->
