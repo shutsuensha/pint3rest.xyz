@@ -77,12 +77,12 @@ async function loadUser() {
 </script>
 
 <template>
-  <div class="col-span-1 relative">
+  <div class="w-1/5 p-2">
     <RouterLink :to="`/pin/${pin.id}`" class="block">
       <div v-if="!showAllPins" class="w-full h-96 rounded-3xl" :style="{ backgroundColor: pin.rgb }"></div>
       <div v-else>
-        <img v-if="pinIsImage" :src="pinFile" alt="pin image" class="w-full h-96 rounded-3xl object-cover" />
-        <video v-if="pinIsVideo" :src="pinFile" class="w-full h-96 rounded-3xl object-cover" autoplay loop muted />
+        <img v-if="pinIsImage" :src="pinFile" alt="pin image" class="w-full h-auto rounded-3xl" />
+        <video v-if="pinIsVideo" :src="pinFile" class="w-full h-auto rounded-3xl" autoplay loop muted />
       </div>
       <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
     </RouterLink>
@@ -94,7 +94,6 @@ async function loadUser() {
       <span 
         v-if="showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
 
-      <!-- Popover -->
       <div v-show="showPopover" @mouseover="insidePopover = true" @mouseleave="insidePopover = false; showPopover = false"
         class="absolute top-[30px] left-[5px] bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-gray-700 z-30 h-32 w-32">
         <div class="flex flex-col items-center justify-center">

@@ -11,6 +11,7 @@ const limit = ref(10);
 
 const isPinsLoading = ref(false)
 
+
 const loadPins = async () => {
 
   if (isPinsLoading.value) {
@@ -25,7 +26,7 @@ const loadPins = async () => {
     });
 
     // Append new pins to the existing ones
-    pins.value.push({pins: response.data, showAllPins: false});
+    pins.value.push({ pins: response.data, showAllPins: false });
 
     offset.value += limit.value;
   } catch (error) {
@@ -55,15 +56,13 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="mt-20 ml-20">
-    <div v-for="pinGroup in pins" :key="pinGroup.id" class="grid grid-cols-5 gap-5 px-5 mb-4">
-      <Pin
-        v-for="pinem in pinGroup.pins"
-        :key="pinem.id"
-        :pin="pinem"
+    <div transition-duration="1s" item-selector=".item"
+     v-for="pinGroup in pins" :key="pinGroup.id" v-masonry="pinGroup.id">
+      <Pin v-masonry-tile class="item"
+        v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
-        @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false }"
-        :showAllPins="pinGroup.showAllPins"
-      />
+        @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false;}"
+        :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>
 </template>
