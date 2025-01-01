@@ -10,6 +10,10 @@ const limit = ref(10);
 
 const isPinsLoading = ref(false);
 
+const props = defineProps({
+  user_id: Number
+})
+
 const loadPins = async () => {
   if (isPinsLoading.value) {
     return;
@@ -17,7 +21,7 @@ const loadPins = async () => {
 
   isPinsLoading.value = true;
   try {
-    const response = await axios.get('/api/pins/', {
+    const response = await axios.get(`/api/pins/user_saved_pins/${props.user_id}`, {
       params: { offset: offset.value, limit: limit.value },
       withCredentials: true,
     });
@@ -59,7 +63,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mt-20 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
+  <div class="mt-10 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div
      v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item"

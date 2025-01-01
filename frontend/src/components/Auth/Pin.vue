@@ -21,6 +21,9 @@ const showPopover = ref(false); // State to control the popover visibility
 
 const insidePopover = ref(false)
 
+const bgSave = ref('bg-red-700')
+const saveText = ref('Save')
+
 const props = defineProps({
   pin: Object,
   lastPinId: Number,
@@ -34,6 +37,8 @@ const onImageLoad = () => {
 const onVideoLoad = () => {
   videoLoaded.value = true;
 }
+
+const showSaveButton = ref(false)
 
 onMounted(async () => {
   try {
@@ -83,22 +88,42 @@ async function loadUser() {
     console.error(error)
   }
 }
+
+async function save() {
+  bgSave.value = 'bg-black'
+  saveText.value = 'Saving...'
+  try {
+    const response = await axios.post(`/api/pins/user_saved_pins/${props.pin.id}`, {
+      withCredentials: true
+    })
+    saveText.value = 'Saved'
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
   <div class="w-1/5 p-2">
-    <RouterLink :to="`/pin/${pin.id}`" class="block">
-      <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
-        :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
-      </div>
-      <div v-show="showAllPins">
-        <img v-if="pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
-          class="w-full h-auto rounded-3xl" />
-        <video v-if="pinVideo" :src="pinVideo" @loadeddata="onVideoLoad"
-          class="w-full h-auto rounded-3xl" autoplay loop muted />
-      </div>
-      <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
-    </RouterLink>
+    <div class="relative block hover:opacity-90" @mouseover="showSaveButton = true"
+      @mouseleave="showSaveButton = false">
+      <button v-if="showSaveButton" @click.stop="save"
+        :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
+        {{  saveText }}
+      </button>
+      <RouterLink :to="`/pin/${pin.id}`">
+        <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
+          :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
+        </div>
+        <div v-show="showAllPins">
+          <img v-if="pinImage" :src="pinImage" @load="onImageLoad" alt="pin image" class="w-full h-auto rounded-3xl" />
+          <video v-if="pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" class="w-full h-auto rounded-3xl" autoplay
+            loop muted />
+        </div>
+        <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
+      </RouterLink>
+    </div>
 
     <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
       @mouseleave="if (!insidePopover) showPopover = false;"
