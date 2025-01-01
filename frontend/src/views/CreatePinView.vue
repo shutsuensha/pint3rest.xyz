@@ -1,11 +1,9 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick } from "vue";
 import { useToast } from "vue-toastification";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import router from '@/router';
-
-
 
 const mediaFile = ref(null);
 const mediaPreview = ref(null);
@@ -32,7 +30,7 @@ function handleMediaUpload(event) {
     mediaFile.value = file;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       mediaPreview.value = e.target.result;
 
       // Check file type for preview
@@ -48,6 +46,7 @@ function handleMediaUpload(event) {
   }
 }
 
+
 async function submitPin() {
   const title = formPin.title
   const description = formPin.description
@@ -62,10 +61,19 @@ async function submitPin() {
   sendingPin.value = true
 
   try {
+    let height = null;
+    if (isImage.value) {
+      const rect = document.getElementById('imagePreview').getBoundingClientRect();
+      height = rect.height.toFixed(2);
+    } else {
+      const rect = document.getElementById('videoPreview').getBoundingClientRect();
+      height = rect.height.toFixed(2);
+    }
     const response = await axios.post('/api/pins', {
       title: title,
       description: description,
-      href: href
+      href: href,
+      height: `${height}`
     },
       {
         withCredentials: true
@@ -102,19 +110,23 @@ async function submitPin() {
     </div>
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
-    <div v-else class="grid grid-cols-2 gap-6 mt-5 mx-36">
+    <div v-else class="grid grid-cols-2 mt-5 mx-36 ">
       <!-- First Column: Media Input and Preview -->
       <div>
-        <label for="media" class="block mb-2 text-sm font-medium text-gray-900">Изображение/Видео</label>
+        <label for="media"
+          class="block w-[271px] mx-auto text-center mb-2 text-sm font-medium text-gray-900">Изображение/Видео</label>
         <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-          class="block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
+          class="block w-[271px] mx-auto text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
         <!-- Media Preview -->
-        <div v-if="mediaPreview" class="mt-2 rounded-3xl overflow-hidden">
-          <img v-if="isImage" :src="mediaPreview" class="h-96 w-full object-cover" alt="Media Preview" />
-          <video v-if="isVideo" :src="mediaPreview" class="h-96 w-full object-cover" autoplay loop muted />
+        <div id="mediaPreview" v-if="mediaPreview" class="mt-2">
+          <img id="imagePreview" v-if="isImage" :src="mediaPreview" class="h-auto w-[271.84px] rounded-3xl mx-auto"
+            alt="Media Preview" />
+          <video id="videoPreview" v-if="isVideo" :src="mediaPreview" class="h-auto w-[271.84px] rounded-3xl mx-auto"
+            autoplay loop muted />
         </div>
-        <div v-else class="mt-2 rounded-3xl overflow-hidden">
-          <div class="relative bg-gray-300 h-96 w-full flex justify-center items-center text-center">
+        <div v-else class="mt-2 overflow-hidden">
+          <div
+            class="relative bg-gray-300 h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto">
             <!-- Upload Icon -->
             <div class="absolute flex flex-col items-center space-y-4">
               <i class="pi pi-arrow-up text-4xl text-gray-400"></i> <!-- Replace with your icon -->

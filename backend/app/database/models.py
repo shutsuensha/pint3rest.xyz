@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey
+from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
 from datetime import date
@@ -46,6 +46,8 @@ class PinsOrm(Base):
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
     rgb: Mapped[str | None] = mapped_column(String(100), default=None)
+
+    height: Mapped[str | None] = mapped_column(String(100), default=None)
 
 
 class TagsOrm(Base):

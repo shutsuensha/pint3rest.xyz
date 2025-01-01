@@ -10,9 +10,11 @@ const popImage = ref(null)
 const emit = defineEmits(['lastPinLoaded'])
 
 const user = ref(null);
-const pinFile = ref(null);
-const pinIsVideo = ref(false);
-const pinIsImage = ref(false);
+const pinImage = ref(null);
+const pinVideo = ref(null)
+const imageLoaded = ref(false); // Флаг загрузки изображения
+const videoLoaded = ref(false); // Флаг загрузки видео
+
 const userImage = ref(null);
 
 const showPopover = ref(false); // State to control the popover visibility
@@ -24,6 +26,14 @@ const props = defineProps({
   lastPinId: Number,
   showAllPins: Boolean
 });
+
+const onImageLoad = () => {
+  imageLoaded.value = true;
+};
+
+const onVideoLoad = () => {
+  videoLoaded.value = true;
+}
 
 onMounted(async () => {
   try {
@@ -41,12 +51,11 @@ onMounted(async () => {
     try {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
-      pinFile.value = blobUrl;
       const contentType = pinResponse.headers['content-type'];
       if (contentType.startsWith('image/')) {
-        pinIsImage.value = true;
+        pinImage.value = blobUrl;
       } else {
-        pinIsVideo.value = true;
+        pinVideo.value = blobUrl;
       }
       if (props.pin.id === props.lastPinId) {
         emit('lastPinLoaded');
@@ -79,27 +88,33 @@ async function loadUser() {
 <template>
   <div class="w-1/5 p-2">
     <RouterLink :to="`/pin/${pin.id}`" class="block">
-      <div v-if="!showAllPins" class="w-full h-96 rounded-3xl" :style="{ backgroundColor: pin.rgb }"></div>
-      <div v-else>
-        <img v-if="pinIsImage" :src="pinFile" alt="pin image" class="w-full h-auto rounded-3xl" />
-        <video v-if="pinIsVideo" :src="pinFile" class="w-full h-auto rounded-3xl" autoplay loop muted />
+      <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
+        :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
+      </div>
+      <div v-show="showAllPins">
+        <img v-if="pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
+          class="w-full h-auto rounded-3xl" />
+        <video v-if="pinVideo" :src="pinVideo" @loadeddata="onVideoLoad"
+          class="w-full h-auto rounded-3xl" autoplay loop muted />
       </div>
       <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
     </RouterLink>
 
-    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()" @mouseleave="if (!insidePopover) showPopover = false; loadingUser = true"
+    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
+      @mouseleave="if (!insidePopover) showPopover = false;"
       class="flex items-center mt-2 hover:underline cursor-pointer relative">
       <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
       <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span 
-        v-if="showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
+      <span v-if="showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
 
-      <div v-show="showPopover" @mouseover="insidePopover = true" @mouseleave="insidePopover = false; showPopover = false"
+      <div v-show="showPopover" @mouseover="insidePopover = true"
+        @mouseleave="insidePopover = false; showPopover = false"
         class="absolute top-[30px] left-[5px] bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-gray-700 z-30 h-32 w-32">
         <div class="flex flex-col items-center justify-center">
           <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
           <div v-else class="bg-red-300 mb-2 rounded-full w-16 h-16"></div>
-          <RouterLink v-if="popUser" :to="`/user/${popUser.username}`" class="text-center text-sm font-medium hover:underline">@{{ popUser.username }}</RouterLink>
+          <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
+            class="text-center text-sm font-medium hover:underline">@{{ popUser.username }}</RouterLink>
         </div>
       </div>
     </RouterLink>

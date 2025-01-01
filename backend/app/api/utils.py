@@ -61,18 +61,25 @@ def decode_url_safe_token(token: str, max_age=3600):
 
 
 def get_primary_color(image_path, n_colors=1):
-    # Open the image and resize for faster processing
+    # Open the image
     image = Image.open(image_path)
-    
+
+    # Handle GIFs with multiple frames
+    if getattr(image, "is_animated", False):
+        image.seek(0)  # Process the first frame only
+
+    # Convert to RGB mode to handle palette or alpha issues
+    image = image.convert("RGB")
+
     # Convert the image to a NumPy array
     image_array = np.array(image)
     pixels = image_array.reshape(-1, 3)  # Reshape to list of pixels
-    
+
     # Use KMeans clustering to find the most dominant colors
-    kmeans = KMeans(n_clusters=n_colors)
+    kmeans = KMeans(n_clusters=n_colors, random_state=42)
     kmeans.fit(pixels)
     dominant_color = kmeans.cluster_centers_[0]  # Get the most dominant color
-    
+
     # Return the dominant color as an RGB tuple
     return tuple(map(int, dominant_color))
 
