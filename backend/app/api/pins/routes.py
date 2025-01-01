@@ -151,7 +151,7 @@ async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filte
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
-    result = await db.execute(select(users_pins).where(users_pins.c.user_id == id))
+    result = await db.execute(select(users_pins).where(users_pins.c.user_id == id).offset(filter.offset).limit(filter.limit))
     rows = result.all()
     pins = []
     for row in rows:
