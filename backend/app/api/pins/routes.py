@@ -128,6 +128,13 @@ async def user_save_pin(pin_id: int, user_id: user_id, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+    query = select(users_pins).where(users_pins.c.user_id == user_id, users_pins.c.pin_id == pin_id)
+    result = await db.execute(query)
+    user_pin = result.fetchone()  # Use `.fetchone()` to get a single result
+
+    if user_pin:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already saved this pin")
 
     await db.execute(insert(users_pins).values(user_id=user_id, pin_id=pin_id))
     await db.commit()
