@@ -2,7 +2,9 @@
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
-- celery, redis - schedule send email reklama + schedule on db
+- celery, redis - schedule send email reklama + schedule on db send updated
+- user updates - api
+- user to user relation
 - test
 - api documentation
 - full rest api for every route
@@ -10,15 +12,16 @@
 - deploy, nginx, ci/cd
 - describe full api in readme do table
 - describe repo
-- primiry color mb in celery?
 - celery results
 - rabbitmq
+- mongodb
 - google one tap, python socialу
 - models relations, sqlalchemy work with session example, models on_delete;
+- user delete created pins;
 - oauth2/jwt secure
 - access_token/refresh_token, отзыв токенов
 - admin role/api
-- secure jwt in frontend
+
 
 
 ### Web server
