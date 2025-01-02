@@ -42,6 +42,11 @@ onMounted(async () => {
         :class="[isActiveLink('/') ? 'bg-gray-200' : 'transition-transform duration-100 transform hover:scale-150 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
         <i :class="['pi', 'pi-home']"></i>
       </RouterLink>
+      <RouterLink :to="`/user/${me.username}`"
+        :class="[isActiveLink(`/user/${me.username}`) ? '' : 'transition-transform duration-100 transform hover:scale-125 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
+        <img :src="meImage" alt="me profile"
+          :class="[isActiveLink(`/user/${me.username}`) ? 'border-black' : 'border-gray-400', 'w-10', 'h-10', 'object-cover', 'rounded-full', 'border-2']" />
+      </RouterLink>
       <RouterLink to="/create-pin"
         :class="[isActiveLink('/create-pin') ? 'bg-gray-200' : 'transition-transform duration-100 transform hover:scale-150 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
         <i :class="['pi', 'pi-plus-circle']"></i>
@@ -54,20 +59,10 @@ onMounted(async () => {
         :class="[isActiveLink('/messages') ? 'bg-gray-200' : 'transition-transform duration-100 transform hover:scale-150 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
         <i class="pi pi-envelope"></i>
       </RouterLink>
-    </div>
-
-    <!-- Profile Link -->
-    <div class="flex items-center justify-center">
-      <RouterLink :to="`/user/${me.username}`"
-      :class="[isActiveLink(`/user/${me.username}`) ? '' : 'transition-transform duration-100 transform hover:scale-125 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
-        <img :src="meImage" alt="me profile" :class="[isActiveLink(`/user/${me.username}`) ? 'border-black' : 'border-gray-400', 'w-10' ,'h-10' ,'object-cover', 'rounded-full', 'border-2']" />
-      </RouterLink>
-    </div>
-
-    <!-- Last Link -->
-    <div @click="logout"
-      class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-5 text-xl flex items-center">
-      <i class="pi pi-sign-out"></i>
+      <div @click="logout"
+        class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-5 text-xl flex items-center">
+        <i class="pi pi-sign-out"></i>
+      </div>
     </div>
   </nav>
 </template>

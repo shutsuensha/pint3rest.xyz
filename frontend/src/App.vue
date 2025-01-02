@@ -39,7 +39,7 @@ function login(token) {
   access_token.value = token; 
   has_token.value = true; 
   confetti.addConfetti();
-  toast.success('𝓦𝓮𝓵𝓬𝓸𝓶𝓮 𝓫𝓪𝓬𝓴 😽🥳', { bodyClassName: ["cursor-pointer", "text-center"] })
+  toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 </script>
 

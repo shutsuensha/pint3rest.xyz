@@ -92,10 +92,19 @@ async function submitPin() {
         },
       });
 
+    } catch (error) {
+      console.log(error)
+    }
+
+    try {
+      const response = await axios.post(`/api/tags/`, {
+        pin_id: pin_id,
+        tags: tags.split(',')
+      })
       sendingPin.value = false
       router.push('/');
     } catch (error) {
-      console.log(error)
+      console.error(error) 
     }
   } catch (error) {
     console.log(error)
@@ -110,7 +119,7 @@ async function submitPin() {
     </div>
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
-    <div v-else class="grid grid-cols-2 mt-5 mx-36 ">
+    <div v-else class="grid grid-cols-2 mt-5 mr-72">
       <!-- First Column: Media Input and Preview -->
       <div>
         <label for="media"

@@ -130,7 +130,7 @@ async function save() {
       class="flex items-center mt-2 hover:underline cursor-pointer relative">
       <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
       <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span v-if="showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
+      <span v-if="user" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
 
       <div v-show="showPopover" @mouseover="insidePopover = true"
         @mouseleave="insidePopover = false; showPopover = false"
