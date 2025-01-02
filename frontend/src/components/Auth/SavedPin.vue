@@ -27,7 +27,7 @@ const saveText = ref('Save')
 const props = defineProps({
   pin: Object,
   lastPinId: Number,
-  showAllPins: Boolean
+  showAllPins: Boolean,
 });
 
 const onImageLoad = () => {
@@ -40,7 +40,9 @@ const onVideoLoad = () => {
 
 const showSaveButton = ref(false)
 
+
 onMounted(async () => {
+
   try {
     const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`);
     user.value = response.data;
@@ -112,7 +114,7 @@ async function save() {
       @mouseleave="showSaveButton = false">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
-        {{ saveText }}
+        {{  saveText }}
       </button>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"

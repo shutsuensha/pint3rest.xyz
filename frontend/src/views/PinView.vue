@@ -1,11 +1,14 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useRoute, RouterLink } from 'vue-router';
+import { onMounted, ref, watch  } from 'vue';
+import { useRoute, RouterLink, useRouter } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
 
+
 const route = useRoute();
 const pinId = route.params.id
+
+
 
 const pin = ref(null)
 const pinImage = ref(null)
@@ -15,11 +18,12 @@ const pinVideo = ref(null)
 const pinUser = ref(null)
 const pinUserImage = ref(null)
 
+
 onMounted(async () => {
+  console.log('pin view')
   try {
     const response = await axios.get(`/api/pins/${pinId}`)
     pin.value = response.data
-    console.log(pin.value)
     try {
       const response = await axios.get(`/api/pins/upload/${pinId}`, { responseType: 'blob' })
       const blobUrl = URL.createObjectURL(response.data);

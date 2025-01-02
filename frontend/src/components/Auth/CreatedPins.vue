@@ -2,7 +2,7 @@
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
-import Pin from '@/components/Auth/Pin.vue';
+import CreatedPin from './CreatedPin.vue';
 
 const pins = ref([]);
 const offset = ref(0);
@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
   <div class="mt-10 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div
      v-for="pinGroup in pins" :key="pinGroup.id">
-      <Pin v-masonry-tile class="item"
+      <CreatedPin v-masonry-tile class="item"
         v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
         @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false; }"

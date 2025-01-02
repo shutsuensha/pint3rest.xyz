@@ -5,7 +5,9 @@ import { RouterView } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
+import { useRoute, RouterLink, useRouter } from 'vue-router';
 
+const route = useRoute();
 
 const emit = defineEmits(['logout'])
 
@@ -60,9 +62,8 @@ onMounted(async () => {
 
 
 <template>
-  <ClipLoader v-if="loadingProfile" :color="color" :size="size"
-    class="flex items-center justify-center h-screen" />
+  <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
   <Navbar v-if="!loadingProfile" />
-  <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage"/>
-  <RouterView />
+  <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
+  <RouterView :key="`${$route.params.id}-${$route.params.username}`" />
 </template>

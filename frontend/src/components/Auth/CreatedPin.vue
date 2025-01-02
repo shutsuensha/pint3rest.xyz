@@ -42,17 +42,6 @@ const showSaveButton = ref(false)
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`);
-    user.value = response.data;
-
-    try {
-      const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
-      const blobUrl = URL.createObjectURL(userResponse.data);
-      userImage.value = blobUrl;
-    } catch (error) {
-      console.error(error);
-    }
-
     try {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
@@ -125,30 +114,6 @@ async function save() {
         </div>
         <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
       </RouterLink>
-    </div>
-
-    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
-      @mouseleave="if (!insidePopover) showPopover = false;"
-      class="flex items-center mt-2 hover:underline cursor-pointer relative">
-      <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span v-if="user" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
-
-      <div v-show="showPopover" @mouseover="insidePopover = true"
-        @mouseleave="insidePopover = false; showPopover = false"
-        class="absolute top-[30px] left-[5px] bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-gray-700 z-30 h-32 w-32">
-        <div class="flex flex-col items-center justify-center">
-          <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
-          <div v-else class="bg-red-300 mb-2 rounded-full w-16 h-16"></div>
-          <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
-            class="text-center text-sm font-medium hover:underline">@{{ popUser.username }}</RouterLink>
-        </div>
-      </div>
-    </RouterLink>
-
-    <div v-else class="flex items-center mt-2 hover:underline cursor-pointer">
-      <div class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <span class="ml-2 text-sm font-medium"></span>
     </div>
   </div>
 </template>

@@ -22,12 +22,12 @@ const showPopover = ref(false); // State to control the popover visibility
 const insidePopover = ref(false)
 
 const bgSave = ref('bg-red-700')
-const saveText = ref('Save')
+const saveText = ref('Delete')
 
 const props = defineProps({
   pin: Object,
   lastPinId: Number,
-  showAllPins: Boolean
+  showAllPins: Boolean,
 });
 
 const onImageLoad = () => {
@@ -40,7 +40,9 @@ const onVideoLoad = () => {
 
 const showSaveButton = ref(false)
 
+
 onMounted(async () => {
+
   try {
     const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`);
     user.value = response.data;
@@ -91,17 +93,14 @@ async function loadUser() {
 
 async function save() {
   bgSave.value = 'bg-black'
-  saveText.value = 'Saving...'
   try {
-    const response = await axios.post(`/api/pins/user_saved_pins/${props.pin.id}`, {
+    const response = await axios.delete(`/api/pins/user_saved_pins/${props.pin.id}`, {
       withCredentials: true
     })
-    saveText.value = 'Saved'
+    saveText.value = 'Deleted'
 
   } catch (error) {
-    if (error.response.status === 409) {
-      saveText.value = 'U already saved!'
-    }
+    console.error(error)
   }
 }
 </script>
@@ -112,7 +111,7 @@ async function save() {
       @mouseleave="showSaveButton = false">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
-        {{ saveText }}
+        {{  saveText }}
       </button>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"

@@ -17,7 +17,32 @@ const username = route.params.username
 const user = ref(null)
 const userImage = ref(null)
 
+const auth_user_id = ref(null)
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 onMounted(async () => {
+  const accessToken = getCookie('access_token');
+  // Decode the JWT (assuming the access_token is a JWT)
+  const base64Url = accessToken.split('.')[1]; // Get the payload part
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+
+  const payload = JSON.parse(jsonPayload);
+
+  // Log user_id to the console
+  auth_user_id.value = payload.user_id
+
   try {
     const response = await axios.get(`/api/users/user_username/${username}`);
     user.value = response.data;
@@ -66,15 +91,17 @@ async function savedPins() {
       <img v-if="userImage" :src="userImage" alt="Profile Picture" class="rounded-full w-32 h-32 object-cover" />
       <p v-if="user" class="mt-4 text-lg font-semibold text-gray-700">@{{ user.username }}</p>
       <div class="flex mt-4 space-x-4">
-        <button @click="createdPins" :class="`px-6 py-2 text-black  border-b-4 ${bgCreated} transition hover:border-red-600` ">
+        <button @click="createdPins"
+          :class="`px-6 py-2 text-black  border-b-4 ${bgCreated} transition hover:border-red-600`">
           Созданные
         </button>
-        <button @click="savedPins" :class="`px-6 py-2 text-black  border-b-4 ${bgSaved} transition hover:border-red-600`">
+        <button @click="savedPins"
+          :class="`px-6 py-2 text-black  border-b-4 ${bgSaved} transition hover:border-red-600`">
           Сохраненные
         </button>
       </div>
     </div>
   </div>
-  <CreatedPins v-if="showCreated" :user_id="user.id"/>
-  <SavedPins v-if="showSaved" :user_id="user.id" />
+  <CreatedPins v-if="showCreated" :user_id="user.id" />
+  <SavedPins v-if="showSaved" :user_id="user.id" :auth_user_id="auth_user_id"/>
 </template>
