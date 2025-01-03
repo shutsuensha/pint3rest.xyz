@@ -153,7 +153,7 @@ async def user_delete_saved_pin(pin_id: int, user_id: user_id, db: db):
 
 
 @router.get('/user_saved_pins/{id}', response_model=list[PinOut])
-async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filter):
+async def get_user_saved_pins(id: int, user_id: user_id, db: db, filter: filter):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
