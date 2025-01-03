@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, nextTick } from "vue";
+import { ref, reactive, nextTick, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
@@ -21,8 +21,22 @@ const formPin = reactive({
   title: '',
   description: '',
   href: '',
-  tags: '',
 });
+
+const tagToAdd = ref('')
+
+const available_tags = ref(null)
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200'])
+const tags = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('/api/tags/', { withCredentials: true })
+    available_tags.value = response.data
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
@@ -46,12 +60,10 @@ function handleMediaUpload(event) {
   }
 }
 
-
 async function submitPin() {
   const title = formPin.title
   const description = formPin.description
   const href = formPin.href
-  const tags = formPin.tags
 
   if (!mediaFile.value) {
     toast.warning('Please, upload file', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
@@ -96,20 +108,51 @@ async function submitPin() {
       console.log(error)
     }
 
-    try {
-      const response = await axios.post(`/api/tags/`, {
-        pin_id: pin_id,
-        tags: tags.split(',')
-      })
+    if (tags.value.length !== 0) {
+      try {
+        const response = await axios.post(`/api/tags/`, {
+          pin_id: pin_id,
+          tags: tags.value
+        })
+        sendingPin.value = false
+        router.push('/');
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
       sendingPin.value = false
       router.push('/');
-    } catch (error) {
-      console.error(error) 
     }
   } catch (error) {
     console.log(error)
   }
 }
+
+const randomBgColor = () => {
+  const randomIndex = Math.floor(Math.random() * bgColors.value.length);
+  return bgColors.value[randomIndex];
+};
+
+
+function addTag() {
+  available_tags.value.push({ id: available_tags.value.length, name: tagToAdd.value })
+  tagToAdd.value = ''
+}
+
+
+function addTagToPin(name) {
+  if (checkPinAded(name)) {
+    tags.value = tags.value.filter((el) => el !== name);
+  }
+  else {
+    tags.value.push(name)
+  }
+}
+
+function checkPinAded(name) {
+  return tags.value.includes(name);
+}
+
 </script>
 
 <template>
@@ -121,11 +164,11 @@ async function submitPin() {
       class="flex items-center justify-center h-96 font-extrabold" />
     <div v-else class="grid grid-cols-2 mt-5 mr-72">
       <!-- First Column: Media Input and Preview -->
-      <div>
+      <div class="ml-36">
         <label for="media"
           class="block w-[271px] mx-auto text-center mb-2 text-sm font-medium text-gray-900">Изображение/Видео</label>
         <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-          class="block w-[271px] mx-auto text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
+          class="block w-[271px] mx-auto text-sm text-gray-900 border border-gray-300 rounded-xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
         <!-- Media Preview -->
         <div id="mediaPreview" v-if="mediaPreview" class="mt-2">
           <img id="imagePreview" v-if="isImage" :src="mediaPreview" class="h-auto w-[271.84px] rounded-3xl mx-auto"
@@ -146,41 +189,60 @@ async function submitPin() {
       </div>
       <!-- Second Column: Title, Description, Href, Tags -->
       <div>
-        <form class="space-y-7" @submit.prevent="submitPin">
+        <div class="space-y-7 mt-6">
           <!-- Title Field -->
           <div>
-            <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Название</label>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить название" />
           </div>
           <!-- Description Field -->
           <div>
-            <label for="description" class="block mb-2 text-sm font-medium text-gray-900">Описание</label>
             <textarea v-model="formPin.description" name="description" id="description"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить описание"></textarea>
           </div>
           <!-- Href Field -->
           <div>
-            <label for="href" class="block mb-2 text-sm font-medium text-gray-900">Ссылка</label>
             <input v-model="formPin.href" type="url" name="href" id="href" autocomplete="off"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить ссылку" />
           </div>
           <!-- Tags Field -->
           <div>
-            <label for="tags" class="block mb-2 text-sm font-medium text-gray-900">Теги</label>
-            <input v-model="formPin.tags" type="text" name="tags" id="tags" autocomplete="off"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
-              placeholder="Добавить теги, разделенные запятыми" />
+
+            <div class="flex items-center space-x-2">
+              <!-- Add Button -->
+              <button type="button" @click="addTag"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-sm px-4 py-2">
+                Создать
+              </button>
+
+              <!-- Tags Input -->
+              <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
+                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                placeholder="Создать тег" />
+            </div>
+            <div class="mt-5">
+              <!-- Heading -->
+              <h3 class="text-md mb-2 text-gray-600">Выберите теги</h3>
+
+              <!-- Tags List -->
+              <div class="flex space-x-2">
+                <div v-show="available_tags" v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
+                  :class="[checkPinAded(tag.name) ? 'border-black border' : '', 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', randomBgColor(), 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+                  {{ tag.name }}
+                </div>
+                <div v-show="!available_tags" class="h-11"></div>
+              </div>
+            </div>
           </div>
           <!-- Submit Button -->
-          <button type="submit"
-            class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
-            Создать
+          <button @click="submitPin"
+            class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
+            Создать Пин
           </button>
-        </form>
+        </div>
       </div>
     </div>
   </div>

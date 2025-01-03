@@ -18,6 +18,8 @@ const pinVideo = ref(null)
 const pinUser = ref(null)
 const pinUserImage = ref(null)
 
+const router = useRouter(); 
+
 
 onMounted(async () => {
   console.log('pin view')
@@ -53,11 +55,20 @@ onMounted(async () => {
     console.error(error)
   }
 })
+
+const goBack = () => {
+  router.back();
+};
 </script>
 
 
 <template>
   <div class="mt-20 ml-20">
+    <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
     <div v-show="pinImageLoaded || pinVideoLoaded" class="grid grid-cols-2 gap-6 mx-60 bg-gray-100 rounded-3xl shadow-lg">
       <!-- Left Column: Image or Video -->
       <div>

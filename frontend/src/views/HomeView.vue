@@ -6,7 +6,7 @@ import Pin from '@/components/Auth/Pin.vue';
 
 const pins = ref([]);
 const offset = ref(0);
-const limit = ref(10);  
+const limit = ref(10);
 
 const isPinsLoading = ref(false);
 
@@ -56,14 +56,13 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll);
 });
+
 </script>
 
 <template>
   <div class="mt-20 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
-    <div
-     v-for="pinGroup in pins" :key="pinGroup.id">
-      <Pin v-masonry-tile class="item"
-        v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
+    <div v-for="pinGroup in pins" :key="pinGroup.id">
+      <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
         @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false; }"
         :showAllPins="pinGroup.showAllPins" />
