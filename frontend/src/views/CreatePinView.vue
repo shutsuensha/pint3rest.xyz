@@ -26,13 +26,17 @@ const formPin = reactive({
 const tagToAdd = ref('')
 
 const available_tags = ref(null)
-const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200'])
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 const tags = ref([])
 
 onMounted(async () => {
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data
+    for (let i = 0; i < response.data.length; i++) {
+      const tag = response.data[i];
+      tag.color = randomBgColor()
+    }
   } catch (error) {
     console.log(error)
   }
@@ -135,8 +139,10 @@ const randomBgColor = () => {
 
 
 function addTag() {
-  available_tags.value.push({ id: available_tags.value.length, name: tagToAdd.value })
-  tagToAdd.value = ''
+  if (tagToAdd.value.trim()) {
+    available_tags.value.unshift({ id: available_tags.value.length, name: tagToAdd.value, color: randomBgColor() });
+    tagToAdd.value = '';
+  }
 }
 
 
@@ -156,7 +162,7 @@ function checkPinAded(name) {
 </script>
 
 <template>
-  <div class="mt-20 ml-20">
+  <div class="mt-20 ml-20 mb-20">
     <div class="mt-2 text-xl py-5 border-t border-b border-gray-300 px-4">
       <h1>Создание пина</h1>
     </div>
@@ -229,12 +235,11 @@ function checkPinAded(name) {
               <h3 class="text-md mb-2 text-gray-600">Выберите теги</h3>
 
               <!-- Tags List -->
-              <div class="flex space-x-2">
-                <div v-show="available_tags" v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
-                  :class="[checkPinAded(tag.name) ? 'border-black border' : '', 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', randomBgColor(), 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+              <div class="flex flex-wrap gap-2" v-auto-animate>
+                <div v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
+                  :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-105' :`${tag.color}`, 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
                   {{ tag.name }}
                 </div>
-                <div v-show="!available_tags" class="h-11"></div>
               </div>
             </div>
           </div>
