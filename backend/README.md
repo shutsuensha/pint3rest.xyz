@@ -5,6 +5,7 @@
 - celery, redis - schedule send email reklama + schedule on db send updated
 - user updates - api
 - user to user relation
+- черновики create pins
 - test
 - api documentation
 - full rest api for every route
