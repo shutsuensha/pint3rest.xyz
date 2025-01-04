@@ -10,6 +10,10 @@ const mediaPreview = ref(null);
 const isImage = ref(false);
 const isVideo = ref(false);
 
+const isDragging = ref(false);
+
+
+
 const toast = useToast();
 
 const color = ref('red')
@@ -45,24 +49,48 @@ onMounted(async () => {
 function handleMediaUpload(event) {
   const file = event.target.files[0];
   if (file) {
-    mediaFile.value = file;
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      mediaPreview.value = e.target.result;
-
-      // Check file type for preview
-      if (file.type.startsWith("image/")) {
-        isImage.value = true;
-        isVideo.value = false;
-      } else if (file.type.startsWith("video/")) {
-        isImage.value = false;
-        isVideo.value = true;
-      }
-    };
-    reader.readAsDataURL(file);
+    previewFile(file);
   }
 }
+
+const previewFile = (file) => {
+  mediaFile.value = file;
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    mediaPreview.value = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+
+  if (file.type.startsWith("image/")) {
+    isImage.value = true;
+    isVideo.value = false;
+  } else if (file.type.startsWith("video/")) {
+    isImage.value = false;
+    isVideo.value = true;
+  }
+};
+
+const onDrop = (event) => {
+  isDragging.value = false;
+  const file = event.dataTransfer.files[0];
+  if (file) {
+    previewFile(file);
+    isDragging.value = false
+  }
+};
+
+// Handle drag over
+const onDragOver = () => {
+  isDragging.value = true;
+};
+
+// Handle drag leave
+const onDragLeave = () => {
+  isDragging.value = false;
+};
+
 
 async function submitPin() {
   const title = formPin.title
@@ -170,9 +198,11 @@ function checkPinAded(name) {
       class="flex items-center justify-center h-96 font-extrabold" />
     <div v-else class="grid grid-cols-2 mt-5 mr-72 gap-10">
       <div class="ml-36">
-        <label for="media" class="cursor-pointer">
+        <label for="media" class="cursor-pointer" 
+        @dragover.prevent="onDragOver" @dragleave="onDragLeave" @drop.prevent="onDrop">
           <!-- Media Preview -->
-          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl">
+          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 hover:bg-red-100 transition duration-300"
+          :class="{ 'border-red-500 bg-red-100': isDragging }">
             <img id="imagePreview" v-if="isImage" :src="mediaPreview"
               class="h-auto w-[271.84px] rounded-3xl mx-auto my-8" alt="Media Preview" />
             <video id="videoPreview" v-if="isVideo" :src="mediaPreview"
@@ -181,12 +211,13 @@ function checkPinAded(name) {
 
           <!-- Placeholder for no preview -->
           <div v-else
-            class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 transition duration-300 overflow-hidden">
+            class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 hover:bg-red-100 transition duration-300 overflow-hidden"
+            :class="{ 'border-red-500 bg-red-100': isDragging }">
             <div
               class="relative bg-gray-200 h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
               <div class="absolute flex flex-col items-center space-y-4">
                 <i class="pi pi-arrow-up text-4xl text-gray-400"></i>
-                <p class="mt-2 text-sm text-gray-600">Click to upload image or video</p>
+                <p class="mt-2 text-sm text-gray-600">Drag & Drop or Click to Upload</p>
               </div>
             </div>
           </div>
@@ -237,7 +268,7 @@ function checkPinAded(name) {
               <!-- Tags List -->
               <div class="flex flex-wrap gap-2" v-auto-animate>
                 <div v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
-                  :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-105' :`${tag.color}`, 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+                  :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
                   {{ tag.name }}
                 </div>
               </div>
