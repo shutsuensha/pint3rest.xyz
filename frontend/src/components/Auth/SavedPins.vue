@@ -9,6 +9,9 @@ const pins = ref([]);
 const offset = ref(0);
 const limit = ref(10);
 
+const cntLoading = ref(0)
+const limitCntLoading = ref(null)
+
 const isPinsLoading = ref(false);
 
 const props = defineProps({
@@ -30,6 +33,10 @@ const loadPins = async () => {
 
     // Append new pins to the existing ones
     pins.value.push({ pins: response.data, showAllPins: false });
+
+    limitCntLoading.value = response.data.length
+
+    limitCntLoading.value
 
     // Increment the offset
     offset.value += limit.value;
@@ -72,12 +79,12 @@ onBeforeUnmount(() => {
   <div class="mt-10 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <SavedPin v-if="!showDeleteSavePin" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
-        :pin="pinem" :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
-        @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false; }"
+        :pin="pinem" 
+        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
-      <DeleteSavedPin v-if="showDeleteSavePin" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
-        :pin="pinem" :lastPinId="pinGroup.pins[pinGroup.pins.length - 1].id"
-        @lastPinLoaded="() => { pinGroup.showAllPins = true; isPinsLoading = false; }"
+      <DeleteSavedPin v-if="showDeleteSavePin" v-masonry-tile class="item" v-for="pinem in pinGroup.pins"
+        :key="pinem.id" :pin="pinem" 
+        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>

@@ -162,34 +162,35 @@ function checkPinAded(name) {
     </div>
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
-    <div v-else class="grid grid-cols-2 mt-5 mr-72">
-      <!-- First Column: Media Input and Preview -->
+    <div v-else class="grid grid-cols-2 mt-5 mr-72 gap-10">
       <div class="ml-36">
-        <label for="media"
-          class="block w-[271px] mx-auto text-center mb-2 text-sm font-medium text-gray-900">Изображение/Видео</label>
-        <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-          class="block w-[271px] mx-auto text-sm text-gray-900 border border-gray-300 rounded-xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
-        <!-- Media Preview -->
-        <div id="mediaPreview" v-if="mediaPreview" class="mt-2">
-          <img id="imagePreview" v-if="isImage" :src="mediaPreview" class="h-auto w-[271.84px] rounded-3xl mx-auto"
-            alt="Media Preview" />
-          <video id="videoPreview" v-if="isVideo" :src="mediaPreview" class="h-auto w-[271.84px] rounded-3xl mx-auto"
-            autoplay loop muted />
-        </div>
-        <div v-else class="mt-2 overflow-hidden">
-          <div
-            class="relative bg-gray-300 h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto">
-            <!-- Upload Icon -->
-            <div class="absolute flex flex-col items-center space-y-4">
-              <i class="pi pi-arrow-up text-4xl text-gray-400"></i> <!-- Replace with your icon -->
-              <p class="mt-2 text-sm text-gray-600">Upload image or video</p>
+        <label for="media" class="cursor-pointer">
+          <!-- Media Preview -->
+          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl">
+            <img id="imagePreview" v-if="isImage" :src="mediaPreview"
+              class="h-auto w-[271.84px] rounded-3xl mx-auto my-8" alt="Media Preview" />
+            <video id="videoPreview" v-if="isVideo" :src="mediaPreview"
+              class="h-auto w-[271.84px] rounded-3xl mx-auto my-8" autoplay loop muted />
+          </div>
+
+          <!-- Placeholder for no preview -->
+          <div v-else
+            class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 transition duration-300 overflow-hidden">
+            <div
+              class="relative bg-gray-200 h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
+              <div class="absolute flex flex-col items-center space-y-4">
+                <i class="pi pi-arrow-up text-4xl text-gray-400"></i>
+                <p class="mt-2 text-sm text-gray-600">Click to upload image or video</p>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
+        <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
+          class="hidden" />
       </div>
-      <!-- Second Column: Title, Description, Href, Tags -->
+
       <div>
-        <div class="space-y-7 mt-6">
+        <div class="space-y-7 mt-2">
           <!-- Title Field -->
           <div>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"

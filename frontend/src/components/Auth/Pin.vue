@@ -7,7 +7,7 @@ import axios from 'axios';
 const popUser = ref(null)
 const popImage = ref(null)
 
-const emit = defineEmits(['lastPinLoaded'])
+const emit = defineEmits(['pinLoaded'])
 
 const user = ref(null);
 const pinImage = ref(null);
@@ -26,16 +26,17 @@ const saveText = ref('Save')
 
 const props = defineProps({
   pin: Object,
-  lastPinId: Number,
   showAllPins: Boolean
 });
 
 const onImageLoad = () => {
   imageLoaded.value = true;
+  emit('pinLoaded')
 };
 
 const onVideoLoad = () => {
   videoLoaded.value = true;
+  emit('pinLoaded')
 }
 
 const showSaveButton = ref(false)
@@ -61,9 +62,6 @@ onMounted(async () => {
         pinImage.value = blobUrl;
       } else {
         pinVideo.value = blobUrl;
-      }
-      if (props.pin.id === props.lastPinId) {
-        emit('lastPinLoaded');
       }
     } catch (error) {
       console.error(error);
@@ -118,12 +116,12 @@ async function save() {
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
         </div>
-        <div v-show="showAllPins">
-          <img v-if="pinImage" :src="pinImage" @load="onImageLoad" alt="pin image" class="w-full h-auto rounded-3xl" />
-          <video v-if="pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" class="w-full h-auto rounded-3xl" autoplay
-            loop muted />
-        </div>
-        <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
+        <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
+          class="w-full h-auto rounded-3xl" />
+        <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad"
+          class="w-full h-auto rounded-3xl" autoplay loop muted />
+
+        <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
       </RouterLink>
     </div>
 
