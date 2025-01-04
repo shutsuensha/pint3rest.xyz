@@ -231,19 +231,19 @@ function checkPinAded(name) {
           <!-- Title Field -->
           <div>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-red-100 transition duration-300  cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить название" />
           </div>
           <!-- Description Field -->
           <div>
             <textarea v-model="formPin.description" name="description" id="description"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить описание"></textarea>
           </div>
           <!-- Href Field -->
           <div>
             <input v-model="formPin.href" type="url" name="href" id="href" autocomplete="off"
-              class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="Добавить ссылку" />
           </div>
           <!-- Tags Field -->
@@ -252,13 +252,13 @@ function checkPinAded(name) {
             <div class="flex items-center space-x-2">
               <!-- Add Button -->
               <button type="button" @click="addTag"
-                class="bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-sm px-4 py-2">
+                class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
                 Создать
               </button>
 
               <!-- Tags Input -->
               <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="Создать тег" />
             </div>
             <div class="mt-5">
@@ -268,7 +268,7 @@ function checkPinAded(name) {
               <!-- Tags List -->
               <div class="flex flex-wrap gap-2" v-auto-animate>
                 <div v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
-                  :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-xl', 'px-2', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+                  :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-110' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-3xl', 'px-3', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
                   {{ tag.name }}
                 </div>
               </div>
@@ -276,7 +276,7 @@ function checkPinAded(name) {
           </div>
           <!-- Submit Button -->
           <button @click="submitPin"
-            class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
+            class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
             Создать Пин
           </button>
         </div>

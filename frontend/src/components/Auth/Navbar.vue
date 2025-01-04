@@ -24,7 +24,7 @@ onUnmounted(() => {
         <input
           type="text"
           placeholder="Поиск"
-          class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-xl block w-full py-3 px-10 outline-none border-none focus:ring-0"
+          class="transition duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-xl block w-full py-3 px-10 outline-none border-none focus:ring-0"
         />
         <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
           <i class="pi pi-search text-gray-600"></i>

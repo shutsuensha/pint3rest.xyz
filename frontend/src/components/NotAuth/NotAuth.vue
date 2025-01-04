@@ -370,19 +370,19 @@ onMounted(async () => {
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
               <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
               <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <div>
               <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image</label>
               <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
-                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+                class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
               <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
                 alt="Image Preview" />
             </div>
@@ -390,11 +390,11 @@ onMounted(async () => {
               <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email
                 (Optional)</label>
               <input v-model="formSignUp.email" type="text" name="email" id="email" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
             <button type="submit"
-              class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
+              class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
               Already have an account? <a @click="showSignUp = false; showLogin = true" href="#"
@@ -432,21 +432,21 @@ onMounted(async () => {
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
               <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
               <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
-              class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Log
+              class=" transition duration-300 w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Log
               In</button>
             <div class="text-sm font-medium text-black ">
               Dont have an account? <a @click="showLogin = false; showSignUp = true" href="#"
-                class="text-red-500 hover:underline">Sign Up</a>
+                class="text-red-500 hover:underline ">Sign Up</a>
             </div>
             <div class="flex">
               <a @click="showLogin = false; showPasswordReset = true" href="#"
@@ -484,13 +484,13 @@ onMounted(async () => {
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
               <input v-model="formPasswordReset.username" type="text" name="username" id="username" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email</label>
               <input v-model="formPasswordReset.email" type="text" name="email" id="email" autocomplete="off"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
             <div>
@@ -498,10 +498,10 @@ onMounted(async () => {
                 New Password</label>
               <input v-model="formPasswordReset.password" type="password" name="password" id="password"
                 placeholder="••••••••"
-                class="cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
-              class="w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Reset
+              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Reset
               Password</button>
           </form>
         </div>
