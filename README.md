@@ -9,3 +9,4 @@
 - screenshots for every page
 - learn how to format readme project describe
 - do github profile
+- do github page
