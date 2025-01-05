@@ -11,6 +11,7 @@
   "dependencies": {
     "@asika32764/vue-animate": "^3.0.2",
     "@formkit/auto-animate": "^0.8.2",
+    "@lottiefiles/dotlottie-vue": "^0.5.4",
     "@vueuse/components": "^12.2.0",
     "@yeger/vue-masonry-wall": "^5.0.16",
     "aos": "^2.3.4",

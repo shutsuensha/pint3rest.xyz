@@ -54,7 +54,7 @@ const formPasswordReset = reactive({
 });
 
 
-const emit = defineEmits(['login'])
+const emit = defineEmits(['login', 'signup'])
 
 const showSignUpLoader = ref(false)
 const showLoginLoader = ref(false)
@@ -112,7 +112,7 @@ async function submitSignUp() {
           showSignUpLoader.value = false
           showSignUp.value = false
 
-          emit('login', access_token)
+          emit('signup', access_token)
         } catch (error) {
           showSignUpLoader.value = false
           showErrorModalSignup.value = true

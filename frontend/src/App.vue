@@ -43,9 +43,21 @@ function login(token) {
   }, 1000); // 2000ms = 2 seconds
   toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
+
+const register = ref(false)
+
+function signup(token) {
+  access_token.value = token;
+  has_token.value = true;
+  register.value = true
+  setTimeout(() => {
+    confetti.addConfetti();
+  }, 1000); // 2000ms = 2 seconds
+  toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
+}
 </script>
 
 <template>
-  <Auth v-if="has_token" :access_token="access_token" @logout="logout()" />
-  <NotAuth v-else @login="(token) => { login(token) }" />
+  <Auth v-if="has_token" :access_token="access_token" @logout="logout()" :register="register" @createPinModelClose="register = false"/>
+  <NotAuth v-else @login="(token) => { login(token) }"  @signup="(token) => { signup(token) }"/>
 </template>

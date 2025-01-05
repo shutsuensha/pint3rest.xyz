@@ -9,7 +9,7 @@ import { useRoute, RouterLink, useRouter } from 'vue-router';
 
 const route = useRoute();
 
-const emit = defineEmits(['logout'])
+const emit = defineEmits(['logout', 'createPinModelClose'])
 
 const me = ref(null)
 const meImage = ref(null)
@@ -20,7 +20,8 @@ const size = ref('100px')
 
 
 const props = defineProps({
-  access_token: String
+  access_token: String,
+  register: Boolean
 })
 
 onMounted(async () => {
@@ -65,5 +66,5 @@ onMounted(async () => {
   <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
   <Navbar v-if="!loadingProfile" />
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
-  <RouterView :key="`${$route.params.id}-${$route.params.username}`" />
+  <RouterView :key="`${$route.params.id}-${$route.params.username}`" :register="register" @createPinModelClose="emit('createPinModelClose')"/>
 </template>

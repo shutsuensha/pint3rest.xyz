@@ -17,7 +17,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav :class="['fixed top-0 left-20 w-full bg-white z-20', isScrolled ? 'shadow-lg' : '']">
+  <nav :class="['fixed top-0 left-20 w-full bg-white z-40', isScrolled ? 'shadow-lg' : '']">
     <div class="flex items-center justify-between px-6 py-3">
       <!-- Search Bar -->
       <div class="relative flex-1 mr-20">
