@@ -9,6 +9,8 @@ https://github.com/vuejs/awesome-vue
 - user following
 - direct messages 
 - homeview cache ?
+- navbar как у yandex
+- v-show modal create pin
 
 ### Frontend server
 npm run dev
