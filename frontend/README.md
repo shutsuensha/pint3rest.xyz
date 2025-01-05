@@ -10,8 +10,13 @@ https://github.com/vuejs/awesome-vue
 - direct messages 
 - homeview cache ?
 - homeview video/gif
+- homeview pins hover button, hover dark bg
 - detail video
 - detail design
+- create photo/gif/video - продумай height/width - возможность доавления несколько файлов
+- рандомное limit пинов
+- homeview появление пинов
+
 
 ### Frontend server
 npm run dev

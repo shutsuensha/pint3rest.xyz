@@ -75,6 +75,8 @@ const randomBgColor = () => {
 };
 
 onMounted(async () => {
+  loadPins();
+  window.addEventListener('scroll', handleScroll);
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data
@@ -86,8 +88,33 @@ onMounted(async () => {
   } catch (error) {
     console.log(error)
   }
-  loadPins();  // Initial load
-  window.addEventListener('scroll', handleScroll);
+  for (let i = 1; i < available_tags.value.length; i++) {
+    try {
+      const response = await axios.get(`/api/pins/tag/${available_tags.value[i].name}`, {
+        params: { offset: 0, limit: 1 },
+        withCredentials: true,
+      })
+      const pin_id = response.data[0].id
+
+      try {
+        const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
+        const blobUrl = URL.createObjectURL(pinResponse.data);
+        const contentType = pinResponse.headers['content-type'];
+        if (contentType.startsWith('image/')) {
+          available_tags.value[i].file = blobUrl;
+          available_tags.value[i].isImage = true
+        } else {
+          available_tags.value[i].file = blobUrl;
+          available_tags.value[i].isImage = false
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
   if (props.register === true) {
     setTimeout(() => {
       showCreatePin.value = true
@@ -127,6 +154,25 @@ async function loadPinsByTag(name) {
   }
 }
 
+const scrollAmount = 200;
+
+// Ссылка на контейнер с тегами
+const containerRef = ref(null);
+
+// Функция для прокрутки влево
+const scrollLeft = () => {
+  if (containerRef.value) {
+    containerRef.value.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  }
+};
+
+// Функция для прокрутки вправо
+const scrollRight = () => {
+  if (containerRef.value) {
+    containerRef.value.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+};
+
 </script>
 
 <template>
@@ -158,12 +204,41 @@ async function loadPinsByTag(name) {
   </transition>
 
 
-  <div class="flex flex-wrap gap-2 mt-20 ml-24" v-auto-animate>
-    <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
-      :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-110' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-3xl', 'px-3', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
-      {{ tag.name }}
+  <div class="relative mt-20 ml-24">
+    <!-- Левая стрелка -->
+    <button
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+      @click="scrollLeft(containerRef)">
+      ◀
+    </button>
+
+    <!-- Контейнер с тегами -->
+    <div ref="containerRef"
+      class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-1"
+      v-auto-animate>
+      <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
+        :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', '', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-105']">
+        <!-- Отображение изображения или видео -->
+        <div class="w-9 h-9 flex-shrink-0">
+          <img v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image"
+            class="w-full h-full object-cover rounded-full" />
+          <video v-else-if="!tag.isImage && tag.file" :src="tag.file" class="w-full h-full object-cover rounded-full"
+            autoplay loop muted />
+        </div>
+        <!-- Название тега -->
+        <span class="truncate">{{ tag.name }}</span>
+      </div>
     </div>
+
+    <!-- Правая стрелка -->
+    <button
+      class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+      @click="scrollRight(containerRef)">
+      ▶
+    </button>
   </div>
+
+
   <div v-show="!showPinsBytag" class="ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
@@ -185,5 +260,17 @@ async function loadPinsByTag(name) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 </style>

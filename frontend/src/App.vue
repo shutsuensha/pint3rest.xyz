@@ -38,9 +38,6 @@ function logout() {
 function login(token) {
   access_token.value = token;
   has_token.value = true;
-  setTimeout(() => {
-    confetti.addConfetti();
-  }, 1000); // 2000ms = 2 seconds
   toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
@@ -53,7 +50,6 @@ function signup(token) {
   setTimeout(() => {
     confetti.addConfetti();
   }, 1000); // 2000ms = 2 seconds
-  toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 </script>
 
