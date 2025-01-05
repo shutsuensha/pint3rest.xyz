@@ -4,11 +4,14 @@ https://github.com/vuejs/awesome-vue
 - tags, navbar
 - likes, comments detail
 - user profile desing
-- sing page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
+- notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - updates
 - user following
 - direct messages 
 - homeview cache ?
+- homeview video/gif
+- detail video
+- detail design
 
 ### Frontend server
 npm run dev

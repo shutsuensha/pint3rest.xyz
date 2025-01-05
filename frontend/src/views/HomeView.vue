@@ -1,9 +1,11 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick } from 'vue';
 import axios from 'axios';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 import Pin from '@/components/Auth/Pin.vue';
+
+import PinsByTag from '@/components/Auth/PinsByTag.vue';
 
 const emit = defineEmits(['createPinModelClose'])
 
@@ -15,6 +17,9 @@ const cntLoading = ref(0)
 const limitCntLoading = ref(null)
 
 const isPinsLoading = ref(false);
+
+const available_tags = ref(null)
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 
 const props = defineProps({
   register: Boolean
@@ -64,14 +69,30 @@ const handleScroll = () => {
   }
 };
 
-onMounted(() => {
+const randomBgColor = () => {
+  const randomIndex = Math.floor(Math.random() * bgColors.value.length);
+  return bgColors.value[randomIndex];
+};
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('/api/tags/', { withCredentials: true })
+    available_tags.value = response.data
+    for (let i = 0; i < response.data.length; i++) {
+      const tag = response.data[i];
+      tag.color = randomBgColor()
+    }
+    available_tags.value.unshift({ id: available_tags.value.length, name: 'All', color: randomBgColor() });
+  } catch (error) {
+    console.log(error)
+  }
   loadPins();  // Initial load
   window.addEventListener('scroll', handleScroll);
   if (props.register === true) {
     setTimeout(() => {
-    showCreatePin.value = true
-    document.body.style.overflowY = 'clip'
-  }, Math.random() * 2000);
+      showCreatePin.value = true
+      document.body.style.overflowY = 'clip'
+    }, Math.random() * 2000);
   }
 });
 
@@ -83,6 +104,27 @@ function closeCreatePin() {
   showCreatePin.value = false
   document.body.style.overflowY = 'auto'
   emit('createPinModelClose')
+}
+
+
+const selectedTag = ref('All')
+const showPinsBytag = ref(false)
+
+async function loadPinsByTag(name) {
+  if (name !== selectedTag.value) {
+    showPinsBytag.value = false
+    selectedTag.value = null
+    if (name === 'All') {
+      window.addEventListener('scroll', handleScroll);
+      showPinsBytag.value = false
+      selectedTag.value = 'All'
+    } else {
+      window.removeEventListener('scroll', handleScroll);
+      await nextTick();
+      selectedTag.value = name
+      showPinsBytag.value = true
+    }
+  }
 }
 
 </script>
@@ -116,13 +158,20 @@ function closeCreatePin() {
   </transition>
 
 
-  <div class="mt-20 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
+  <div class="flex flex-wrap gap-2 mt-20 ml-24" v-auto-animate>
+    <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
+      :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-110' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-3xl', 'px-3', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+      {{ tag.name }}
+    </div>
+  </div>
+  <div v-show="!showPinsBytag" class="ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>
+  <PinsByTag v-if="showPinsBytag && selectedTag !== null" :tag="selectedTag" />
 </template>
 
 
