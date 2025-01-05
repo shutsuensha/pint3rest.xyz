@@ -16,6 +16,8 @@ https://github.com/vuejs/awesome-vue
 - create photo/gif/video - продумай height/width - возможность доавления несколько файлов
 - рандомное limit пинов
 - homeview появление пинов
+- navbar как у yandex
+- v-show modal create pin
 
 
 ### Frontend server
