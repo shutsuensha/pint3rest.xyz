@@ -41,6 +41,13 @@ async def get_pins_by_tag(tag_name: str, user_id: user_id, db: db, filter: filte
 
 @router.get('/search', response_model=list[PinOut])
 async def search_pins(filter_with_value: filter_with_value, user_id: user_id, db: db):
+    """
+    split value 
+    title description by value
+    get tags by value
+    get pins by tag
+    unique
+    """   
     pins = await db.scalars(select(PinsOrm).where(
             or_(
                 PinsOrm.title.ilike(f"%{filter_with_value.value}%"),
