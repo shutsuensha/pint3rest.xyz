@@ -23,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="text-center flex flex-col justify-center items-center h-screen">
+  <section class="text-center flex flex-col justify-center items-center relative top-20">
     <h1 class="text-4xl font-bold mb-4">404</h1>
     <ClipLoader v-if="loading" :size="size" :color="color" />
     <img v-else class="h-96 rounded-xl" :src="image"

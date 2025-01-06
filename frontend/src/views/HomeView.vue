@@ -18,6 +18,9 @@ const limitCntLoading = ref(null)
 
 const isPinsLoading = ref(false);
 
+const cntTagLoading = ref(0)
+const limitTagLoading = ref(null)
+
 const available_tags = ref(null)
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 
@@ -51,7 +54,7 @@ const loadPins = async () => {
 
     // После первого запроса изменяем лимит на 5
     if (limit.value === 10) {
-      limit.value = 5;
+      limit.value = 8;
     }
 
   } catch (error) {
@@ -80,11 +83,12 @@ onMounted(async () => {
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data
+    limitTagLoading.value = available_tags.value.length
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
       tag.color = randomBgColor()
     }
-    available_tags.value.unshift({ id: available_tags.value.length, name: 'All', color: randomBgColor() });
+    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor() });
   } catch (error) {
     console.log(error)
   }
@@ -134,17 +138,17 @@ function closeCreatePin() {
 }
 
 
-const selectedTag = ref('All')
+const selectedTag = ref('Everything')
 const showPinsBytag = ref(false)
 
 async function loadPinsByTag(name) {
   if (name !== selectedTag.value) {
     showPinsBytag.value = false
     selectedTag.value = null
-    if (name === 'All') {
+    if (name === 'Everything') {
       window.addEventListener('scroll', handleScroll);
       showPinsBytag.value = false
-      selectedTag.value = 'All'
+      selectedTag.value = 'Everything'
     } else {
       window.removeEventListener('scroll', handleScroll);
       await nextTick();
@@ -154,30 +158,60 @@ async function loadPinsByTag(name) {
   }
 }
 
-const scrollAmount = 200;
+const scrollAmount = 400;
 
 // Ссылка на контейнер с тегами
 const containerRef = ref(null);
 
+function customScroll(container, amount, duration = 300) {
+  const start = container.scrollLeft;
+  const startTime = performance.now();
+
+  function scrollStep(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1); // Ensure progress doesn't exceed 1
+    const ease = 0.5 - 0.5 * Math.cos(Math.PI * progress); // Ease-in-out effect
+
+    container.scrollLeft = start + amount * ease;
+
+    if (elapsed < duration) {
+      requestAnimationFrame(scrollStep);
+    }
+  }
+
+  requestAnimationFrame(scrollStep);
+}
+
 // Функция для прокрутки влево
 const scrollLeft = () => {
   if (containerRef.value) {
-    containerRef.value.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    // containerRef.value.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    customScroll(containerRef.value, -scrollAmount, 300);
   }
 };
 
 // Функция для прокрутки вправо
 const scrollRight = () => {
   if (containerRef.value) {
-    containerRef.value.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    // containerRef.value.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    customScroll(containerRef.value, scrollAmount, 300);
   }
 };
 
+
+const tagsLoaded = ref(false)
+
+function onTagLoad() {
+  cntTagLoading.value += 1
+  if (cntTagLoading.value === limitTagLoading.value) {
+    tagsLoaded.value = true
+  }
+}
 </script>
 
 <template>
   <transition name="fade" appear>
-    <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+    <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 
       <!-- Lottie Animation -->
 
@@ -203,50 +237,77 @@ const scrollRight = () => {
     </div>
   </transition>
 
+  <nav :class="['fixed top-0 left-20 w-full bg-white z-30', 'bg-opacity-20 backdrop-blur-sm']">
+    <div class="flex items-center justify-between px-6 py-2">
+      <!-- Search Bar -->
+       
+      <div class="relative flex-1 mr-20">
+        <input type="text" placeholder="Поиск"
+          class="transition duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-xl block w-full py-3 px-10 outline-none border-none focus:ring-0" />
+        <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
+          <i class="pi pi-search text-gray-600"></i>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-  <div class="relative mt-20 ml-24">
+
+  <div class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
     <!-- Левая стрелка -->
     <button
-      class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+      class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:-translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-90"
       @click="scrollLeft(containerRef)">
-      ◀
+      <i class="pi pi-chevron-left text-xl"></i>
     </button>
 
-    <!-- Контейнер с тегами -->
-    <div ref="containerRef"
-      class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-1"
-      v-auto-animate>
-      <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
-        :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', '', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-105']">
-        <!-- Отображение изображения или видео -->
-        <div class="w-9 h-9 flex-shrink-0">
-          <img v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image"
-            class="w-full h-full object-cover rounded-full" />
-          <video v-else-if="!tag.isImage && tag.file" :src="tag.file" class="w-full h-full object-cover rounded-full"
-            autoplay loop muted />
+    <!-- Контейнер с градиентами -->
+    <div class="relative overflow-hidden">
+      <!-- Облака (градиенты) видны только при наведении на контейнер -->
+      <div
+        class="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white via-white/70 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      </div>
+      <div
+        class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white via-white/70 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      </div>
+
+      <!-- Контейнер с тегами -->
+      <div ref="containerRef" class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-1 px-5"
+        v-auto-animate>
+        <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
+          :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-100', 'transform', 'hover:scale-110']">
+          <!-- Отображение изображения или видео -->
+          <div class="w-9 h-9 flex-shrink-0">
+            <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
+              class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
+            <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
+            class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" autoplay loop muted />
+          </div>
+          <!-- Название тега -->
+          <span class="truncate">{{ tag.name }}</span>
         </div>
-        <!-- Название тега -->
-        <span class="truncate">{{ tag.name }}</span>
       </div>
     </div>
 
     <!-- Правая стрелка -->
     <button
-      class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+      class="absolute right-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-90"
       @click="scrollRight(containerRef)">
-      ▶
+      <i class="pi pi-chevron-right text-xl"></i>
     </button>
   </div>
 
 
-  <div v-show="!showPinsBytag" class="ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
+
+
+  <div v-show="!showPinsBytag" class="ml-20 mt-28" v-masonry transition-duration="0.4s" item-selector=".item"
+    stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>
-  <PinsByTag v-if="showPinsBytag && selectedTag !== null" :tag="selectedTag" />
+  <PinsByTag class="mt-28" v-if="showPinsBytag && selectedTag !== null" :tag="selectedTag" />
 </template>
 
 
@@ -272,5 +333,18 @@ const scrollRight = () => {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
   /* Chrome, Safari, Opera */
+}
+
+.fade-in-animation {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup>
-import Navbar from './Navbar.vue';
 import Aside from './Aside.vue';
 import { RouterView } from 'vue-router';
 import { ref, onMounted } from 'vue';
@@ -64,7 +63,6 @@ onMounted(async () => {
 
 <template>
   <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
-  <Navbar v-if="!loadingProfile" />
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
   <RouterView :key="`${$route.params.id}-${$route.params.username}`" :register="register" @createPinModelClose="emit('createPinModelClose')"/>
 </template>

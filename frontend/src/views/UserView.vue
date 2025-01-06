@@ -87,7 +87,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center mt-20">
+  <div class="flex items-center justify-center mt-5">
     <ClipLoader v-if="loadingUser" :color="color" :size="size" class="" />
     <div v-else class="flex flex-col items-center">
       <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">

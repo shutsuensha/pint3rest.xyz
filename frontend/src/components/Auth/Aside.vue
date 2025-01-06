@@ -34,7 +34,7 @@ onMounted(async () => {
 
 <template>
   <nav
-    class="fixed top-0 left-0 h-full w-20 flex flex-col justify-between items-center z-30 border-r border-gray-300 py-4">
+    class="fixed top-0 left-0 h-full w-20 flex flex-col justify-between items-center z-30 border-r border-gray-300 py-4 ">
 
     <!-- Icons -->
     <div class="flex flex-col items-center text-xl space-y-6">

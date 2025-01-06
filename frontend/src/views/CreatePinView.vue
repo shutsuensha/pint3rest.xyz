@@ -33,6 +33,8 @@ const available_tags = ref(null)
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 const tags = ref([])
 
+
+
 onMounted(async () => {
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
@@ -190,13 +192,18 @@ function checkPinAded(name) {
 </script>
 
 <template>
-  <div class="mt-20 ml-20 mb-20">
-    <div class="mt-2 text-xl py-5 border-t border-b border-gray-300 px-4">
+  <div class="ml-20">
+    <div class="mt-2 text-2xl font-bold py-5 border-b border-gray-300 px-4 text-center">
       <h1>Создание пина</h1>
     </div>
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
     <div v-else class="grid grid-cols-2 mt-5 mr-72 gap-10">
+      <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
       <div class="ml-36">
         <label for="media" class="cursor-pointer" 
         @dragover.prevent="onDragOver" @dragleave="onDragLeave" @drop.prevent="onDrop">
