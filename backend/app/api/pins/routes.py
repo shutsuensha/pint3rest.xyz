@@ -6,6 +6,7 @@ from sqlalchemy import insert, select, update, delete, or_, desc
 from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
+from app.api.tags.routes import get_all_tags
 
 
 router = APIRouter(prefix="/pins", tags=["pins"])
@@ -47,16 +48,38 @@ async def search_pins(filter_with_value: filter_with_value, user_id: user_id, db
     get tags by value
     get pins by tag
     unique
-    """   
-    pins = await db.scalars(select(PinsOrm).where(
-            or_(
-                PinsOrm.title.ilike(f"%{filter_with_value.value}%"),
-                PinsOrm.description.ilike(f"%{filter_with_value.value}%")    
-            )
-        ).offset(filter_with_value.offset).limit(filter_with_value.limit)
-    )
+    """
+    result = {}
 
-    return pins
+    split_and_clean = [part for part in filter_with_value.value.split(' ') if part.strip()]
+    tags = await get_all_tags(db, user_id)
+    tag_list = tags.all()
+    for value in split_and_clean:
+        pins = await db.scalars(select(PinsOrm).where(
+                or_(
+                    PinsOrm.title.ilike(f"%{value}%"),
+                    PinsOrm.description.ilike(f"%{value}%")    
+                )
+            )
+        )
+        pin_list = pins.all()
+        for pin in pin_list:
+            if pin.id not in result:
+                result[pin.id] = pin
+
+        for tag in tag_list:
+            if value in tag.name:
+                    tag = await db.scalar(select(TagsOrm).where(TagsOrm.name == tag.name))
+                    result_table = await db.execute(select(pins_tags).where(pins_tags.c.tag_id == tag.id))
+                    rows = result_table.all()
+                    for row in rows:
+                        pin_by_tag_id = row[0]
+                        if pin_by_tag_id not in result:
+                            pin_by_tag = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_by_tag_id))
+                            result[pin_by_tag.id] = pin_by_tag
+
+
+    return [pin for pin in result.values()][filter_with_value.offset:filter_with_value.offset+filter_with_value.limit]
 
 
 
