@@ -1,13 +1,16 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, nextTick } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed  } from 'vue';
 import axios from 'axios';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 import Pin from '@/components/Auth/Pin.vue';
 
 import PinsByTag from '@/components/Auth/PinsByTag.vue';
+import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 const emit = defineEmits(['createPinModelClose'])
+
+
 
 const pins = ref([]);
 const offset = ref(0);
@@ -88,7 +91,7 @@ onMounted(async () => {
       const tag = response.data[i];
       tag.color = randomBgColor()
     }
-    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor() });
+    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file:'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg', isImage: true });
   } catch (error) {
     console.log(error)
   }
@@ -142,6 +145,11 @@ const selectedTag = ref('Everything')
 const showPinsBytag = ref(false)
 
 async function loadPinsByTag(name) {
+  if (showSearchPins.value) {
+    showSearchPins.value = false
+    window.addEventListener('scroll', handleScroll);
+    searchValue.value = ''
+  }
   if (name !== selectedTag.value) {
     showPinsBytag.value = false
     selectedTag.value = null
@@ -207,6 +215,38 @@ function onTagLoad() {
     tagsLoaded.value = true
   }
 }
+
+const showSearchPins = ref(false)
+const searchValue = ref('')
+
+watch(searchValue, async (newValue, oldValue) => {
+  if (newValue.trim() !== '') {
+    showSearchPins.value = false
+    window.removeEventListener('scroll', handleScroll);
+    await nextTick()
+    searchValue.value = newValue
+    showSearchPins.value = true
+  } else {
+    if (oldValue.trim() !== '') {
+      showSearchPins.value = false
+      window.addEventListener('scroll', handleScroll);
+    }
+  }
+});
+
+
+const filteredTags = computed(() => {
+  const trimmedValue = searchValue.value.trim().toLowerCase();
+  if (trimmedValue === '') {
+    return available_tags.value; // Возвращаем все теги, если строка поиска пустая
+  }
+
+  // Разбиваем поисковую строку на слова
+  const searchWords = trimmedValue.split(/\s+/); // Разделяем по пробелам
+  return available_tags.value.filter(tag =>
+    searchWords.some(word => tag.name.toLowerCase().includes(word))
+  );
+});
 </script>
 
 <template>
@@ -240,10 +280,10 @@ function onTagLoad() {
   <nav :class="['fixed top-0 left-20 w-full bg-white z-30', 'bg-opacity-20 backdrop-blur-sm']">
     <div class="flex items-center justify-between px-6 py-2">
       <!-- Search Bar -->
-       
+
       <div class="relative flex-1 mr-20">
-        <input type="text" placeholder="Поиск"
-          class="transition duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-xl block w-full py-3 px-10 outline-none border-none focus:ring-0" />
+        <input v-model="searchValue" type="text" placeholder="Search"
+          class="transition duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-3xl block w-full py-3 px-10 outline-none border-none focus:ring-0" />
         <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
           <i class="pi pi-search text-gray-600"></i>
         </div>
@@ -273,14 +313,15 @@ function onTagLoad() {
       <!-- Контейнер с тегами -->
       <div ref="containerRef" class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-1 px-5"
         v-auto-animate>
-        <div v-for="tag in available_tags" :key="tag.id" @click="loadPinsByTag(tag.name)"
+        <div v-for="tag in filteredTags" :key="tag.id" @click="loadPinsByTag(tag.name)"
           :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-100', 'transform', 'hover:scale-110']">
           <!-- Отображение изображения или видео -->
           <div class="w-9 h-9 flex-shrink-0">
             <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
             <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
-            class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" autoplay loop muted />
+              class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }"
+              autoplay loop muted />
           </div>
           <!-- Название тега -->
           <span class="truncate">{{ tag.name }}</span>
@@ -299,15 +340,16 @@ function onTagLoad() {
 
 
 
-  <div v-show="!showPinsBytag" class="ml-20 mt-28" v-masonry transition-duration="0.4s" item-selector=".item"
-    stagger="0.03s">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.4s"
+    item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>
-  <PinsByTag class="mt-28" v-if="showPinsBytag && selectedTag !== null" :tag="selectedTag" />
+  <PinsByTag class="mt-28" v-if="showPinsBytag && selectedTag !== null && !showSearchPins" :tag="selectedTag" />
+  <PinsBySearch class="mt-28" v-if="showSearchPins" :value="searchValue" />
 </template>
 
 
