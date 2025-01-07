@@ -19,6 +19,13 @@ https://github.com/vuejs/awesome-vue
 - back arrow with route back in all route + fix margin top in all route (navbar deleted)
 - fine cool FONT
 - FIX FAVICON ICON
+- title change on every route
+- fix blur on tags
+- user popout animation 
+- dont show tags buttons when not available tags
+- think about logo/favicon icon, show logo in everything tag
+- стрелочки транслейт убрать на тегах + стрелочки на бек сделать тоже без транслейта а так как на тегах
+- теги hover мб без приближения
 
 ### Now
 - navbar design
