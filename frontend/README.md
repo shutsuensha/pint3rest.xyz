@@ -26,10 +26,8 @@ https://github.com/vuejs/awesome-vue
 - think about logo/favicon icon, show logo in everything tag
 - стрелочки транслейт убрать на тегах + стрелочки на бек сделать тоже без транслейта а так как на тегах
 - теги hover мб без приближения
+- search optimization
 
-### Now
-- navbar design
-- navbar api route
 
 ### Frontend server
 npm run dev
