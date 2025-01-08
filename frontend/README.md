@@ -27,7 +27,13 @@ https://github.com/vuejs/awesome-vue
 - стрелочки транслейт убрать на тегах + стрелочки на бек сделать тоже без транслейта а так как на тегах
 - теги hover мб без приближения
 - search optimization
-
+- add emoji in create pin description
+- fix register props for hoveview only without WWARNING IN ALL ROUTES
+- create pin image/video from url
+- user can edit theyr profile add banned and other
+- все роуты на отдачу сортировку в обратном порядке
+- fix bug in everything after scroll in tag that choose by search
+- задизайнить навбар получше
 
 ### Frontend server
-npm run dev
+  npm run dev
