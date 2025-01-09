@@ -171,6 +171,7 @@ async function addComment() {
           });
 
           imagePreview.value = null
+          commentImage.value = null
 
         } catch (error) {
           console.log(error)
