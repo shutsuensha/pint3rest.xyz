@@ -4,6 +4,7 @@ import { useRoute, RouterLink, useRouter } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
 import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
+import CommentSection from '@/components/Auth/CommentSection.vue';
 
 const route = useRoute();
 const pinId = route.params.id
@@ -32,6 +33,8 @@ const pinUserImage = ref(null)
 const cntLikes = ref(null)
 const checkUserLike = ref(null)
 
+const showCommets = ref(false)
+
 const router = useRouter();
 
 
@@ -41,6 +44,11 @@ const insidePopover = ref(false)
 
 const bgSave = ref('bg-red-700')
 const saveText = ref('Save')
+
+
+const comment = ref('')
+const commentImage = ref(null)
+const imagePreview = ref(null)
 
 
 onMounted(async () => {
@@ -130,6 +138,49 @@ async function save() {
     }
   }
 }
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    commentImage.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result; // Update the preview data
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function addComment() {
+  if (comment.value.trim() !== '') {
+    try {
+      const response = await axios.post(`/api/comments/${pin.value.id}`, {
+        content: comment.value.trim()
+      })
+      comment.value = ''
+      const commentId = response.data.id
+      if (commentImage.value) {
+        try {
+          const formData = new FormData();
+          formData.append('file', commentImage.value);
+
+          const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          imagePreview.value = null
+
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
 </script>
 
 
@@ -162,15 +213,15 @@ async function save() {
               @mouseleave="if (!insidePopover) showPopover = false;">
               <span>{{ cntLikes }}</span>
               <div v-if="showPopover" @mouseover="insidePopover = true"
-                @mouseleave="insidePopover = false; showPopover = false"
-                class="absolute top-[30px] left-[-50px]">
-                <PinLikesPopover :pin_id="pin.id"/>
+                @mouseleave="insidePopover = false; showPopover = false" class="absolute top-[30px] left-[-50px]">
+                <PinLikesPopover :pin_id="pin.id" />
               </div>
             </div>
           </div>
 
           <!-- Save Button -->
-          <button @click="save" :class="`px-6 py-3 text-sm ${bgSave} hover:bg-red-700 text-white rounded-3xl transition`">
+          <button @click="save"
+            :class="`px-6 py-3 text-sm ${bgSave} hover:bg-red-700 text-white rounded-3xl transition`">
             {{ saveText }}
           </button>
         </div>
@@ -188,6 +239,26 @@ async function save() {
           <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-8 h-8 rounded-full" />
           <span class="ml-2 text-sm font-medium">@{{ pinUser.username }}</span>
         </RouterLink>
+        <div @click="showCommets = !showCommets">
+          <h1>Comments</h1>
+        </div>
+        <CommentSection v-if="showCommets" :pin_id="pin.id"/>
+        <div class="flex items-center space-x-2">
+          <!-- Add Button -->
+          <button type="button" @click="addComment"
+            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+            Add
+          </button>
+
+          <!-- Tags Input -->
+          <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
+            class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+            placeholder="Введите комментарий" />
+        </div>
+        <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
+          class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+        <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
+          alt="Image Preview" />
       </div>
     </div>
   </div>
