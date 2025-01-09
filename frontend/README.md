@@ -39,7 +39,9 @@ https://github.com/vuejs/awesome-vue
 - add comment - add video
 - reply add emoji add video/image
 - cnt comments in pin detail
+- cnt replies
 - user like pins display in profile
+- comment image preview cancel for user
 
 ### Frontend server
   npm run dev
