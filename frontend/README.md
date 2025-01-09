@@ -34,6 +34,12 @@ https://github.com/vuejs/awesome-vue
 - все роуты на отдачу сортировку в обратном порядке
 - fix bug in everything after scroll in tag that choose by search
 - задизайнить навбар получше
+- add emoji in comment input
+- design detail - compact add comment
+- add comment - add video
+- reply add emoji add video/image
+- cnt comments in pin detail
+- user like pins display in profile
 
 ### Frontend server
   npm run dev
