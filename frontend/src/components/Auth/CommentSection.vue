@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
+import CommentLikesPopover from './CommentLikesPopover.vue';
+
 
 const props = defineProps({
   pin_id: Number
@@ -48,9 +50,24 @@ async function loadComments() {
         } catch (error) {
           console.error(error);
         }
+        let checkUserLike = null
+        try {
+          const response = await axios.get(`/api/likes/comment/user_like/${commentData.id}`)
+          checkUserLike = response.data
+        } catch (error) {
+          console.error(error)
+        }
+        let cntLikes = null
+        try {
+          const response = await axios.get(`/api/likes/comment/likes/cnt/${commentData.id}`)
+          cntLikes = response.data
+        } catch (error) {
+          console.error(error)
+        }
         comments.value.push({
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
-          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', replyImagePreview: null, replyImage: null, showReplies: false
+          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', replyImagePreview: null, replyImage: null, showReplies: false,
+          checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false
         })
       } catch (error) {
         console.error(error)
@@ -118,12 +135,32 @@ function handleImageUpload(event, comment) {
     reader.readAsDataURL(file);
   }
 }
+
+async function likeComment(comment) {
+  if (comment.checkUserLike) {
+    try {
+      await axios.delete(`/api/likes/comment/${comment.id}`)
+      comment.checkUserLike = false
+      comment.cntLikes -= 1
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    try {
+      await axios.post(`/api/likes/comment/${comment.id}`)
+      comment.checkUserLike = true
+      comment.cntLikes += 1
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 </script>
 
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-4 bg-white rounded-xl text-sm font-medium text-gray-700 z-30 h-60 w-full overflow-y-auto">
+    class="flex flex-col gap-4 bg-white rounded-xl text-sm font-medium text-gray-700 h-60 w-full overflow-y-auto">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col mb-2">
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
@@ -136,7 +173,7 @@ function handleImageUpload(event, comment) {
         <div @click="comment.showReplies = !comment.showReplies">
           <h1>Ответы</h1>
         </div>
-        <ReplyCommentSection v-if="comment.showReplies" :comment_id="comment.id"/>
+        <ReplyCommentSection v-if="comment.showReplies" :comment_id="comment.id" />
       </div>
       <div v-if="comment.showReply" class="flex items-center space-x-2">
         <button type="button" @click="addComment(comment)"
@@ -162,6 +199,19 @@ function handleImageUpload(event, comment) {
         <span class="text-gray-700 font-medium">{{ comment.created_at }}</span>
         <span @click="comment.showReply = !comment.showReply"
           class="hover:underline hover:text-blue-400 cursor-pointer">Ответить</span>
+        <div class="flex items-center space-x-2">
+          <!-- Icon -->
+          <i @click="likeComment(comment)" :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
+          <!-- Number of Likes -->
+          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative" @mouseover="comment.showPopover = true"
+            @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
+            <span>{{ comment.cntLikes }}</span>
+            <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
+              @mouseleave="comment.insidePopover = false; comment.showPopover = false" class="absolute top-[30px] left-[-50px]">
+              <CommentLikesPopover :comment_id="comment.id" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
