@@ -9,5 +9,5 @@
 - screenshots for every page
 - learn how to format readme project describe
 - do github profile
-- do github page
+- do github page + find photo
 - сделать как backend репу с описанием и frontend модулем внутри
