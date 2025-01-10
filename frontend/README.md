@@ -42,6 +42,9 @@ https://github.com/vuejs/awesome-vue
 - cnt replies
 - user like pins display in profile
 - comment image preview cancel for user
+- dark theme
+- responsive design
+- popover появления если места не будет сверху - home, detail
 
 ### Frontend server
-  npm run dev
+npm run dev
