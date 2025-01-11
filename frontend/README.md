@@ -1,7 +1,6 @@
 https://github.com/vuejs/awesome-vue
 
 ### Next
-- likes, comments detail
 - user profile desing
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - updates
@@ -21,6 +20,7 @@ https://github.com/vuejs/awesome-vue
 - FIX FAVICON ICON
 - title change on every route
 - fix blur on tags
+- tags pagination
 - user popout animation 
 - dont show tags buttons when not available tags
 - think about logo/favicon icon, show logo in everything tag
@@ -38,13 +38,14 @@ https://github.com/vuejs/awesome-vue
 - design detail - compact add comment
 - add comment - add video
 - reply add emoji add video/image
-- cnt comments in pin detail
-- cnt replies
 - user like pins display in profile
 - comment image preview cancel for user
 - dark theme
 - responsive design
 - popover появления если места не будет сверху - home, detail
+- everything tag 1s pin image/video display
+- mb rewrite image loading v-if v-show @load in images (later)
+- tags loading gray placeholder
 
 ### Frontend server
 npm run dev
