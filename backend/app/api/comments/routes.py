@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.dependencies import db, user_id, filter
 from .schemas import CommentIn, CommentOut
 from app.database.models import CommentsOrm, PinsOrm
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, func
 import uuid
 from app.api.utils import save_file
 from fastapi.responses import FileResponse
@@ -34,6 +34,30 @@ async def get_comments_on_pin(pin_id: int, db: db, user_id: user_id, filter: fil
 
     comments = await db.scalars(select(CommentsOrm).where(CommentsOrm.pin_id == pin_id).offset(filter.offset).limit(filter.limit))
     return comments
+
+
+@router.get('/cnt/comments/{pin_id}')
+async def get_cnt_comments_on_pin(pin_id: int, db: db, user_id: user_id):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+
+    cnt_comments = await db.scalar(
+        select(func.count()).select_from(CommentsOrm).where(CommentsOrm.pin_id == pin_id)
+    )
+    return cnt_comments
+
+
+@router.get('/cnt/replies/{comment_id}')
+async def get_cnt_replies_on_comment(comment_id: int, db: db, user_id: user_id):
+    comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
+    if comment is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
+
+    cnt_comments = await db.scalar(
+        select(func.count()).select_from(CommentsOrm).where(CommentsOrm.comment_id == comment_id)
+    )
+    return cnt_comments
 
 
 @router.post("/upload/{id}", response_model=CommentOut)
