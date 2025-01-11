@@ -29,11 +29,19 @@ async function loadComments() {
     for (let i = 0; i < response.data.length; i++) {
       const commentData = response.data[i]
       let commentImage = null
+      let isImage = false
+      let isVideo = false
       if (commentData.image) {
         try {
           const response = await axios.get(`/api/comments/upload/${commentData.id}`, { responseType: 'blob' });
           const blobUrl = URL.createObjectURL(response.data);
+          const contentType = response.headers['content-type'];
           commentImage = blobUrl;
+          if (contentType.startsWith('image/')) {
+            isImage = true;
+          } else {
+            isVideo = true;
+          }
         } catch (error) {
           console.error(error);
         }
@@ -64,10 +72,18 @@ async function loadComments() {
         } catch (error) {
           console.error(error)
         }
+        let cntReplies = null
+        try {
+          const response = await axios.get(`/api/comments/cnt/replies/${commentData.id}`)
+          cntReplies = response.data
+        } catch (error) {
+          console.error(error)
+        }
         comments.value.push({
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
-          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', replyImagePreview: null, replyImage: null, showReplies: false,
-          checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false
+          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: false,
+          checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
+          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null
         })
       } catch (error) {
         console.error(error)
@@ -93,17 +109,17 @@ onMounted(() => {
 });
 
 async function addComment(comment) {
-  if (comment.replyContent.trim() !== '') {
+  if (comment.replyContent.trim() !== '' || comment.replyMediaFile) {
     try {
       const response = await axios.post(`/api/comments/comment/${comment.id}`, {
         content: comment.replyContent.trim()
       })
       comment.replyContent = ''
       const commentId = response.data.id
-      if (comment.replyImage) {
+      if (comment.replyMediaFile) {
         try {
           const formData = new FormData();
-          formData.append('file', comment.replyImage);
+          formData.append('file', comment.replyMediaFile);
 
           const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
             headers: {
@@ -111,8 +127,11 @@ async function addComment(comment) {
             },
           });
 
-          comment.replyImagePreview = null
-          comment.replyImage = null
+          comment.replyMediaPreview = null
+          comment.replyMediaFile = null
+          comment.replyIsImage = false
+          comment.replyIsVideo = false
+
 
         } catch (error) {
           console.log(error)
@@ -121,20 +140,35 @@ async function addComment(comment) {
     } catch (error) {
       console.error(error)
     }
+    comment.cntReplies += 1
   }
 }
 
-function handleImageUpload(event, comment) {
+function handleMediaUpload(event, comment) {
   const file = event.target.files[0];
   if (file) {
-    comment.replyImage = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      comment.replyImagePreview = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    previewFile(file, comment);
   }
 }
+
+const previewFile = (file, comment) => {
+  comment.replyMediaFile = file;
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    comment.replyMediaPreview = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+
+  if (file.type.startsWith("image/")) {
+    comment.replyIsImage = true;
+    comment.replyIsVideo = false;
+  } else if (file.type.startsWith("video/")) {
+    comment.replyIsImage = false;
+    comment.replyIsVideo = true;
+  }
+};
 
 async function likeComment(comment) {
   if (comment.checkUserLike) {
@@ -169,9 +203,12 @@ async function likeComment(comment) {
       </RouterLink>
       <span class="text-gray-700 font-medium">{{ comment.content }}</span>
       <div class="flex flex-row">
-        <img v-if="comment.image" :src="comment.image" alt="comment image" class="h-28 w-28 object-cover rounded-lg" />
-        <div @click="comment.showReplies = !comment.showReplies">
-          <h1>Ответы</h1>
+        <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
+          class="h-28 w-28 object-cover rounded-lg" />
+        <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
+          class="h-28 w-28 object-cover rounded-lg" autoplay loop muted />
+        <div v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">
+          <h1>{{ comment.cntReplies }} Replies </h1>
         </div>
         <ReplyCommentSection v-if="comment.showReplies" :comment_id="comment.id" />
       </div>
@@ -187,11 +224,13 @@ async function likeComment(comment) {
           placeholder="Введите комментарий" />
       </div>
       <div v-if="comment.showReply" class="flex flex-col">
-        <input type="file" id="image" name="image" accept="image/*"
-          @change="(event) => handleImageUpload(event, comment)"
+        <input type="file" id="media" name="media" accept="image/*,video/*"
+          @change="(event) => handleMediaUpload(event, comment)"
           class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-        <img v-if="comment.replyImagePreview" :src="comment.replyImagePreview"
-          class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Image Preview" />
+
+
+        <img v-if="comment.replyIsImage" :src="comment.replyMediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
+        <video v-if="comment.replyIsVideo" :src="comment.replyMediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
       </div>
       <div>
       </div>
@@ -201,13 +240,16 @@ async function likeComment(comment) {
           class="hover:underline hover:text-blue-400 cursor-pointer">Ответить</span>
         <div class="flex items-center space-x-2">
           <!-- Icon -->
-          <i @click="likeComment(comment)" :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
+          <i @click="likeComment(comment)"
+            :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
           <!-- Number of Likes -->
-          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative" @mouseover="comment.showPopover = true"
+          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative"
+            @mouseover="comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
             <span>{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
-              @mouseleave="comment.insidePopover = false; comment.showPopover = false" class="absolute top-[30px] left-[-50px]">
+              @mouseleave="comment.insidePopover = false; comment.showPopover = false"
+              class="absolute top-[30px] left-[-50px]">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>

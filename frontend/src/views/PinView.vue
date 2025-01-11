@@ -33,6 +33,8 @@ const pinUserImage = ref(null)
 const cntLikes = ref(null)
 const checkUserLike = ref(null)
 
+const cntComments = ref(null)
+
 const showCommets = ref(false)
 
 const router = useRouter();
@@ -47,8 +49,11 @@ const saveText = ref('Save')
 
 
 const comment = ref('')
-const commentImage = ref(null)
-const imagePreview = ref(null)
+
+const mediaFile = ref(null)
+const mediaPreview = ref(null);
+const isImage = ref(false);
+const isVideo = ref(false);
 
 
 onMounted(async () => {
@@ -97,6 +102,14 @@ onMounted(async () => {
   } catch (error) {
     console.error(error)
   }
+
+  try {
+    const response = await axios.get(`/api/comments/cnt/comments/${pin.value.id}`)
+    cntComments.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+
 })
 
 const goBack = () => {
@@ -139,30 +152,44 @@ async function save() {
   }
 }
 
-function handleImageUpload(event) {
+function handleMediaUpload(event) {
   const file = event.target.files[0];
   if (file) {
-    commentImage.value = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imagePreview.value = e.target.result; // Update the preview data
-    };
-    reader.readAsDataURL(file);
+    previewFile(file);
   }
 }
 
+const previewFile = (file) => {
+  mediaFile.value = file;
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    mediaPreview.value = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+
+  if (file.type.startsWith("image/")) {
+    isImage.value = true;
+    isVideo.value = false;
+  } else if (file.type.startsWith("video/")) {
+    isImage.value = false;
+    isVideo.value = true;
+  }
+};
+
 async function addComment() {
-  if (comment.value.trim() !== '') {
+  if (comment.value.trim() !== '' || mediaFile.value) {
     try {
       const response = await axios.post(`/api/comments/${pin.value.id}`, {
         content: comment.value.trim()
       })
       comment.value = ''
       const commentId = response.data.id
-      if (commentImage.value) {
+      if (mediaFile.value) {
         try {
           const formData = new FormData();
-          formData.append('file', commentImage.value);
+          formData.append('file', mediaFile.value);
 
           const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
             headers: {
@@ -170,8 +197,10 @@ async function addComment() {
             },
           });
 
-          imagePreview.value = null
-          commentImage.value = null
+          mediaPreview.value = null
+          mediaFile.value = null
+          isImage.value = false
+          isVideo.value = false
 
         } catch (error) {
           console.log(error)
@@ -180,6 +209,7 @@ async function addComment() {
     } catch (error) {
       console.error(error)
     }
+    cntComments.value += 1
   }
 }
 </script>
@@ -240,10 +270,10 @@ async function addComment() {
           <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-8 h-8 rounded-full" />
           <span class="ml-2 text-sm font-medium">@{{ pinUser.username }}</span>
         </RouterLink>
-        <div @click="showCommets = !showCommets">
-          <h1>Comments</h1>
+        <div v-if="cntComments != 0" @click="showCommets = !showCommets">
+          <h1> {{ cntComments }} Comments</h1>
         </div>
-        <CommentSection v-if="showCommets" :pin_id="pin.id"/>
+        <CommentSection v-if="showCommets" :pin_id="pin.id" />
         <div class="flex items-center space-x-2">
           <!-- Add Button -->
           <button type="button" @click="addComment"
@@ -256,10 +286,13 @@ async function addComment() {
             class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
             placeholder="Введите комментарий" />
         </div>
-        <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
+        <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
           class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-        <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
-          alt="Image Preview" />
+
+        <img v-if="isImage" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
+          alt="Media Preview" />
+        <video v-if="isVideo" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
+          autoplay loop muted />
       </div>
     </div>
   </div>

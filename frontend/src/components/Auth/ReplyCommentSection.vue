@@ -27,11 +27,19 @@ async function loadComments() {
     for (let i = 0; i < response.data.length; i++) {
       const commentData = response.data[i]
       let commentImage = null
+      let isImage = false
+      let isVideo = false
       if (commentData.image) {
         try {
           const response = await axios.get(`/api/comments/upload/${commentData.id}`, { responseType: 'blob' });
           const blobUrl = URL.createObjectURL(response.data);
+          const contentType = response.headers['content-type'];
           commentImage = blobUrl;
+          if (contentType.startsWith('image/')) {
+            isImage = true;
+          } else {
+            isVideo = true;
+          }
         } catch (error) {
           console.error(error);
         }
@@ -64,7 +72,8 @@ async function loadComments() {
         }
         comments.value.push({
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
-          user: commentUser, userImage: commentUserImage, checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false
+          user: commentUser, userImage: commentUserImage, checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false,
+          isImage: isImage, isVideo: isVideo
         })
       } catch (error) {
         console.error(error)
@@ -123,19 +132,25 @@ async function likeComment(comment) {
       </RouterLink>
       <span class="text-gray-700 font-medium">{{ comment.content }}</span>
       <div class="flex flex-row">
-        <img v-if="comment.image" :src="comment.image" alt="comment image" class="h-28 w-28 object-cover rounded-lg" />
+        <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
+          class="h-28 w-28 object-cover rounded-lg" />
+        <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
+          class="h-28 w-28 object-cover rounded-lg" autoplay loop muted />
       </div>
       <div class="flex items-center space-x-2">
         <span class="text-gray-700 font-medium">{{ comment.created_at }}</span>
         <div class="flex items-center space-x-2">
           <!-- Icon -->
-          <i @click="likeComment(comment)" :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
+          <i @click="likeComment(comment)"
+            :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
           <!-- Number of Likes -->
-          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative" @mouseover="comment.showPopover = true"
+          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative"
+            @mouseover="comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
             <span>{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
-              @mouseleave="comment.insidePopover = false; comment.showPopover = false" class="absolute top-[30px] left-[-50px]">
+              @mouseleave="comment.insidePopover = false; comment.showPopover = false"
+              class="absolute top-[30px] left-[-50px]">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>
