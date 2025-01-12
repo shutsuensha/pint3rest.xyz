@@ -11,3 +11,5 @@
 - do github profile
 - do github page + find photo
 - сделать как backend репу с описанием и frontend модулем внутри
+- сделать интернет магазин с card death - https://codepen.io/andymerskin/pen/XNMWvQ + vue snikers
+- social app, ecommerce app, next -> ? (soundcloud)
