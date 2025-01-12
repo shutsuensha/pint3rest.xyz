@@ -51,7 +51,7 @@
  
 - video/audio streaming + websockets
 
-- telegram app like ashqua (meetings)
+- telegram app like ashqua (meetings), like chatgpt
  
 - find project idea for portfolio + practice
 
