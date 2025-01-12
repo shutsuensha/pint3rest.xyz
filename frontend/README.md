@@ -3,7 +3,7 @@ npm run dev
 
 ### Next
 - user profile
-  - user likes pins display
+  - user view cache after back
   - user can edit profile
     - add banner or bg image for user
     - add additional information
@@ -97,3 +97,6 @@ npm run dev
 
 - analyze pinterest to add more functions, awesome vuejs
 
+- not found user view, pin view
+
+- user view if no craeted or saved or liked - display message 
