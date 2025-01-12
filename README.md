@@ -50,6 +50,8 @@
   - chat app for portfolio
  
 - video/audio streaming + websockets
+
+- telegram app like ashqua (meetings)
  
 - find project idea for portfolio + practice
 
