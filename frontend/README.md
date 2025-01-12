@@ -1,51 +1,94 @@
-https://github.com/vuejs/awesome-vue
-
 ### Next
-- user profile desing
-- notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
+- https://github.com/vuejs/awesome-vue
+
+- user profile
+  - user likes pins display
+  - user can edit profile
+    - add banner or bg image for user
+    - add additional information
+    - can change ava
+
 - updates
-- user following
-- direct messages 
-- homeview cache ?
-- homeview video/gif
-- homeview pins hover button, hover dark bg
-- detail video
-- detail design
-- create photo/gif/video - продумай height/width - возможность доавления несколько файлов
-- рандомное limit пинов
-- homeview появление пинов
-- v-show modal create pin
-- back arrow with route back in all route + fix margin top in all route (navbar deleted)
-- fine cool FONT
-- FIX FAVICON ICON
+ - schedule reklama
+ - updates from another users interation
+
+- user to user
+  - user followers
+  - user following
+
+- direct messages
+ - every user can write message to another user
+ - dialog display in /messages
+
+- homeview
+  - cache after back
+  - video/gif display
+  - pins hover button, hover dark bg
+  - рандомное limit пинов
+  - homeview появление пинов
+  - fix blur on tags
+  - tags pagination
+  - tags sort
+  - dont show tags buttons when not available tags
+  - search optimization
+  - search/tags design
+  - everything tag 1s pin image/video display
+  - tags loading gray placeholder
+
+- detail
+  - video controls
+  - full design
+  - cancel fileMedia
+  - animations for like
+  - animations for comment
+
+- create 
+  - photo/gif/video - продумай height/width (create/home/detail) - возможность доавления несколько файлов
+  - tags pagination
+  - search tags
+  - tags sort
+  - image/video from url
+  - черновики
+
+- modal-create-pin
+  - add some better design
+  - optimize svg loading
+
+- font
+ - font for all
+ - part font change (for modal-create-pin)
+
+- favicon icon
+
+- back arrow with route back in all routes
+
 - title change on every route
-- fix blur on tags
-- tags pagination
-- user popout animation 
-- dont show tags buttons when not available tags
-- think about logo/favicon icon, show logo in everything tag
-- стрелочки транслейт убрать на тегах + стрелочки на бек сделать тоже без транслейта а так как на тегах
-- теги hover мб без приближения
-- search optimization
-- add emoji in create pin description
+
+- popout
+  - animations
+  - positions top/bottom for available space
+
+- test values trim that user enter
+
+- add emoji in every input
+
 - fix register props for hoveview only without WWARNING IN ALL ROUTES
-- create pin image/video from url
-- user can edit theyr profile add banned and other
+
 - все роуты на отдачу сортировку в обратном порядке
+
 - fix bug in everything after scroll in tag that choose by search
-- задизайнить навбар получше
-- add emoji in comment input
-- design detail - compact add comment
-- add comment - add video
-- reply add emoji add video/image
-- user like pins display in profile
-- comment image preview cancel for user
+
+- rewrite image/video loading v-if v-show @load for all routes
+
 - dark theme
+
 - responsive design
-- popover появления если места не будет сверху - home, detail
-- everything tag 1s pin image/video display
-- mb rewrite image loading v-if v-show @load in images (later)
-- tags loading gray placeholder
+
+- notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
+
+- test optimization for site
+
+- ceo optimization?
 
 ### Frontend server
 npm run dev
