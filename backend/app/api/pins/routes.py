@@ -94,6 +94,17 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
     return pin
 
 
+@router.delete('/{pin_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+
+    await db.execute(delete(PinsOrm).where(PinsOrm.user_id == user_id, PinsOrm.id == pin_id))
+    await db.commit()
+    return {'status', 'ok'}
+
+
 @router.post("/upload/{id}", response_model=PinOut)
 async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
 

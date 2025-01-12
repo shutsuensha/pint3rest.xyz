@@ -7,7 +7,7 @@ from datetime import date
 pins_tags = Table(
     "pins_tags",
     Base.metadata,
-    Column("pin_id", ForeignKey("pins.id"), primary_key=True),
+    Column("pin_id", ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
     Column("tag_id", ForeignKey("tags.id"), primary_key=True),
 )
 
@@ -15,7 +15,7 @@ users_pins = Table(
     "users_pins",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("pin_id", ForeignKey("pins.id"), primary_key=True),
+    Column("pin_id", ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
 )
 
 class UsersOrm(Base):
@@ -63,9 +63,9 @@ class CommentsOrm(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id"), default=None)
+    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), default=None)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id"), default=None)
+    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
 
     content: Mapped[str | None] = mapped_column(String(400), default=None)
     created_at: Mapped[date] = mapped_column(default=date.today)
@@ -78,6 +78,6 @@ class LikesOrm(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id"), default=None)
+    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), default=None)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id"), default=None)
+    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
