@@ -83,3 +83,15 @@
 - change location to minsk
   - for a while (1st time mb 1-2 month)
   - money rodaki: kv, work place, inet, eda, odejda
+  - testovoe/stajer complete
+
+- fastapi job contract
+  - otdat dolhgi
+  - kv solo
+  - interent
+  - pc + work place
+  - odejda
+  - girl
+  - dota 2 core position
+  - vkusnii eda
+  - masaj
