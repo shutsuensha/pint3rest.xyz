@@ -25,7 +25,7 @@
   - vue frontend for complete app
   - social like app for portfolio
 
-- ecommerce app (https://codepen.io/andymerskin/pen/XNMWvQ + vue snikers)
+- ecommerce app (https://codepen.io/andymerskin/pen/XNMWvQ + vue snikers or https://thousand-cursed-enemies.com/)
   - full fastapi + stack
   - work with pay system
   - vue frontend for complete app
