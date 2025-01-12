@@ -15,7 +15,7 @@
 - github readme profile
   - github description as developer nothing more
 
-- github page
+- github page/vue hostings(nestify,vercel)
   - resume/about/portfolio full description about me
   
 - social app (pinterest)
@@ -28,7 +28,7 @@
   - full fastapi + stack
   - work with pay system
   - vue frontend for complete app
-  - ecomerce app for portfolio
+  - ecommerce app for portfolio
  
 - streaming audio app (yandex/spotify music)
   - full fastapi + stack
@@ -42,7 +42,21 @@
   - vue frontend for complete app
   - streaming video app for portfolio
  
+- chat app (telegram)
+  - full fastapi + stack
+  - websockets
+  - vue frontend for complete app
+  - chat app for portfolio
+ 
+- video/audio streaming + websockets
+ 
 - find project idea for portfolio + practice
+
+- future
+  - telegram development, aiohttp, asyncio, openai, api, нейронки
+  - web-frontend: vue/react + stack
+  - mobile-frontend: dart, flutter
+  - web-full: js/ts + mern stack
 
 - tms sertificate
   - all tasks speedrun
