@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.dependencies import db, user_id, filter, filter_with_value
 from .schemas import PinOut, PinIn
-from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags
+from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
 from sqlalchemy import insert, select, update, delete, or_, desc
 from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
@@ -195,4 +195,22 @@ async def get_user_saved_pins(id: int, user_id: user_id, db: db, filter: filter)
         pin_id = row[1]
         pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
         pins.append(pin)
+    return pins
+
+
+@router.get('/user_liked_pins/{id}', response_model=list[PinOut])
+async def get_user_liked_pins(id: int, user_id: user_id, db: db, filter: filter):
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+
+    result = await db.execute(
+        select(PinsOrm)
+        .join(LikesOrm, PinsOrm.id == LikesOrm.pin_id)
+        .where(LikesOrm.user_id == id)
+        .offset(filter.offset)
+        .limit(filter.limit)
+    )
+    pins = result.scalars().all()
+
     return pins

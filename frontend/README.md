@@ -1,3 +1,6 @@
+### Frontend server
+npm run dev
+
 ### Next
 - user profile
   - user likes pins display
@@ -94,5 +97,3 @@
 
 - analyze pinterest to add more functions, awesome vuejs
 
-### Frontend server
-npm run dev
