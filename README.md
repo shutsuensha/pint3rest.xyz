@@ -4,6 +4,7 @@
 
 - сделать как backend репу с описанием и frontend модулем внутри
 
+
 - form repository
   - link to host, docs
   - title repo
@@ -11,6 +12,9 @@
   - learn how to format readme project describe
   - logo, preview, descriptions
   - screenshots for every page
+
+- github readme profile
+  - description as developer nothing more
   
 - github page/vue hostings(nestify,vercel)
   - resume/about/portfolio full description about me
