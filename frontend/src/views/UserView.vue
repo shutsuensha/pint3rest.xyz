@@ -126,7 +126,7 @@ const goBack = () => {
       </div>
     </div>
   </div>
-  <CreatedPins v-if="showCreated" :user_id="user.id" />
+  <CreatedPins v-if="showCreated" :user_id="user.id" :auth_user_id="auth_user_id"/>
   <SavedPins v-if="showSaved" :user_id="user.id" :auth_user_id="auth_user_id" />
   <LikedPins v-if="showLiked" :user_id="user.id" />
 </template>

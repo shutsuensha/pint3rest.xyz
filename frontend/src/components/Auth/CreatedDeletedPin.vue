@@ -21,12 +21,15 @@ const showPopover = ref(false); // State to control the popover visibility
 
 const insidePopover = ref(false)
 
-const bgSave = ref('bg-black')
-const saveText = ref('Delete')
+const bgSave = ref('bg-red-700')
+const saveText = ref('Save')
+
+const bgDelete = ref('bg-black')
+const deleteText = ref('Delete')
 
 const props = defineProps({
   pin: Object,
-  showAllPins: Boolean,
+  showAllPins: Boolean
 });
 
 const onImageLoad = () => {
@@ -40,22 +43,10 @@ const onVideoLoad = () => {
 }
 
 const showSaveButton = ref(false)
-
+const showDeleteButton = ref(false)
 
 onMounted(async () => {
-
   try {
-    const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`);
-    user.value = response.data;
-
-    try {
-      const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
-      const blobUrl = URL.createObjectURL(userResponse.data);
-      userImage.value = blobUrl;
-    } catch (error) {
-      console.error(error);
-    }
-
     try {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
@@ -91,11 +82,28 @@ async function loadUser() {
 
 async function save() {
   bgSave.value = 'bg-black'
+  saveText.value = 'Saving...'
   try {
-    const response = await axios.delete(`/api/pins/user_saved_pins/${props.pin.id}`, {
+    const response = await axios.post(`/api/pins/user_saved_pins/${props.pin.id}`, {
       withCredentials: true
     })
-    saveText.value = 'Deleted'
+    saveText.value = 'Saved'
+
+  } catch (error) {
+    if (error.response.status === 409) {
+      saveText.value = 'U already saved!'
+    }
+  }
+}
+
+async function deletePin() {
+  bgDelete.value = 'bg-black'
+  deleteText.value = 'Deleting...'
+  try {
+    const response = await axios.delete(`/api/pins/${props.pin.id}`, {
+      withCredentials: true
+    })
+    deleteText.value = 'Deleted'
 
   } catch (error) {
     console.error(error)
@@ -105,11 +113,15 @@ async function save() {
 
 <template>
   <div class="w-1/5 p-2">
-    <div class="relative block hover:opacity-90" @mouseover="showSaveButton = true"
-      @mouseleave="showSaveButton = false">
+    <div class="relative block hover:opacity-90" @mouseover="showSaveButton = true; showDeleteButton = true"
+      @mouseleave="showSaveButton = false; showDeleteButton = false">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
-        {{  saveText }}
+        {{ saveText }}
+      </button>
+      <button v-if="showDeleteButton" @click.stop="deletePin"
+        :class="`absolute z-50 top-16 right-2 px-6 py-3 text-sm ${bgDelete} text-white rounded-3xl transition`">
+        {{ deleteText }}
       </button>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
@@ -122,30 +134,6 @@ async function save() {
 
         <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
       </RouterLink>
-    </div>
-
-    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
-      @mouseleave="if (!insidePopover) showPopover = false;"
-      class="flex items-center mt-2 hover:underline cursor-pointer relative">
-      <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span v-if="user" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
-
-      <div v-show="showPopover" @mouseover="insidePopover = true"
-        @mouseleave="insidePopover = false; showPopover = false"
-        class="absolute top-[30px] left-[5px] bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-gray-700 z-30 h-32 w-32">
-        <div class="flex flex-col items-center justify-center">
-          <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
-          <div v-else class="bg-red-300 mb-2 rounded-full w-16 h-16"></div>
-          <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
-            class="text-center text-sm font-medium hover:underline">@{{ popUser.username }}</RouterLink>
-        </div>
-      </div>
-    </RouterLink>
-
-    <div v-else class="flex items-center mt-2 hover:underline cursor-pointer">
-      <div class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <span class="ml-2 text-sm font-medium"></span>
     </div>
   </div>
 </template>

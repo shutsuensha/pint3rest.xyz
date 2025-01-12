@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed  } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed } from 'vue';
 import axios from 'axios';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
@@ -9,7 +9,6 @@ import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 const emit = defineEmits(['createPinModelClose'])
-
 
 
 const pins = ref([]);
@@ -91,7 +90,7 @@ onMounted(async () => {
       const tag = response.data[i];
       tag.color = randomBgColor()
     }
-    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file:'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg', isImage: true });
+    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: 'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg', isImage: true });
   } catch (error) {
     console.log(error)
   }
@@ -101,21 +100,27 @@ onMounted(async () => {
         params: { offset: 0, limit: 1 },
         withCredentials: true,
       })
-      const pin_id = response.data[0].id
 
-      try {
-        const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
-        const blobUrl = URL.createObjectURL(pinResponse.data);
-        const contentType = pinResponse.headers['content-type'];
-        if (contentType.startsWith('image/')) {
-          available_tags.value[i].file = blobUrl;
-          available_tags.value[i].isImage = true
-        } else {
-          available_tags.value[i].file = blobUrl;
-          available_tags.value[i].isImage = false
+      if (response.data.length === 1) {
+        const pin_id = response.data[0].id
+
+        try {
+          const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
+          const blobUrl = URL.createObjectURL(pinResponse.data);
+          const contentType = pinResponse.headers['content-type'];
+          if (contentType.startsWith('image/')) {
+            available_tags.value[i].file = blobUrl;
+            available_tags.value[i].isImage = true
+          } else {
+            available_tags.value[i].file = blobUrl;
+            available_tags.value[i].isImage = false
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
+      } else {
+        available_tags.value[i].file = 'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg';
+        available_tags.value[i].isImage = true
       }
 
     } catch (error) {

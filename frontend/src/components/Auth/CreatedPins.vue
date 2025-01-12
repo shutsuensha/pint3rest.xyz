@@ -3,6 +3,7 @@ import { onMounted, ref, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
 import CreatedPin from './CreatedPin.vue';
+import CreatedDeletedPin from './CreatedDeletedPin.vue';
 
 const pins = ref([]);
 const offset = ref(0);
@@ -14,8 +15,11 @@ const limitCntLoading = ref(null)
 const isPinsLoading = ref(false);
 
 const props = defineProps({
-  user_id: Number
+  user_id: Number,
+  auth_user_id: Number
 })
+
+const showDeleteCreatedPin = ref(null)
 
 const loadPins = async () => {
   if (isPinsLoading.value) {
@@ -60,6 +64,7 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  showDeleteCreatedPin.value = props.user_id === props.auth_user_id
   loadPins();  // Initial load
   window.addEventListener('scroll', handleScroll);
 });
@@ -72,7 +77,12 @@ onBeforeUnmount(() => {
 <template>
   <div class="mt-10 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
-      <CreatedPin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
+      <CreatedPin v-if="!showDeleteCreatedPin" v-masonry-tile class="item" v-for="pinem in pinGroup.pins"
+        :key="pinem.id" :pin="pinem"
+        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
+        :showAllPins="pinGroup.showAllPins" />
+      <CreatedDeletedPin v-if="showDeleteCreatedPin" v-masonry-tile class="item" v-for="pinem in pinGroup.pins"
+        :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
