@@ -1,8 +1,8 @@
-## TODO
+## Next
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
-- celery, redis - schedule send email reklama + schedule on db send updated
+- celery[flower, beat], redis - schedule send email reklama + schedule on db send updated
 - user updates - api
 - user to user relation
 - черновики create pins
@@ -22,8 +22,8 @@
 - oauth2/jwt secure
 - access_token/refresh_token, отзыв токенов
 - admin role/api
-
-
+- fix login not verified
+- analyze/learn fastapi awesome/stack
 
 ### Web server
 uvicorn app.main:app --reload

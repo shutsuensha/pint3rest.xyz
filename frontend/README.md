@@ -1,6 +1,4 @@
 ### Next
-- https://github.com/vuejs/awesome-vue
-
 - user profile
   - user likes pins display
   - user can edit profile
@@ -89,6 +87,12 @@
 - test optimization for site
 
 - ceo optimization?
+
+- design mail templates/success templates
+
+- add boards
+
+- analyze pinterest to add more functions, awesome vuejs
 
 ### Frontend server
 npm run dev
