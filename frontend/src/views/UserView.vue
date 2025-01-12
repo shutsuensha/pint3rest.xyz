@@ -5,6 +5,7 @@ import axios from 'axios';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import CreatedPins from '@/components/Auth/CreatedPins.vue';
 import SavedPins from '@/components/Auth/SavedPins.vue';
+import LikedPins from '@/components/Auth/LikedPins.vue';
 
 const color = ref('red');
 const size = ref('100px');
@@ -62,22 +63,37 @@ onMounted(async () => {
 
 const bgCreated = ref('border-gray-200');
 const bgSaved = ref('border-gray-200');
+const bgLiked = ref('border-gray-200');
 
 const showCreated = ref(false);
 const showSaved = ref(false);
+const showLiked = ref(false)
 
 async function createdPins() {
   showSaved.value = false;
+  showLiked.value = false;
   showCreated.value = true;
   bgSaved.value = 'border-gray-200';
+  bgLiked.value = 'border-gray-200';
   bgCreated.value = 'border-red-600';
 }
 
 async function savedPins() {
   showSaved.value = true;
   showCreated.value = false;
+  showLiked.value = false;
   bgCreated.value = 'border-gray-200';
+  bgLiked.value = 'border-gray-200';
   bgSaved.value = 'border-red-600';
+}
+
+async function likedPins() {
+  showLiked.value = true;
+  showCreated.value = false;
+  showSaved.value = false;
+  bgCreated.value = 'border-gray-200';
+  bgSaved.value = 'border-gray-200';
+  bgLiked.value = 'border-red-600';
 }
 
 // Function to go back to the previous page in history
@@ -104,9 +120,13 @@ const goBack = () => {
         <button @click="savedPins" :class="`px-6 py-2 text-black border-b-4 ${bgSaved} transition hover:border-red-600`">
           Сохраненные
         </button>
+        <button @click="likedPins" :class="`px-6 py-2 text-black border-b-4 ${bgLiked} transition hover:border-red-600`">
+          Понравившиеся
+        </button>
       </div>
     </div>
   </div>
   <CreatedPins v-if="showCreated" :user_id="user.id" />
   <SavedPins v-if="showSaved" :user_id="user.id" :auth_user_id="auth_user_id" />
+  <LikedPins v-if="showLiked" :user_id="user.id" />
 </template>
