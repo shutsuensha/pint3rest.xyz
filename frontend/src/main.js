@@ -5,7 +5,7 @@ import "vue-toastification/dist/index.css";
 import router from './router';
 import mitt from 'mitt'
 import { VueMasonryPlugin } from "vue-masonry";
-import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
 
 
 const emitter = mitt()
