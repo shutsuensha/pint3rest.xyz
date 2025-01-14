@@ -13,6 +13,22 @@ class UserOut(BaseModel):
     image: str | None = None
     email: EmailStr | None = None
     verified: bool | None = None
+    banner_image: str | None = None
+    description: str | None = None
+    instagram: str | None = None
+    tiktok: str | None = None
+    telegram: str | None = None
+    pinterest: str | None = None
+
+
+class UserPatch(BaseModel):
+    username: str | None = None
+    description: str | None = None
+    instagram: str | None = None
+    tiktok: str | None = None
+    telegram: str | None = None
+    pinterest: str | None = None
+
 
 
 class PasswordResetRequestModel(BaseModel):

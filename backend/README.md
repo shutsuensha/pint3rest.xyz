@@ -24,6 +24,7 @@
 - admin role/api
 - fix login not verified
 - analyze/learn fastapi awesome/stack
+- sqalchemy execute + best practices for using execute / scalar
 
 ### Web server
 uvicorn app.main:app --reload

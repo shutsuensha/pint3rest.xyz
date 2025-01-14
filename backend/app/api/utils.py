@@ -9,7 +9,7 @@ from PIL import Image
 from sklearn.cluster import KMeans
 import numpy as np
 import cv2
-
+import os
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -44,6 +44,10 @@ def encode_token(token: str) -> dict:
 def save_file(file, path):
     with open(path, "bw+") as new_file:
         shutil.copyfileobj(file, new_file)
+
+
+def delete_file(path):
+    os.remove(path)
 
 
 def create_url_safe_token(data: dict, expiration=3600):

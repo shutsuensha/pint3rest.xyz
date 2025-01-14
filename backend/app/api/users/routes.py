@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Request
-from .schemas import UserIn, UserOut, PasswordResetRequestModel
+from .schemas import UserIn, UserOut, PasswordResetRequestModel, UserPatch
 from app.api.dependencies import db, user_id
 from sqlalchemy import insert, select, update
 from app.database.models import UsersOrm
-from app.api.utils import hash_password, verify_password, create_access_token, save_file, create_url_safe_token, decode_url_safe_token
+from app.api.utils import hash_password, verify_password, create_access_token, save_file, create_url_safe_token, decode_url_safe_token, delete_file
 import uuid
 from fastapi.responses import FileResponse
 from app.config import settings
@@ -206,3 +206,57 @@ async def get_image(user_id: user_id, id: int, db: db):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
     
     return FileResponse(user.image)
+
+
+@router.patch('/information', response_model=UserOut)
+async def update_user_information(user_model: UserPatch, user_id: user_id, db: db):
+    if (user_model.username):
+        user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_model.username))
+        if user:
+            raise HTTPException(status_code=409, detail="user already exists")
+    user =  await db.scalar(update(UsersOrm).values(**user_model.model_dump(exclude_unset=True)).where(UsersOrm.id == user_id).returning(UsersOrm))
+    await db.commit()
+    return user
+
+
+@router.patch("/upload/profile", response_model=UserOut)
+async def update_user_profile_image(user_id: user_id, db: db, file: UploadFile):
+
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
+    
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"app/media/users/{unique_filename}"
+    save_file(file.file, image_path)
+    delete_file(user.image)
+
+    user = await db.scalar(
+        update(UsersOrm)
+        .where(UsersOrm.id == user_id)
+        .values(image = image_path)
+        .returning(UsersOrm)
+    )
+    await db.commit()
+
+    return user
+
+
+@router.patch("/upload/banner", response_model=UserOut)
+async def update_user_banner_image(user_id: user_id, db: db, file: UploadFile):
+
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
+    
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"app/media/users/{unique_filename}"
+    save_file(file.file, image_path)
+    if (user.banner_image):
+        delete_file(user.banner_image)
+
+    user = await db.scalar(
+        update(UsersOrm)
+        .where(UsersOrm.id == user_id)
+        .values(banner_image = image_path)
+        .returning(UsersOrm)
+    )
+    await db.commit()
+
+    return user

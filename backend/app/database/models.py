@@ -26,6 +26,14 @@ class UsersOrm(Base):
     username: Mapped[str] = mapped_column(String(200), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(200))
     image: Mapped[str | None] = mapped_column(String(200), default=None)
+    banner_image: Mapped[str | None] = mapped_column(String(200), default=None)
+
+    description: Mapped[str | None] = mapped_column(String(400), default=None)
+
+    instagram: Mapped[str | None] = mapped_column(String(200), default=None)
+    tiktok: Mapped[str | None] = mapped_column(String(200), default=None)
+    telegram: Mapped[str | None] = mapped_column(String(200), default=None)
+    pinterest: Mapped[str | None] = mapped_column(String(200), default=None)
     
     email: Mapped[str | None] = mapped_column(String(200), default=None)
     verified: Mapped[bool | None] = mapped_column(Boolean, default=False)
