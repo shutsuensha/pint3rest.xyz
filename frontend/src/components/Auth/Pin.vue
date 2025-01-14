@@ -6,6 +6,7 @@ import axios from 'axios';
 
 const popUser = ref(null)
 const popImage = ref(null)
+const popBanner = ref(null)
 
 const emit = defineEmits(['pinLoaded'])
 
@@ -134,12 +135,27 @@ async function save() {
 
       <div v-show="showPopover" @mouseover="insidePopover = true"
         @mouseleave="insidePopover = false; showPopover = false"
-        class="absolute top-[30px] left-[5px] bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-gray-700 z-30 h-32 w-32">
+        class="absolute top-[30px] left-0 bg-white shadow-2xl rounded-xl px-4 py-2 text-sm font-medium text-black z-50 h-auto w-[280px]">
         <div class="flex flex-col items-center justify-center">
           <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
-          <div v-else class="bg-red-300 mb-2 rounded-full w-16 h-16"></div>
           <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
-            class="text-center text-sm font-medium hover:underline">@{{ popUser.username }}</RouterLink>
+            class="text-center text-xl font-medium hover:underline">@{{ popUser.username }}</RouterLink>
+          <p v-if="popUser && popUser.description"
+            class="text-center mt-4 text-md font-semibold truncate mx-auto w-full">{{ popUser.description }}</p>
+          <div class="flex flex-row gap-2 text-2xl">
+            <a v-if="popUser && popUser.instagram" :href="user.instagram">
+              <i class="pi pi-instagram"></i>
+            </a>
+            <a v-if="popUser && popUser.tiktok" :href="user.tiktok">
+              <i class="pi pi-tiktok"></i>
+            </a>
+            <a v-if="popUser && popUser.telegram" :href="user.telegram">
+              <i class="pi pi-telegram"></i>
+            </a>
+            <a v-if="popUser && popUser.pinterest" :href="user.pinterest">
+              <i class="pi pi-pinterest"></i>
+            </a>
+          </div>
         </div>
       </div>
     </RouterLink>

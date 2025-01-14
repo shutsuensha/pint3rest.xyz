@@ -1,9 +1,13 @@
+### Now
+- popout
+  - animations
+  - positions top/bottom for available space
+  - popout banner display
+  - design popouts
+  - rewrite all popouts in pins
+
+
 ### Next
-- user profile
-  - user can edit profile
-    - add banner or bg image for user
-    - add additional information
-    - can change ava
 - homeview
   - video/gif display
   - pins hover button, hover dark bg
@@ -32,9 +36,6 @@
 - favicon icon
 - back arrow with route back in all routes
 - title change on every route
-- popout
-  - animations
-  - positions top/bottom for available space
 - not found user view, pin view - redirect to not-found route with back arrow to home
 - test values trim that user enter
 - add emoji in every input
