@@ -105,9 +105,9 @@ onMounted(async () => {
   loadingUser.value = false;
 });
 
-const bgCreated = ref('border-gray-200');
-const bgSaved = ref('border-gray-200');
-const bgLiked = ref('border-gray-200');
+const bgCreated = ref('border-black');
+const bgSaved = ref('border-black');
+const bgLiked = ref('border-black');
 
 const showCreated = ref(false);
 const showSaved = ref(false);
@@ -119,8 +119,8 @@ async function createdPins() {
   showSaved.value = false;
   showLiked.value = false;
   showCreated.value = true;
-  bgSaved.value = 'border-gray-200';
-  bgLiked.value = 'border-gray-200';
+  bgSaved.value = 'border-black';
+  bgLiked.value = 'border-black';
   bgCreated.value = 'border-red-600';
 }
 
@@ -128,8 +128,8 @@ async function savedPins() {
   showSaved.value = true;
   showCreated.value = false;
   showLiked.value = false;
-  bgCreated.value = 'border-gray-200';
-  bgLiked.value = 'border-gray-200';
+  bgCreated.value = 'border-black';
+  bgLiked.value = 'border-black';
   bgSaved.value = 'border-red-600';
 }
 
@@ -137,8 +137,8 @@ async function likedPins() {
   showLiked.value = true;
   showCreated.value = false;
   showSaved.value = false;
-  bgCreated.value = 'border-gray-200';
-  bgSaved.value = 'border-gray-200';
+  bgCreated.value = 'border-black';
+  bgSaved.value = 'border-black';
   bgLiked.value = 'border-red-600';
 }
 

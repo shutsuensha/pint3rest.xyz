@@ -2,14 +2,7 @@
 - homeview
   - video/gif display
   - pins hover button, hover dark bg
-  - рандомное limit пинов
   - homeview появление пинов
-  - fix blur on tags
-  - tags pagination?
-  - tags sort
-  - dont show tags buttons when not available tags
-  - search optimization
-  - search/tags design
   - everything tag 1s pin image/video display
   - tags loading gray placeholder
 - detail
@@ -18,9 +11,6 @@
   - cancel fileMedia
   - animations for like
   - animations for comment
-- font
- - font for all
-- favicon icon
 - back arrow with route back in all routes
 - title change on every route
 - not found user view, pin view - redirect to not-found route with back arrow to home
@@ -32,8 +22,6 @@
 - show tags without pins?
 - notfound - https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg
 
-- create 
-  - image/video from url
 
 ### Future
 - updates
