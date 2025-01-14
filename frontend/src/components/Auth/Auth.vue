@@ -64,5 +64,11 @@ onMounted(async () => {
 <template>
   <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
-  <RouterView :key="`${$route.params.id}-${$route.params.username}`" :register="register" @createPinModelClose="emit('createPinModelClose')"/>
+  <!-- <RouterView :key="`${$route.params.id}-${$route.params.username}`" :register="register"
+    @createPinModelClose="emit('createPinModelClose')" /> -->
+  <RouterView :key="`${$route.params.id}-${$route.params.username}`" v-slot="{ Component }">
+    <component :is="Component" v-if="$route.name === 'home'" :register="register"
+      @createPinModelClose="emit('createPinModelClose')" />
+    <component v-else :is="Component" />
+  </RouterView>
 </template>

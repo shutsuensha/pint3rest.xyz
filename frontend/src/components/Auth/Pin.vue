@@ -86,7 +86,7 @@ async function loadUser() {
   } catch (error) {
     console.error(error)
   }
-  if (popUser.value.banner_image) {
+  if (popUser.value && popUser.value.banner_image) {
     try {
       const userResponse = await axios.get(
         `/api/users/upload/banner/${popUser.value.id}`,
