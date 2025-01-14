@@ -300,6 +300,8 @@ function handleBannerUpload(event) {
     reader.readAsDataURL(file);
   }
 }
+
+const showEditButtons = ref(false)
 </script>
 
 <template>
@@ -391,8 +393,9 @@ function handleBannerUpload(event) {
           <label for="image" class="block mb-2 text-sm font-medium text-white">Your Profile Image</label>
           <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
             class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-          <img v-if="imagePreview" :src="imagePreview" class="mt-2 rounded-full w-32 h-32 object-cover border-4 border-black"
-            alt="Image Preview" style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
+          <img v-if="imagePreview" :src="imagePreview"
+            class="mt-2 rounded-full w-32 h-32 object-cover border-4 border-black" alt="Image Preview"
+            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
         </div>
         <div clas="flex space-x-4">
           <button @click="editProfileImage"
@@ -422,7 +425,8 @@ function handleBannerUpload(event) {
           <input type="file" id="image" name="image" accept="image/*" @change="handleBannerUpload"
             class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
           <img v-if="bannerImagePreview" :src="bannerImagePreview"
-            class="mt-2 rounded-2xl h-[400px] w-[600px] object-cover" alt="Image Preview" style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
+            class="mt-2 rounded-2xl h-[400px] w-[600px] object-cover" alt="Image Preview"
+            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
         </div>
         <div clas="flex space-x-4">
           <button @click="editBannerImage"
@@ -456,7 +460,23 @@ function handleBannerUpload(event) {
             class="rounded-full w-32 h-32 object-cover border-4 border-black" />
         </div>
         <p v-if="user" class="mt-4 text-lg font-semibold">{{ user.username }}</p>
-        <p v-if="user && user.description" class="text-center mt-4 text-lg font-semibold  truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
+        <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons" class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">Edit profile</button>
+        <div v-if="showEditButtons" class="mt-4 space-x-2">
+          <button v-if="canEditProfile" @click="showEditModal = true"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            information
+          </button>
+          <button v-if="canEditProfile" @click="showEditModalImage = true"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            profile image
+          </button>
+          <button v-if="canEditProfile" @click="showEditModalBanner = true"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            banner
+          </button>
+        </div>
+        <p v-if="user && user.description"
+          class="text-center mt-4 text-lg font-semibold  truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
         <div class="flex flex-row gap-2 text-4xl">
           <a v-if="user && user.instagram" :href="user.instagram">
             <i class="pi pi-instagram"></i>
@@ -471,18 +491,6 @@ function handleBannerUpload(event) {
             <i class="pi pi-pinterest"></i>
           </a>
         </div>
-        <button v-if="canEditProfile" @click="showEditModal = true"
-          class="hover:underline hover:text-blue-500 underline">
-          edit profile information
-        </button>
-        <button v-if="canEditProfile" @click="showEditModalImage = true"
-          class="hover:underline hover:text-blue-500 underline">
-          edit profile image
-        </button>
-        <button v-if="canEditProfile" @click="showEditModalBanner = true"
-          class="hover:underline hover:text-blue-500 underline">
-          edit banner image
-        </button>
       </div>
       <div class="flex items-center mt-6 justify-center space-x-4">
         <button @click="createdPins"

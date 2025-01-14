@@ -275,7 +275,7 @@ const filteredTags = computed(() => {
       <button @click="closeCreatePin"
         class="absolute top-72 left-36 px-6 py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
         style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-        Ok
+        Done
       </button>
 
       <!-- Centered Button with Glow -->
