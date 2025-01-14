@@ -510,7 +510,7 @@ function handleBannerUpload(event) {
 </template>
 
 
-<style>
+<style scoped>
 /* Define transition animations */
 .fade-enter-active,
 .fade-leave-active {

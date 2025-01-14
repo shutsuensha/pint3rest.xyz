@@ -1,10 +1,5 @@
 ### Now
-- popout
-  - animations
-  - positions top/bottom for available space
-  - popout banner display
-  - design popouts
-  - rewrite all popouts in pins
+  - fix warns
 
 
 ### Next
