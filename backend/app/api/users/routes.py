@@ -199,6 +199,15 @@ async def upload_image(id: int, db: db, file: UploadFile):
     return user
 
 
+@router.get("/upload/banner/{id}")
+async def get_user_banner(id: int, user_id: user_id, db: db):
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+    
+    return FileResponse(user.banner_image)
+
+
 @router.get("/upload/{id}")
 async def get_image(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
@@ -208,13 +217,14 @@ async def get_image(user_id: user_id, id: int, db: db):
     return FileResponse(user.image)
 
 
+
 @router.patch('/information', response_model=UserOut)
 async def update_user_information(user_model: UserPatch, user_id: user_id, db: db):
     if (user_model.username):
         user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_model.username))
         if user:
             raise HTTPException(status_code=409, detail="user already exists")
-    user =  await db.scalar(update(UsersOrm).values(**user_model.model_dump(exclude_unset=True)).where(UsersOrm.id == user_id).returning(UsersOrm))
+    user =  await db.scalar(update(UsersOrm).values(**user_model.model_dump(exclude_none=True)).where(UsersOrm.id == user_id).returning(UsersOrm))
     await db.commit()
     return user
 
