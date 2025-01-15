@@ -316,7 +316,7 @@ const filteredTags = computed(() => {
       </div>
 
       <!-- Контейнер с тегами -->
-      <div ref="containerRef" class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-1 px-5"
+      <div ref="containerRef" class="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide p-0.5 px-5"
         v-auto-animate>
         <div v-for="tag in filteredTags" :key="tag.id" @click="loadPinsByTag(tag.name)"
           :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-100', 'transform', 'hover:scale-110']">
@@ -345,7 +345,7 @@ const filteredTags = computed(() => {
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.4s"
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28 grid grid-columns-5" v-masonry transition-duration="0.4s"
     item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"

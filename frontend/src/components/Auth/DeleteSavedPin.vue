@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -36,9 +36,37 @@ const onImageLoad = () => {
 };
 
 const onVideoLoad = () => {
+  if (videoPlayer.value) {
+    videoDuration.value = videoPlayer.value.duration; // Получаем длительность
+  }
   videoLoaded.value = true;
   emit('pinLoaded')
 }
+
+const videoDuration = ref(0)
+const currentTime = ref(0)
+
+const videoPlayer = ref(null);
+
+const imageGif = ref(false)
+
+
+const onTimeUpdate = () => {
+  if (videoPlayer.value) {
+    currentTime.value = videoPlayer.value.currentTime; // Получаем текущее время
+  }
+};
+
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
+const formattedTimeRemaining = computed(() => {
+  const timeRemaining = Math.max(videoDuration.value - currentTime.value, 0);
+  return formatTime(timeRemaining);
+});
 
 const showSaveButton = ref(false)
 
@@ -61,6 +89,9 @@ onMounted(async () => {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
       const contentType = pinResponse.headers['content-type'];
+      if (contentType === 'image/gif') {
+        imageGif.value = true
+      }
       if (contentType.startsWith('image/')) {
         pinImage.value = blobUrl;
       } else {
@@ -117,32 +148,42 @@ async function save() {
     console.error(error)
   }
 }
+
 </script>
 
 <template>
   <div class="w-1/5 p-2">
-    <div class="relative block hover:opacity-90" @mouseover="showSaveButton = true"
-      @mouseleave="showSaveButton = false">
+    <div class="relative block transition-transform duration-100 transform hover:scale-105" @mouseover="showSaveButton = true; "
+      @mouseleave="showSaveButton = false; ">
       <button v-if="showSaveButton" @click.stop="save"
-        :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
-        {{  saveText }}
+        :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} hover:bg-red-800 text-white rounded-3xl transition`">
+        {{ saveText }}
       </button>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
         </div>
-        <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
-          class="w-full h-auto rounded-3xl" />
-        <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad"
-          class="w-full h-auto rounded-3xl" autoplay loop muted />
-
-        <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
+        <div class="relative">
+          <div v-if="imageGif" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
+          </div>
+          <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
+            class="w-full h-auto rounded-3xl" />
+        </div>
+        <div class="relative">
+          <div v-if="videoDuration" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">
+            {{ formattedTimeRemaining }}
+          </div>
+          <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" ref="videoPlayer"
+            @timeupdate="onTimeUpdate" class="w-full h-auto rounded-3xl" autoplay loop muted />
+        </div>
       </RouterLink>
     </div>
 
+    <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
+
     <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
       @mouseleave="if (!insidePopover) { showPopover = false; popUser = null; popImage = null; popBanner = null }"
-      class="flex items-center mt-2 hover:underline cursor-pointer relative">
+      class="flex items-center mt-2 hover:underline cursor-pointer relative ">
       <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
       <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
       <span v-if="user" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
@@ -150,7 +191,7 @@ async function save() {
       <transition name="flash">
         <div v-if="showPopover" @mouseover="insidePopover = true"
           @mouseleave="insidePopover = false; showPopover = false; popUser = null; popImage = null; popBanner = null"
-          class="absolute top-[30px] left-0 bg-white shadow-2xl rounded-xl text-sm font-medium text-black z-50 h-auto w-[280px]">
+          class="absolute top-[30px] left-0 bg-white shadow-2xl rounded-xl text-sm font-medium text-black z-50 h-auto w-[280px] border-2 border-black">
           <img v-if="popBanner" :src="popBanner" class="rounded-xl w-full h-20 object-cover" />
           <div class="flex flex-col items-center justify-center">
             <div class="relative">

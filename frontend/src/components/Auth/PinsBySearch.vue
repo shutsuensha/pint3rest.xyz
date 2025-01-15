@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
+  <div class="ml-20 grid grid-columns-5" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"

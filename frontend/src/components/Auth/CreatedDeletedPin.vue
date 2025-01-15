@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -21,11 +21,34 @@ const showPopover = ref(false); // State to control the popover visibility
 
 const insidePopover = ref(false)
 
-const bgSave = ref('bg-red-700')
+const bgSave = ref('bg-red-600')
 const saveText = ref('Save')
 
-const bgDelete = ref('bg-black')
+const bgDelete = ref('bg-gray-800')
 const deleteText = ref('Delete')
+
+const videoDuration = ref(0)
+const currentTime = ref(0)
+
+const videoPlayer = ref(null);
+
+
+const onTimeUpdate = () => {
+  if (videoPlayer.value) {
+    currentTime.value = videoPlayer.value.currentTime; // Получаем текущее время
+  }
+};
+
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
+const formattedTimeRemaining = computed(() => {
+  const timeRemaining = Math.max(videoDuration.value - currentTime.value, 0);
+  return formatTime(timeRemaining);
+});
 
 const props = defineProps({
   pin: Object,
@@ -38,6 +61,9 @@ const onImageLoad = () => {
 };
 
 const onVideoLoad = () => {
+  if (videoPlayer.value) {
+    videoDuration.value = videoPlayer.value.duration; // Получаем длительность
+  }
   videoLoaded.value = true;
   emit('pinLoaded')
 }
@@ -51,6 +77,9 @@ onMounted(async () => {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
       const contentType = pinResponse.headers['content-type'];
+      if (contentType === 'image/gif') {
+        imageGif.value = true
+      }
       if (contentType.startsWith('image/')) {
         pinImage.value = blobUrl;
       } else {
@@ -109,28 +138,41 @@ async function deletePin() {
     console.error(error)
   }
 }
+
+const imageGif = ref(false)
+
 </script>
 
 <template>
   <div class="w-1/5 p-2">
-    <div class="relative block hover:opacity-90" @mouseover="showSaveButton = true; showDeleteButton = true"
+    <div class="relative block transition-transform duration-100 transform hover:scale-105" @mouseover="showSaveButton = true; showDeleteButton = true"
       @mouseleave="showSaveButton = false; showDeleteButton = false">
       <button v-if="showSaveButton" @click.stop="save"
-        :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} text-white rounded-3xl transition`">
+        :class="`absolute z-50 top-2 right-2 px-6 py-3 text-sm ${bgSave} hover:bg-red-700 text-white rounded-3xl transition`">
         {{ saveText }}
       </button>
       <button v-if="showDeleteButton" @click.stop="deletePin"
-        :class="`absolute z-50 top-16 right-2 px-6 py-3 text-sm ${bgDelete} text-white rounded-3xl transition`">
+        :class="`absolute z-50 top-16 right-2 px-6 py-3 text-sm ${bgDelete} hover:bg-black text-white rounded-3xl transition`">
         {{ deleteText }}
       </button>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
         </div>
-        <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
-          class="w-full h-auto rounded-3xl" />
-        <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad"
-          class="w-full h-auto rounded-3xl" autoplay loop muted />
+        <div class="relative">
+          <div v-if="imageGif" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
+          </div>
+          <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
+            class="w-full h-auto rounded-3xl" />
+        </div>
+        <div class="relative">
+          <div v-if="videoDuration" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">
+            {{ formattedTimeRemaining }}
+          </div>
+          <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" ref="videoPlayer"
+            @timeupdate="onTimeUpdate" class="w-full h-auto rounded-3xl" autoplay loop muted />
+        </div>
+
 
         <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
       </RouterLink>

@@ -25,6 +25,7 @@
 - fix login not verified
 - analyze/learn fastapi awesome/stack
 - sqalchemy execute + best practices for using execute / scalar
+- chatgpt рекомендации по улучшению
 
 ### Web server
 uvicorn app.main:app --reload

@@ -1,10 +1,8 @@
 ### Next
 - homeview
-  - video/gif display
-  - pins hover button, hover dark bg
-  - homeview появление пинов
   - everything tag 1s pin image/video display
   - tags loading gray placeholder
+  - dont show tags without pins
 - detail
   - video controls
   - full design
@@ -19,7 +17,6 @@
 - fix bug in everything after scroll in tag that choose by search
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - user view if no craeted or saved or liked - display message 
-- show tags without pins?
 - notfound - https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg
 
 
