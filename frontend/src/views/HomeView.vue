@@ -56,7 +56,7 @@ const loadPins = async () => {
 
     // После первого запроса изменяем лимит на 5
     if (limit.value === 10) {
-      limit.value = 8;
+      limit.value = 5;
     }
 
   } catch (error) {
@@ -90,7 +90,30 @@ onMounted(async () => {
       const tag = response.data[i];
       tag.color = randomBgColor()
     }
-    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: 'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg', isImage: true });
+    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: null, isImage: null });
+    try {
+      const response = await axios.get(`/api/pins/`, {
+        params: { offset: 0, limit: 1 },
+        withCredentials: true,
+      })
+      const pin_id = response.data[0].id
+      try {
+        const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
+        const blobUrl = URL.createObjectURL(pinResponse.data);
+        const contentType = pinResponse.headers['content-type'];
+        if (contentType.startsWith('image/')) {
+          available_tags.value[0].file = blobUrl;
+          available_tags.value[0].isImage = true
+        } else {
+          available_tags.value[0].file = blobUrl;
+          available_tags.value[0].isImage = false
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } catch (error) {
+      console.error(error)
+    }
   } catch (error) {
     console.log(error)
   }
@@ -119,7 +142,7 @@ onMounted(async () => {
           console.error(error);
         }
       } else {
-        available_tags.value[i].file = 'https://i.pinimg.com/736x/cd/84/75/cd847565ecab2a576841f1e6c50a871c.jpg';
+        available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
         available_tags.value[i].isImage = true
       }
 
@@ -300,7 +323,7 @@ const filteredTags = computed(() => {
   <div class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
     <!-- Левая стрелка -->
     <button
-      class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:-translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-90"
+      class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:-translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
       @click="scrollLeft(containerRef)">
       <i class="pi pi-chevron-left text-xl"></i>
     </button>
@@ -327,6 +350,8 @@ const filteredTags = computed(() => {
             <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }"
               autoplay loop muted />
+            <div v-show="!tagsLoaded" class="bg-gray-200 w-full h-full object-cover rounded-full">
+            </div>
           </div>
           <!-- Название тега -->
           <span class="truncate">{{ tag.name }}</span>
@@ -336,7 +361,7 @@ const filteredTags = computed(() => {
 
     <!-- Правая стрелка -->
     <button
-      class="absolute right-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-90"
+      class="absolute right-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
       @click="scrollRight(containerRef)">
       <i class="pi pi-chevron-right text-xl"></i>
     </button>

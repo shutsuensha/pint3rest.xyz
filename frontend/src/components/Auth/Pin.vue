@@ -158,7 +158,7 @@ const showOverlay = ref(false)
 </script>
 
 <template>
-  <div class="w-1/5 p-2">
+  <div class="w-1/5 p-2 ">
     <div class="relative block transition-transform duration-100 transform hover:scale-105"  @mouseover="showSaveButton = true; showOverlay = true"
       @mouseleave="showSaveButton = false; showOverlay = false">
       <div v-if="showOverlay" class="absolute inset-0 bg-black bg-opacity-40 rounded-3xl transition"></div>
@@ -186,14 +186,14 @@ const showOverlay = ref(false)
       </RouterLink>
     </div>
 
-    <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
+    <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
 
     <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
       @mouseleave="if (!insidePopover) { showPopover = false; popUser = null; popImage = null; popBanner = null }"
       class="flex items-center mt-2 hover:underline cursor-pointer relative ">
       <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
       <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span v-if="user" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
+      <span v-if="user && showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
 
       <transition name="flash">
         <div v-if="showPopover" @mouseover="insidePopover = true"

@@ -226,9 +226,9 @@ async function addComment() {
       class="grid grid-cols-2 gap-6 mx-60 bg-gray-100 rounded-3xl shadow-lg">
       <!-- Left Column: Image or Video -->
       <div>
-        <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-auto rounded-l-3xl"
+        <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
           @load="pinImageLoaded = true" />
-        <video v-if="pinVideo" :src="pinVideo" alt="Pin Video" class="w-auto h-auto rounded-l-3xl" autoplay loop muted
+        <video v-if="pinVideo" :src="pinVideo" alt="Pin Video" class="w-full h-auto rounded-l-3xl" autoplay loop muted
           @loadeddata="pinVideoLoaded = true" />
       </div>
 

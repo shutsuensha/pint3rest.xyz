@@ -174,7 +174,7 @@ const imageGif = ref(false)
         </div>
 
 
-        <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
+        <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
       </RouterLink>
     </div>
   </div>

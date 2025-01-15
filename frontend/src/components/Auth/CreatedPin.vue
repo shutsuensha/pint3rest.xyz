@@ -152,6 +152,6 @@ async function save() {
       </RouterLink>
     </div>
 
-    <p v-if="pin.title && showAllPins" class="mt-2 text-sm"> {{ pin.title }}</p>
+    <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
   </div>
 </template>
