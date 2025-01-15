@@ -4,6 +4,7 @@ import { useToast } from "vue-toastification";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import router from '@/router';
+import { useRoute, useRouter } from 'vue-router';
 
 const mediaFile = ref(null);
 const mediaPreview = ref(null);
@@ -12,6 +13,7 @@ const isVideo = ref(false);
 
 const isDragging = ref(false);
 
+const routerBack = useRouter(); 
 
 
 const toast = useToast();
@@ -91,6 +93,10 @@ const onDragOver = () => {
 // Handle drag leave
 const onDragLeave = () => {
   isDragging.value = false;
+};
+
+const goBack = () => {
+  routerBack.back();
 };
 
 

@@ -11,7 +11,7 @@ const color = ref('red');
 const size = ref('100px');
 
 const route = useRoute();
-const router = useRouter(); // Add useRouter to access the router instance
+const router = useRouter();
 
 const loadingUser = ref(true);
 
@@ -79,7 +79,7 @@ onMounted(async () => {
       console.error(error);
     }
   } catch (error) {
-    console.log(error);
+    router.push('/not-found')
   }
 
   try {

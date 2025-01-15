@@ -86,7 +86,7 @@ onMounted(async () => {
       console.log(error)
     }
   } catch (error) {
-    console.error(error)
+    router.push('/not-found')
   }
 
   try {
