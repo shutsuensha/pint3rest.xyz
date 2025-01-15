@@ -31,4 +31,3 @@ async def get_image(id: int):
         return FileResponse(f'app/media/carousel/{id}.jpg')
     else:
         return FileResponse(f'app/media/carousel/{id}.gif')
-
