@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, onActivated } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
@@ -9,6 +9,13 @@ import CommentSection from '@/components/Auth/CommentSection.vue';
 const route = useRoute();
 const pinId = route.params.id
 
+onActivated(() => {
+  if (pin.value.title) {
+    document.title = 'pinterest.xyz / pin ' + pin.value.title
+  } else {
+    document.title = 'pinterest.xyz / pin ' + pin.value.id
+  }
+});
 
 
 const pin = ref({
@@ -120,6 +127,10 @@ onMounted(async () => {
 const goBack = () => {
   router.back();
 };
+
+function goForward() {
+  router.go(1);
+}
 
 async function likePin() {
   if (checkUserLike.value) {

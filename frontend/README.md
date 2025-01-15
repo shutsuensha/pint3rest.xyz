@@ -1,11 +1,12 @@
-### Current working
-- pinia/vuex
+### Currently working
+KeepAlive routerview
+
 
 ### Frontend server
 npm run dev
 
 
-### EXTRA FUTURE? mbmb idc
+### up for me not necessary
 - test all inputs for trim()
 - add emoji in every input
 - detail
@@ -68,3 +69,10 @@ npm run dev
 - chatgpt for impove all components
 - edit user email + verification + edit old verification refactor
 - login/signup animation
+- after user create pin in home show animation
+- back arrow better design
+- полоску на загрузку кажого роута
+- detail video/gif + play video after activate stop after deactivate
+- back arrow hover bg
+- fix errors video play
+- везде где пагинацию - обратная отдача

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
@@ -85,6 +85,12 @@ onMounted(async () => {
   document.title = 'pinterest.xyz'
   loadPins();
   window.addEventListener('scroll', handleScroll);
+  if (props.register === true) {
+    setTimeout(() => {
+      showCreatePin.value = true
+      document.body.style.overflowY = 'clip'
+    }, 2000);
+  }
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data
@@ -153,12 +159,6 @@ onMounted(async () => {
       console.error(error)
     }
   }
-  if (props.register === true) {
-    setTimeout(() => {
-      showCreatePin.value = true
-      document.body.style.overflowY = 'clip'
-    }, Math.random() * 2000);
-  }
 });
 
 onBeforeUnmount(() => {
@@ -170,6 +170,16 @@ function closeCreatePin() {
   document.body.style.overflowY = 'auto'
   emit('createPinModelClose')
 }
+
+onActivated(() => {
+  document.title = 'pinterest.xyz'
+  window.addEventListener('scroll', handleScroll);
+});
+
+onDeactivated(() => {
+  window.removeEventListener('scroll', handleScroll);
+}); 
+
 
 
 const selectedTag = ref('Everything')

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
 
 import SavedPin from './SavedPin.vue';
@@ -77,6 +77,14 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+onActivated(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll);
 });
 </script>

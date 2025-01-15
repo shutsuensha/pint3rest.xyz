@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, onActivated, onDeactivated } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -30,6 +30,21 @@ const videoDuration = ref(0)
 const currentTime = ref(0)
 
 const videoPlayer = ref(null);
+
+
+onActivated(() => {
+  if (videoPlayer.value) {
+    // Возобновляем воспроизведение видео
+    videoPlayer.value.play();
+  }
+});
+
+onDeactivated(() => {
+  if (videoPlayer.value) {
+    // Можно остановить видео или выполнить другие действия
+    videoPlayer.value.pause();
+  }
+});
 
 
 const onTimeUpdate = () => {

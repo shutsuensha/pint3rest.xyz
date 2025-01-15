@@ -1,7 +1,7 @@
 <script setup>
 import Aside from './Aside.vue';
 import { RouterView } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed  } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import { useRoute, RouterLink, useRouter } from 'vue-router';
@@ -58,6 +58,27 @@ onMounted(async () => {
     console.error('Error decoding access token:', error)
   }
 })
+
+
+const homeProps = computed(() => {
+  if (route.name === 'home') {
+    return { register: props.register }; // Replace `registerFunction` with your actual function
+  }
+  return {};
+});
+
+const homeEvents = computed(() => {
+  if (route.name === 'home') {
+    return {
+      createPinModelClose: handleCreatePinModelClose, // Replace with your actual handler
+    };
+  }
+  return {};
+});
+
+function handleCreatePinModelClose() {
+  emit('createPinModelClose')
+}
 </script>
 
 
@@ -66,9 +87,16 @@ onMounted(async () => {
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
   <!-- <RouterView :key="`${$route.params.id}-${$route.params.username}`" :register="register"
     @createPinModelClose="emit('createPinModelClose')" /> -->
-  <RouterView :key="`${$route.params.id}-${$route.params.username}`" v-slot="{ Component }">
-    <component :is="Component" v-if="$route.name === 'home'" :register="register"
-      @createPinModelClose="emit('createPinModelClose')" />
-    <component v-else :is="Component" />
+  <!-- <RouterView :key="$route.fullPath" v-slot="{ Component }">
+      <component :is="Component" v-if="$route.name === 'home'" :register="register"
+        @createPinModelClose="emit('createPinModelClose')" />
+      <component v-else :is="Component" />
+    </RouterView> -->
+
+  <RouterView v-slot="{ Component }">
+    <KeepAlive :max="10" exclude="NotFoundView,CreatePinView">
+      <component :is="Component" :key="$route.fullPath" v-bind="homeProps" v-on="homeEvents" />
+    </KeepAlive>
   </RouterView>
+
 </template>

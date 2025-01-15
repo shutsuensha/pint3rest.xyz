@@ -1,11 +1,12 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onActivated, onDeactivated } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import CreatedPins from '@/components/Auth/CreatedPins.vue';
 import SavedPins from '@/components/Auth/SavedPins.vue';
 import LikedPins from '@/components/Auth/LikedPins.vue';
+
 
 const color = ref('red');
 const size = ref('100px');
@@ -467,18 +468,20 @@ const showEditButtons = ref(false)
             class="rounded-full w-32 h-32 object-cover border-4 border-black" />
         </div>
         <p v-if="user" class="mt-4 text-lg font-semibold">{{ user.username }}</p>
-        <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons" class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">Edit profile</button>
+        <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons"
+          class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">Edit
+          profile</button>
         <div v-if="showEditButtons" class="mt-4 space-x-2">
           <button v-if="canEditProfile" @click="showEditModal = true"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             information
           </button>
           <button v-if="canEditProfile" @click="showEditModalImage = true"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             profile image
           </button>
           <button v-if="canEditProfile" @click="showEditModalBanner = true"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             banner
           </button>
         </div>
