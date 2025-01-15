@@ -17,6 +17,8 @@ const props = defineProps({
   user_id: Number,
 })
 
+const showNoPins = ref(false)
+
 const loadPins = async () => {
   if (isPinsLoading.value) {
     return;
@@ -31,6 +33,10 @@ const loadPins = async () => {
 
     // Append new pins to the existing ones
     pins.value.push({ pins: response.data, showAllPins: false });
+
+    if (pins.value[0].pins.length === 0) {
+      showNoPins.value = true
+    }
 
     limitCntLoading.value = response.data.length
 
@@ -73,10 +79,16 @@ onBeforeUnmount(() => {
 <template>
   <div class="mt-10 ml-20" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
-      <SavedPin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
-        :pin="pinem" 
+      <SavedPin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
+  </div>
+
+  <div v-show="showNoPins" class="mt-10">
+    <section class="text-center flex flex-col justify-center items-center relative">
+      <h1 class="text-2xl font-bold mb-4">no pins</h1>
+      <img class="h-72 rounded-xl" src="https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg" alt="not found image">
+    </section>
   </div>
 </template>

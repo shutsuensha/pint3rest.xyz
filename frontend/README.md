@@ -1,7 +1,6 @@
 ### Next
 
 - title change on every route
-- user view if no craeted or saved or liked - display message 
 - add emoji in every input
 - все роуты на отдачу сортировку в обратном порядке
 - fix bug in everything after scroll in tag that choose by search
