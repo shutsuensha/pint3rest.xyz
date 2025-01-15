@@ -60,6 +60,11 @@ onMounted(async () => {
   try {
     const response = await axios.get(`/api/pins/${pinId}`)
     pin.value = response.data
+    if (pin.value.title) {
+      document.title = 'pinterest.xyz / pin ' + pin.value.title
+    } else {
+      document.title = 'pinterest.xyz / pin ' + pin.value.id
+    }
     try {
       const response = await axios.get(`/api/pins/upload/${pinId}`, { responseType: 'blob' })
       const blobUrl = URL.createObjectURL(response.data);
@@ -289,10 +294,8 @@ async function addComment() {
         <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
           class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
 
-        <img v-if="isImage" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
-          alt="Media Preview" />
-        <video v-if="isVideo" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
-          autoplay loop muted />
+        <img v-if="isImage" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
+        <video v-if="isVideo" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
       </div>
     </div>
   </div>

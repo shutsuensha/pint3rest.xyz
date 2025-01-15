@@ -38,6 +38,7 @@ const tags = ref([])
 
 
 onMounted(async () => {
+  document.title = 'pinterest.xyz / create pin'
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data

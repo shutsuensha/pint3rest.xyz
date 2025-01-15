@@ -14,6 +14,10 @@ const goBack = () => {
   router.push('/');
 };
 
+onMounted(() => {
+  document.title = 'pinterest.xyz / 404 not found'
+})
+
 </script>
 
 <template>

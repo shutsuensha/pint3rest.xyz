@@ -159,9 +159,8 @@ const showOverlay = ref(false)
 
 <template>
   <div class="w-1/5 p-2 ">
-    <div class="relative block transition-transform duration-100 transform hover:scale-105"  @mouseover="showSaveButton = true; showOverlay = true"
-      @mouseleave="showSaveButton = false; showOverlay = false">
-      <div v-if="showOverlay" class="absolute inset-0 bg-black bg-opacity-40 rounded-3xl transition"></div>
+    <div class="relative block transition-transform duration-100 transform hover:scale-105"  @mouseover="showSaveButton = true;"
+      @mouseleave="showSaveButton = false;">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-10 top-2 right-2 px-6 py-3 text-sm ${bgSave} hover:bg-red-800 text-white rounded-3xl transition`">
         {{ saveText }}

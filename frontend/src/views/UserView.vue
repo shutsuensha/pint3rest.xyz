@@ -71,6 +71,12 @@ onMounted(async () => {
     const response = await axios.get(`/api/users/user_username/${username}`);
     user.value = response.data;
     canEditProfile.value = auth_user_id.value === user.value.id
+    if (canEditProfile.value) {
+      document.title = 'pinterest.xyz / me ' + user.value.username
+    } else {
+      document.title = 'pinterest.xyz / user ' + user.value.username
+    }
+
     try {
       const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(userResponse.data);
@@ -103,6 +109,7 @@ onMounted(async () => {
   }
 
   loadingUser.value = false;
+  createdPins()
 });
 
 const bgCreated = ref('border-black');

@@ -323,6 +323,7 @@ function handleImageUpload(event) {
 }
 
 onMounted(async () => {
+  document.title = 'pinterest.xyz'
   AOS.init({
     duration: 3000,  // Длительность анимации
     once: true,      // Анимация будет воспроизводиться только один раз

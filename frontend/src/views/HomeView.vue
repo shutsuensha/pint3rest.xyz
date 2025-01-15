@@ -8,6 +8,8 @@ import Pin from '@/components/Auth/Pin.vue';
 import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
+
+
 const emit = defineEmits(['createPinModelClose'])
 
 
@@ -80,6 +82,7 @@ const randomBgColor = () => {
 };
 
 onMounted(async () => {
+  document.title = 'pinterest.xyz'
   loadPins();
   window.addEventListener('scroll', handleScroll);
   try {
@@ -350,7 +353,7 @@ const filteredTags = computed(() => {
             <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }"
               autoplay loop muted />
-            <div v-show="!tagsLoaded" class="bg-gray-200 w-full h-full object-cover rounded-full">
+            <div v-show="!tagsLoaded" class="bg-gray-100 w-full h-full object-cover rounded-full animate-pulse">
             </div>
           </div>
           <!-- Название тега -->

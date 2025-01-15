@@ -1,19 +1,19 @@
-### Next
+### Current working
+- pinia/vuex
 
-- title change on every route
+### Frontend server
+npm run dev
+
+
+### EXTRA FUTURE? mbmb idc
+- test all inputs for trim()
 - add emoji in every input
-- все роуты на отдачу сортировку в обратном порядке
-- fix bug in everything after scroll in tag that choose by search
-
 - detail
   - video controls
   - full design
   - cancel fileMedia
   - animations for like
   - animations for comment
-
-
-### Future
 - updates
  - schedule reklama
  - updates from another users interation
@@ -23,7 +23,6 @@
 - direct messages
  - every user can write message to another user
  - dialog display in /messages
-- pinia/vuex
 - add boards
 - analyze pinterest to add more functions, awesome vuejs
 - user view design
@@ -31,9 +30,41 @@
 - not found design
 - toasts for update profile and why dont updated?????
 - home search design
-
-
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
-
-### Frontend server
-npm run dev
+- fix bug search/tags
+- pins desc order
+- tags стрелочки показываем или нет
+- tags without pins dont show
+- tags sort
+- tags pagination
+- create pin - tags sort/pagination
+- create pin url load
+- create pin - multiply files
+- home load pin bug with user placeholder
+- user view - display messages for me/other user if no pins
+- change font
+- search/tags design
+- user popover mb show by click???
+- all pins hover buttons better
+- loaders for userview
+- loaders for not-found
+- rewrite all img/video loaders
+- optimizations
+- ceo
+- dark theme
+- responsive design
+- awesome-vue + find in pintereset functional
+- mb rewrite masonry grid (1st time вылетает - потом - появляеться)
+- after save pin - анимацию что пин сохранен (toast?)
+- delete saved pin / delete created pin - modal are u sure with preview of pin
+- model create pin with snow animation
+- user view change tab animations
+- search home view animations
+- search in all routes just route back and search
+- detail tags show
+- mail templates 
+- user edit information
+- popover loading clip + show on top or bottom
+- chatgpt for impove all components
+- edit user email + verification + edit old verification refactor
+- login/signup animation
