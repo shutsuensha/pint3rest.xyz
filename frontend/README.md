@@ -1,6 +1,5 @@
 ### Currently working
-KeepAlive routerview
-
+- fix bug search/tags
 
 ### Frontend server
 npm run dev
@@ -32,7 +31,6 @@ npm run dev
 - toasts for update profile and why dont updated?????
 - home search design
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
-- fix bug search/tags
 - pins desc order
 - tags стрелочки показываем или нет
 - tags without pins dont show
@@ -76,3 +74,4 @@ npm run dev
 - back arrow hover bg
 - fix errors video play
 - везде где пагинацию - обратная отдача
+- когда идет поиск оставить everything tag

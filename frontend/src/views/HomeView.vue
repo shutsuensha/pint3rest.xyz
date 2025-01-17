@@ -67,6 +67,7 @@ const loadPins = async () => {
 };
 
 const handleScroll = () => {
+  console.log('home handle scroll')
   const scrollableHeight = document.documentElement.scrollHeight;
   const currentScrollPosition = window.innerHeight + window.scrollY;
 
@@ -173,7 +174,9 @@ function closeCreatePin() {
 
 onActivated(() => {
   document.title = 'pinterest.xyz'
-  window.addEventListener('scroll', handleScroll);
+  if (selectedTag.value === 'Everything' && searchValue.value === '') {
+    window.addEventListener('scroll', handleScroll);
+  }
 });
 
 onDeactivated(() => {
@@ -188,8 +191,6 @@ const showPinsBytag = ref(false)
 async function loadPinsByTag(name) {
   if (showSearchPins.value) {
     showSearchPins.value = false
-    window.addEventListener('scroll', handleScroll);
-    searchValue.value = ''
   }
   if (name !== selectedTag.value) {
     showPinsBytag.value = false
@@ -198,6 +199,7 @@ async function loadPinsByTag(name) {
       window.addEventListener('scroll', handleScroll);
       showPinsBytag.value = false
       selectedTag.value = 'Everything'
+      searchValue.value = ''
     } else {
       window.removeEventListener('scroll', handleScroll);
       await nextTick();
@@ -262,6 +264,7 @@ const searchValue = ref('')
 
 watch(searchValue, async (newValue, oldValue) => {
   if (newValue.trim() !== '') {
+    selectedTag.value = ''
     showSearchPins.value = false
     window.removeEventListener('scroll', handleScroll);
     await nextTick()
@@ -270,7 +273,7 @@ watch(searchValue, async (newValue, oldValue) => {
   } else {
     if (oldValue.trim() !== '') {
       showSearchPins.value = false
-      window.addEventListener('scroll', handleScroll);
+      loadPinsByTag('Everything')
     }
   }
 });
@@ -278,15 +281,27 @@ watch(searchValue, async (newValue, oldValue) => {
 
 const filteredTags = computed(() => {
   const trimmedValue = searchValue.value.trim().toLowerCase();
+  let filtered = [];
+
   if (trimmedValue === '') {
-    return available_tags.value; // Возвращаем все теги, если строка поиска пустая
+    // Если строка поиска пустая, возвращаем все теги
+    filtered = available_tags.value;
+  } else {
+    // Разбиваем поисковую строку на слова
+    const searchWords = trimmedValue.split(/\s+/); // Разделяем по пробелам
+    filtered = available_tags.value.filter(tag =>
+      searchWords.some(word => tag.name.toLowerCase().includes(word))
+    );
   }
 
-  // Разбиваем поисковую строку на слова
-  const searchWords = trimmedValue.split(/\s+/); // Разделяем по пробелам
-  return available_tags.value.filter(tag =>
-    searchWords.some(word => tag.name.toLowerCase().includes(word))
-  );
+  // Убедимся, что тег "Everything" всегда присутствует
+  const everythingTag = (available_tags.value || []).find(tag => tag.name.toLowerCase() === 'everything');
+
+  if (everythingTag && !filtered.some(tag => tag.name.toLowerCase() === 'everything')) {
+    filtered.unshift(everythingTag); // Добавляем "Everything" в начало
+  }
+
+  return filtered;
 });
 </script>
 
