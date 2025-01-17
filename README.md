@@ -11,3 +11,5 @@
   - learn how to format readme project describe
   - logo, preview, descriptions
   - screenshots for every page
+
+- reddit piar project as vue as fastapi
