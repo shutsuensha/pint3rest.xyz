@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, onActivated } from 'vue';
+import { onMounted, ref, watch, onActivated, onDeactivated, computed } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
@@ -9,13 +9,81 @@ import CommentSection from '@/components/Auth/CommentSection.vue';
 const route = useRoute();
 const pinId = route.params.id
 
-onActivated(() => {
-  if (pin.value.title) {
-    document.title = 'pinterest.xyz / pin ' + pin.value.title
+const videoPlayer = ref(null);
+const isPlaying = ref(true);
+const isMuted = ref(false);
+const volume = ref(0.2);
+const currentTime = ref(0);
+const duration = ref(0);
+
+const onVideoLoad = () => {
+  pinVideoLoaded.value = true;
+  if (videoPlayer.value) {
+    videoPlayer.value.volume = volume.value;
+    duration.value = videoPlayer.value.duration;
+  }
+};
+
+const togglePlayPause = () => {
+  if (!videoPlayer.value) return;
+  if (isPlaying.value) {
+    videoPlayer.value.pause();
   } else {
-    document.title = 'pinterest.xyz / pin ' + pin.value.id
+    videoPlayer.value.play();
+  }
+  isPlaying.value = !isPlaying.value;
+};
+
+const muteUnmute = () => {
+  if (!videoPlayer.value) return;
+  isMuted.value = !isMuted.value;
+  videoPlayer.value.muted = isMuted.value;
+};
+
+const changeVolume = () => {
+  if (videoPlayer.value) {
+    videoPlayer.value.volume = volume.value;
+  }
+};
+
+const updateProgress = () => {
+  if (videoPlayer.value) {
+    currentTime.value = videoPlayer.value.currentTime;
+  }
+};
+
+const seek = () => {
+  if (videoPlayer.value) {
+    videoPlayer.value.currentTime = currentTime.value;
+  }
+};
+
+const formatTime = (time) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+};
+
+const onVideoEnd = () => {
+  isPlaying.value = false;
+};
+
+onActivated(() => {
+  if (videoPlayer.value) {
+    videoPlayer.value.volume = volume.value;
+    videoPlayer.value.play();
+    isPlaying.value = true;
   }
 });
+
+onDeactivated(() => {
+  if (videoPlayer.value) {
+    videoPlayer.value.pause();
+    isPlaying.value = false;
+  }
+});
+
+
 
 
 const pin = ref({
@@ -28,6 +96,7 @@ const pin = ref({
   rgb: '',
   height: '',
 });
+
 
 
 const pinImage = ref(null)
@@ -228,6 +297,8 @@ async function addComment() {
     cntComments.value += 1
   }
 }
+
+const showControls = ref(false)
 </script>
 
 
@@ -244,8 +315,40 @@ async function addComment() {
       <div>
         <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
           @load="pinImageLoaded = true" />
-        <video v-if="pinVideo" :src="pinVideo" alt="Pin Video" class="w-full h-auto rounded-l-3xl" autoplay loop muted
-          @loadeddata="pinVideoLoaded = true" />
+        <div class="relative w-full max-w-2xl mx-auto" @mouseover="showControls = true" @mouseleave="showControls = false">
+          <!-- Video Element -->
+          <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
+            class="w-full rounded-l-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
+            @ended="onVideoEnd"></video>
+
+          <!-- Custom Controls -->
+          <div v-if="pinVideoLoaded && showControls"
+            class="absolute bottom-10 left-4 right-4   flex items-center justify-between text-white ">
+            <!-- Left Controls (Play/Pause and Time Info) -->
+            <div class="flex items-center gap-3">
+              <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause cursor-pointer text-2xl"></i>
+              <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play cursor-pointer text-2xl"></i>
+              <span class="text-md">
+                {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+              </span>
+            </div>
+
+            <!-- Right Controls (Mute/Unmute and Volume Slider) -->
+            <div class="flex items-center gap-3">
+              <i v-if="isMuted" @click="muteUnmute" class="pi  pi-volume-off cursor-pointer text-2xl"></i>
+              <i v-if="!isMuted" @click="muteUnmute" class="pi pi-volume-up cursor-pointer text-2xl"></i>
+              <input type="range" class="w-20 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer" min="0" max="1"
+                step="0.1" v-model="volume" @input="changeVolume" />
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div v-if="showControls" class="absolute bottom-4 left-4  right-4">
+            <input type="range" class="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer" :max="duration"
+              v-model="currentTime" @input="seek" />
+          </div>
+        </div>
+
       </div>
 
       <!-- Right Column: User Information -->

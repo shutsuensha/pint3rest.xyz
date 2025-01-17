@@ -1,19 +1,18 @@
 ### Currently working
-- fix bug search/tags
+- затемнение controls
+- анимацию на pause/resume
+- ползунок громкости появляеться на hover иконки
+- ползутки меньше и цвет выбрать
+- ползунки step меньше
 
 ### Frontend server
 npm run dev
 
 
 ### up for me not necessary
+- after create pin продумать
 - test all inputs for trim()
 - add emoji in every input
-- detail
-  - video controls
-  - full design
-  - cancel fileMedia
-  - animations for like
-  - animations for comment
 - updates
  - schedule reklama
  - updates from another users interation
@@ -75,3 +74,8 @@ npm run dev
 - fix errors video play
 - везде где пагинацию - обратная отдача
 - когда идет поиск оставить everything tag
+- title test all routes
+- fix video in tags after back
+- иконки везде пиздатые сделать
+- create pin loader
+- create pin max-height
