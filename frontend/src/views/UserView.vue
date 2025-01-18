@@ -7,6 +7,16 @@ import CreatedPins from '@/components/Auth/CreatedPins.vue';
 import SavedPins from '@/components/Auth/SavedPins.vue';
 import LikedPins from '@/components/Auth/LikedPins.vue';
 
+onActivated(() => {
+  if (user.value) {
+    if (canEditProfile.value) {
+      document.title = 'pinterest.xyz / me ' + user.value.username
+    } else {
+      document.title = 'pinterest.xyz / user ' + user.value.username
+    }
+  }
+});
+
 
 const color = ref('red');
 const size = ref('100px');
