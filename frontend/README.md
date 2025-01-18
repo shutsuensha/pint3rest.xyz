@@ -72,3 +72,5 @@ npm run dev
 - иконки везде пиздатые сделать
 - create pin loader
 - create pin max-height
+- width/height - create pin view
+- выделение текста цвет
