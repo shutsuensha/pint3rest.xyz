@@ -11,10 +11,13 @@ const pinId = route.params.id
 
 const videoPlayer = ref(null);
 const isPlaying = ref(true);
-const isMuted = ref(false);
 const volume = ref(0.2);
+const oldVolume = ref(null)
 const currentTime = ref(0);
 const duration = ref(0);
+
+const showLikeAnimation = ref(null)
+const showDislikeAnimation = ref(null)
 
 const onVideoLoad = () => {
   pinVideoLoaded.value = true;
@@ -34,15 +37,21 @@ const togglePlayPause = () => {
   isPlaying.value = !isPlaying.value;
 };
 
-const muteUnmute = () => {
-  if (!videoPlayer.value) return;
-  isMuted.value = !isMuted.value;
-  videoPlayer.value.muted = isMuted.value;
-};
 
 const changeVolume = () => {
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
+  }
+};
+
+const muteUnmute = () => {
+  if (videoPlayer.value.volume == 0) {
+    volume.value = oldVolume.value
+    videoPlayer.value.volume = volume.value
+  } else {
+    videoPlayer.value.volume = 0;
+    oldVolume.value = volume.value;
+    volume.value = 0;
   }
 };
 
@@ -69,6 +78,11 @@ const onVideoEnd = () => {
 };
 
 onActivated(() => {
+  if (pin.value.title) {
+    document.title = 'pinterest.xyz / pin ' + pin.value.title
+  } else {
+    document.title = 'pinterest.xyz / pin ' + pin.value.id
+  }
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
     videoPlayer.value.play();
@@ -131,6 +145,9 @@ const mediaPreview = ref(null);
 const isImage = ref(false);
 const isVideo = ref(false);
 
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
+const tags = ref([])
+
 
 onMounted(async () => {
   try {
@@ -185,6 +202,17 @@ onMounted(async () => {
   }
 
   try {
+    const response = await axios.get(`/api/tags/pin/tags/${pin.value.id}`, { withCredentials: true })
+    tags.value = response.data
+    for (let i = 0; i < response.data.length; i++) {
+      const tag = response.data[i];
+      tag.color = randomBgColor()
+    }
+  } catch (error) {
+    console.log(error)
+  }
+
+  try {
     const response = await axios.get(`/api/comments/cnt/comments/${pin.value.id}`)
     cntComments.value = response.data
   } catch (error) {
@@ -201,8 +229,15 @@ function goForward() {
   router.go(1);
 }
 
+const randomBgColor = () => {
+  const randomIndex = Math.floor(Math.random() * bgColors.value.length);
+  return bgColors.value[randomIndex];
+};
+
 async function likePin() {
   if (checkUserLike.value) {
+    showDislikeAnimation.value = true
+    showLikeAnimation.value = false
     try {
       await axios.delete(`/api/likes/pin/${pin.value.id}`)
       checkUserLike.value = false
@@ -211,6 +246,8 @@ async function likePin() {
       console.log(error)
     }
   } else {
+    showLikeAnimation.value = true
+    showDislikeAnimation.value = false
     try {
       await axios.post(`/api/likes/pin/${pin.value.id}`)
       checkUserLike.value = true
@@ -282,11 +319,6 @@ async function addComment() {
             },
           });
 
-          mediaPreview.value = null
-          mediaFile.value = null
-          isImage.value = false
-          isVideo.value = false
-
         } catch (error) {
           console.log(error)
         }
@@ -298,7 +330,18 @@ async function addComment() {
   }
 }
 
-const showControls = ref(true)
+const showControls = ref(false)
+
+function showTagsPin(tag) {
+  router.push(`/?tag=${tag.name}`);
+}
+
+function resetFile() {
+  mediaPreview.value = null
+  mediaFile.value = null
+  isImage.value = false
+  isVideo.value = false
+}
 </script>
 
 
@@ -313,8 +356,22 @@ const showControls = ref(true)
       class="grid grid-cols-2 gap-6 mx-60 bg-gray-100 rounded-3xl shadow-lg">
       <!-- Left Column: Image or Video -->
       <div>
-        <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
-          @load="pinImageLoaded = true" />
+        <div class="relative w-full max-w-2xl mx-auto">
+          <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
+            @load="pinImageLoaded = true" />
+          <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="relative flex items-center justify-center w-12 h-12">
+              <transition name="flash2">
+                <i v-if="showDislikeAnimation"
+                  class="absolute pi pi-heart text-8xl text-white glowing-icon opacity-0"></i>
+              </transition>
+              <transition name="flash2">
+                <i v-if="showLikeAnimation"
+                  class="absolute pi pi-heart-fill text-8xl text-white glowing-icon opacity-0"></i>
+              </transition>
+            </div>
+          </div>
+        </div>
         <div class="relative w-full max-w-2xl mx-auto" @mouseover="showControls = true"
           @mouseleave="showControls = false">
           <!-- Video Element -->
@@ -322,9 +379,14 @@ const showControls = ref(true)
             class="w-full rounded-l-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
             @ended="onVideoEnd"></video>
 
+          <!-- Gradient Overlay (cloud-like fade effect) -->
+          <div v-if="pinVideoLoaded && showControls"
+            class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-900 to-transparent rounded-l-3xl">
+          </div>
+
           <!-- Custom Controls -->
           <div v-if="pinVideoLoaded && showControls"
-            class="absolute bottom-10 left-4 right-4   flex items-center justify-between text-white">
+            class="absolute bottom-10 left-4 right-4 flex items-center justify-between text-white">
             <!-- Left Controls (Play/Pause and Time Info) -->
             <div class="flex items-center gap-3">
               <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause cursor-pointer text-xl"></i>
@@ -335,22 +397,47 @@ const showControls = ref(true)
             </div>
 
             <!-- Right Controls (Mute/Unmute and Volume Slider) -->
-            <div class="flex items-center gap-3">
-              <i v-if="isMuted" @click="muteUnmute" class="pi  pi-volume-off cursor-pointer text-xl"></i>
-              <i v-if="!isMuted" @click="muteUnmute" class="pi pi-volume-up cursor-pointer text-xl"></i>
-              <input type="range" class="w-20 h-0.5 bg-gray-300 rounded-lg  cursor-pointer accent-white vertical-slider"
-                min="0" max="1" step="0.0005" v-model="volume" @input="changeVolume" />
+            <div class="flex items-center gap-3 text-white">
+              <i v-if="volume == 0" @click="muteUnmute" class="pi pi-volume-off  text-xl"></i>
+              <i v-if="volume != 0" @click="muteUnmute" class="pi pi-volume-up  text-xl"></i>
+              <input type="range" class="w-20 h-0.5 bg-black rounded-lg cursor-pointer accent-white " min="0" max="1"
+                step="0.0005" v-model="volume" @input="changeVolume" />
             </div>
           </div>
 
           <!-- Progress Bar -->
-          <div v-if="showControls && pinVideoLoaded" class="absolute bottom-4 left-4  right-4">
-            <input type="range" class="w-full h-0.5 bg-gray-300 rounded-lg  cursor-pointer accent-white" :max="duration" min="0" step="0.01"
-              v-model="currentTime" @input="seek" />
+          <div v-if="showControls && pinVideoLoaded" class="absolute bottom-4 left-4 right-4">
+            <input type="range" class="w-full h-0.5 bg-black rounded-lg cursor-pointer accent-white" :max="duration"
+              min="0" step="0.01" v-model="currentTime" @input="seek" />
           </div>
-          <div v-if="showControls && pinVideoLoaded" class="absolute bottom-1/2 left-1/2 right-1/2 top-1/2">
-            <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause text-4xl text-white cursor-pointer"></i>
-            <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play text-4xl text-white cursor-pointer"></i>
+
+          <!-- Center Play/Pause Button with Gradient Overlay -->
+          <div v-if="showControls && pinVideoLoaded"
+            class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="relative flex items-center justify-center w-12 h-12">
+              <transition name="flash">
+                <i v-if="isPlaying" @click="togglePlayPause"
+                  class="absolute pi pi-pause text-5xl text-white glowing-icon"></i>
+              </transition>
+              <transition name="flash">
+                <i v-if="!isPlaying" @click="togglePlayPause"
+                  class="absolute pi pi-play text-5xl text-white glowing-icon"></i>
+              </transition>
+            </div>
+          </div>
+
+          <div v-if="pinVideoLoaded" @click="togglePlayPause"
+            class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="relative flex items-center justify-center w-12 h-12">
+              <transition name="flash2">
+                <i v-if="showDislikeAnimation"
+                  class="absolute pi pi-heart text-8xl text-white glowing-icon opacity-0"></i>
+              </transition>
+              <transition name="flash2">
+                <i v-if="showLikeAnimation"
+                  class="absolute pi pi-heart-fill text-8xl text-white glowing-icon opacity-0"></i>
+              </transition>
+            </div>
           </div>
         </div>
 
@@ -360,15 +447,20 @@ const showControls = ref(true)
       <div class="flex flex-col">
         <div class="flex items-center justify-between w-full p-2">
           <!-- Icon and Likes -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-4">
             <!-- Icon -->
-            <i @click="likePin" :class="`pi ${checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-2xl`"></i>
+            <i v-if="checkUserLike" @click="likePin"
+              class="text-rose-500 pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+            <i v-if="!checkUserLike" @click="likePin"
+              class="text-rose-500 pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <!-- Number of Likes -->
-            <div v-if="cntLikes != 0" class="font-medium text-2xl relative" @mouseover="showPopover = true"
+            <div v-if="cntLikes != 0" class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
               @mouseleave="if (!insidePopover) showPopover = false;">
-              <span>{{ cntLikes }}</span>
+              <div>
+                <span>{{ cntLikes }}</span>
+              </div>
               <div v-if="showPopover" @mouseover="insidePopover = true"
-                @mouseleave="insidePopover = false; showPopover = false" class="absolute top-[30px] left-[-50px]">
+                @mouseleave="insidePopover = false; showPopover = false" class="absolute top-[30px] left-[-50px] z-50">
                 <PinLikesPopover :pin_id="pin.id" />
               </div>
             </div>
@@ -381,24 +473,43 @@ const showControls = ref(true)
           </button>
         </div>
         <div v-if="pin.title">
-          {{ pin.title }}
+          <span class="font-bold text-2xl">{{ pin.title }}</span>
         </div>
-        <div v-if="pin.description">
+        <div class="mt-2" v-if="pin.description">
           {{ pin.description }}
         </div>
-        <div v-if="pin.href">
-          {{ pin.href }}
+        <div class="mt-4" v-if="pin.href">
+          <a target="_blank" :href="pin.href" class="underline hover:text-rose-600 text-orange-400">{{ pin.href }}</a>
+        </div>
+        <div class="flex flex-wrap gap-2 my-2" v-auto-animate>
+          <div v-for="tag in tags" :key="tag.id" @click="showTagsPin(tag)"
+            :class="[`${tag.color}`, 'text-sm', 'font-medium', 'rounded-3xl', 'px-3', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
+            {{ tag.name }}
+          </div>
         </div>
         <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
           class="flex items-center mt-2 hover:underline cursor-pointer">
           <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-8 h-8 rounded-full" />
           <span class="ml-2 text-sm font-medium">@{{ pinUser.username }}</span>
         </RouterLink>
-        <div v-if="cntComments != 0" @click="showCommets = !showCommets">
+        <div class="mt-5" v-if="cntComments != 0" @click="showCommets = !showCommets">
           <h1> {{ cntComments }} Comments</h1>
         </div>
-        <CommentSection v-if="showCommets" :pin_id="pin.id" />
-        <div class="flex items-center space-x-2">
+        <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5"/>
+        <div v-if="isImage" class="relative">
+          <div class="absolute top-0 left-[-10px]" @click="resetFile">
+            <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
+          </div>
+          <img :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
+        </div>
+        <div v-if="isVideo" class="relative">
+          <div class="absolute top-0 left-[-10px] z-20" @click="resetFile">
+            <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
+          </div>
+          <video :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop
+            muted />
+        </div>
+        <div class="flex items-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Add Button -->
           <button type="button" @click="addComment"
             class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
@@ -409,14 +520,63 @@ const showControls = ref(true)
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
             class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
             placeholder="Введите комментарий" />
-        </div>
-        <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-          class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
 
-        <img v-if="isImage" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
-        <video v-if="isVideo" :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
+          <label for="media">
+            <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
+          </label>
+          <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
+            class="hidden hover:bg-red-100 transition duration-300 w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+        </div>
       </div>
     </div>
   </div>
   <RelatedPins v-if="pinImageLoaded || pinVideoLoaded" :pin_id="pin.id" />
 </template>
+
+
+<style scoped>
+/* Анимация вспышки */
+.flash-enter-active,
+.flash-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.flash-enter-from,
+.flash-leave-to {
+  opacity: 0;
+  transform: scale(3);
+}
+
+.flash-enter-to,
+.flash-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+
+
+.glowing-icon {
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 0, 0, 0.5);
+}
+
+
+
+
+.flash2-enter-active,
+.flash2-leave-active {
+  transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1);
+}
+
+.flash2-enter-from,
+.flash2-leave-to {
+  opacity: 0;
+  transform: scale(3);
+}
+
+.flash2-enter-to,
+.flash2-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+</style>

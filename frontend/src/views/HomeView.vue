@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
+import { useRoute } from 'vue-router';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 import Pin from '@/components/Auth/Pin.vue';
@@ -9,6 +10,7 @@ import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 
+const route = useRoute();
 
 const emit = defineEmits(['createPinModelClose'])
 
@@ -24,6 +26,8 @@ const isPinsLoading = ref(false);
 
 const cntTagLoading = ref(0)
 const limitTagLoading = ref(null)
+
+const tagFromUrl = ref(null)
 
 const available_tags = ref(null)
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
@@ -160,6 +164,12 @@ onMounted(async () => {
       console.error(error)
     }
   }
+  tagFromUrl.value = route.query.tag || '';
+  if (tagFromUrl.value) {
+    if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
+      loadPinsByTag(tagFromUrl.value)
+    }
+  }
 });
 
 onBeforeUnmount(() => {
@@ -176,6 +186,11 @@ onActivated(() => {
   document.title = 'pinterest.xyz'
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
+  }
+  if (tagFromUrl.value) {
+    if (tagFromUrl.value !== selectedTag.value) {
+      loadPinsByTag(tagFromUrl.value)
+    }
   }
 });
 
