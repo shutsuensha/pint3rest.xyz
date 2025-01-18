@@ -54,3 +54,20 @@ async def get_related_pins(db: db, user_id: user_id, pin_id: int, filter: filter
                 pins[pin_db.id] = pin_db
     
     return [pin for pin in pins.values()][filter.offset:filter.offset+filter.limit]
+
+@router.get('/pin/tags/{pin_id}', response_model=list[TagOut])
+async def get_tags_on_pin(db: db, user_id: user_id, pin_id: int):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+    result = await db.execute(select(pins_tags).where(pins_tags.c.pin_id == pin_id))
+    rows = result.all()
+
+    tags = []
+
+    for row in rows:
+        tag_id = row[1]
+        tag = await db.scalar(select(TagsOrm).where(TagsOrm.id == tag_id))
+        tags.append(tag)
+    return tags
