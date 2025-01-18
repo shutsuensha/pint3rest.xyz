@@ -72,3 +72,5 @@ npm run dev
 - иконки везде пиздатые сделать
 - create pin loader
 - create pin max-height
+- https://github.com/amineyarman/vue-kinesis
+- - create pin display tags при нажатии поиск по тегу
