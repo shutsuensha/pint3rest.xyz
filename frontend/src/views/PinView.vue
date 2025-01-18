@@ -298,7 +298,7 @@ async function addComment() {
   }
 }
 
-const showControls = ref(false)
+const showControls = ref(true)
 </script>
 
 
@@ -315,7 +315,8 @@ const showControls = ref(false)
       <div>
         <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
           @load="pinImageLoaded = true" />
-        <div class="relative w-full max-w-2xl mx-auto" @mouseover="showControls = true" @mouseleave="showControls = false">
+        <div class="relative w-full max-w-2xl mx-auto" @mouseover="showControls = true"
+          @mouseleave="showControls = false">
           <!-- Video Element -->
           <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
             class="w-full rounded-l-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
@@ -323,11 +324,11 @@ const showControls = ref(false)
 
           <!-- Custom Controls -->
           <div v-if="pinVideoLoaded && showControls"
-            class="absolute bottom-10 left-4 right-4   flex items-center justify-between text-white ">
+            class="absolute bottom-10 left-4 right-4   flex items-center justify-between text-white">
             <!-- Left Controls (Play/Pause and Time Info) -->
             <div class="flex items-center gap-3">
-              <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause cursor-pointer text-2xl"></i>
-              <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play cursor-pointer text-2xl"></i>
+              <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause cursor-pointer text-xl"></i>
+              <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play cursor-pointer text-xl"></i>
               <span class="text-md">
                 {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
               </span>
@@ -335,17 +336,21 @@ const showControls = ref(false)
 
             <!-- Right Controls (Mute/Unmute and Volume Slider) -->
             <div class="flex items-center gap-3">
-              <i v-if="isMuted" @click="muteUnmute" class="pi  pi-volume-off cursor-pointer text-2xl"></i>
-              <i v-if="!isMuted" @click="muteUnmute" class="pi pi-volume-up cursor-pointer text-2xl"></i>
-              <input type="range" class="w-20 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer" min="0" max="1"
-                step="0.1" v-model="volume" @input="changeVolume" />
+              <i v-if="isMuted" @click="muteUnmute" class="pi  pi-volume-off cursor-pointer text-xl"></i>
+              <i v-if="!isMuted" @click="muteUnmute" class="pi pi-volume-up cursor-pointer text-xl"></i>
+              <input type="range" class="w-20 h-0.5 bg-gray-300 rounded-lg  cursor-pointer accent-white vertical-slider"
+                min="0" max="1" step="0.0005" v-model="volume" @input="changeVolume" />
             </div>
           </div>
 
           <!-- Progress Bar -->
           <div v-if="showControls" class="absolute bottom-4 left-4  right-4">
-            <input type="range" class="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer" :max="duration"
+            <input type="range" class="w-full h-0.5 bg-gray-300 rounded-lg  cursor-pointer accent-white" :max="duration" min="0" step="0.01"
               v-model="currentTime" @input="seek" />
+          </div>
+          <div v-if="showControls" class="absolute bottom-1/2 left-1/2 right-1/2 top-1/2">
+            <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause text-4xl text-white cursor-pointer"></i>
+            <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play text-4xl text-white cursor-pointer"></i>
           </div>
         </div>
 

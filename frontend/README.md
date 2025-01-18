@@ -1,10 +1,3 @@
-### Currently working
-- затемнение controls
-- анимацию на pause/resume
-- ползунок громкости появляеться на hover иконки
-- ползутки меньше и цвет выбрать
-- ползунки step меньше
-
 ### Frontend server
 npm run dev
 
