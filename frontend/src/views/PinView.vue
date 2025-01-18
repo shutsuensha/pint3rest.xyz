@@ -344,11 +344,11 @@ const showControls = ref(true)
           </div>
 
           <!-- Progress Bar -->
-          <div v-if="showControls" class="absolute bottom-4 left-4  right-4">
+          <div v-if="showControls && pinVideoLoaded" class="absolute bottom-4 left-4  right-4">
             <input type="range" class="w-full h-0.5 bg-gray-300 rounded-lg  cursor-pointer accent-white" :max="duration" min="0" step="0.01"
               v-model="currentTime" @input="seek" />
           </div>
-          <div v-if="showControls" class="absolute bottom-1/2 left-1/2 right-1/2 top-1/2">
+          <div v-if="showControls && pinVideoLoaded" class="absolute bottom-1/2 left-1/2 right-1/2 top-1/2">
             <i v-if="isPlaying" @click="togglePlayPause" class="pi pi-pause text-4xl text-white cursor-pointer"></i>
             <i v-if="!isPlaying" @click="togglePlayPause" class="pi pi-play text-4xl text-white cursor-pointer"></i>
           </div>
