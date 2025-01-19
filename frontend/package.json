@@ -16,6 +16,7 @@
     "@yeger/vue-masonry-wall": "^5.0.16",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "flowbite": "^2.5.2",
     "js-confetti": "^0.12.0",
     "masonry-flow": "^0.2.2",

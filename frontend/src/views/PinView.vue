@@ -219,6 +219,10 @@ onMounted(async () => {
     console.error(error)
   }
 
+  if(cntComments.value) {
+    showCommets.value = true
+  }
+
 })
 
 const goBack = () => {
@@ -492,10 +496,16 @@ function resetFile() {
           <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-8 h-8 rounded-full" />
           <span class="ml-2 text-sm font-medium">@{{ pinUser.username }}</span>
         </RouterLink>
-        <div class="mt-5" v-if="cntComments != 0" @click="showCommets = !showCommets">
-          <h1> {{ cntComments }} Comments</h1>
+        <div class="mt-5 mb-2 flex items-center justify-between cursor-pointer" v-if="cntComments != 0"
+          @click="showCommets = !showCommets">
+          <h1 class="text-xl">
+            {{ cntComments }} Comments
+          </h1>
+          <span class="transition-transform duration-300 mr-5" :class="{ 'rotate-180': showCommets }">
+            <i class="pi pi-angle-down text-xl"></i>
+          </span>
         </div>
-        <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5"/>
+        <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5 mt-4" />
         <div v-if="isImage" class="relative">
           <div class="absolute top-0 left-[-10px]" @click="resetFile">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
@@ -506,8 +516,7 @@ function resetFile() {
           <div class="absolute top-0 left-[-10px] z-20" @click="resetFile">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
           </div>
-          <video :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop
-            muted />
+          <video :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
         </div>
         <div class="flex items-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Add Button -->

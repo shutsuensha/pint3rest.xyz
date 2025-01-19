@@ -4,6 +4,13 @@ import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
 import CommentLikesPopover from './CommentLikesPopover.vue';
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+
+dayjs.extend(relativeTime);
+
+
 
 const props = defineProps({
   pin_id: Number
@@ -194,19 +201,19 @@ async function likeComment(comment) {
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-4 bg-white rounded-xl text-sm font-medium text-gray-700 h-60 w-full overflow-y-auto">
+    class="flex flex-col gap-4 bg-gray-100 rounded-xl text-md font-medium text-black h-80 w-full overflow-y-auto">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col mb-2">
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
         <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-        <span class="text-gray-700 font-medium">{{ comment.user.username }}</span>
+        <span class="font-medium">{{ comment.user.username }}</span>
       </RouterLink>
-      <span class="text-gray-700 font-medium">{{ comment.content }}</span>
+      <span class=" font-medium">{{ comment.content }}</span>
       <div class="flex flex-row">
         <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
-          class="h-28 w-28 object-cover rounded-lg" />
+          class="h-32 w-32 object-cover rounded-lg" />
         <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
-          class="h-28 w-28 object-cover rounded-lg" autoplay loop muted />
+          class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
         <div v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">
           <h1>{{ comment.cntReplies }} Replies </h1>
         </div>
@@ -235,7 +242,7 @@ async function likeComment(comment) {
       <div>
       </div>
       <div class="flex items-center space-x-2">
-        <span class="text-gray-700 font-medium">{{ comment.created_at }}</span>
+        <span class="font-medium">{{ comment.created_at }}</span>
         <span @click="comment.showReply = !comment.showReply"
           class="hover:underline hover:text-blue-400 cursor-pointer">Ответить</span>
         <div class="flex items-center space-x-2">

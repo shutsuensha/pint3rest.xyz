@@ -74,3 +74,7 @@ npm run dev
 - create pin max-height
 - https://github.com/amineyarman/vue-kinesis
 - - create pin display tags при нажатии поиск по тегу
+- анимации на появления лайков коментариев
+- высота для лайков - коментаривем исходя из подгруженных
+- АНИМАцию цифры лайка добавление
+- after add comment close comments and show fro display user comment
