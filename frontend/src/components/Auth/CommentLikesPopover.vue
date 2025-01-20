@@ -61,11 +61,11 @@ onMounted(() => {
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-4 bg-white shadow-2xl rounded-xl text-sm font-medium text-gray-700 z-30 h-32 w-60 overflow-y-auto">
+  class="z-50 flex flex-col gap-4 bg-black shadow-2xl rounded-3xl text-sm  text-white h-48 w-60 overflow-y-auto">
     <RouterLink v-for="user in users" :key="user.id" :to="`/user/${user.username}`"
       class="flex items-center space-x-2 hover:underline cursor-pointer">
       <img :src="user.image" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-      <span class="text-gray-700 font-medium">{{ user.username }}</span>
+      <span class="font-medium">{{ user.username }}</span>
     </RouterLink>
   </div>
 </template>

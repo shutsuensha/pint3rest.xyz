@@ -3,6 +3,17 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios'
 import CommentLikesPopover from './CommentLikesPopover.vue';
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ru";
+
+
+
+dayjs.extend(relativeTime);
+dayjs.locale("ru");
+
+
+
 const props = defineProps({
   comment_id: Number
 })
@@ -123,34 +134,38 @@ async function likeComment(comment) {
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-4 bg-white rounded-xl text-sm font-medium text-gray-700 z-30 h-60 w-full overflow-y-auto">
+    class="flex flex-col gap-1 bg-gray-100 text-sm font-medium  z-30 h-60 w-full overflow-y-auto border-2 border-black">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col mb-2">
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
         <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-        <span class="text-gray-700 font-medium">{{ comment.user.username }}</span>
+        <span class=" font-bold">{{ comment.user.username }}</span>
       </RouterLink>
-      <span class="text-gray-700 font-medium">{{ comment.content }}</span>
-      <div class="flex flex-row">
+      <span class="font-medium ml-12 mr-12">{{ comment.content }}</span>
+      <div class="flex flex-row ml-12">
         <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
-          class="h-28 w-28 object-cover rounded-lg" />
+          class="h-32 w-32 object-cover rounded-lg" />
         <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
-          class="h-28 w-28 object-cover rounded-lg" autoplay loop muted />
+          class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
       </div>
-      <div class="flex items-center space-x-2">
-        <span class="text-gray-700 font-medium">{{ comment.created_at }}</span>
+      <div class="flex items-center space-x-2 ml-12 mt-2">
+        <span class="font-medium text-gray-600">{{ dayjs(comment.created_at).fromNow() }}</span>
         <div class="flex items-center space-x-2">
-          <!-- Icon -->
-          <i @click="likeComment(comment)"
-            :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
+
+
+          <i v-if="comment.checkUserLike" @click="likeComment(comment)"
+            class="text-rose-500 pi pi-heart-fill text-md cursor-pointer "></i>
+          <i v-if="!comment.checkUserLike" @click="likeComment(comment)"
+            class="text-rose-500 pi pi-heart text-md cursor-pointer "></i>
+
           <!-- Number of Likes -->
-          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative"
+          <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
             @mouseover="comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
             <span>{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
               @mouseleave="comment.insidePopover = false; comment.showPopover = false"
-              class="absolute top-[30px] left-[-50px]">
+              class="absolute top-[20px] left-[-100px]">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>

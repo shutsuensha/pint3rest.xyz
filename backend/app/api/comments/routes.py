@@ -32,7 +32,7 @@ async def get_comments_on_pin(pin_id: int, db: db, user_id: user_id, filter: fil
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
 
-    comments = await db.scalars(select(CommentsOrm).where(CommentsOrm.pin_id == pin_id).offset(filter.offset).limit(filter.limit))
+    comments = await db.scalars(select(CommentsOrm).where(CommentsOrm.pin_id == pin_id).order_by(CommentsOrm.id.desc()).offset(filter.offset).limit(filter.limit))
     return comments
 
 
@@ -113,5 +113,5 @@ async def get_comments_on_comment(comment_id: int, db: db, user_id: user_id, fil
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
 
-    comments = await db.scalars(select(CommentsOrm).where(CommentsOrm.comment_id == comment_id).offset(filter.offset).limit(filter.limit))
+    comments = await db.scalars(select(CommentsOrm).where(CommentsOrm.comment_id == comment_id).order_by(CommentsOrm.id.desc()).offset(filter.offset).limit(filter.limit))
     return comments

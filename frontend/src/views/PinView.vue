@@ -1,17 +1,18 @@
 <script setup>
-import { onMounted, ref, watch, onActivated, onDeactivated, computed } from 'vue';
+import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
 import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
 import CommentSection from '@/components/Auth/CommentSection.vue';
 
+
 const route = useRoute();
 const pinId = route.params.id
 
 const videoPlayer = ref(null);
 const isPlaying = ref(true);
-const volume = ref(0.2);
+const volume = ref(0);
 const oldVolume = ref(null)
 const currentTime = ref(0);
 const duration = ref(0);
@@ -219,7 +220,7 @@ onMounted(async () => {
     console.error(error)
   }
 
-  if(cntComments.value) {
+  if (cntComments.value) {
     showCommets.value = true
   }
 
@@ -331,6 +332,9 @@ async function addComment() {
       console.error(error)
     }
     cntComments.value += 1
+    showCommets.value = false
+    await nextTick()
+    showCommets.value = true
   }
 }
 
@@ -346,6 +350,8 @@ function resetFile() {
   isImage.value = false
   isVideo.value = false
 }
+
+
 </script>
 
 
@@ -493,8 +499,8 @@ function resetFile() {
         </div>
         <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
           class="flex items-center mt-2 hover:underline cursor-pointer">
-          <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-8 h-8 rounded-full" />
-          <span class="ml-2 text-sm font-medium">@{{ pinUser.username }}</span>
+          <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full" />
+          <span class="ml-2 text-md font-medium">@{{ pinUser.username }}</span>
         </RouterLink>
         <div class="mt-5 mb-2 flex items-center justify-between cursor-pointer" v-if="cntComments != 0"
           @click="showCommets = !showCommets">
@@ -505,7 +511,7 @@ function resetFile() {
             <i class="pi pi-angle-down text-xl"></i>
           </span>
         </div>
-        <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5 mt-4" />
+        <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
         <div v-if="isImage" class="relative">
           <div class="absolute top-0 left-[-10px]" @click="resetFile">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>

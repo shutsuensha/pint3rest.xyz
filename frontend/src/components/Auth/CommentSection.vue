@@ -1,14 +1,17 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
 import CommentLikesPopover from './CommentLikesPopover.vue';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ru";
+
 
 
 dayjs.extend(relativeTime);
+dayjs.locale("ru");
 
 
 
@@ -92,6 +95,10 @@ async function loadComments() {
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
           replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null
         })
+        if (comments.value[i].cntReplies > 0) {
+          console.log('show replies')
+          comments.value[i].showReplies = true
+        }
       } catch (error) {
         console.error(error)
       }
@@ -148,6 +155,9 @@ async function addComment(comment) {
       console.error(error)
     }
     comment.cntReplies += 1
+    comment.showReplies = false
+    await nextTick()
+    comment.showReplies = true
   }
 }
 
@@ -196,71 +206,100 @@ async function likeComment(comment) {
     }
   }
 }
+
+function resetFile(comment) {
+  comment.replyIsImage = false
+  comment.replyIsVideo = false
+  comment.replyMediaPreview = null
+  comment.replyMediaFile = null
+}
 </script>
 
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-4 bg-gray-100 rounded-xl text-md font-medium text-black h-80 w-full overflow-y-auto">
-    <div v-for="comment in comments" :key="comment.id" class="flex flex-col mb-2">
+    class="flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-96 w-full overflow-y-auto border-2 border-black">
+    <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
         <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-        <span class="font-medium">{{ comment.user.username }}</span>
+        <span class="font-bold">{{ comment.user.username }}</span>
       </RouterLink>
-      <span class=" font-medium">{{ comment.content }}</span>
-      <div class="flex flex-row">
+      <span class="font-medium ml-12 mr-12 text-wrap truncate">{{ comment.content }}</span>
+      <div class="flex flex-row ml-12">
         <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
           class="h-32 w-32 object-cover rounded-lg" />
         <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
           class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
-        <div v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">
-          <h1>{{ comment.cntReplies }} Replies </h1>
-        </div>
-        <ReplyCommentSection v-if="comment.showReplies" :comment_id="comment.id" />
       </div>
-      <div v-if="comment.showReply" class="flex items-center space-x-2">
+      <div v-if="comment.showReply">
+        <div v-if="comment.replyIsImage" class="relative ml-12">
+          <div class="absolute top-0 left-[-10px]" @click="resetFile(comment)">
+            <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
+          </div>
+          <img :src="comment.replyMediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
+        </div>
+        <div v-if="comment.replyIsVideo" class="relative ml-12">
+          <div class="absolute top-0 left-[-10px] z-20" @click="resetFile(comment)">
+            <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
+          </div>
+          <video :src="comment.replyMediaPreview" class="mt-2 h-32 w-32 object-cover rounded-lg" autoplay loop muted />
+        </div>
+      </div>
+      <div v-if="comment.showReply" class="flex items-center space-x-2 ml-12 mr-4">
+        <i @click="comment.showReply = false"
+          class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
         <button type="button" @click="addComment(comment)"
           class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
-          Ответить
+          Add
         </button>
 
         <!-- Tags Input -->
         <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
           class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
           placeholder="Введите комментарий" />
-      </div>
-      <div v-if="comment.showReply" class="flex flex-col">
-        <input type="file" id="media" name="media" accept="image/*,video/*"
+
+        <label :for="comment.id">
+          <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
+        </label>
+        <input type="file" :id="comment.id" :name="comment.id" accept="image/*,video/*"
           @change="(event) => handleMediaUpload(event, comment)"
-          class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-
-
-        <img v-if="comment.replyIsImage" :src="comment.replyMediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
-        <video v-if="comment.replyIsVideo" :src="comment.replyMediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
+          class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
       </div>
-      <div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="font-medium">{{ comment.created_at }}</span>
+      <div class="flex items-center space-x-2 ml-12 mt-2">
+        <span class="font-medium text-gray-600">{{ dayjs(comment.created_at).fromNow() }}</span>
         <span @click="comment.showReply = !comment.showReply"
-          class="hover:underline hover:text-blue-400 cursor-pointer">Ответить</span>
+          class="text-md hover:underline hover:text-rose-400  cursor-pointer">Ответить</span>
         <div class="flex items-center space-x-2">
           <!-- Icon -->
-          <i @click="likeComment(comment)"
-            :class="`pi ${comment.checkUserLike ? 'pi-heart-fill' : 'pi-heart'} text-md`"></i>
+
+          <i v-if="comment.checkUserLike" @click="likeComment(comment)"
+            class="text-rose-500 pi pi-heart-fill text-md cursor-pointer "></i>
+          <i v-if="!comment.checkUserLike" @click="likeComment(comment)"
+            class="text-rose-500 pi pi-heart text-md cursor-pointer "></i>
           <!-- Number of Likes -->
-          <div v-if="comment.cntLikes != 0" class="font-medium text-2xl relative"
+          <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
             @mouseover="comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
             <span>{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
               @mouseleave="comment.insidePopover = false; comment.showPopover = false"
-              class="absolute top-[30px] left-[-50px]">
+              class="absolute top-[20px] left-[-100px]">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>
         </div>
+      </div>
+      <div class="ml-12 text-gray-700 text-sm mt-4 italic cursor-pointer mb-2 flex items-center justify-between"
+        v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">
+        <h1 v-if="!comment.showReplies">⎯⎯ Просмотреть {{ comment.cntReplies }} ответа </h1>
+        <h1 v-if="comment.showReplies">⎯⎯ Скрыть ответы </h1>
+        <span class="transition-transform duration-300 mr-5" :class="{ 'rotate-180': comment.showReplies }">
+          <i class="pi pi-angle-down text-sm"></i>
+        </span>
+      </div>
+      <div class="ml-12">
+        <ReplyCommentSection v-if="comment.showReplies" :comment_id="comment.id" />
       </div>
     </div>
   </div>

@@ -66,7 +66,7 @@ async def get_likes_on_pin(pin_id:int, db: db, user_id: user_id, filter: filter)
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
 
-    likes = await db.scalars(select(LikesOrm).where(LikesOrm.pin_id == pin_id).offset(filter.offset).limit(filter.limit))
+    likes = await db.scalars(select(LikesOrm).where(LikesOrm.pin_id == pin_id).order_by(LikesOrm.id.desc()).offset(filter.offset).limit(filter.limit))
     return likes
 
 
@@ -129,5 +129,5 @@ async def get_likes_on_comment(comment_id: int, db: db, user_id: user_id, filter
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
 
-    likes = await db.scalars(select(LikesOrm).where(LikesOrm.comment_id == comment_id).offset(filter.offset).limit(filter.limit))
+    likes = await db.scalars(select(LikesOrm).where(LikesOrm.comment_id == comment_id).order_by(LikesOrm.id.desc()).offset(filter.offset).limit(filter.limit))
     return likes

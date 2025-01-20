@@ -1,8 +1,20 @@
+### Currently working
+высоту в зависимости от прогруженных лайков
+высоту в зависимости от прогруженных коментов
+зафиксить адд комент
+не открываються ответы на прогрузку
+время коментов фиксануть
+анимации на появления лайков коментариев
+АНИМАцию цифры лайка добавление
+home view user load by click
+
+
 ### Frontend server
 npm run dev
 
 
 ### up for me not necessary
+- comment video controls
 - after create pin продумать
 - test all inputs for trim()
 - add emoji in every input
@@ -73,8 +85,10 @@ npm run dev
 - create pin loader
 - create pin max-height
 - https://github.com/amineyarman/vue-kinesis
-- - create pin display tags при нажатии поиск по тегу
-- анимации на появления лайков коментариев
-- высота для лайков - коментаривем исходя из подгруженных
-- АНИМАцию цифры лайка добавление
-- after add comment close comments and show fro display user comment
+- rgb на коменты и профили пользователей + свечение везде
+- переработать инпуты ВСЕ НАХ
+- text-wrap truncate - likepopover
+- pin detail на загрузку без прыжков
+- fix video play after back cache
+- toast for saving/deleting, liked/add comment
+- fix add coment input on same file handle
