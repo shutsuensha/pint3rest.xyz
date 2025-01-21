@@ -20,6 +20,7 @@ const props = defineProps({
 })
 
 
+
 const comments = ref([])
 
 const offset = ref(0);
@@ -91,14 +92,10 @@ async function loadComments() {
         }
         comments.value.push({
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
-          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: false,
+          user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: cntReplies > 0 ? true : false,
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
-          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null
+          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null
         })
-        if (comments.value[i].cntReplies > 0) {
-          console.log('show replies')
-          comments.value[i].showReplies = true
-        }
       } catch (error) {
         console.error(error)
       }
@@ -158,6 +155,7 @@ async function addComment(comment) {
     comment.showReplies = false
     await nextTick()
     comment.showReplies = true
+    comment.showReply = false
   }
 }
 
@@ -189,6 +187,8 @@ const previewFile = (file, comment) => {
 
 async function likeComment(comment) {
   if (comment.checkUserLike) {
+    comment.showDislikeAnimation = true
+    comment.showLikeAnimation = false
     try {
       await axios.delete(`/api/likes/comment/${comment.id}`)
       comment.checkUserLike = false
@@ -197,6 +197,8 @@ async function likeComment(comment) {
       console.log(error)
     }
   } else {
+    comment.showDislikeAnimation = false
+    comment.showLikeAnimation = true
     try {
       await axios.post(`/api/likes/comment/${comment.id}`)
       comment.checkUserLike = true
@@ -218,20 +220,31 @@ function resetFile(comment) {
 
 <template>
   <div @scroll="handleScroll"
-    class="flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-96 w-full overflow-y-auto border-2 border-black">
+    :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
         <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
         <span class="font-bold">{{ comment.user.username }}</span>
       </RouterLink>
-      <span class="font-medium ml-12 mr-12 text-wrap truncate">{{ comment.content }}</span>
-      <div class="flex flex-row ml-12">
-        <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
-          class="h-32 w-32 object-cover rounded-lg" />
-        <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
-          class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
+      <div class="relative">
+        <div class="absolute top-[-20px] left-10">
+          <transition name="flash2">
+            <i v-if="comment.showDislikeAnimation" class="pi pi-heart text-5xl text-white glowing-icon opacity-0"></i>
+          </transition>
+          <transition name="flash2">
+            <i v-if="comment.showLikeAnimation"
+              class="pi pi-heart-fill text-5xl text-white glowing-icon opacity-0"></i>
+          </transition>
+        </div>
       </div>
+      <span class="font-medium ml-12 mr-12 text-wrap truncate">{{ comment.content }}</span>
+        <div class="flex flex-row ml-12">
+          <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
+            class="h-32 w-32 object-cover rounded-lg" />
+          <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
+            class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
+        </div>
       <div v-if="comment.showReply">
         <div v-if="comment.replyIsImage" class="relative ml-12">
           <div class="absolute top-0 left-[-10px]" @click="resetFile(comment)">
@@ -246,18 +259,19 @@ function resetFile(comment) {
           <video :src="comment.replyMediaPreview" class="mt-2 h-32 w-32 object-cover rounded-lg" autoplay loop muted />
         </div>
       </div>
-      <div v-if="comment.showReply" class="flex items-center space-x-2 ml-12 mr-4">
+      <div v-if="comment.showReply" class="flex items-center space-x-2 ml-12 mr-4 mt-2">
         <i @click="comment.showReply = false"
           class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
-        <button type="button" @click="addComment(comment)"
-          class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
-          Add
-        </button>
 
         <!-- Tags Input -->
         <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
           class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
-          placeholder="Введите комментарий" />
+          placeholder="Добавить комментарий" />
+
+        <button type="button" @click="addComment(comment)"
+          class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+          Add
+        </button>
 
         <label :for="comment.id">
           <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
@@ -274,9 +288,9 @@ function resetFile(comment) {
           <!-- Icon -->
 
           <i v-if="comment.checkUserLike" @click="likeComment(comment)"
-            class="text-rose-500 pi pi-heart-fill text-md cursor-pointer "></i>
+            class="text-red-700 pi pi-heart-fill text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
           <i v-if="!comment.checkUserLike" @click="likeComment(comment)"
-            class="text-rose-500 pi pi-heart text-md cursor-pointer "></i>
+            class="text-red-700 pi pi-heart text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
           <!-- Number of Likes -->
           <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
             @mouseover="comment.showPopover = true"
@@ -304,3 +318,26 @@ function resetFile(comment) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.flash2-enter-active,
+.flash2-leave-active {
+  transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1);
+}
+
+.flash2-enter-from,
+.flash2-leave-to {
+  opacity: 0;
+  transform: scale(3);
+}
+
+.flash2-enter-to,
+.flash2-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.glowing-icon {
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 0, 0, 0.5);
+}
+</style>

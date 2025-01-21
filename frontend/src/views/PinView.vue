@@ -335,6 +335,8 @@ async function addComment() {
     showCommets.value = false
     await nextTick()
     showCommets.value = true
+
+    resetFile()
   }
 }
 
@@ -363,12 +365,14 @@ function resetFile() {
       </svg>
     </button>
     <div v-show="pinImageLoaded || pinVideoLoaded"
-      class="grid grid-cols-2 gap-6 mx-60 bg-gray-100 rounded-3xl shadow-lg">
+      class="grid grid-cols-2 gap-10 mx-60 bg-gray-100 rounded-3xl shadow-lg">
       <!-- Left Column: Image or Video -->
       <div>
         <div class="relative w-full max-w-2xl mx-auto">
-          <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-l-3xl"
-            @load="pinImageLoaded = true" />
+          <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
+            @load="pinImageLoaded = true" :style="{
+              boxShadow: `0 0 30px 15px ${ pin.rgb }`
+            }" />
           <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="relative flex items-center justify-center w-12 h-12">
               <transition name="flash2">
@@ -386,12 +390,15 @@ function resetFile() {
           @mouseleave="showControls = false">
           <!-- Video Element -->
           <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
-            class="w-full rounded-l-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
-            @ended="onVideoEnd"></video>
+            class="w-full rounded-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
+            @ended="onVideoEnd" :style="{
+              boxShadow: `0 0 30px 15px ${ pin.rgb }`
+            }">
+          </video>
 
           <!-- Gradient Overlay (cloud-like fade effect) -->
           <div v-if="pinVideoLoaded && showControls"
-            class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-900 to-transparent rounded-l-3xl">
+            class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-900 to-transparent rounded-3xl">
           </div>
 
           <!-- Custom Controls -->
@@ -460,9 +467,9 @@ function resetFile() {
           <div class="flex items-center space-x-4">
             <!-- Icon -->
             <i v-if="checkUserLike" @click="likePin"
-              class="text-rose-500 pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+              class="text-red-700 pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <i v-if="!checkUserLike" @click="likePin"
-              class="text-rose-500 pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+              class="text-red-700 pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <!-- Number of Likes -->
             <div v-if="cntLikes != 0" class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
               @mouseleave="if (!insidePopover) showPopover = false;">
@@ -486,7 +493,9 @@ function resetFile() {
           <span class="font-bold text-2xl">{{ pin.title }}</span>
         </div>
         <div class="mt-2" v-if="pin.description">
-          {{ pin.description }}
+          <span class="">
+            {{ pin.description }}
+          </span>
         </div>
         <div class="mt-4" v-if="pin.href">
           <a target="_blank" :href="pin.href" class="underline hover:text-rose-600 text-orange-400">{{ pin.href }}</a>
@@ -511,6 +520,9 @@ function resetFile() {
             <i class="pi pi-angle-down text-xl"></i>
           </span>
         </div>
+        <div v-else class="mt-5 mb-2">
+          <h1 class="text-xl">No comments</h1>
+        </div>
         <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
         <div v-if="isImage" class="relative">
           <div class="absolute top-0 left-[-10px]" @click="resetFile">
@@ -526,15 +538,16 @@ function resetFile() {
         </div>
         <div class="flex items-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Add Button -->
-          <button type="button" @click="addComment"
-            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
-            Add
-          </button>
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
             class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
-            placeholder="Введите комментарий" />
+            placeholder="Добавить комментарий" />
+
+          <button type="button" @click="addComment"
+            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+            Add
+          </button>
 
           <label for="media">
             <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>

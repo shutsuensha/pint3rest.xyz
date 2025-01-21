@@ -1,12 +1,4 @@
 ### Currently working
-высоту в зависимости от прогруженных лайков
-высоту в зависимости от прогруженных коментов
-зафиксить адд комент
-не открываються ответы на прогрузку
-время коментов фиксануть
-анимации на появления лайков коментариев
-АНИМАцию цифры лайка добавление
-home view user load by click
 
 
 ### Frontend server
@@ -14,6 +6,16 @@ npm run dev
 
 
 ### up for me not necessary
+ссылки username не на всю ширину
+hover likes лучше  (типо absolute сделать зону на ховерок)
+pin detail load related когда заскролит пользователь к секции?
+после открытия пин детаил показывать кнопки и скрывать их на видео (учитывать ховер)
+после создания пина сделать редирект на него? (mb celery)
+инпуты задезайнить?
+цвет лайка мб другой?
+тональность на всем view на pin.rgb?
+animations number likes?
+- home view user load by click
 - comment video controls
 - after create pin продумать
 - test all inputs for trim()
@@ -89,6 +91,18 @@ npm run dev
 - переработать инпуты ВСЕ НАХ
 - text-wrap truncate - likepopover
 - pin detail на загрузку без прыжков
-- fix video play after back cache
+- fix video play after reload detail, after back - comments, controls + preview - controls, play after back
 - toast for saving/deleting, liked/add comment
 - fix add coment input on same file handle
+- custom slider likespopover commets 
+- keep alive optimization, 
+- pin detail цвета и тона по pin.rgb всех элементов
+- home view видео из поле зрения выключать
+- testing site in all browsers
+- truncate title, description pin detail
+- delete comment/edit
+- likespopover on click
+- reply in replies
+- likespopover display over section + top/bottom displayed
+- like comment animation from icon
+- internet/server error for all requests - toasts

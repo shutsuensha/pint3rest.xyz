@@ -174,8 +174,8 @@ const showOverlay = ref(false)
 
 <template>
   <div class="w-1/5 p-2 ">
-    <div class="relative block transition-transform duration-100 transform hover:scale-105"  @mouseover="showSaveButton = true;"
-      @mouseleave="showSaveButton = false;">
+    <div class="relative block transition-transform duration-100 transform hover:scale-105"
+      @mouseover="showSaveButton = true;" @mouseleave="showSaveButton = false;">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-10 top-2 right-2 px-6 py-3 text-sm ${bgSave} hover:bg-red-800 text-white rounded-3xl transition`">
         {{ saveText }}
@@ -188,7 +188,7 @@ const showOverlay = ref(false)
           <div v-if="imageGif" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
           </div>
           <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
-            class="w-full h-auto rounded-3xl" />
+            class="w-full h-auto rounded-3xl"/>
         </div>
         <div class="relative">
           <div v-if="videoDuration" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">
