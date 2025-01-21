@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
-from datetime import date
+from datetime import date, datetime
 
 
 pins_tags = Table(
@@ -76,7 +76,8 @@ class CommentsOrm(Base):
     comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
 
     content: Mapped[str | None] = mapped_column(String(400), default=None)
-    created_at: Mapped[date] = mapped_column(default=date.today)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
