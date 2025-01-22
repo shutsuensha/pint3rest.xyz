@@ -90,3 +90,12 @@ class LikesOrm(Base):
     pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), default=None)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
+
+
+class SubsrciptionsOrm(Base):
+    __tablename__ = "subscriptions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    follower_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    following_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
