@@ -371,7 +371,7 @@ function resetFile() {
         <div class="relative w-full max-w-2xl mx-auto">
           <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
             @load="pinImageLoaded = true" :style="{
-              boxShadow: `0 0 30px 15px ${ pin.rgb }`
+              boxShadow: `0 0 30px 15px ${pin.rgb}`
             }" />
           <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="relative flex items-center justify-center w-12 h-12">
@@ -392,14 +392,14 @@ function resetFile() {
           <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
             class="w-full rounded-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
             @ended="onVideoEnd" :style="{
-              boxShadow: `0 0 30px 15px ${ pin.rgb }`
+              boxShadow: `0 0 30px 15px ${pin.rgb}`
             }">
           </video>
 
           <!-- Gradient Overlay (cloud-like fade effect) -->
           <div v-if="pinVideoLoaded && showControls"
             class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-900 to-transparent rounded-3xl">
-          </div>  
+          </div>
 
           <!-- Custom Controls -->
           <div v-if="pinVideoLoaded && showControls"
@@ -507,11 +507,14 @@ function resetFile() {
             {{ tag.name }}
           </div>
         </div>
-        <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
-          class="flex items-center mt-2 hover:underline cursor-pointer">
-          <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full" />
-          <span class="ml-2 text-md font-medium">@{{ pinUser.username }}</span>
-        </RouterLink>
+        <div>
+          <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
+            class="inline-flex items-center mt-2 hover:underline cursor-pointer">
+            <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full" />
+            <span class="ml-2 text-md font-medium">@{{ pinUser.username }}</span>
+          </RouterLink>
+        </div>
+
         <div class="mt-5 mb-2 flex items-center justify-between cursor-pointer" v-if="cntComments != 0"
           @click="showCommets = !showCommets">
           <h1 class="text-xl">
@@ -522,7 +525,7 @@ function resetFile() {
           </span>
         </div>
         <div v-else class="mt-5 mb-2">
-          <h1 class="text-xl">No comments</h1>
+          <h1 class="text-xl italic text-gray-600">Добавьте комментарий, будьте первыми!</h1>
         </div>
         <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
         <div v-if="isImage" class="relative">
@@ -542,11 +545,11 @@ function resetFile() {
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
-            class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+            class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
             placeholder="Добавить комментарий" />
 
           <button type="button" @click="addComment"
-            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
             Add
           </button>
 

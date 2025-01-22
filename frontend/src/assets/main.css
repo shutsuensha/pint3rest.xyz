@@ -6,3 +6,15 @@
 body {
   font-family: 'Poppins', sans-serif;
 }
+
+
+::selection {
+  background-color: #4CAF50; /* Цвет фона выделения */
+  color: white; /* Цвет текста выделения */
+}
+
+/* Для браузера Firefox (необязательно, но полезно для совместимости) */
+::-moz-selection {
+  background-color: #4CAF50;
+  color: white;
+}

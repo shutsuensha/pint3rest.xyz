@@ -1,39 +1,12 @@
-### Currently workingx
-
-### Frontend server
-npm run dev
-
-
-### up for me not necessary
-ссылки username не на всю ширину
-hover likes лучше  (типо absolute сделать зону на ховерок)
-pin detail load related когда заскролит пользователь к секции?
+### Next
 после открытия пин детаил показывать кнопки и скрывать их на видео (учитывать ховер)
-после создания пина сделать редирект на него? (mb celery)
-инпуты задезайнить?
-цвет лайка мб другой?
-тональность на всем view на pin.rgb?
-animations number likes?
+инпуты задезайнить
+тональность на всем view на pin.rgb
 - home view user load by click
 - comment video controls
-- after create pin продумать
-- test all inputs for trim()
 - add emoji in every input
-- updates
- - schedule reklama
- - updates from another users interation
-- user to user
-  - user followers
-  - user following
-- direct messages
- - every user can write message to another user
- - dialog display in /messages
-- add boards
-- analyze pinterest to add more functions, awesome vuejs
-- user view design
 - create pin design
 - not found design
-- toasts for update profile and why dont updated?????
 - home search design
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - pins desc order
@@ -70,7 +43,6 @@ animations number likes?
 - user edit information
 - popover loading clip + show on top or bottom
 - chatgpt for impove all components
-- edit user email + verification + edit old verification refactor
 - login/signup animation
 - after user create pin in home show animation
 - back arrow better design
@@ -101,8 +73,32 @@ animations number likes?
 - truncate title, description pin detail
 - delete comment/edit
 - likespopover on click
-- reply in replies
 - likespopover display over section + top/bottom displayed
 - like comment animation from icon
-- internet/server error for all requests - toasts
-- выделение текста цвет
+- pin detail - image - show full screen image
+
+
+### Frontend server
+npm run dev
+
+
+### After All
+- updates
+ - schedule reklama
+ - updates from another users interation
+- user to user
+  - user followers
+  - user following
+- direct messages
+ - every user can write message to another user
+ - dialog display in /messages
+- add boards
+- edit user email + verification + edit old verification refactor 
+- test all axios for inputs server error for all requests - toasts
+  - test all inputs for trim(), errors
+- reply in replies
+- after create pin - celery + celery results + notification for user
+- user can disable add comment on pin
+- analyze pinterest to add more functions, awesome vuejs
+- user view design (after fix verification + user to user api)
+  - toasts for update profile and why dont updated?????

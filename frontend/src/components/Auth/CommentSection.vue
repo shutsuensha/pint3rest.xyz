@@ -222,29 +222,28 @@ function resetFile(comment) {
   <div @scroll="handleScroll"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
-      <RouterLink :to="`/user/${comment.user.username}`"
-        class="flex items-center space-x-2 hover:underline cursor-pointer">
-        <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-        <span class="font-bold">{{ comment.user.username }}</span>
-      </RouterLink>
+        <RouterLink :to="`/user/${comment.user.username}`"
+          class="flex items-center space-x-2 hover:underline cursor-pointer">
+          <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
+          <span class="font-bold">{{ comment.user.username }}</span>
+        </RouterLink>
       <div class="relative">
         <div class="absolute top-[-20px] left-10">
           <transition name="flash2">
             <i v-if="comment.showDislikeAnimation" class="pi pi-heart text-5xl text-white glowing-icon opacity-0"></i>
           </transition>
           <transition name="flash2">
-            <i v-if="comment.showLikeAnimation"
-              class="pi pi-heart-fill text-5xl text-white glowing-icon opacity-0"></i>
+            <i v-if="comment.showLikeAnimation" class="pi pi-heart-fill text-5xl text-white glowing-icon opacity-0"></i>
           </transition>
         </div>
       </div>
       <span class="font-medium ml-12 mr-12 text-wrap truncate">{{ comment.content }}</span>
-        <div class="flex flex-row ml-12">
-          <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
-            class="h-32 w-32 object-cover rounded-lg" />
-          <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
-            class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
-        </div>
+      <div class="flex flex-row ml-12">
+        <img v-if="comment.image && comment.isImage" :src="comment.image" alt="comment image"
+          class="h-32 w-32 object-cover rounded-lg" />
+        <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
+          class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
+      </div>
       <div v-if="comment.showReply">
         <div v-if="comment.replyIsImage" class="relative ml-12">
           <div class="absolute top-0 left-[-10px]" @click="resetFile(comment)">

@@ -1,12 +1,12 @@
 ### Next
+- user to user relation
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
 - celery[flower, beat], redis - schedule send email reklama + schedule on db send updated
 - user updates - api
-- user to user relation
 - черновики create pins
-- test
+- tests
 - api documentation
 - full rest api for every route
 - dockerfile backend, dockerfile frontend, docker-compose
