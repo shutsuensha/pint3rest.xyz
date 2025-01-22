@@ -1,11 +1,11 @@
 ### Next
-- user to user relation
+- user direct messages
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
 - celery[flower, beat], redis - schedule send email reklama + schedule on db send updated
-- user updates - api
 - черновики create pins
+- boards
 - tests
 - api documentation
 - full rest api for every route
@@ -18,7 +18,6 @@
 - mongodb
 - google one tap, python socialу
 - models relations, sqlalchemy work with session example, models on_delete;
-- user delete created pins;
 - oauth2/jwt secure
 - access_token/refresh_token, отзыв токенов
 - admin role/api

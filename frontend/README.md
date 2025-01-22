@@ -76,7 +76,7 @@
 - likespopover display over section + top/bottom displayed
 - like comment animation from icon
 - pin detail - image - show full screen image
-
+- show only 1 reply
 
 ### Frontend server
 npm run dev
@@ -86,9 +86,6 @@ npm run dev
 - updates
  - schedule reklama
  - updates from another users interation
-- user to user
-  - user followers
-  - user following
 - direct messages
  - every user can write message to another user
  - dialog display in /messages
