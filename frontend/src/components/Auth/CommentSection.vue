@@ -264,11 +264,11 @@ function resetFile(comment) {
 
         <!-- Tags Input -->
         <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
-          class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+          class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
           placeholder="Добавить комментарий" />
 
         <button type="button" @click="addComment(comment)"
-          class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+          class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
           Add
         </button>
 

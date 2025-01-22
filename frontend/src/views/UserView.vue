@@ -6,6 +6,9 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import CreatedPins from '@/components/Auth/CreatedPins.vue';
 import SavedPins from '@/components/Auth/SavedPins.vue';
 import LikedPins from '@/components/Auth/LikedPins.vue';
+import FollowersSection from '@/components/Auth/FollowersSection.vue';
+import FollowingSection from '@/components/Auth/FollowingSection.vue';
+
 
 onActivated(() => {
   if (user.value) {
@@ -58,6 +61,13 @@ const imagePreview = ref(null)
 const bannerImageFile = ref(null)
 const bannerImagePreview = ref(null)
 
+const cntUserFollowers = ref(null)
+const cntUserFollowing = ref(null)
+const checkUserFollow = ref(null)
+
+const showFollowers = ref(false)
+const showFollowing = ref(false)
+
 
 onMounted(async () => {
   const accessToken = getCookie('access_token');
@@ -75,8 +85,6 @@ onMounted(async () => {
 
   // Log user_id to the console
   auth_user_id.value = payload.user_id;
-
-
 
   try {
     const response = await axios.get(`/api/users/user_username/${username}`);
@@ -117,6 +125,27 @@ onMounted(async () => {
     }
   } catch (error) {
     console.log(error);
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true })
+    cntUserFollowers.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true })
+    cntUserFollowing.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true })
+    checkUserFollow.value = response.data
+  } catch (error) {
+    console.error(error)
   }
 
   loadingUser.value = false;
@@ -320,6 +349,26 @@ function handleBannerUpload(event) {
 }
 
 const showEditButtons = ref(false)
+
+async function follow() {
+  try {
+    const response = await axios.post(`/api/subscription/${user.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = true
+  cntUserFollowers.value += 1
+}
+
+async function unfollow() {
+  try {
+    const response = await axios.delete(`/api/subscription/${user.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = false
+  cntUserFollowers.value -= 1
+}
 </script>
 
 <template>
@@ -462,6 +511,29 @@ const showEditButtons = ref(false)
       </div>
     </div>
   </transition>
+
+  <transition name="fade" appear>
+    <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+      <FollowersSection :user_id="user.id"/>
+      <button @click="showFollowers = false"
+        class="absolute right-20 top-20 mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+        style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+        Close
+      </button>
+    </div>
+  </transition>
+
+  <transition name="fade" appear>
+    <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+      <FollowingSection :user_id="user.id"/>
+      <button @click="showFollowing = false"
+        class="absolute right-20 top-20 mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+        style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+        Close
+      </button>
+    </div>
+  </transition>
+
   <div class="flex items-center justify-center mt-5">
     <ClipLoader v-if="loadingUser" :color="color" :size="size" class="" />
     <div v-else>
@@ -511,6 +583,24 @@ const showEditButtons = ref(false)
             <i class="pi pi-pinterest"></i>
           </a>
         </div>
+        <div class="flex">
+          <button @click="showFollowers = true"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            {{ cntUserFollowers }} Подпищиков
+          </button>
+          <button @click="showFollowing = true"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            {{ cntUserFollowing }} Подписок
+          </button>
+        </div>
+        <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+          Подписаться
+        </button>
+        <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+          Отписаться
+        </button>
       </div>
       <div class="flex items-center mt-6 justify-center space-x-4">
         <button @click="createdPins"
