@@ -105,3 +105,4 @@ animations number likes?
 - likespopover display over section + top/bottom displayed
 - like comment animation from icon
 - internet/server error for all requests - toasts
+- выделение текста цвет
