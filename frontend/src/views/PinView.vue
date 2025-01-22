@@ -399,7 +399,7 @@ function resetFile() {
           <!-- Gradient Overlay (cloud-like fade effect) -->
           <div v-if="pinVideoLoaded && showControls"
             class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-900 to-transparent rounded-3xl">
-          </div>
+          </div>  
 
           <!-- Custom Controls -->
           <div v-if="pinVideoLoaded && showControls"
@@ -464,13 +464,14 @@ function resetFile() {
       <div class="flex flex-col">
         <div class="flex items-center justify-between w-full p-2">
           <!-- Icon and Likes -->
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-4 relative">
             <!-- Icon -->
             <i v-if="checkUserLike" @click="likePin"
               class="text-red-700 pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <i v-if="!checkUserLike" @click="likePin"
               class="text-red-700 pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <!-- Number of Likes -->
+
             <div v-if="cntLikes != 0" class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
               @mouseleave="if (!insidePopover) showPopover = false;">
               <div>
