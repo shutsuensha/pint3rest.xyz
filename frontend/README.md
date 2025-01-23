@@ -1,5 +1,4 @@
 ### Next
-после открытия пин детаил показывать кнопки и скрывать их на видео (учитывать ховер)
 инпуты задезайнить
 тональность на всем view на pin.rgb
 - home view user load by click
@@ -77,6 +76,8 @@
 - like comment animation from icon
 - pin detail - image - show full screen image
 - show only 1 reply
+- v-auto-animate options
+- video controls animation?
 
 ### Frontend server
 npm run dev

@@ -20,11 +20,14 @@ const duration = ref(0);
 const showLikeAnimation = ref(null)
 const showDislikeAnimation = ref(null)
 
+
+
 const onVideoLoad = () => {
   pinVideoLoaded.value = true;
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
     duration.value = videoPlayer.value.duration;
+    videoPlayer.value.play();
   }
 };
 
@@ -86,14 +89,30 @@ onActivated(() => {
   }
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
-    videoPlayer.value.play();
+    var playPromise = videoPlayer.value.play()
+    if (playPromise !== undefined) {
+      playPromise.then(_ => {
+        // Automatic playback started!
+        // Show playing UI.
+      })
+        .catch(error => {
+          // Auto-play was prevented
+          // Show paused UI.
+        });
+    }
     isPlaying.value = true;
+    showControls.value = true
+    timeoutWorking.value = true
+    timeoutId.value = setTimeout(() => {
+      showControls.value = false
+      timeoutWorking.value = false
+    }, 2000);
   }
 });
 
 onDeactivated(() => {
   if (videoPlayer.value) {
-    videoPlayer.value.pause();
+    // videoPlayer.value.pause();
     isPlaying.value = false;
   }
 });
@@ -149,6 +168,8 @@ const isVideo = ref(false);
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 const tags = ref([])
 
+const timeoutId = ref(null)
+const timeoutWorking = ref(false)
 
 onMounted(async () => {
   try {
@@ -187,6 +208,14 @@ onMounted(async () => {
   } catch (error) {
     router.push('/not-found')
   }
+
+  showControls.value = true
+  timeoutWorking.value = true
+  timeoutId.value = setTimeout(() => {
+    showControls.value = false
+    timeoutWorking.value = false
+  }, 2000);
+
 
   try {
     const response = await axios.get(`/api/likes/pin/likes/cnt/${pin.value.id}`)
@@ -353,6 +382,12 @@ function resetFile() {
   isVideo.value = false
 }
 
+async function showVideoControls() {
+  if (timeoutWorking.value) {
+    clearTimeout(timeoutId.value)
+  }
+  showControls.value = true;
+}
 
 </script>
 
@@ -386,11 +421,11 @@ function resetFile() {
             </div>
           </div>
         </div>
-        <div class="relative w-full max-w-2xl mx-auto" @mouseover="showControls = true"
+        <div class="relative w-full max-w-2xl mx-auto" @mouseover="showVideoControls"
           @mouseleave="showControls = false">
           <!-- Video Element -->
           <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
-            class="w-full rounded-3xl block" autoplay loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
+            class="w-full rounded-3xl block" loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
             @ended="onVideoEnd" :style="{
               boxShadow: `0 0 30px 15px ${pin.rgb}`
             }">

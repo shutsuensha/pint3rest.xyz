@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, onActivated, onDeactivated } from 'vue';
+import { onMounted, ref, computed, onActivated, onDeactivated, nextTick } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -34,8 +34,17 @@ const videoPlayer = ref(null);
 
 onActivated(() => {
   if (videoPlayer.value) {
-    // Возобновляем воспроизведение видео
-    videoPlayer.value.play();
+    var playPromise = videoPlayer.value.play()
+    if (playPromise !== undefined) {
+      playPromise.then(_ => {
+        // Automatic playback started!
+        // Show playing UI.
+      })
+        .catch(error => {
+          // Auto-play was prevented
+          // Show paused UI.
+        });
+    }
   }
 });
 
@@ -188,7 +197,7 @@ const showOverlay = ref(false)
           <div v-if="imageGif" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
           </div>
           <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
-            class="w-full h-auto rounded-3xl"/>
+            class="w-full h-auto rounded-3xl" />
         </div>
         <div class="relative">
           <div v-if="videoDuration" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">

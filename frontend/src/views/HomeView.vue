@@ -71,7 +71,6 @@ const loadPins = async () => {
 };
 
 const handleScroll = () => {
-  console.log('home handle scroll')
   const scrollableHeight = document.documentElement.scrollHeight;
   const currentScrollPosition = window.innerHeight + window.scrollY;
 
