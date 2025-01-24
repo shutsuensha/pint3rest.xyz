@@ -26,17 +26,22 @@
 - analyze/learn fastapi awesome/stack
 - sqalchemy execute + best practices for using execute / scalar
 - chatgpt рекомендации по улучшению
+- rename route - cookie
+- add route for ouath2, refresh tokens, revoke tokens
 
 
 ### Web server
 uvicorn app.main:app --reload
 
+
 ### Postgres
 psql -U evalshine -d pinterest
+
 
 ### Migrations
 alembic revision --autogenerate -m "init"
 alembic upgrade head
+
 
 ### Redis
 sudo systemctl start redis-server
