@@ -209,44 +209,11 @@ async function save() {
 
     <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
 
-    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
-      @mouseleave="if (!insidePopover) { showPopover = false; popUser = null; popImage = null; popBanner = null }"
+    <RouterLink v-if="user" :to="`/user/${user.username}`"
       class="flex items-center mt-2 hover:underline cursor-pointer relative ">
       <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
       <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
       <span v-if="user && showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
-
-      <transition name="flash">
-        <div v-if="showPopover" @mouseover="insidePopover = true"
-          @mouseleave="insidePopover = false; showPopover = false; popUser = null; popImage = null; popBanner = null"
-          class="absolute top-[30px] left-0 bg-white shadow-2xl rounded-xl text-sm font-medium text-black z-50 h-auto w-[280px] border-2 border-black">
-          <img v-if="popBanner" :src="popBanner" class="rounded-xl w-full h-20 object-cover" />
-          <div class="flex flex-col items-center justify-center">
-            <div class="relative">
-              <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
-              <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
-            </div>
-            <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
-              class="text-center text-xl font-medium hover:underline">{{ popUser.username }}</RouterLink>
-            <p v-if="popUser && popUser.description" class="text-center text-md font-semibold truncate mx-auto w-full">
-              {{ popUser.description }}</p>
-            <div class="flex flex-row gap-2 text-2xl">
-              <a v-if="popUser && popUser.instagram" :href="popUser.instagram">
-                <i class="pi pi-instagram"></i>
-              </a>
-              <a v-if="popUser && popUser.tiktok" :href="popUser.tiktok">
-                <i class="pi pi-tiktok"></i>
-              </a>
-              <a v-if="popUser && popUser.telegram" :href="popUser.telegram">
-                <i class="pi pi-telegram"></i>
-              </a>
-              <a v-if="popUser && popUser.pinterest" :href="popUser.pinterest">
-                <i class="pi pi-pinterest"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </transition>
     </RouterLink>
 
     <div v-else class="flex items-center mt-2 hover:underline cursor-pointer">

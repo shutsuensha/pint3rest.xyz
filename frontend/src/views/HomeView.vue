@@ -19,6 +19,9 @@ const pins = ref([]);
 const offset = ref(0);
 const limit = ref(10);
 
+const stagged = ref(0.3)
+const duration = ref('0.5s')
+
 const cntLoading = ref(0)
 const limitCntLoading = ref(null)
 
@@ -63,6 +66,8 @@ const loadPins = async () => {
     // После первого запроса изменяем лимит на 5
     if (limit.value === 10) {
       limit.value = 5;
+      duration.value = '0.2s'
+      stagged.value = 0.01
     }
 
   } catch (error) {
@@ -412,10 +417,10 @@ const filteredTags = computed(() => {
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.4s"
-    item-selector=".item" stagger="0.03s">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28 grid grid-cols-3" v-masonry :transition-duration="duration"
+    item-selector=".item" :stagger="stagged">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
-      <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
+      <Pin v-masonry-tile class="item " v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>

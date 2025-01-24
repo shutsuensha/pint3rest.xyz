@@ -9,12 +9,12 @@ body {
 
 
 ::selection {
-  background-color: #4CAF50; /* Цвет фона выделения */
+  background-color: #FF0000; /* Цвет фона выделения (красный) */
   color: white; /* Цвет текста выделения */
 }
 
-/* Для браузера Firefox (необязательно, но полезно для совместимости) */
+/* Для браузера Firefox */
 ::-moz-selection {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #FF0000; /* Цвет фона выделения (красный) */
+  color: white; /* Цвет текста выделения */
 }

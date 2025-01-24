@@ -2,11 +2,23 @@
 import { onMounted, ref, computed, onActivated, onDeactivated, nextTick } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import axios from 'axios';
+import FollowersSection from '@/components/Auth/FollowersSection.vue';
+import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
 
 const popUser = ref(null)
 const popImage = ref(null)
-const popBanner = ref(null)
+
+const cntUserFollowers = ref(null)
+const cntUserFollowing = ref(null)
+const checkUserFollow = ref(null)
+
+const showFollowers = ref(false)
+const showFollowing = ref(false)
+
+
+const itsMe = ref(null)
+
 
 const emit = defineEmits(['pinLoaded'])
 
@@ -75,6 +87,13 @@ const formattedTimeRemaining = computed(() => {
 
 
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 
 const props = defineProps({
   pin: Object,
@@ -90,8 +109,8 @@ const onVideoLoad = () => {
   if (videoPlayer.value) {
     videoDuration.value = videoPlayer.value.duration; // Получаем длительность
   }
-  videoLoaded.value = true;
   emit('pinLoaded')
+  videoLoaded.value = true;
 }
 
 const showSaveButton = ref(false)
@@ -132,6 +151,7 @@ onMounted(async () => {
 });
 
 async function loadUser() {
+  if (popUser.value) return
   try {
     const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`)
     popUser.value = response.data
@@ -145,21 +165,64 @@ async function loadUser() {
   } catch (error) {
     console.error(error)
   }
-  if (popUser.value && popUser.value.banner_image) {
-    try {
-      const userResponse = await axios.get(
-        `/api/users/upload/banner/${popUser.value.id}`,
-        {
-          responseType: 'blob', // Treat the response as a binary file
-          withCredentials: true, // Include credentials such as cookies or client certificates
-        }
-      );
-      const blobUrl = URL.createObjectURL(userResponse.data);
-      popBanner.value = blobUrl;
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const response = await axios.get(`/api/subscription/followers/cnt/${popUser.value.id}`, { withCredentials: true })
+    cntUserFollowers.value = response.data
+  } catch (error) {
+    console.error(error)
   }
+
+  try {
+    const response = await axios.get(`/api/subscription/following/cnt/${popUser.value.id}`, { withCredentials: true })
+    cntUserFollowing.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/check_user_follow/${popUser.value.id}`, { withCredentials: true })
+    checkUserFollow.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+
+  const accessToken = getCookie('access_token');
+  // Decode the JWT (assuming the access_token is a JWT)
+  const base64Url = accessToken.split('.')[1]; // Get the payload part
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+
+  const payload = JSON.parse(jsonPayload);
+
+  // Log user_id to the console
+  let auth_user_id = payload.user_id;
+
+  itsMe.value = auth_user_id === popUser.value.id
+}
+
+async function follow() {
+  try {
+    const response = await axios.post(`/api/subscription/${popUser.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = true
+  cntUserFollowers.value += 1
+}
+
+async function unfollow() {
+  try {
+    const response = await axios.delete(`/api/subscription/${popUser.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = false
+  cntUserFollowers.value -= 1
 }
 
 async function save() {
@@ -178,11 +241,28 @@ async function save() {
   }
 }
 
-const showOverlay = ref(false)
 </script>
 
 <template>
   <div class="w-1/5 p-2 ">
+    <transition name="fade" appear>
+      <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+        <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
+        <i @click="showFollowers = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+      </div>
+    </transition>
+
+    <transition name="fade" appear>
+      <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+        <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
+        <i @click="showFollowing = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+      </div>
+    </transition>
+
     <div class="relative block transition-transform duration-100 transform hover:scale-105"
       @mouseover="showSaveButton = true;" @mouseleave="showSaveButton = false;">
       <button v-if="showSaveButton" @click.stop="save"
@@ -200,7 +280,8 @@ const showOverlay = ref(false)
             class="w-full h-auto rounded-3xl" />
         </div>
         <div class="relative">
-          <div v-if="videoDuration" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">
+          <div v-if="showAllPins && videoDuration"
+            class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">
             {{ formattedTimeRemaining }}
           </div>
           <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" ref="videoPlayer"
@@ -211,49 +292,55 @@ const showOverlay = ref(false)
 
     <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
 
-    <RouterLink v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
-      @mouseleave="if (!insidePopover) { showPopover = false; popUser = null; popImage = null; popBanner = null }"
-      class="flex items-center mt-2 hover:underline cursor-pointer relative ">
-      <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-      <span v-if="user && showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
-
-      <transition name="flash">
-        <div v-if="showPopover" @mouseover="insidePopover = true"
-          @mouseleave="insidePopover = false; showPopover = false; popUser = null; popImage = null; popBanner = null"
-          class="absolute top-[30px] left-0 bg-white shadow-2xl rounded-xl text-sm font-medium text-black z-50 h-auto w-[280px] border-2 border-black">
-          <img v-if="popBanner" :src="popBanner" class="rounded-xl w-full h-20 object-cover" />
-          <div class="flex flex-col items-center justify-center">
-            <div class="relative">
-              <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
-              <img v-if="popImage" :src="popImage" class="mb-2 rounded-full w-16 h-16 object-cover" />
-            </div>
-            <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
-              class="text-center text-xl font-medium hover:underline">{{ popUser.username }}</RouterLink>
-            <p v-if="popUser && popUser.description" class="text-center text-md font-semibold truncate mx-auto w-full">
-              {{ popUser.description }}</p>
-            <div class="flex flex-row gap-2 text-2xl">
-              <a v-if="popUser && popUser.instagram" :href="popUser.instagram">
-                <i class="pi pi-instagram"></i>
-              </a>
-              <a v-if="popUser && popUser.tiktok" :href="popUser.tiktok">
-                <i class="pi pi-tiktok"></i>
-              </a>
-              <a v-if="popUser && popUser.telegram" :href="popUser.telegram">
-                <i class="pi pi-telegram"></i>
-              </a>
-              <a v-if="popUser && popUser.pinterest" :href="popUser.pinterest">
-                <i class="pi pi-pinterest"></i>
-              </a>
+    <div class="relative">
+      <div v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
+        @mouseleave="if (!insidePopover) { showPopover = false; }"
+        class="flex items-center mt-2 hover:underline cursor-cell relative ">
+        <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
+        <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
+        <span v-if="user && showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
+        <transition name="flash">
+          <div v-if="showPopover" @mouseover="insidePopover = true"
+            @mouseleave="insidePopover = false; showPopover = false;"
+            class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
+            <div class="relative flex flex-col top-7 items-center justify-center">
+              <RouterLink :to="`/user/${popUser.username}`"
+                class="relative transition-transform duration-200 transform hover:scale-110">
+                <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
+                <img v-if="popImage" :src="popImage"
+                  class="mb-2 rounded-full w-20 h-20 object-cover border-2 border-red-500" />
+              </RouterLink>
+              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
+                class="text-center text-xl font-bold hover:underline">{{ popUser.username }}</RouterLink>
+              <div class="flex space-x-4">
+                <span v-if="cntUserFollowers > 0" @click="showFollowers = true"
+                  :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110 `">
+                  {{ cntUserFollowers }} followers
+                </span>
+                <button v-if="cntUserFollowing > 0" @click="showFollowing = true"
+                  :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110  `">
+                  {{ cntUserFollowing }} following
+                </button>
+              </div>
+              <div
+                class="absolute top-0 right-2 cursor-pointer transition-transform duration-200 transform hover:scale-110">
+                <button v-if="!checkUserFollow && !itsMe" @click="follow"
+                  class=" px-4 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
+                  Follow
+                </button>
+                <button v-if="checkUserFollow && !itsMe" @click="unfollow"
+                  class=" px-4 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
+                  Unfollow
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </transition>
-    </RouterLink>
-
-    <div v-else class="flex items-center mt-2 hover:underline cursor-pointer">
-      <div class="bg-gray-300 w-8 h-8 rounded-full"></div>
-      <span class="ml-2 text-sm font-medium"></span>
+        </transition>
+      </div>
+      <div v-else class="flex items-center mt-2 hover:underline cursor-pointer">
+        <div class="bg-gray-300 w-8 h-8 rounded-full"></div>
+        <span class="ml-2 text-sm font-medium"></span>
+      </div>
     </div>
   </div>
 </template>
@@ -261,32 +348,58 @@ const showOverlay = ref(false)
 
 <style scoped>
 .flash-enter-active {
-  animation: flashEffect 1s ease-out;
+  animation: flashEffect 0.5s ease-out;
 }
 
-.flash-enter-from,
-.flash-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
 
 @keyframes flashEffect {
   0% {
     opacity: 0;
-    transform: scale(0.9);
-    filter: brightness(0.1);
+    transform: scale(0.1);
   }
 
   50% {
     opacity: 1;
     transform: scale(1);
-    filter: brightness(1.2);
   }
+}
+</style>
 
-  100% {
+
+<style scoped>
+/* Define transition animations */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+.fade-in-animation {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
     opacity: 1;
     transform: scale(1);
-    filter: brightness(1);
   }
 }
 </style>

@@ -515,22 +515,18 @@ async function unfollow() {
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
       <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers"/>
-      <button @click="showFollowers = false"
-        class="absolute right-20 top-20 mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-        style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-        Close
-      </button>
+      <i @click="showFollowers = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
 
   <transition name="fade" appear>
     <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
       <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing"/>
-      <button @click="showFollowing = false"
-        class="absolute right-20 top-20 mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-        style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-        Close
-      </button>
+      <i @click="showFollowing = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
 
