@@ -1,6 +1,5 @@
 ### Sure to do
 - emoji for every input
-- create pin design
 - home search design
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - after save pin - анимацию что пин сохранен
