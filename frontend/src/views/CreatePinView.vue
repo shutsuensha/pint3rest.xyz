@@ -156,13 +156,13 @@ async function submitPin() {
           tags: tags.value
         })
         sendingPin.value = false
-        router.push('/');
+        router.push(`/pin/${pin_id}`);  
       } catch (error) {
         console.error(error)
       }
     } else {
       sendingPin.value = false
-      router.push('/');
+      router.push(`/pin/${pin_id}`);  
     }
   } catch (error) {
     console.log(error)
