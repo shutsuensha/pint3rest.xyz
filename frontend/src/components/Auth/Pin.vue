@@ -293,15 +293,13 @@ async function save() {
     <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
 
     <div class="relative">
-      <div v-if="user" :to="`/user/${user.username}`" @mouseover="showPopover = true; loadUser()"
-        @mouseleave="if (!insidePopover) { showPopover = false; }"
-        class="flex items-center mt-2 hover:underline cursor-cell relative ">
+      <div v-if="user" :to="`/user/${user.username}`"
+        class="flex items-center mt-2 hover:underline relative ">
         <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
         <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-        <span v-if="user && showAllPins" class="ml-2 text-sm font-medium"> {{ user.username }}</span>
+        <span @click="if(showPopover) {showPopover = false} else { showPopover = true; loadUser()}" v-if="user && showAllPins" class="ml-2 text-sm font-medium cursor-pointer"> {{ user.username }}</span>
         <transition name="flash">
-          <div v-if="showPopover" @mouseover="insidePopover = true"
-            @mouseleave="insidePopover = false; showPopover = false;"
+          <div v-if="showPopover"
             class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
             <div class="relative flex flex-col top-7 items-center justify-center">
                <RouterLink :to="`/user/${popUser.username}`"

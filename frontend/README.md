@@ -1,11 +1,8 @@
-### Sure to do
+### Next up for me free time
 - emoji for every input
 - home search design
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
 - after save pin - анимацию что пин сохранен
-
-
-### Next up for me free time
 - pin detail, play comments video + controls
 - play tags video after back
 - not found design
@@ -60,6 +57,8 @@
 - errors in userpopout
 - pin detail likes full screen
 - aftet back video paused display PAUSE play on hover
+- pin detail buttons scale on hover
+- login/signup purple?
 
 - ### After All
 - updates
