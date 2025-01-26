@@ -1,17 +1,16 @@
-### Next
-- pin detail, play comments video + controls
-- play tags video after back
+### Sure to do
 - полоску на загрузку кажого роута
 - emoji for every input
-- тональность на всем view на pin.rgb
-инпуты задезайнить
-тональность на всем view на pin.rgb
-- comment video controls
-- add emoji in every input
 - create pin design
-- not found design
 - home search design
 - notauth page scrolling + describe all functional - https://codepen.io/rexjbull/pen/RwRRezq
+- after save pin - анимацию что пин сохранен
+
+
+### Next up for me free time
+- pin detail, play comments video + controls
+- play tags video after back
+- not found design
 - pins desc order
 - tags стрелочки показываем или нет
 - tags without pins dont show
@@ -20,16 +19,13 @@
 - create pin - tags sort/pagination
 - create pin url load
 - create pin - multiply files
-- home load pin bug with user placeholder
 - user view - display messages for me/other user if no pins
 - change font
-- search/tags design
 - all pins hover buttons better
 - loaders for userview
 - loaders for not-found
 - rewrite all img/video loaders
-- awesome-vue + find in pintereset functional
-- after save pin - анимацию что пин сохранен (toast?)
+- after save pin - анимацию что пин сохранен
 - delete saved pin / delete created pin - modal are u sure with preview of pin
 - user view change tab animations
 - search home view animations

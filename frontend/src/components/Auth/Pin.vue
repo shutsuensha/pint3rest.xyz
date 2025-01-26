@@ -304,23 +304,23 @@ async function save() {
             @mouseleave="insidePopover = false; showPopover = false;"
             class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
             <div class="relative flex flex-col top-7 items-center justify-center">
-              <RouterLink :to="`/user/${popUser.username}`"
-                class="relative transition-transform duration-200 transform hover:scale-110">
+               <RouterLink :to="`/user/${popUser.username}`"
+                class="relative transition-transform duration-200transform hover:scale-110">
                 <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
                 <img v-if="popImage" :src="popImage"
                   class="mb-2 rounded-full w-20 h-20 object-cover border-2 border-red-500" />
               </RouterLink>
-              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
+              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                 class="text-center text-xl font-bold hover:underline">{{ popUser.username }}</RouterLink>
               <div class="flex space-x-4">
-                <span v-if="cntUserFollowers > 0" @click="showFollowers = true"
+                <span v-if="cntUserFollowers > 0" @click="showFollowers = true" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                   :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110 `">
                   {{ cntUserFollowers }} followers
                 </span>
-                <button v-if="cntUserFollowing > 0" @click="showFollowing = true"
+                <span v-if="cntUserFollowing > 0" @click="showFollowing = true" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                   :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110  `">
                   {{ cntUserFollowing }} following
-                </button>
+                </span>
               </div>
               <div
                 class="absolute top-0 right-2 cursor-pointer transition-transform duration-200 transform hover:scale-110">

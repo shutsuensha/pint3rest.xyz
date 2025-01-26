@@ -501,16 +501,16 @@ async function showVideoControls() {
           <!-- Icon and Likes -->
           <div class="flex items-center space-x-4 relative">
             <!-- Icon -->
-            <i v-if="checkUserLike" @click="likePin"
-              class="text-red-700 pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
-            <i v-if="!checkUserLike" @click="likePin"
-              class="text-red-700 pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+            <i v-if="checkUserLike" @click="likePin" :style="{ color: pin.rgb }"
+              class="pi pi-heart-fill text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+            <i v-if="!checkUserLike" @click="likePin" :style="{ color: pin.rgb }"
+              class="pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <!-- Number of Likes -->
 
             <div v-if="cntLikes != 0" class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
               @mouseleave="if (!insidePopover) showPopover = false;">
               <div>
-                <span>{{ cntLikes }}</span>
+                <span :style="{ color: pin.rgb }">{{ cntLikes }}</span>
               </div>
               <div v-if="showPopover" @mouseover="insidePopover = true"
                 @mouseleave="insidePopover = false; showPopover = false" class="absolute top-[30px] left-[-50px] z-50">
@@ -520,13 +520,15 @@ async function showVideoControls() {
           </div>
 
           <!-- Save Button -->
-          <button @click="save"
-            :class="`px-6 py-3 text-sm ${bgSave} hover:bg-red-700 text-white rounded-3xl transition`">
+          <button @click="save" :style="{
+            backgroundColor: pin.rgb,
+          }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105`">
             {{ saveText }}
           </button>
+
         </div>
         <div v-if="pin.title">
-          <span class="font-bold text-2xl">{{ pin.title }}</span>
+          <span :style="{ color: pin.rgb }" class="font-bold text-2xl">{{ pin.title }}</span>
         </div>
         <div class="mt-2" v-if="pin.description">
           <span class="">
@@ -580,16 +582,18 @@ async function showVideoControls() {
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
-            class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+            class="transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
             placeholder="Добавить комментарий" />
 
-          <button type="button" @click="addComment"
-            class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
+          <button type="button" @click="addComment" :style="{
+            backgroundColor: pin.rgb
+          }"
+            class="transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
             Add
           </button>
 
           <label for="media">
-            <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
+            <i :style="{ color: pin.rgb }" class="pi pi-images text-4xl cursor-pointer transition duration-300"></i>
           </label>
           <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
             class="hidden hover:bg-red-100 transition duration-300 w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">

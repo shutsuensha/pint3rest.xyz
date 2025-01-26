@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref, nextTick, onActivated, onDeactivated } from 'vue';
 import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
 import CommentLikesPopover from './CommentLikesPopover.vue';
@@ -17,6 +17,10 @@ dayjs.locale("ru");
 
 const props = defineProps({
   pin_id: Number
+})
+
+onActivated(() => {
+
 })
 
 
@@ -287,9 +291,9 @@ function resetFile(comment) {
           <!-- Icon -->
 
           <i v-if="comment.checkUserLike" @click="likeComment(comment)"
-            class="text-red-700 pi pi-heart-fill text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+            class="text-red-600 pi pi-heart-fill text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
           <i v-if="!comment.checkUserLike" @click="likeComment(comment)"
-            class="text-red-700 pi pi-heart text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
+            class="text-red-600 pi pi-heart text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
           <!-- Number of Likes -->
           <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
             @mouseover="comment.showPopover = true"
