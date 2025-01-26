@@ -21,6 +21,10 @@ const showLikeAnimation = ref(null)
 const showDislikeAnimation = ref(null)
 
 
+const isLoading = ref(false);
+const progress = ref(0);
+
+
 
 const onVideoLoad = () => {
   pinVideoLoaded.value = true;
@@ -172,16 +176,25 @@ const timeoutId = ref(null)
 const timeoutWorking = ref(false)
 
 onMounted(async () => {
+  // Start the loading process
+  isLoading.value = true;
+  progress.value = 0;
+
   try {
-    const response = await axios.get(`/api/pins/${pinId}`)
-    pin.value = response.data
+    const response = await axios.get(`/api/pins/${pinId}`);
+    pin.value = response.data;
+
+    // Update progress after fetching pin data
+    progress.value = 20;
+
     if (pin.value.title) {
-      document.title = 'pinterest.xyz / pin ' + pin.value.title
+      document.title = 'pinterest.xyz / pin ' + pin.value.title;
     } else {
-      document.title = 'pinterest.xyz / pin ' + pin.value.id
+      document.title = 'pinterest.xyz / pin ' + pin.value.id;
     }
+
     try {
-      const response = await axios.get(`/api/pins/upload/${pinId}`, { responseType: 'blob' })
+      const response = await axios.get(`/api/pins/upload/${pinId}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(response.data);
       const contentType = response.headers['content-type'];
       if (contentType.startsWith('image/')) {
@@ -189,71 +202,96 @@ onMounted(async () => {
       } else {
         pinVideo.value = blobUrl;
       }
+
+      // Update progress after fetching pin media
+      progress.value = 40;
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
+
     try {
-      const response = await axios.get(`/api/users/user_id/${pin.value.user_id}`)
-      pinUser.value = response.data
+      const response = await axios.get(`/api/users/user_id/${pin.value.user_id}`);
+      pinUser.value = response.data;
+
+      // Update progress after fetching user data
+      progress.value = 50;
+
       try {
-        const response = await axios.get(`/api/users/upload/${pinUser.value.id}`, { responseType: 'blob' })
+        const response = await axios.get(`/api/users/upload/${pinUser.value.id}`, { responseType: 'blob' });
         const blobUrl = URL.createObjectURL(response.data);
-        pinUserImage.value = blobUrl
+        pinUserImage.value = blobUrl;
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   } catch (error) {
-    router.push('/not-found')
+    router.push('/not-found');
   }
 
-  showControls.value = true
-  timeoutWorking.value = true
+  // Update progress after all the main data is loaded
+  progress.value = 60;
+
+  showControls.value = true;
+  timeoutWorking.value = true;
   timeoutId.value = setTimeout(() => {
-    showControls.value = false
-    timeoutWorking.value = false
+    showControls.value = false;
+    timeoutWorking.value = false;
   }, 2000);
 
-
   try {
-    const response = await axios.get(`/api/likes/pin/likes/cnt/${pin.value.id}`)
-    cntLikes.value = response.data
+    const response = await axios.get(`/api/likes/pin/likes/cnt/${pin.value.id}`);
+    cntLikes.value = response.data;
+
+    // Update progress after fetching likes count
+    progress.value = 70;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   try {
-    const response = await axios.get(`/api/likes/pin/user_like/${pin.value.id}`)
-    checkUserLike.value = response.data
+    const response = await axios.get(`/api/likes/pin/user_like/${pin.value.id}`);
+    checkUserLike.value = response.data;
+
+    // Update progress after checking user like status
+    progress.value = 80;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   try {
-    const response = await axios.get(`/api/tags/pin/tags/${pin.value.id}`, { withCredentials: true })
-    tags.value = response.data
+    const response = await axios.get(`/api/tags/pin/tags/${pin.value.id}`, { withCredentials: true });
+    tags.value = response.data;
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
-      tag.color = randomBgColor()
+      tag.color = randomBgColor();
     }
+
+    // Update progress after fetching tags
+    progress.value = 90;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 
   try {
-    const response = await axios.get(`/api/comments/cnt/comments/${pin.value.id}`)
-    cntComments.value = response.data
+    const response = await axios.get(`/api/comments/cnt/comments/${pin.value.id}`);
+    cntComments.value = response.data;
+
+    // Update progress after fetching comments count
+    progress.value = 100;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   if (cntComments.value) {
-    showCommets.value = true
+    showCommets.value = true;
   }
 
-})
+  // End the loading process
+  isLoading.value = false;
+});
+
 
 const goBack = () => {
   router.back();
@@ -393,6 +431,9 @@ async function showVideoControls() {
 
 
 <template>
+  <div v-if="isLoading" class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
+    :style="{ width: `${progress}%` }">
+  </div>
   <div class="mt-4 ml-20">
     <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

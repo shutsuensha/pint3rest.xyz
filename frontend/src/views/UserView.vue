@@ -9,6 +9,9 @@ import LikedPins from '@/components/Auth/LikedPins.vue';
 import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
+const isLoading = ref(false);
+const progress = ref(0);
+
 
 onActivated(() => {
   if (user.value) {
@@ -86,25 +89,36 @@ onMounted(async () => {
   // Log user_id to the console
   auth_user_id.value = payload.user_id;
 
+  // Start the loading process
+  isLoading.value = true;
+  progress.value = 0;
+
   try {
     const response = await axios.get(`/api/users/user_username/${username}`);
     user.value = response.data;
-    canEditProfile.value = auth_user_id.value === user.value.id
+    canEditProfile.value = auth_user_id.value === user.value.id;
+
+    // Update progress after fetching user data
+    progress.value = 20;
+
     if (canEditProfile.value) {
-      document.title = 'pinterest.xyz / me ' + user.value.username
+      document.title = 'pinterest.xyz / me ' + user.value.username;
     } else {
-      document.title = 'pinterest.xyz / user ' + user.value.username
+      document.title = 'pinterest.xyz / user ' + user.value.username;
     }
 
     try {
       const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(userResponse.data);
       userImage.value = blobUrl;
+
+      // Update progress after fetching user image
+      progress.value = 40;
     } catch (error) {
       console.error(error);
     }
   } catch (error) {
-    router.push('/not-found')
+    router.push('/not-found');
   }
 
   try {
@@ -119,6 +133,9 @@ onMounted(async () => {
         );
         const blobUrl = URL.createObjectURL(userResponse.data);
         userBanner.value = blobUrl;
+
+        // Update progress after fetching banner image
+        progress.value = 60;
       } catch (error) {
         console.error(error);
       }
@@ -128,28 +145,40 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true })
-    cntUserFollowers.value = response.data
+    const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true });
+    cntUserFollowers.value = response.data;
+
+    // Update progress after fetching followers count
+    progress.value = 70;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   try {
-    const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true })
-    cntUserFollowing.value = response.data
+    const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true });
+    cntUserFollowing.value = response.data;
+
+    // Update progress after fetching following count
+    progress.value = 80;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   try {
-    const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true })
-    checkUserFollow.value = response.data
+    const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true });
+    checkUserFollow.value = response.data;
+
+    // Update progress after checking user follow status
+    progress.value = 90;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
+  // Final progress update and stop loading
   loadingUser.value = false;
-  createdPins()
+  isLoading.value = false;
+  progress.value = 100;
+  createdPins();
 });
 
 const bgCreated = ref('border-black');
@@ -372,6 +401,10 @@ async function unfollow() {
 </script>
 
 <template>
+  <div v-if="isLoading"
+    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
+    :style="{ width: `${progress}%` }">
+  </div>
   <transition name="fade" appear>
     <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 
@@ -514,19 +547,19 @@ async function unfollow() {
 
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers"/>
+      <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
       <i @click="showFollowers = false"
-          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
 
   <transition name="fade" appear>
     <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing"/>
+      <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
       <i @click="showFollowing = false"
-          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
 

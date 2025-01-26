@@ -274,7 +274,7 @@ async function save() {
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
         </div>
         <div class="relative">
-          <div v-if="imageGif" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
+          <div v-if="imageGif && showAllPins" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
           </div>
           <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
             class="w-full h-auto rounded-3xl" />

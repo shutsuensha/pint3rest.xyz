@@ -14,13 +14,17 @@ const route = useRoute();
 
 const emit = defineEmits(['createPinModelClose'])
 
+const isLoading = ref(false);
+const progress = ref(0);
+
+
 
 const pins = ref([]);
 const offset = ref(0);
 const limit = ref(10);
 
-const stagged = ref(0.3)
-const duration = ref('0.5s')
+const stagged = ref('0.03s')
+const duration = ref('0.4s')
 
 const cntLoading = ref(0)
 const limitCntLoading = ref(null)
@@ -47,6 +51,7 @@ const loadPins = async () => {
   }
 
   isPinsLoading.value = true;
+
   try {
     const response = await axios.get('/api/pins/', {
       params: { offset: offset.value, limit: limit.value },
@@ -56,24 +61,30 @@ const loadPins = async () => {
     // Append new pins to the existing ones
     pins.value.push({ pins: response.data, showAllPins: false });
 
-    limitCntLoading.value = response.data.length
+    limitCntLoading.value = response.data.length;
 
-    limitCntLoading.value
+    // Увеличиваем прогресс в зависимости от количества загруженных пинов
+    const loadedPinsProgress = Math.round((response.data.length / limit.value) * 30); // 30% выделено на загрузку пинов
+    progress.value = Math.min(progress.value + loadedPinsProgress, 100); // Ограничиваем прогресс значением 100
 
     // Increment the offset
     offset.value += limit.value;
 
     // После первого запроса изменяем лимит на 5
     if (limit.value === 10) {
-      limit.value = 5;
-      duration.value = '0.2s'
-      stagged.value = 0.01
+      limit.value = 10;
     }
-
   } catch (error) {
     console.log(error);
+  } finally {
+
+    // Если загрузка завершена, ставим прогресс на максимум
+    if (offset.value >= limitCntLoading.value) {
+      progress.value = 100;
+    }
   }
 };
+
 
 const handleScroll = () => {
   const scrollableHeight = document.documentElement.scrollHeight;
@@ -91,59 +102,79 @@ const randomBgColor = () => {
 };
 
 onMounted(async () => {
-  document.title = 'pinterest.xyz'
+  isLoading.value = true;
+  progress.value = 0;
+  document.title = 'pinterest.xyz';
   loadPins();
   window.addEventListener('scroll', handleScroll);
+
   if (props.register === true) {
     setTimeout(() => {
-      showCreatePin.value = true
-      document.body.style.overflowY = 'clip'
+      showCreatePin.value = true;
+      document.body.style.overflowY = 'clip';
     }, 2000);
   }
+
   try {
-    const response = await axios.get('/api/tags/', { withCredentials: true })
-    available_tags.value = response.data
-    limitTagLoading.value = available_tags.value.length
+    const response = await axios.get('/api/tags/', { withCredentials: true });
+    available_tags.value = response.data;
+    limitTagLoading.value = available_tags.value.length;
+
+    // Обновляем прогресс после получения списка тегов
+    progress.value = 20;
+
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
-      tag.color = randomBgColor()
+      tag.color = randomBgColor();
     }
     available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: null, isImage: null });
+
     try {
       const response = await axios.get(`/api/pins/`, {
         params: { offset: 0, limit: 1 },
         withCredentials: true,
-      })
-      const pin_id = response.data[0].id
+      });
+      const pin_id = response.data[0].id;
+
+      // Обновляем прогресс после получения первого пина
+      progress.value = 40;
+
       try {
         const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
         const blobUrl = URL.createObjectURL(pinResponse.data);
         const contentType = pinResponse.headers['content-type'];
         if (contentType.startsWith('image/')) {
           available_tags.value[0].file = blobUrl;
-          available_tags.value[0].isImage = true
+          available_tags.value[0].isImage = true;
         } else {
           available_tags.value[0].file = blobUrl;
-          available_tags.value[0].isImage = false
+          available_tags.value[0].isImage = false;
         }
+
+        // Обновляем прогресс после загрузки первого файла
+        progress.value = 50;
       } catch (error) {
         console.error(error);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
+
+  const totalTags = available_tags.value.length;
+  let completedTags = 0;
+
   for (let i = 1; i < available_tags.value.length; i++) {
     try {
       const response = await axios.get(`/api/pins/tag/${available_tags.value[i].name}`, {
         params: { offset: 0, limit: 1 },
         withCredentials: true,
-      })
+      });
 
       if (response.data.length === 1) {
-        const pin_id = response.data[0].id
+        const pin_id = response.data[0].id;
 
         try {
           const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
@@ -151,29 +182,37 @@ onMounted(async () => {
           const contentType = pinResponse.headers['content-type'];
           if (contentType.startsWith('image/')) {
             available_tags.value[i].file = blobUrl;
-            available_tags.value[i].isImage = true
+            available_tags.value[i].isImage = true;
           } else {
             available_tags.value[i].file = blobUrl;
-            available_tags.value[i].isImage = false
+            available_tags.value[i].isImage = false;
           }
         } catch (error) {
           console.error(error);
         }
       } else {
         available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
-        available_tags.value[i].isImage = true
+        available_tags.value[i].isImage = true;
       }
-
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
+
+    // Увеличиваем количество завершенных тегов и обновляем прогресс
+    completedTags++;
+    progress.value = 50 + Math.round((completedTags / totalTags) * 50);
   }
+
   tagFromUrl.value = route.query.tag || '';
   if (tagFromUrl.value) {
     if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
-      loadPinsByTag(tagFromUrl.value)
+      loadPinsByTag(tagFromUrl.value);
     }
   }
+
+  // Завершаем прогресс после полной загрузки
+  progress.value = 100;
+  isLoading.value = false;
 });
 
 onBeforeUnmount(() => {
@@ -200,7 +239,7 @@ onActivated(() => {
 
 onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll);
-}); 
+});
 
 
 
@@ -325,6 +364,10 @@ const filteredTags = computed(() => {
 </script>
 
 <template>
+  <div v-if="isLoading" class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
+    :style="{ width: `${progress}%` }">
+  </div>
+
   <transition name="fade" appear>
     <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 
@@ -417,8 +460,8 @@ const filteredTags = computed(() => {
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28 grid grid-cols-3" v-masonry :transition-duration="duration"
-    item-selector=".item" :stagger="stagged">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry
+    transition-duration="0.001s" item-selector=".item" stagger="0.001s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item " v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
