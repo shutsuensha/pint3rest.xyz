@@ -1,5 +1,4 @@
 ### Sure to do
-- полоску на загрузку кажого роута
 - emoji for every input
 - create pin design
 - home search design
@@ -59,7 +58,9 @@
 - show only 1 reply
 - v-auto-animate options
 - video controls animation?
-- user popover add following + design
+- errors in userpopout
+- pin detail likes full screen
+- aftet back video paused display PAUSE play on hover
 
 - ### After All
 - updates

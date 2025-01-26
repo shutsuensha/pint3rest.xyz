@@ -200,23 +200,20 @@ function checkPinAded(name) {
 
 <template>
   <div class="ml-20">
-    <div class="mt-2 text-2xl font-bold py-5 border-b border-gray-300 px-4 text-center">
-      <h1>Создание пина</h1>
-    </div>
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
-    <div v-else class="grid grid-cols-2 mt-5 mr-72 gap-10">
+    <div v-else class="grid grid-cols-2 mt-10 mr-72 gap-10">
       <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div class="ml-36">
+      <div class="ml-56">
         <label for="media" class="cursor-pointer" 
         @dragover.prevent="onDragOver" @dragleave="onDragLeave" @drop.prevent="onDrop">
           <!-- Media Preview -->
-          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 hover:bg-red-100 transition duration-300"
-          :class="{ 'border-red-500 bg-red-100': isDragging }">
+          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-purple-500 hover:bg-purple-100 transition duration-100"
+          :class="{ 'border-purple-500 bg-purple-100': isDragging }">
             <img id="imagePreview" v-if="isImage" :src="mediaPreview"
               class="h-auto w-[271.84px] rounded-3xl mx-auto my-8" alt="Media Preview" />
             <video id="videoPreview" v-if="isVideo" :src="mediaPreview"
@@ -225,13 +222,13 @@ function checkPinAded(name) {
 
           <!-- Placeholder for no preview -->
           <div v-else
-            class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-red-500 hover:bg-red-100 transition duration-300 overflow-hidden"
-            :class="{ 'border-red-500 bg-red-100': isDragging }">
+            class="mt-2 border border-dashed border-gray-900 rounded-3xl hover:border-purple-500 hover:bg-purple-100 transition duration-100 overflow-hidden"
+            :class="{ 'border-purple-500 bg-purple-100': isDragging }">
             <div
-              class="relative bg-gray-200 h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
+              class="relative  h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
               <div class="absolute flex flex-col items-center space-y-4">
                 <i class="pi pi-arrow-up text-4xl text-gray-400"></i>
-                <p class="mt-2 text-sm text-gray-600">Drag & Drop or Click to Upload</p>
+                <p class="mt-2 text-sm text-black">Drag & Drop or Click to Upload</p>
               </div>
             </div>
           </div>
@@ -245,19 +242,19 @@ function checkPinAded(name) {
           <!-- Title Field -->
           <div>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
-              class="hover:bg-red-100 transition duration-300  cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-purple-100 transition duration-100  cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Добавить название" />
           </div>
           <!-- Description Field -->
           <div>
             <textarea v-model="formPin.description" name="description" id="description"
-              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Добавить описание"></textarea>
           </div>
           <!-- Href Field -->
           <div>
             <input v-model="formPin.href" type="url" name="href" id="href" autocomplete="off"
-              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl block w-full py-4 px-5 focus:ring-red-500 focus:border-red-500"
+              class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Добавить ссылку" />
           </div>
           <!-- Tags Field -->
@@ -266,13 +263,13 @@ function checkPinAded(name) {
             <div class="flex items-center space-x-2">
               <!-- Add Button -->
               <button type="button" @click="addTag"
-                class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-xl text-sm px-4 py-2">
+                class="bg-purple-500 hover:bg-purple-600 transition duration-100 text-white font-medium rounded-3xl text-sm px-4 py-2">
                 Создать
               </button>
 
               <!-- Tags Input -->
               <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
-                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="Создать тег" />
             </div>
             <div class="mt-5">
@@ -290,7 +287,7 @@ function checkPinAded(name) {
           </div>
           <!-- Submit Button -->
           <button @click="submitPin"
-            class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
+            class="w-full transition duration-100 text-white bg-purple-500 hover:bg-purple-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
             Создать Пин
           </button>
         </div>
