@@ -116,7 +116,7 @@ onActivated(() => {
 
 onDeactivated(() => {
   if (videoPlayer.value) {
-    // videoPlayer.value.pause();
+    videoPlayer.value.pause();
     isPlaying.value = false;
   }
 });

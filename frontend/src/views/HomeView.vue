@@ -149,6 +149,7 @@ onMounted(async () => {
         } else {
           available_tags.value[0].file = blobUrl;
           available_tags.value[0].isImage = false;
+          available_tags.value[0].videoPlayer = null;
         }
 
         // Обновляем прогресс после загрузки первого файла
@@ -186,6 +187,7 @@ onMounted(async () => {
           } else {
             available_tags.value[i].file = blobUrl;
             available_tags.value[i].isImage = false;
+            available_tags.value[i].videoPlayer = null;
           }
         } catch (error) {
           console.error(error);
@@ -235,11 +237,36 @@ onActivated(() => {
       loadPinsByTag(tagFromUrl.value)
     }
   }
+  if (available_tags.value) {
+    for (let i = 0; i < available_tags.value.length; i++) {
+      if (!available_tags.value[i].isImage) {
+        var playPromise = available_tags.value[i].videoPlayer.play()
+        if (playPromise !== undefined) {
+          playPromise.then(_ => {
+            // Automatic playback started!
+            // Show playing UI.
+          })
+            .catch(error => {
+              // Auto-play was prevented
+              // Show paused UI.
+            });
+        }
+      }
+    }
+  }
 });
 
 onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll);
-});
+  if (available_tags.value) {
+    for (let i = 0; i < available_tags.value.length; i++) {
+      if (!available_tags.value[i].isImage) {
+        available_tags.value[i].videoPlayer.pause();
+      }
+    }
+  }
+}
+);
 
 
 
@@ -364,7 +391,8 @@ const filteredTags = computed(() => {
 </script>
 
 <template>
-  <div v-if="isLoading" class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
+  <div v-if="isLoading"
+    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
     :style="{ width: `${progress}%` }">
   </div>
 
@@ -438,8 +466,8 @@ const filteredTags = computed(() => {
             <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
             <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
-              class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }"
-              autoplay loop muted />
+              :ref="el => { if (el) tag.videoPlayer = el; }" class="w-full h-full object-cover rounded-full fade-in"
+              :class="{ 'fade-in-animation': tagsLoaded }" autoplay loop muted />
             <div v-show="!tagsLoaded" class="bg-gray-100 w-full h-full object-cover rounded-full animate-pulse">
             </div>
           </div>
@@ -460,11 +488,11 @@ const filteredTags = computed(() => {
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry
-    transition-duration="0.001s" item-selector=".item" stagger="0.001s">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.001s"
+    item-selector=".item" stagger="0.001s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item " v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
-        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
+        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0; } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>

@@ -398,9 +398,48 @@ async function unfollow() {
   checkUserFollow.value = false
   cntUserFollowers.value -= 1
 }
+
+const openSendMessage = ref(false)
+const messageContent = ref('')
+
+async function sendMessage() {
+  try {
+    const response = await axios.post('/api/messages/', {
+      content: messageContent.value,
+      to_user_id: user.value.id
+    }, {withCredentials: true})
+    messageContent.value = ''
+    openSendMessage.value = false
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
+  <transition name="fade" appear>
+    <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-40 p-6">
+
+      <div class="flex justify-center items-center min-h-screen">
+        <div
+          class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-2 items-center">
+
+          <h1 class="text-center text-6xl text-black mt-4">Написать сообщение</h1>
+          <textarea v-model="messageContent" name="messageContent" id="messageContent" style="height: 200px;"
+            class=" cursor-pointer  text-black text-3xl rounded-3xl block w-3/4 py-10 px-10 focus:ring-black  bg-white focus:border-4 focus:border-white"></textarea>
+
+          <button @click="sendMessage"
+            class="my-5 w-[400px] py-3 bg-white text-black font-semibold rounded-3xl hover:-translate-y-2">
+            Отправить
+          </button>
+        </div>
+      </div>
+
+      <i @click="openSendMessage = false"
+        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+    </div>
+  </transition>
   <div v-if="isLoading"
     class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
     :style="{ width: `${progress}%` }">
@@ -622,14 +661,20 @@ async function unfollow() {
             {{ cntUserFollowing }} Подписок
           </button>
         </div>
-        <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-          Подписаться
-        </button>
-        <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-          Отписаться
-        </button>
+        <div class="flex flex-row gap-4">
+          <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Подписаться
+          </button>
+          <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Отписаться
+          </button>
+          <button v-if="!canEditProfile" @click="openSendMessage = true"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Написать
+          </button>
+        </div>
       </div>
       <div class="flex items-center mt-6 justify-center space-x-4">
         <button @click="createdPins"

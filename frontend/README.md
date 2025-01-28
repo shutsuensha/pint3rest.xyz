@@ -1,3 +1,8 @@
+### Frontend server
+npm run dev
+
+
+
 ### Easy
 - all pins hover buttons better
 - user view change tab animations
@@ -75,9 +80,6 @@
 - after create pin - celery + celery results + notification for user
 - analyze pinterest to add more functions, awesome vuejs
 
-
-### Frontend server
-npm run dev
 
 
 - https://github.com/amineyarman/vue-kinesis

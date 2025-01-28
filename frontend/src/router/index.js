@@ -2,8 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import CreatePinView from '@/views/CreatePinView.vue';
 import PinView from '@/views/PinView.vue';
-import UserView from '@/views/UserView.vue';
+import UserView from '@/views/UserView.vue';  
 import NotFoundView from '@/views/NotFoundView.vue';
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
