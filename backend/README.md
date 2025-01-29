@@ -1,5 +1,7 @@
+### Now
+
+
 ### Next
-- user direct messages
 - refactor routes, imports, add service layer, service layer - work with sqlalchemy, hadle server errors, routes layers - handle fastapi error, documentation for routes
 - custom error, middleward - loguru
 - fastapi cache
@@ -25,6 +27,9 @@
 - analyze/learn fastapi awesome/stack
 - sqalchemy execute + best practices for using execute / scalar
 - chatgpt рекомендации по улучшению
+- graphql
+- push norifications
+
 
 ### Web server
 uvicorn app.main:app --reload
@@ -42,6 +47,7 @@ alembic upgrade head
 ### Redis
 sudo systemctl start redis-server
 redis-cli -h localhost -p 6379
+
 
 ### Celery
 celery -A app.celery.celery_app.celery_instance worker --loglevel=info
