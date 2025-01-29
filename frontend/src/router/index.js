@@ -4,7 +4,7 @@ import CreatePinView from '@/views/CreatePinView.vue';
 import PinView from '@/views/PinView.vue';
 import UserView from '@/views/UserView.vue';  
 import NotFoundView from '@/views/NotFoundView.vue';
-
+import MessagesView from '@/views/MessagesView.vue';
 
 
 const router = createRouter({
@@ -29,6 +29,11 @@ const router = createRouter({
       path: '/user/:username',
       name: 'user',
       component: UserView,
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: MessagesView,
     },
     {
       path: '/:catchAll(.*)',

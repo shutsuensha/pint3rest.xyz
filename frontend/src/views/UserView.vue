@@ -67,6 +67,7 @@ const bannerImagePreview = ref(null)
 const cntUserFollowers = ref(null)
 const cntUserFollowing = ref(null)
 const checkUserFollow = ref(null)
+const checkUserChat = ref(null)
 
 const showFollowers = ref(false)
 const showFollowing = ref(false)
@@ -170,6 +171,16 @@ onMounted(async () => {
 
     // Update progress after checking user follow status
     progress.value = 90;
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const response = await axios.get(`/api/messages/check_chat/${user.value.id}`, { withCredentials: true });
+    checkUserChat.value = response.data;
+
+    // Update progress after checking user follow status
+    progress.value = 95;
   } catch (error) {
     console.error(error);
   }
@@ -413,6 +424,10 @@ async function sendMessage() {
   } catch (error) {
     console.error(error)
   }
+}
+
+async function redirectToChat() {
+  router.push('/messages');
 }
 </script>
 
@@ -670,9 +685,13 @@ async function sendMessage() {
             class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             Отписаться
           </button>
-          <button v-if="!canEditProfile" @click="openSendMessage = true"
+          <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
             class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             Написать
+          </button>
+          <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Перейти в чат
           </button>
         </div>
       </div>
