@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey, Integer
+from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
 from datetime import date, datetime
@@ -99,3 +99,21 @@ class SubsrciptionsOrm(Base):
 
     follower_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     following_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+
+
+class ChatOrm(Base):
+    __tablename__ = "chats"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_1_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_2_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+
+
+class MessageOrm(Base):
+    __tablename__ = "messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"), nullable=False)
+    user_id_: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)  
