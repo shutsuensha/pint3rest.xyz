@@ -8,7 +8,7 @@ def register_websocket(app: FastAPI):
         await manager.connect(websocket, chat_id, user_id)
         try:
             while True:
-                data = await websocket.receive_text()
+                data = await websocket.receive_json()
                 await manager.send_message(data, chat_id, user_id)
         except WebSocketDisconnect:
             manager.disconnect(chat_id, user_id)

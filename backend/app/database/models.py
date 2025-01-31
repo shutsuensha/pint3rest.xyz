@@ -115,5 +115,7 @@ class MessageOrm(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"), nullable=False)
     user_id_: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)  
+    content: Mapped[str | None] = mapped_column(String(400), default=None)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+    image: Mapped[str | None] = mapped_column(String(200), default=None)

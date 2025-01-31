@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class MessageIn(BaseModel):
-    content: str
+    content: str | None = None
     to_user_id: int | None = None
     chat_id: int | None = None
 
@@ -12,8 +12,9 @@ class MessageOut(BaseModel):
     id: int
     chat_id: int
     user_id_: int
-    content: str
+    content: str | None = None
     created_at: datetime
+    image: str | None = None
 
 
 class ChatOut(BaseModel):
