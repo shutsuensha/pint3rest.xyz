@@ -237,36 +237,11 @@ onActivated(() => {
       loadPinsByTag(tagFromUrl.value)
     }
   }
-  if (available_tags.value) {
-    for (let i = 0; i < available_tags.value.length; i++) {
-      if (!available_tags.value[i].isImage) {
-        var playPromise = available_tags.value[i].videoPlayer.play()
-        if (playPromise !== undefined) {
-          playPromise.then(_ => {
-            // Automatic playback started!
-            // Show playing UI.
-          })
-            .catch(error => {
-              // Auto-play was prevented
-              // Show paused UI.
-            });
-        }
-      }
-    }
-  }
 });
 
 onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll);
-  if (available_tags.value) {
-    for (let i = 0; i < available_tags.value.length; i++) {
-      if (!available_tags.value[i].isImage) {
-        available_tags.value[i].videoPlayer.pause();
-      }
-    }
-  }
-}
-);
+});
 
 
 
@@ -465,7 +440,7 @@ const filteredTags = computed(() => {
           <div class="w-9 h-9 flex-shrink-0">
             <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
-            <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
+            <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad" @mouseover="tag.videoPlayer.play()"
               :ref="el => { if (el) tag.videoPlayer = el; }" class="w-full h-full object-cover rounded-full fade-in"
               :class="{ 'fade-in-animation': tagsLoaded }" autoplay loop muted />
             <div v-show="!tagsLoaded" class="bg-gray-100 w-full h-full object-cover rounded-full animate-pulse">

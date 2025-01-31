@@ -13,8 +13,14 @@ const cntUserFollowers = ref(null)
 const cntUserFollowing = ref(null)
 const checkUserFollow = ref(null)
 
+const showPause = ref(false)
+
 const showFollowers = ref(false)
 const showFollowing = ref(false)
+
+onActivated(()=> {
+  showPause.value = true
+})
 
 
 const itsMe = ref(null)
@@ -42,30 +48,6 @@ const videoDuration = ref(0)
 const currentTime = ref(0)
 
 const videoPlayer = ref(null);
-
-
-onActivated(() => {
-  if (videoPlayer.value) {
-    var playPromise = videoPlayer.value.play()
-    if (playPromise !== undefined) {
-      playPromise.then(_ => {
-        // Automatic playback started!
-        // Show playing UI.
-      })
-        .catch(error => {
-          // Auto-play was prevented
-          // Show paused UI.
-        });
-    }
-  }
-});
-
-onDeactivated(() => {
-  if (videoPlayer.value) {
-    // Можно остановить видео или выполнить другие действия
-    videoPlayer.value.pause();
-  }
-});
 
 
 const onTimeUpdate = () => {
@@ -274,7 +256,8 @@ async function save() {
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
         </div>
         <div class="relative">
-          <div v-if="imageGif && showAllPins" class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
+          <div v-if="imageGif && showAllPins"
+            class="absolute top-2 left-2 bg-gray-200 text-black rounded-2xl px-3 py-1 text-sm">Gif
           </div>
           <img v-show="showAllPins && pinImage" :src="pinImage" @load="onImageLoad" alt="pin image"
             class="w-full h-auto rounded-3xl" />
@@ -285,7 +268,20 @@ async function save() {
             {{ formattedTimeRemaining }}
           </div>
           <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" ref="videoPlayer"
-            @timeupdate="onTimeUpdate" class="w-full h-auto rounded-3xl" autoplay loop muted />
+            @mouseover="videoPlayer.play(); showPause = false" @timeupdate="onTimeUpdate" class="w-full h-auto rounded-3xl" autoplay loop
+            muted />
+          <div v-if="pinVideo && showPause" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="relative flex items-center justify-center w-12 h-12">
+              <transition name="flash2">
+                <i v-if="!showPause"
+                  class="absolute pi pi-pause text-5xl text-white glowing-icon"></i>
+              </transition>
+              <transition name="flash2">
+                <i v-if="showPause"
+                  class="absolute pi pi-play text-5xl text-white glowing-icon"></i>
+              </transition>
+            </div>
+          </div>
         </div>
       </RouterLink>
     </div>
@@ -293,29 +289,32 @@ async function save() {
     <p v-if="pin.title" class="mt-2 text-sm"> {{ pin.title }}</p>
 
     <div class="relative">
-      <div v-if="user" :to="`/user/${user.username}`"
-        class="flex items-center mt-2 hover:underline relative ">
+      <div v-if="user" :to="`/user/${user.username}`" class="flex items-center mt-2 hover:underline relative ">
         <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
         <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-        <span @click="if(showPopover) {showPopover = false} else { showPopover = true; loadUser()}" v-if="user && showAllPins" class="ml-2 text-sm font-medium cursor-pointer"> {{ user.username }}</span>
+        <span @click="if (showPopover) { showPopover = false } else { showPopover = true; loadUser() }"
+          v-if="user && showAllPins" class="ml-2 text-sm font-medium cursor-pointer"> {{ user.username }}</span>
         <transition name="flash">
           <div v-if="showPopover"
             class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
             <div class="relative flex flex-col top-7 items-center justify-center">
-               <RouterLink :to="`/user/${popUser.username}`"
+              <RouterLink :to="`/user/${popUser.username}`"
                 class="relative transition-transform duration-200transform hover:scale-110">
                 <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
                 <img v-if="popImage" :src="popImage"
                   class="mb-2 rounded-full w-20 h-20 object-cover border-2 border-red-500" />
               </RouterLink>
-              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
+              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
+                style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                 class="text-center text-xl font-bold hover:underline">{{ popUser.username }}</RouterLink>
               <div class="flex space-x-4">
-                <span v-if="cntUserFollowers > 0" @click="showFollowers = true" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
+                <span v-if="cntUserFollowers > 0" @click="showFollowers = true"
+                  style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                   :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110 `">
                   {{ cntUserFollowers }} followers
                 </span>
-                <span v-if="cntUserFollowing > 0" @click="showFollowing = true" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
+                <span v-if="cntUserFollowing > 0" @click="showFollowing = true"
+                  style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);"
                   :class="`text-white cursor-pointer transition-transform duration-200 transform hover:scale-110  `">
                   {{ cntUserFollowing }} following
                 </span>
@@ -400,4 +399,9 @@ async function save() {
     transform: scale(1);
   }
 }
+
+.glowing-icon {
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 0, 0, 0.5);
+}
+
 </style>
