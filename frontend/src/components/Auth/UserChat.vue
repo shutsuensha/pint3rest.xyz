@@ -35,8 +35,8 @@ const showChat = ref(false)
 
 
 <template>
-  <div class="ml-2 flex items-center space-x-2 hover:underline cursor-pointer align-left">
-    <img v-if="userImage" :src="userImage" alt="User Image" class="w-[60px] h-[60px] rounded-full object-cover" />
+  <div class="flex items-center space-x-2 cursor-pointer" :class="[props.chat.selected ? 'bg-pink-300' : 'hover:bg-gray-200']">
+    <img v-if="userImage" :src="userImage" alt="User Image" class="w-[60px] h-[60px] rounded-full object-cover m-2" />
     <span v-if="user" class="truncate">{{ user.username }}</span>
   </div>
 </template>

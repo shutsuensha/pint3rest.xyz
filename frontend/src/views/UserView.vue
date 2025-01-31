@@ -424,10 +424,16 @@ async function sendMessage() {
   } catch (error) {
     console.error(error)
   }
+  redirectToChat()
 }
 
 async function redirectToChat() {
-  router.push('/messages');
+  try {
+    const response = await axios.get(`/api/messages/get_chat/${user.value.id}`, { withCredentials: true });
+    router.push(`/messages?chat_id=${response.data}`);
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 
