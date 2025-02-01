@@ -12,6 +12,9 @@ import "dayjs/locale/ru";
 dayjs.extend(relativeTime);
 dayjs.locale("ru");
 
+
+const emit = defineEmits(['updateLastMessage'])
+
 let socket;
 
 const chatBox = ref(null);
@@ -107,6 +110,7 @@ const connectWebSocket = () => {
       console.error("Ошибка при разборе JSON:", error);
     }
     scrollToBottom();
+    emit('updateLastMessage', props.chat_id)
   };
 };
 
@@ -127,6 +131,7 @@ const sendMessage = async () => {
     socket.send(JSON.stringify(messageResp));
     message.value = "";
     scrollToBottom();
+    emit('updateLastMessage', props.chat_id)
   }
 };
 
@@ -222,7 +227,7 @@ async function sendMediaMessage() {
   }
   openSendMedia.value = false
   scrollToBottom();
-
+  emit('updateLastMessage', props.chat_id)
 }
 
 const openSendMedia = ref(false)
@@ -236,7 +241,7 @@ const openSendMedia = ref(false)
 
       <div class="flex justify-center">
         <div
-          class="flex flex-col  bg-gray-200 h-auto max-h-[670px] text-2xl rounded-3xl  z-50 w-[600px] overflow-y-auto items-center">
+          class="flex flex-col  bg-gray-200 h-auto max-h-[670px] text-2xl rounded-3xl  z-50 w-[700px] overflow-y-auto items-center scrollbar-hide">
 
           <div v-if="isImage" class="relative mt-4">
             <img :src="mediaPreview" class="h-full w-[400px]  rounded-t-2xl" alt="Media Preview" />
@@ -246,8 +251,9 @@ const openSendMedia = ref(false)
           </div>
 
 
-          <input id="messageContent" v-model="messageContent" placeholder="Add discription" autocomplete="off"
-            class="py-2 px-4 focus:outline-none focus:ring-none focus:ring-none rounded-2xl mt-2 w-[400px]" />
+          <h1 class="text-center text-6xl text-black mt-4">Добавить описание</h1>
+          <textarea v-model="messageContent" name="messageContent" id="messageContent"
+            class="cursor-pointer text-black text-3xl rounded-3xl block w-3/4 min-h-[100px] max-h-[300px] focus:ring-black bg-white focus:border-4 focus:border-white px-5 py-5" />
           <button @click="sendMediaMessage"
             class="my-5 w-[400px] py-3 bg-white text-black font-semibold rounded-3xl hover:-translate-y-2">
             Отправить
@@ -256,7 +262,7 @@ const openSendMedia = ref(false)
       </div>
 
       <i @click="openSendMedia = false"
-        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        class="bg-white rounded-3xl p-5  absolute right-20 top-5 pi pi-times text-black text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-110"
         style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>

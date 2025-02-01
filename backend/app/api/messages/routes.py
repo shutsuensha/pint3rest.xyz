@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status, UploadFile, stat
 from app.api.dependencies import db, user_id, filter
 from .schemas import MessageIn, MessageOut, ChatOut
 from app.database.models import ChatOrm, MessageOrm
-from sqlalchemy import select, insert, update, func, or_
+from sqlalchemy import select, insert, update, func, or_, desc
 import uuid
 from app.api.utils import save_file
 from fastapi.responses import FileResponse
@@ -49,6 +49,22 @@ async def get_chat_history(db: db, user_id: user_id, chat_id: int, filter: filte
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="chat not found")
     messages = await db.scalars(select(MessageOrm).where(MessageOrm.chat_id == chat_id).order_by(MessageOrm.id.desc()).offset(filter.offset).limit(filter.limit))
     return messages
+
+
+@router.get('/last/{chat_id}', response_model=MessageOut)
+async def get_last_message_in_chat(db: db, user_id: user_id, chat_id: int):
+    chat = await db.scalar(select(ChatOrm).where(ChatOrm.id == chat_id))
+    if chat is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="chat not found")
+            
+    message = await db.scalar(
+        select(MessageOrm)
+        .where(MessageOrm.chat_id == chat_id)
+        .order_by(desc(MessageOrm.id))
+        .limit(1)  
+    )
+
+    return message
     
         
 
@@ -112,3 +128,5 @@ async def get_image(user_id: user_id, id: int, db: db):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="message not found")
     
     return FileResponse(message.image)
+
+
