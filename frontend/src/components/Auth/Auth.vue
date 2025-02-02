@@ -86,7 +86,7 @@ function handleCreatePinModelClose() {
   <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
   <RouterView v-slot="{ Component }">
-    <KeepAlive :max="10" exclude="NotFoundView,CreatePinView">
+    <KeepAlive :max="10" exclude="NotFoundView,CreatePinView,MessagesView">
       <component :is="Component" :key="$route.fullPath" v-bind="homeProps" v-on="homeEvents" />
     </KeepAlive>
   </RouterView>
