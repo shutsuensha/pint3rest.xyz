@@ -1,7 +1,9 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue';
-
+import FollowersSection from './FollowersSection.vue';
+import FollowingSection from './FollowingSection.vue';
+import { RouterLink, useRoute } from 'vue-router';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -89,6 +91,8 @@ const handleScroll = (event) => {
 };
 
 
+const isOnline = ref(false)
+
 
 const connectWebSocket = () => {
   socket = new WebSocket(`ws://127.0.0.1:8000/ws/${props.chat_id}/${props.auth_user_id}`);
@@ -96,6 +100,14 @@ const connectWebSocket = () => {
   socket.onmessage = async (event) => {
     try {
       const messageObj = JSON.parse(event.data);
+      if ("online" in messageObj) {
+        if (messageObj.online == true) {
+          isOnline.value = true
+        } else {
+          isOnline.value = false
+        }
+        return
+      }
       if (messageObj.image) {
         try {
           const response = await axios.get(`/api/messages/upload/${messageObj.id}`, { responseType: 'blob' });
@@ -137,13 +149,61 @@ const sendMessage = async () => {
 
 const props = defineProps({
   chat_id: Number,
-  auth_user_id: Number
+  auth_user_id: Number,
+  user_to_load: Number
 })
+
+
+const user = ref(null)
+const userImage = ref(null)
+const cntUserFollowers = ref(null)
+const cntUserFollowing = ref(null)
+const checkUserFollow = ref(null)
+const showFollowers = ref(null)
+const showFollowing = ref(null)
 
 
 onMounted(async () => {
   connectWebSocket();
-  loadMessages()
+  loadMessages();
+  try {
+    const response = await axios.get(`/api/users/user_id/${props.user_to_load}`);
+    user.value = response.data;
+
+    try {
+      const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
+      const blobUrl = URL.createObjectURL(userResponse.data);
+      userImage.value = blobUrl;
+
+    } catch (error) {
+      console.error(error);
+    }
+  } catch (error) {
+    router.push('/not-found');
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true });
+    cntUserFollowers.value = response.data;
+
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true });
+    cntUserFollowing.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true });
+    checkUserFollow.value = response.data;
+
+  } catch (error) {
+    console.error(error);
+  }
 })
 
 
@@ -231,10 +291,48 @@ async function sendMediaMessage() {
 }
 
 const openSendMedia = ref(false)
+
+async function follow() {
+  try {
+    const response = await axios.post(`/api/subscription/${user.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = true
+  cntUserFollowers.value += 1
+}
+
+async function unfollow() {
+  try {
+    const response = await axios.delete(`/api/subscription/${user.value.id}`, { withCredentials: true })
+  } catch (error) {
+    console.log(error)
+  }
+  checkUserFollow.value = false
+  cntUserFollowers.value -= 1
+}
 </script>
 
 
 <template>
+
+  <transition name="fade" appear>
+    <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+      <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
+      <i @click="showFollowers = false"
+        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+    </div>
+  </transition>
+
+  <transition name="fade" appear>
+    <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+      <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
+      <i @click="showFollowing = false"
+        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+    </div>
+  </transition>
 
   <transition name="fade" appear>
     <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6">
@@ -269,29 +367,56 @@ const openSendMedia = ref(false)
 
 
   <div class="">
-
-
-    <!-- Чат -->
-    <div ref="chatBox" @scroll="handleScroll" id="chatBox"
-      class="w-[1000px] h-[650px] bg-pink-300  overflow-y-auto p-2 flex flex-col-reverse">
-      <div v-for="(message, index) in messages" :key="index" class="flex my-1"
-        :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
-        <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
-          <img v-if="message.media && message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl">
-          <video v-if="message.media && !message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl"
-            autoplay loop muted></video>
-          <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
-            <span class="text-sm text-black ">{{ message.content }}</span>
+    <div class="flex flex-row">
+      <div ref="chatBox" @scroll="handleScroll" id="chatBox"
+        class="w-[800px] h-[680px] bg-pink-300  overflow-y-auto p-2 flex flex-col-reverse">
+        <div v-for="(message, index) in messages" :key="index" class="flex my-1"
+          :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
+          <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
+            <img v-if="message.media && message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl">
+            <video v-if="message.media && !message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl"
+              autoplay loop muted></video>
+            <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
+              <span class="text-sm text-black ">{{ message.content }}</span>
+            </div>
+            <span class="text-sm text-gray-700 px-4 py-2">{{ dayjs(message.created_at).fromNow() }}</span>
           </div>
-          <span class="text-sm text-gray-700 px-4 py-2">{{ dayjs(message.created_at).fromNow() }}</span>
         </div>
+      </div>
+      <div class="w-[280px] h-[650px] bg-white flex flex-col items-center justify-start">
+        <RouterLink v-if="user" :to="`/user/${user.username}`">
+          <img v-if="userImage" :src="userImage" class="rounded-full w-40 h-40 object-cover" />
+        </RouterLink>
+        <RouterLink v-if="user" :to="`/user/${user.username}`">
+          <span v-if="user" class="hover:underline text-2xl truncate px-4">{{ user.username }}</span>
+        </RouterLink>
+        <span v-if="isOnline" class="text-4xl text-pink-300">Online</span>
+        <span v-if="!isOnline" class="text-4xl text-gray-400">Offline</span>
+        <div class="flex">
+          <button @click="showFollowers = true" v-if="cntUserFollowers"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            {{ cntUserFollowers }} Подпищиков
+          </button>
+          <button @click="showFollowing = true" v-if="cntUserFollowing"
+            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            {{ cntUserFollowing }} Подписок
+          </button>
+        </div>
+        <button v-if="!checkUserFollow" @click="follow"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+          Подписаться
+        </button>
+        <button v-if="checkUserFollow" @click="unfollow"
+          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+          Отписаться
+        </button>
       </div>
     </div>
 
     <!-- Поле ввода -->
-    <div class="w-[1000px] flex mt-4 relative">
+    <div class="w-[800px] h-[50px] flex relative border-r justify-center items-center">
       <label for="media">
-        <i class="absolute top-2 left-0 pi pi-paperclip text-2xl cursor-pointer"></i>
+        <i class="absolute top-3 left-0 pi pi-paperclip text-2xl cursor-pointer"></i>
       </label>
       <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload" class="hidden">
       <input id="messageInput" v-model="message" @keyup.enter="sendMessage" placeholder="Write a message..."

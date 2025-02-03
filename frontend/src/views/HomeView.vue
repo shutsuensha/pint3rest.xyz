@@ -90,11 +90,12 @@ const handleScroll = () => {
   const scrollableHeight = document.documentElement.scrollHeight;
   const currentScrollPosition = window.innerHeight + window.scrollY;
 
-  // Trigger loadPins if user reaches bottom
-  if (currentScrollPosition + 200 >= scrollableHeight) {
+  // Загружаем новые пины только если пользователь достиг самого низа
+  if (currentScrollPosition + 400 >= scrollableHeight) {
     loadPins();
   }
 };
+
 
 const randomBgColor = () => {
   const randomIndex = Math.floor(Math.random() * bgColors.value.length);

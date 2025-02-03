@@ -63,9 +63,18 @@ onMounted(async () => {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
     for (let i = 0; i < chats.value.length; i++) {
+      chats.value[i].online = false
       chats.value[i].socket = new WebSocket(`ws://127.0.0.1:8000/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
       chats.value[i].socket.onmessage = async (event) => {
         const message = JSON.parse(event.data);
+        if ("online" in message) {
+          if (message.online == true) {
+            chats.value[i].online = true
+          } else {
+            chats.value[i].online = false
+          }
+          return
+        }
         updateChat2(message.chat_id)
       }
       try {
@@ -114,6 +123,7 @@ onMounted(async () => {
 const showChat = ref(false)
 const chat_id = ref(null)
 const chat_selected = ref(null)
+const user_to_load = ref(null)
 
 
 async function loadChat(chat, index) {
@@ -127,6 +137,7 @@ async function loadChat(chat, index) {
     showChat.value = false
     await nextTick()
     chat_id.value = id
+    user_to_load.value = chat.user_1_id === auth_user_id.value ? chat.user_2_id : chat.user_1_id
     showChat.value = true
   }
 }
@@ -202,10 +213,10 @@ async function updateChat(chat_id) {
 
 <template>
   <div v-if="showChat" class="fixed top-0 left-[465px] h-full w-full z-50">
-    <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id"
+    <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load"
       @updateLastMessage="(chat_id_) => updateChat(chat_id_)" />
   </div>
-  <div v-else class="fixed top-0 left-[465px] h-full w-[1000px] z-50 bg-pink-300 flex items-center justify-center">
+  <div v-else class="fixed top-0 left-[465px] h-full w-[800px] z-50 bg-pink-300 flex items-center justify-center">
     <span class="text-xs  text-white bg-black bg-opacity-20 px-2 py-1 rounded-3xl">Select chat to start messaging</span>
   </div>
   <div class="ml-20">

@@ -45,9 +45,12 @@ const showChat = ref(false)
 
 
 <template>
-  <div class="flex items-center space-x-2 cursor-pointer"
+  <div class="flex items-center space-x-4 cursor-pointer"
     :class="[props.chat.selected ? 'bg-pink-300' : 'hover:bg-gray-200']">
-    <img v-if="userImage" :src="userImage" alt="User Image"   class="w-[60px] h-[60px] rounded-full object-cover flex-shrink-0 m-2"    />
+    <div class="relative">
+      <img v-if="userImage" :src="userImage" alt="User Image"   class="w-[60px] h-[60px] rounded-full object-cover flex-shrink-0 m-2"    />
+      <div v-if="chat.online" class="absolute bottom-2 right-[-7px] bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
+    </div>
     <div class="flex flex-col w-full gap-1">
       <div class="flex flex-row justify-between items-center w-full">
         <span v-if="user" class="truncate flex-1">{{ user.username }}</span>

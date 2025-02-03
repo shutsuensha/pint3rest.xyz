@@ -298,7 +298,7 @@ async function save() {
           <div v-if="showPopover"
             class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
             <div class="relative flex flex-col top-7 items-center justify-center">
-              <RouterLink :to="`/user/${popUser.username}`"
+              <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
                 class="relative transition-transform duration-200transform hover:scale-110">
                 <i v-if="popUser && popUser.verified" class="absolute top-0 left-16 pi pi-verified text-2xl"></i>
                 <img v-if="popImage" :src="popImage"

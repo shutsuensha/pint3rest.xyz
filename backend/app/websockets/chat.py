@@ -13,4 +13,4 @@ def register_websocket(app: FastAPI):
                 data = await websocket.receive_json()
                 await manager.send_message(data, chat_id, user_id)
         except WebSocketDisconnect:
-            manager.disconnect(chat_id, user_id, chat_connection)
+            await manager.disconnect(chat_id, user_id, chat_connection)
