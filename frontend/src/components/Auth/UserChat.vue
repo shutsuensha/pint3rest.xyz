@@ -16,6 +16,8 @@ const user = ref(null)
 const userImage = ref(null)
 const userId = ref(null)
 
+const cntUnreadMessages = ref(null)
+
 const props = defineProps({
   chat: Object,
   auth_user_id: Number,
@@ -38,6 +40,12 @@ onMounted(async () => {
   } catch (error) {
     console.error(error);
   }
+  try {
+    const response = await axios.get(`/api/messages/unread/cnt/${props.chat.id}`, { withCredentials: true })
+    cntUnreadMessages.value = response.data
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 const showChat = ref(false)
@@ -48,24 +56,39 @@ const showChat = ref(false)
   <div class="flex items-center space-x-4 cursor-pointer"
     :class="[props.chat.selected ? 'bg-pink-300' : 'hover:bg-gray-200']">
     <div class="relative">
-      <img v-if="userImage" :src="userImage" alt="User Image"   class="w-[60px] h-[60px] rounded-full object-cover flex-shrink-0 m-2"    />
-      <div v-if="chat.online" class="absolute bottom-2 right-[-7px] bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
+      <img v-if="userImage" :src="userImage" alt="User Image"
+        class="w-[60px] h-[60px] rounded-full object-cover flex-shrink-0 m-2" />
+      <div v-if="chat.online"
+        class="absolute bottom-2 right-[-7px] bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
     </div>
     <div class="flex flex-col w-full gap-1">
       <div class="flex flex-row justify-between items-center w-full">
         <span v-if="user" class="truncate flex-1">{{ user.username }}</span>
-        <span v-if="chat.last_message" class="text-sm text-gray-700 truncate text-nowrap mr-2">{{ dayjs(chat.last_message.created_at).format('HH:mm') }}</span>
+        <span v-if="chat.last_message" class="text-sm text-gray-700 truncate text-nowrap mr-2">{{
+          dayjs(chat.last_message.created_at).format('HH:mm') }}</span>
       </div>
       <div class="flex flex-row items-center">
         <div>
-          <img v-if="chat.last_message && chat.last_message.media && chat.last_message.isImage" :src="chat.last_message.media" class="h-5 w-5"/>
+          <img v-if="chat.last_message && chat.last_message.media && chat.last_message.isImage"
+            :src="chat.last_message.media" class="h-5 w-5" />
         </div>
         <div>
-          <video v-if="chat.last_message && chat.last_message.media && !chat.last_message.isImage" :src="chat.last_message.media" class="h-5 w-5" autoplay muted loop></video>
+          <video v-if="chat.last_message && chat.last_message.media && !chat.last_message.isImage"
+            :src="chat.last_message.media" class="h-5 w-5" autoplay muted loop></video>
         </div>
-        <span v-if="chat.last_message && chat.last_message.content" :class="[chat.last_message && chat.last_message.media ? 'ml-1':'']" class="text-sm text-gray-700 max-w-[200px] truncate">{{ chat.last_message.content }}</span>
-        <span v-if="chat.last_message && !chat.last_message.content && chat.last_message.media && chat.last_message.isImage" class="ml-1 text-sm text-gray-700">Photo</span>
-        <span v-if="chat.last_message && !chat.last_message.content && chat.last_message.media && !chat.last_message.isImage" class="ml-1 text-sm text-gray-700">Video</span>
+        <span v-if="chat.last_message && chat.last_message.content"
+          :class="[chat.last_message && chat.last_message.media ? 'ml-1' : '']"
+          class="text-sm text-gray-700 max-w-[200px] truncate">{{ chat.last_message.content }}</span>
+        <span
+          v-if="chat.last_message && !chat.last_message.content && chat.last_message.media && chat.last_message.isImage"
+          class="ml-1 text-sm text-gray-700">Photo</span>
+        <span
+          v-if="chat.last_message && !chat.last_message.content && chat.last_message.media && !chat.last_message.isImage"
+          class="ml-1 text-sm text-gray-700">Video</span>
+        <span v-if="cntUnreadMessages"
+          class="ml-auto flex items-center justify-center bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 mr-3">
+          {{ cntUnreadMessages }}
+        </span>
       </div>
     </div>
   </div>

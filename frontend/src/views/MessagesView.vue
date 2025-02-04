@@ -216,8 +216,12 @@ async function updateChat(chat_id) {
     <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load"
       @updateLastMessage="(chat_id_) => updateChat(chat_id_)" />
   </div>
-  <div v-else class="fixed top-0 left-[465px] h-full w-[800px] z-50 bg-pink-300 flex items-center justify-center">
+  <div v-if="chats && !showChat && !(chats.length === 0)" class="fixed top-0 left-[465px] h-full w-[1080px] z-50 bg-pink-300 flex items-center justify-center">
     <span class="text-xs  text-white bg-black bg-opacity-20 px-2 py-1 rounded-3xl">Select chat to start messaging</span>
+  </div>
+  <div v-if="chats && chats.length === 0" class="flex flex-col items-center justify-center mt-20">
+    <span class="text-3xl">У вас пока нет чатов. Начните новый диалог!</span>
+    <img src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg" class="w-auto h-auto rounded-2xl"/>
   </div>
   <div class="ml-20">
     <div id="chats" ref="chatsContainer" class="fixed top-0 left-20 h-full w-96 flex flex-col z-30 overflow-y-auto"

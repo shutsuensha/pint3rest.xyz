@@ -130,3 +130,25 @@ async def get_image(user_id: user_id, id: int, db: db):
     return FileResponse(message.image)
 
 
+@router.get('/unread/cnt/{chat_id}')
+async def get_user_chat_unread_messages(user_id: user_id, db: db, chat_id: int):
+    cnt_messages = await db.scalar(
+        select(func.count()).where(
+                MessageOrm.chat_id == chat_id,
+                MessageOrm.is_read == False,
+                MessageOrm.user_id_ != user_id
+            )
+    )
+    return cnt_messages
+
+
+@router.patch('/read/{message_id}', response_model=MessageOut)
+async def user_read_message(user_id: user_id, db: db, message_id: int):
+    message = await db.scalar(
+        update(MessageOrm)
+        .where(MessageOrm.id == message_id)
+        .values(is_read = True)
+        .returning(MessageOrm)
+    )
+    await db.commit()
+    return message

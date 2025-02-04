@@ -119,3 +119,5 @@ class MessageOrm(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
+
+    is_read: Mapped[bool | None] = mapped_column(Boolean, default=False)

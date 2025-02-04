@@ -4,6 +4,9 @@ import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue';
 import FollowersSection from './FollowersSection.vue';
 import FollowingSection from './FollowingSection.vue';
 import { RouterLink, useRoute } from 'vue-router';
+import double_check from '@/assets/double_check.png';
+import single_check from '@/assets/single_check.png';
+
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -30,6 +33,8 @@ const scrollToBottom = () => {
   });
 };
 
+const cntUnreadMessages = ref(null)
+
 
 
 const messages = ref([]);
@@ -55,6 +60,14 @@ async function loadMessages() {
     const response = await axios.get(`/api/messages/history/${props.chat_id}`, { params: { offset: offset.value, limit: limit.value } })
     messagesTemp.value = response.data
     for (let i = 0; i < messagesTemp.value.length; i++) {
+      if (messagesTemp.value[i].user_id_ !== props.auth_user_id && messagesTemp.value[i].is_read === false) {
+        try {
+          response = await axios.patch(`/api/messages/read/${messagesTemp.value[i].id}`)
+        } catch (error) {
+          console.log(error)
+        }
+        cntUnreadMessages.value -= 1
+      }
       if (messagesTemp.value[i].image) {
         try {
           const response = await axios.get(`/api/messages/upload/${messagesTemp.value[i].id}`, { responseType: 'blob' });
@@ -78,6 +91,9 @@ async function loadMessages() {
 
   offset.value += limit.value;
   isPinsLoading.value = false;
+  if (cntUnreadMessages.value !== 0) {
+    loadMessages()  
+  }
 }
 
 const handleScroll = (event) => {
@@ -164,6 +180,12 @@ const showFollowing = ref(null)
 
 
 onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/messages/unread/cnt/${props.chat_id}`, { withCredentials: true })
+    cntUnreadMessages.value = response.data
+  } catch (error) {
+    console.log(error)
+  }
   connectWebSocket();
   loadMessages();
   try {
@@ -379,7 +401,13 @@ async function unfollow() {
             <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
               <span class="text-sm text-black ">{{ message.content }}</span>
             </div>
-            <span class="text-sm text-gray-700 px-4 py-2">{{ dayjs(message.created_at).fromNow() }}</span>
+            <div class="flex flex-row items-center m-3 gap-2">
+              <span class="text-sm text-gray-500">{{ dayjs(message.created_at).fromNow() }}</span>
+              <div v-if="message.user_id_ === auth_user_id" class="flex ml-auto justify-end items-center gap-1">
+                <img v-if="message.is_read === false" :src="single_check" alt="Single Check" class="h-4 w-4" />
+                <img v-if="message.is_read === true" :src="double_check" alt="Double Check" class="h-4 w-4" />
+              </div>
+            </div>
           </div>
         </div>
       </div>

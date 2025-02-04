@@ -29,7 +29,7 @@ class ConnectionManager:
                 }
             }
 
-        if chat_connection:
+        if chat_connection is not None:
             if self.chats[chat_id]['chat_connections']['user_1']['user_id'] is None:
                 self.chats[chat_id]['chat_connections']['user_1']['user_id'] = user_id
                 self.chats[chat_id]['chat_connections']['user_1']['websocket'] = websocket
@@ -68,23 +68,7 @@ class ConnectionManager:
     
 
     async def disconnect(self, chat_id: int, user_id: int, chat_connection: bool | None = None):
-        if self.chats[chat_id]['user_1']['user_id'] == user_id:
-            self.chats[chat_id]['user_1']['user_id'] = None
-            self.chats[chat_id]['user_1']['websocket'] = None
-
-            websocket = self.chats[chat_id]['user_2']['websocket']
-            if websocket is not None:
-                await websocket.send_json({'online': False})
-        
-        if self.chats[chat_id]['user_2']['user_id'] == user_id:
-            self.chats[chat_id]['user_2']['user_id'] = None
-            self.chats[chat_id]['user_2']['websocket'] = None
-
-            websocket = self.chats[chat_id]['user_1']['websocket']
-            if websocket is not None:
-                await websocket.send_json({'online': False})
-
-        if chat_connection:
+        if chat_connection is not None:
             if self.chats[chat_id]['chat_connections']['user_1']['user_id'] == user_id:
                 self.chats[chat_id]['chat_connections']['user_1']['user_id'] = None
                 self.chats[chat_id]['chat_connections']['user_1']['websocket'] = None
@@ -101,11 +85,23 @@ class ConnectionManager:
                 websocket = self.chats[chat_id]['chat_connections']['user_1']['websocket']
                 if websocket is not None:
                     await websocket.send_json({'online': False})
+        else:
+            if self.chats[chat_id]['user_1']['user_id'] == user_id:
+                self.chats[chat_id]['user_1']['user_id'] = None
+                self.chats[chat_id]['user_1']['websocket'] = None
 
+                websocket = self.chats[chat_id]['user_2']['websocket']
+                if websocket is not None:
+                    await websocket.send_json({'online': False})
+            
+            if self.chats[chat_id]['user_2']['user_id'] == user_id:
+                self.chats[chat_id]['user_2']['user_id'] = None
+                self.chats[chat_id]['user_2']['websocket'] = None
 
-        if self.chats[chat_id]['chat_connections']['user_1']['user_id'] is None and \
-        self.chats[chat_id]['chat_connections']['user_2']['user_id'] is None:
-            del self.chats[chat_id]
+                websocket = self.chats[chat_id]['user_1']['websocket']
+                if websocket is not None:
+                    await websocket.send_json({'online': False})
+
 
 
     async def send_message(self, message: dict, chat_id: int, user_id: int):

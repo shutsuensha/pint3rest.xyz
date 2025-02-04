@@ -15,6 +15,7 @@ class MessageOut(BaseModel):
     content: str | None = None
     created_at: datetime
     image: str | None = None
+    is_read: bool | None = None
 
 
 class ChatOut(BaseModel):
