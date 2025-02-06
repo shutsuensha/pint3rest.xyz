@@ -56,6 +56,10 @@ class ConnectionManager:
                 if websocket1 is not None:
                     await websocket1.send_json({'online': True})
                     await websocket.send_json({'online': True})
+
+                websocket2 = self.chats[chat_id]['chat_connections']['user_2']['websocket']
+                if websocket2 is not None:
+                    await websocket2.send_json({'read_message': True})
             else: 
                 self.chats[chat_id]['user_2']['user_id'] = user_id
                 self.chats[chat_id]['user_2']['websocket'] = websocket
@@ -64,6 +68,10 @@ class ConnectionManager:
                 if websocket1 is not None:
                     await websocket1.send_json({'online': True})
                     await websocket.send_json({'online': True})
+
+                websocket2 = self.chats[chat_id]['chat_connections']['user_1']['websocket']
+                if websocket2 is not None:
+                    await websocket2.send_json({'read_message': True})
             
     
 

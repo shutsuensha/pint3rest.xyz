@@ -152,3 +152,20 @@ async def user_read_message(user_id: user_id, db: db, message_id: int):
     )
     await db.commit()
     return message
+
+
+@router.get('/unread/all_chats/cnt')
+async def get_user_all_chats_unread_messages(user_id: user_id, db: db):
+    chat_ids_subquery = (
+        select(ChatOrm.id)
+        .where((ChatOrm.user_1_id == user_id) | (ChatOrm.user_2_id == user_id))
+        .subquery()
+    )
+
+    cnt_messages = await db.scalar(select(func.count(MessageOrm.id)).where(
+            MessageOrm.chat_id.in_(select(chat_ids_subquery)),
+            MessageOrm.user_id_ != user_id,
+            MessageOrm.is_read == False
+        )
+    )
+    return cnt_messages

@@ -7,6 +7,9 @@ import { RouterLink, useRoute } from 'vue-router';
 import double_check from '@/assets/double_check.png';
 import single_check from '@/assets/single_check.png';
 
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+const unreadMessagesStore = useUnreadMessagesStore();
+
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -62,11 +65,15 @@ async function loadMessages() {
     for (let i = 0; i < messagesTemp.value.length; i++) {
       if (messagesTemp.value[i].user_id_ !== props.auth_user_id && messagesTemp.value[i].is_read === false) {
         try {
-          response = await axios.patch(`/api/messages/read/${messagesTemp.value[i].id}`)
+          const response = await axios.patch(`/api/messages/read/${messagesTemp.value[i].id}`)
         } catch (error) {
           console.log(error)
         }
         cntUnreadMessages.value -= 1
+        props.chat.cntUnreadMessages -= 1
+        if (unreadMessagesStore.count > 0) {
+          unreadMessagesStore.decrement()
+        }
       }
       if (messagesTemp.value[i].image) {
         try {
@@ -92,7 +99,7 @@ async function loadMessages() {
   offset.value += limit.value;
   isPinsLoading.value = false;
   if (cntUnreadMessages.value !== 0) {
-    loadMessages()  
+    loadMessages()
   }
 }
 
@@ -119,10 +126,25 @@ const connectWebSocket = () => {
       if ("online" in messageObj) {
         if (messageObj.online == true) {
           isOnline.value = true
+          props.chat.last_message.is_read = true
         } else {
           isOnline.value = false
         }
+        for (let i = 0; i < messages.value.length; i++) {
+          if (messages.value[i].user_id_ === props.auth_user_id) {
+            if (messages.value[i].is_read === false) {
+              messages.value[i].is_read = true
+            } else {
+              break
+            }
+          }
+        }
         return
+      }
+      try {
+        await axios.patch(`/api/messages/read/${messageObj.id}`)
+      } catch (error) {
+        console.log(error)
       }
       if (messageObj.image) {
         try {
@@ -155,18 +177,22 @@ const sendMessage = async () => {
     } else {
       messageResp.isImage = false;
     }
+    if (isOnline.value === true) {
+      messageResp.is_read = true
+    }
     messages.value.unshift(messageResp)
     socket.send(JSON.stringify(messageResp));
     message.value = "";
     scrollToBottom();
-    emit('updateLastMessage', props.chat_id)
+    emit('updateLastMessage', props.chat_id, isOnline.value)
   }
 };
 
 const props = defineProps({
   chat_id: Number,
   auth_user_id: Number,
-  user_to_load: Number
+  user_to_load: Number,
+  chat: Object
 })
 
 
@@ -307,9 +333,13 @@ async function sendMediaMessage() {
   } catch (error) {
     console.log(error)
   }
+  if (isOnline.value === true) {
+      messageResp.is_read = true
+      props.chat.last_message.is_read = true
+  }
   openSendMedia.value = false
   scrollToBottom();
-  emit('updateLastMessage', props.chat_id)
+  emit('updateLastMessage', props.chat_id, isOnline.value)
 }
 
 const openSendMedia = ref(false)

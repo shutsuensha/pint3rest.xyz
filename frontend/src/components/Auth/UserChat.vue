@@ -1,6 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import double_check from '@/assets/double_check.png';
+import single_check from '@/assets/single_check.png';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -16,7 +18,6 @@ const user = ref(null)
 const userImage = ref(null)
 const userId = ref(null)
 
-const cntUnreadMessages = ref(null)
 
 const props = defineProps({
   chat: Object,
@@ -39,12 +40,6 @@ onMounted(async () => {
 
   } catch (error) {
     console.error(error);
-  }
-  try {
-    const response = await axios.get(`/api/messages/unread/cnt/${props.chat.id}`, { withCredentials: true })
-    cntUnreadMessages.value = response.data
-  } catch (error) {
-    console.log(error)
   }
 })
 
@@ -85,10 +80,14 @@ const showChat = ref(false)
         <span
           v-if="chat.last_message && !chat.last_message.content && chat.last_message.media && !chat.last_message.isImage"
           class="ml-1 text-sm text-gray-700">Video</span>
-        <span v-if="cntUnreadMessages"
+        <span v-if="chat.cntUnreadMessages"
           class="ml-auto flex items-center justify-center bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 mr-3">
-          {{ cntUnreadMessages }}
+          {{ chat.cntUnreadMessages }}
         </span>
+        <div v-if="chat.last_message.user_id_ === auth_user_id" class="flex ml-auto justify-end items-center gap-1 mr-2">
+          <img v-if="chat.last_message.is_read === false" :src="single_check" alt="Single Check" class="h-4 w-4" />
+          <img v-if="chat.last_message.is_read === true" :src="double_check" alt="Double Check" class="h-4 w-4" />
+        </div>
       </div>
     </div>
   </div>

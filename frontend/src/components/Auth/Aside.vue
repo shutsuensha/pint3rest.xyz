@@ -2,6 +2,10 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios'
 import { RouterLink, useRoute } from 'vue-router';
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -26,8 +30,11 @@ async function logout() {
 }
 
 
+const cntUnreadMessages = ref(null)
+
 
 onMounted(async () => {
+  unreadMessagesStore.fetchUnreadMessages(); 
 })
 </script>
 
@@ -56,8 +63,12 @@ onMounted(async () => {
         <i class="pi pi-bell"></i>
       </RouterLink>
       <RouterLink to="/messages"
+        class="relative"
         :class="[isActiveLink('/messages') ? 'bg-gray-200' : 'transition-transform duration-100 transform hover:scale-150 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
         <i class="pi pi-envelope"></i>
+        <div v-if="unreadMessagesStore.count" class="absolute top-0 right-0 py-0.5 px-2 bg-red-600 rounded-full flex align-center items-center">
+          <span class="text-xs text-white"> {{ unreadMessagesStore.count }}</span>
+        </div>
       </RouterLink>
       <div @click="logout"
         class="cursor-pointer rounded-md transition-transform duration-100 transform hover:scale-150 p-5 text-xl flex items-center">

@@ -4,6 +4,9 @@ import axios from 'axios'
 import UserChat from '@/components/Auth/UserChat.vue';
 import WebsocketChat from '@/components/Auth/WebsocketChat.vue';
 import { useRoute } from 'vue-router';
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
 
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 
@@ -75,6 +78,11 @@ onMounted(async () => {
           }
           return
         }
+        if ("read_message" in message) {
+          chats.value[i].last_message.is_read = true
+          return
+        }
+        unreadMessagesStore.increment()
         updateChat2(message.chat_id)
       }
       try {
@@ -97,6 +105,12 @@ onMounted(async () => {
         }
       } catch (error) {
         console.error(error)
+      }
+      try {
+        const response = await axios.get(`/api/messages/unread/cnt/${chats.value[i].id}`, { withCredentials: true })
+        chats.value[i].cntUnreadMessages = response.data
+      } catch (error) {
+        console.log(error)
       }
     }
   } catch (error) {
@@ -124,6 +138,7 @@ const showChat = ref(false)
 const chat_id = ref(null)
 const chat_selected = ref(null)
 const user_to_load = ref(null)
+const chatObject = ref(null)
 
 
 async function loadChat(chat, index) {
@@ -132,6 +147,7 @@ async function loadChat(chat, index) {
     if (chat_selected.value !== null) {
       sortedChats.value[chat_selected.value].selected = false
     }
+    chatObject.value = chat
     chat.selected = true
     chat_selected.value = index
     showChat.value = false
@@ -179,16 +195,23 @@ async function updateChat2(chat_id) {
         console.error(error);
       }
     }
+    try {
+      const response = await axios.get(`/api/messages/unread/cnt/${chatObj.id}`, { withCredentials: true })
+      chatObj.cntUnreadMessages = response.data
+    } catch (error) {
+      console.log(error)
+    }
   } catch (error) {
     console.error(error)
   }
 }
 
-async function updateChat(chat_id) {
+async function updateChat(chat_id, online) {
   scrollToTop()
   try {
     const response = await axios.get(`/api/messages/last/${chat_id}`, { withCredentials: true })
     sortedChats.value[chat_selected.value].last_message = response.data
+    sortedChats.value[chat_selected.value].last_message.is_read = online
     chat_selected.value = 0
     if (sortedChats.value[chat_selected.value].last_message.image !== null) {
       try {
@@ -213,15 +236,17 @@ async function updateChat(chat_id) {
 
 <template>
   <div v-if="showChat" class="fixed top-0 left-[465px] h-full w-full z-50">
-    <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load"
-      @updateLastMessage="(chat_id_) => updateChat(chat_id_)" />
+    <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load" :chat="chatObject"
+      @updateLastMessage="(chat_id_, online) => updateChat(chat_id_, online)" />
   </div>
-  <div v-if="chats && !showChat && !(chats.length === 0)" class="fixed top-0 left-[465px] h-full w-[1080px] z-50 bg-pink-300 flex items-center justify-center">
+  <div v-if="chats && !showChat && !(chats.length === 0)"
+    class="fixed top-0 left-[465px] h-full w-[1080px] z-50 bg-pink-300 flex items-center justify-center">
     <span class="text-xs  text-white bg-black bg-opacity-20 px-2 py-1 rounded-3xl">Select chat to start messaging</span>
   </div>
   <div v-if="chats && chats.length === 0" class="flex flex-col items-center justify-center mt-20">
     <span class="text-3xl">У вас пока нет чатов. Начните новый диалог!</span>
-    <img src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg" class="w-auto h-auto rounded-2xl"/>
+    <img src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
+      class="w-auto h-auto rounded-2xl" />
   </div>
   <div class="ml-20">
     <div id="chats" ref="chatsContainer" class="fixed top-0 left-20 h-full w-96 flex flex-col z-30 overflow-y-auto"
