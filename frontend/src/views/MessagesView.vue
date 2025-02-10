@@ -1,14 +1,45 @@
 <script setup>
-import { onMounted, ref, nextTick, onActivated, computed, onBeforeUnmount } from 'vue';
+import { onMounted, ref, nextTick, watch, computed, onBeforeUnmount } from 'vue';
 import axios from 'axios'
 import UserChat from '@/components/Auth/UserChat.vue';
 import WebsocketChat from '@/components/Auth/WebsocketChat.vue';
 import { useRoute } from 'vue-router';
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
+import { useChatStore } from "@/stores/useChatStore";
+
+const chatStore = useChatStore();
+
 const unreadMessagesStore = useUnreadMessagesStore();
 
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
+
+
+const searchValue = ref('')
+
+const filteredChats = computed(() => {
+  if (!searchValue.value.trim()) {
+    return sortedChats.value; // Если строка пустая, показываем все чаты
+  }
+  return sortedChats.value.filter(chat =>
+    chat.user.username.toLowerCase().includes(searchValue.value.toLowerCase())
+  );
+});
+
+
+const colorMap = {
+  red: { track: "#fca5a5", thumb: "#ef4444" }, // bg-red-300 / bg-red-500
+  blue: { track: "#93c5fd", thumb: "#3b82f6" }, // bg-blue-300 / bg-blue-500
+  lime: { track: "#bef264", thumb: "#84cc16" }, // bg-lime-300 / bg-lime-500
+  yellow: { track: "#fde047", thumb: "#eab308" }, // bg-yellow-300 / bg-yellow-500
+  purple: { track: "#d8b4fe", thumb: "#a855f7" } // bg-purple-300 / bg-purple-500
+};
+
+watch(() => chatStore.bgColor, (newColor) => {
+  if (colorMap[newColor]) {
+    document.documentElement.style.setProperty("--scrollbar-thumb-bg-chats", colorMap[newColor].thumb);
+  }
+}, { immediate: true });
 
 const color = ref('red')
 const size = ref('100px')
@@ -18,6 +49,7 @@ const route = useRoute();
 
 const chats = ref(null)
 const auth_user_id = ref(null)
+
 
 const sortedChats = computed(() => {
   return chats.value ? [...chats.value].sort((a, b) => b.last_message.id - a.last_message.id) : [];
@@ -45,6 +77,9 @@ onBeforeUnmount(() => {
 });
 
 onMounted(async () => {
+  chatStore.fetchChatColor();
+  chatStore.fetchChatSize();
+  chatStore.fetchSide()
   showLoading.value = true
   document.title = 'pinterest.xyz / chats'
   const accessToken = getCookie('access_token');
@@ -66,6 +101,20 @@ onMounted(async () => {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
     for (let i = 0; i < chats.value.length; i++) {
+      const userId = auth_user_id.value === chats.value[i].user_1_id ? chats.value[i].user_2_id : chats.value[i].user_1_id
+      try {
+        const response = await axios.get(`/api/users/user_id/${userId}`, { withCredentials: true })
+        chats.value[i].user = response.data
+      } catch (error) {
+        console.error(error)
+      }
+      try {
+        const userResponse = await axios.get(`/api/users/upload/${userId}`, { responseType: 'blob' });
+        const blobUrl = URL.createObjectURL(userResponse.data);
+        chats.value[i].userImage = blobUrl;
+      } catch (error) {
+        console.error(error);
+      }
       chats.value[i].online = false
       chats.value[i].socket = new WebSocket(`ws://127.0.0.1:8000/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
       chats.value[i].socket.onmessage = async (event) => {
@@ -78,8 +127,16 @@ onMounted(async () => {
           }
           return
         }
-        if ("read_message" in message) {
+        if ("user_read_messages" in message) {
           chats.value[i].last_message.is_read = true
+          return
+        }
+        if ("user_start_typing" in message) {
+          chats.value[i].typing = true
+          return
+        }
+        if ("user_stop_typing" in message) {
+          chats.value[i].typing = false
           return
         }
         unreadMessagesStore.increment()
@@ -142,6 +199,10 @@ const chatObject = ref(null)
 
 
 async function loadChat(chat, index) {
+  if (searchValue.value.trim()) {
+    searchValue.value = ''
+    index = sortedChats.value.findIndex(c => c.id === chat.id);
+  }
   let id = chat.id
   if (id !== chat_id.value) {
     if (chat_selected.value !== null) {
@@ -188,6 +249,9 @@ async function updateChat2(chat_id) {
         const contentType = response.headers['content-type'];
         if (contentType.startsWith('image/')) {
           chatObj.last_message.isImage = true;
+          if (contentType === 'image/gif') {
+            chatObj.last_message.isGif = true;
+          }
         } else {
           chatObj.last_message.isImage = false;
         }
@@ -221,6 +285,9 @@ async function updateChat(chat_id, online) {
         const contentType = response.headers['content-type'];
         if (contentType.startsWith('image/')) {
           sortedChats.value[chat_selected.value].last_message.isImage = true;
+          if (contentType === 'image/gif') {
+            sortedChats.value[chat_selected.value].last_message.isGif = true;
+          }
         } else {
           sortedChats.value[chat_selected.value].last_message.isImage = false;
         }
@@ -232,26 +299,82 @@ async function updateChat(chat_id, online) {
     console.error(error)
   }
 }
+
+const startResize = (event) => {
+  const startX = event.clientX;
+  const startWidth = chatStore.size;
+
+  // Отключаем выделение текста
+  document.body.style.userSelect = "none";
+
+  const onMouseMove = (moveEvent) => {
+    let newWidth = startWidth + (moveEvent.clientX - startX);
+    newWidth = Math.max(200, Math.min(newWidth, 800));
+
+    if (newWidth === 200) {
+      newWidth = 80;
+    }
+
+    chatStore.size = newWidth;
+  };
+
+  const onMouseUp = async () => {
+    try {
+      await axios.patch(`/api/chats/size?size=${chatStore.size}`)
+    } catch (error) {
+      console.log(error)
+    }
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+
+    document.body.style.userSelect = "";
+  };
+
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
+};
+
+const showimg = ref(false)
+
+const showScroll = ref(false)
+
+function setScrollbarColor(color) {
+  document.documentElement.style.setProperty('--scrollbar-thumb-bg-chats', color);
+}
+
 </script>
 
 <template>
-  <div v-if="showChat" class="fixed top-0 left-[465px] h-full w-full z-50">
+  <div v-if="showChat" class="fixed top-0 h-full w-full z-50" :style="{ left: `${chatStore.size + 80}px` }">
     <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load" :chat="chatObject"
       @updateLastMessage="(chat_id_, online) => updateChat(chat_id_, online)" />
   </div>
-  <div v-if="chats && !showChat && !(chats.length === 0)"
-    class="fixed top-0 left-[465px] h-full w-[1080px] z-50 bg-pink-300 flex items-center justify-center">
-    <span class="text-xs  text-white bg-black bg-opacity-20 px-2 py-1 rounded-3xl">Select chat to start messaging</span>
+  <div v-if="chatStore.bgColor && chats && !showChat && !(chats.length === 0)" :class="`bg-${chatStore.bgColor}-300`"
+    :style="{ left: `${chatStore.size + 80}px`, width: `calc(100vw - ${chatStore.size + 80}px)` }"
+    class="fixed top-0 h-full z-20 flex items-center justify-center">
+    <span class="text-xs text-white bg-black bg-opacity-20 px-2 py-1 rounded-3xl">
+      Select chat to start messaging
+    </span>
+    <div class="absolute left-[-10px] bottom-0 top-0 w-5 cursor-ew-resize bg-transparen" @mousedown="startResize">
+    </div>
   </div>
   <div v-if="chats && chats.length === 0" class="flex flex-col items-center justify-center mt-20">
     <span class="text-3xl">У вас пока нет чатов. Начните новый диалог!</span>
-    <img src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
-      class="w-auto h-auto rounded-2xl" />
+    <img v-show="showimg === true" src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
+      class="w-auto h-auto rounded-2xl" @load="showimg = true" />
   </div>
   <div class="ml-20">
-    <div id="chats" ref="chatsContainer" class="fixed top-0 left-20 h-full w-96 flex flex-col z-30 overflow-y-auto"
-      v-auto-animate>
-      <UserChat v-if="!showLoading" v-for="(chat, index) in sortedChats" :key="chat.id" :chat="chat"
+    <div v-show="!showLoading"
+      class="fixed z-30 top-0 left-20 transform h-[50px] flex items-center justify-center shadow-sm"
+      :style="{ width: chatStore.size + 'px' }">
+      <input v-show="chatStore.size > 200" v-model="searchValue" type="text" placeholder="Search"
+        class="w-full mx-5 max-w-[800px] transition-all duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-3xl py-2 px-6 outline-none border-none focus:ring-0" />
+    </div>
+    <div id="chats" ref="chatsContainer" @mouseover="setScrollbarColor(colorMap[chatStore.bgColor].thumb)"
+      @mouseleave="setScrollbarColor('white')"
+      class="fixed top-0 left-20 h-[675px] flex flex-col overflow-x-hidden mt-[50px]"
+      :style="{ width: chatStore.size + 'px' }" v-auto-animate>
+      <UserChat v-if="!showLoading" v-for="(chat, index) in filteredChats" :key="chat.id" :chat="chat"
         :auth_user_id="auth_user_id" @click="loadChat(chat, index)" />
       <ClipLoader v-if="showLoading" :color="color" :size="size"
         class="flex items-center justify-center h-96 font-extrabold" />
@@ -262,18 +385,31 @@ async function updateChat(chat_id, online) {
 <style scoped>
 #chats::-webkit-scrollbar {
   width: 5px;
-  /* Ширина скроллбара */
 }
 
 #chats::-webkit-scrollbar-track {
-  background: #fefefe;
-  /* Фон трека */
+  background: white;
   border-radius: 10px;
 }
 
 #chats::-webkit-scrollbar-thumb {
-  background: rgba(28, 17, 21, 0.1);
-  /* Цвет ползунка */
+  background: var(--scrollbar-thumb-bg-chats);
+  /* ✅ Работает с Tailwind */
   border-radius: 10px;
 }
+
+/* #chats {
+  user-select: none;
+} */
+
+
+/* #chats ::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+#chats ::selection {
+  background: transparent;
+  color: inherit;
+} */
 </style>

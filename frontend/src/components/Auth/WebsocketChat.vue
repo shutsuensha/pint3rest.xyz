@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue';
+import { onMounted, onBeforeUnmount, ref, nextTick, watch } from 'vue';
 import FollowersSection from './FollowersSection.vue';
 import FollowingSection from './FollowingSection.vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -9,6 +9,34 @@ import single_check from '@/assets/single_check.png';
 
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 const unreadMessagesStore = useUnreadMessagesStore();
+
+import { useChatStore } from "@/stores/useChatStore";
+
+const chatStore = useChatStore();
+
+const imageLoaded = ref(false)
+const sectionLoaded = ref(false)
+
+import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
+
+const color = ref('red')
+const size = ref('100px')
+
+const colorMap = {
+  red: { track: "#fca5a5", thumb: "#ef4444" }, // bg-red-300 / bg-red-500
+  blue: { track: "#93c5fd", thumb: "#3b82f6" }, // bg-blue-300 / bg-blue-500
+  lime: { track: "#bef264", thumb: "#84cc16" }, // bg-lime-300 / bg-lime-500
+  yellow: { track: "#fde047", thumb: "#eab308" }, // bg-yellow-300 / bg-yellow-500
+  purple: { track: "#d8b4fe", thumb: "#a855f7" } // bg-purple-300 / bg-purple-500
+};
+
+watch(() => chatStore.bgColor, (newColor) => {
+  if (colorMap[newColor]) {
+    document.documentElement.style.setProperty("--scrollbar-track-bg", colorMap[newColor].track);
+    document.documentElement.style.setProperty("--scrollbar-thumb-bg", colorMap[newColor].thumb);
+    document.documentElement.style.setProperty("--selection-bg", colorMap[newColor].thumb); // Добавляем изменение цвета выделения
+  }
+}, { immediate: true });
 
 
 import dayjs from "dayjs";
@@ -42,6 +70,36 @@ const cntUnreadMessages = ref(null)
 
 const messages = ref([]);
 const message = ref("");
+const isTyping = ref(false)
+let typingTimeout = null;
+
+
+watch(message, (newValue, oldValue) => {
+  if (newValue.trim() !== '') {
+    isTyping.value = true;
+
+    // Сбрасываем предыдущий таймер, если он есть
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    // Устанавливаем новый таймер на 2 секунды
+    typingTimeout = setTimeout(() => {
+      isTyping.value = false;
+    }, 2000);
+  } else {
+    if (oldValue.trim() !== '') {
+      isTyping.value = false;
+    }
+  }
+});
+
+watch(isTyping, (newValue) => {
+  if (newValue) {
+    socket.send(JSON.stringify({ 'user_start_typing': true }));
+  } else {
+    socket.send(JSON.stringify({ 'user_stop_typing': true }));
+  }
+});
+
 
 
 const offset = ref(0);
@@ -73,6 +131,9 @@ async function loadMessages() {
         props.chat.cntUnreadMessages -= 1
         if (unreadMessagesStore.count > 0) {
           unreadMessagesStore.decrement()
+          if (unreadMessagesStore.count === 0) {
+            socket.send(JSON.stringify({ 'user_read_messages': true }));
+          }
         }
       }
       if (messagesTemp.value[i].image) {
@@ -116,6 +177,8 @@ const handleScroll = (event) => {
 
 const isOnline = ref(false)
 
+const typing = ref(false)
+
 
 const connectWebSocket = () => {
   socket = new WebSocket(`ws://127.0.0.1:8000/ws/${props.chat_id}/${props.auth_user_id}`);
@@ -139,6 +202,14 @@ const connectWebSocket = () => {
             }
           }
         }
+        return
+      }
+      if ("user_start_typing" in messageObj) {
+        typing.value = true
+        return
+      }
+      if ("user_stop_typing" in messageObj) {
+        typing.value = false
         return
       }
       try {
@@ -192,7 +263,7 @@ const props = defineProps({
   chat_id: Number,
   auth_user_id: Number,
   user_to_load: Number,
-  chat: Object
+  chat: Object,
 })
 
 
@@ -215,23 +286,7 @@ onMounted(async () => {
   connectWebSocket();
   loadMessages();
   try {
-    const response = await axios.get(`/api/users/user_id/${props.user_to_load}`);
-    user.value = response.data;
-
-    try {
-      const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
-      const blobUrl = URL.createObjectURL(userResponse.data);
-      userImage.value = blobUrl;
-
-    } catch (error) {
-      console.error(error);
-    }
-  } catch (error) {
-    router.push('/not-found');
-  }
-
-  try {
-    const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true });
+    const response = await axios.get(`/api/subscription/followers/cnt/${props.chat.user.id}`, { withCredentials: true });
     cntUserFollowers.value = response.data;
 
   } catch (error) {
@@ -239,19 +294,20 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true });
+    const response = await axios.get(`/api/subscription/following/cnt/${props.chat.user.id}`, { withCredentials: true });
     cntUserFollowing.value = response.data;
   } catch (error) {
     console.error(error);
   }
 
   try {
-    const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true });
+    const response = await axios.get(`/api/subscription/check_user_follow/${props.chat.user.id}`, { withCredentials: true });
     checkUserFollow.value = response.data;
 
   } catch (error) {
     console.error(error);
   }
+  sectionLoaded.value = true
 })
 
 
@@ -334,8 +390,8 @@ async function sendMediaMessage() {
     console.log(error)
   }
   if (isOnline.value === true) {
-      messageResp.is_read = true
-      props.chat.last_message.is_read = true
+    messageResp.is_read = true
+    props.chat.last_message.is_read = true
   }
   openSendMedia.value = false
   scrollToBottom();
@@ -346,7 +402,7 @@ const openSendMedia = ref(false)
 
 async function follow() {
   try {
-    const response = await axios.post(`/api/subscription/${user.value.id}`, { withCredentials: true })
+    const response = await axios.post(`/api/subscription/${props.chat.user.id}`, { withCredentials: true })
   } catch (error) {
     console.log(error)
   }
@@ -356,12 +412,64 @@ async function follow() {
 
 async function unfollow() {
   try {
-    const response = await axios.delete(`/api/subscription/${user.value.id}`, { withCredentials: true })
+    const response = await axios.delete(`/api/subscription/${props.chat.user.id}`, { withCredentials: true })
   } catch (error) {
     console.log(error)
   }
   checkUserFollow.value = false
   cntUserFollowers.value -= 1
+}
+
+async function updateColor(color) {
+  try {
+    await axios.patch(`/api/chats/color?color=${color}`)
+    chatStore.setChatColor(color)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const startResize = (event) => {
+  const startX = event.clientX;
+  const startWidth = chatStore.size;
+
+  // Отключаем выделение текста
+  document.body.style.userSelect = "none";
+
+  const onMouseMove = (moveEvent) => {
+    let newWidth = startWidth + (moveEvent.clientX - startX);
+    newWidth = Math.max(200, Math.min(newWidth, 800));
+
+    if (newWidth === 200) {
+      newWidth = 80;
+    }
+
+    chatStore.size = newWidth;
+  };
+
+  const onMouseUp = async () => {
+    try {
+      await axios.patch(`/api/chats/size?size=${chatStore.size}`)
+    } catch (error) {
+      console.log(error)
+    }
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+
+    document.body.style.userSelect = "";
+  };
+
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
+};
+
+async function updateSide(side) {
+  try {
+    await axios.patch(`/api/chats/side?side=${side}`)
+    chatStore.side = side
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 
@@ -370,7 +478,7 @@ async function unfollow() {
 
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
+      <FollowersSection :user_id="chat.user.id" :cntUserFollowers="cntUserFollowers" />
       <i @click="showFollowers = false"
         class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
         style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
@@ -379,7 +487,7 @@ async function unfollow() {
 
   <transition name="fade" appear>
     <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
+      <FollowingSection :user_id="chat.user.id" :cntUserFollowing="cntUserFollowing" />
       <i @click="showFollowing = false"
         class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
         style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
@@ -417,11 +525,26 @@ async function unfollow() {
     </div>
   </transition>
 
-
-  <div class="">
+  <div id="websocket-chat" class="">
     <div class="flex flex-row">
+      <div class="absolute left-[-10px] bottom-0 top-0 w-5 cursor-ew-resize bg-transparen" @mousedown="startResize">
+      </div>
+      <div
+        class="absolute z-30 top-0 left-0 transform h-[50px] flex items-center justify-between shadow-sm bg-white border-x border-gray-300 px-4"
+        :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
+        <div class="flex flex-col">
+          <span class="text-md"> {{ chat.user.username }}</span>
+          <span v-show="!typing" v-if="isOnline" class="text-md" :class="`text-${chatStore.bgColor}-500`">online</span>
+          <span v-show="!typing" v-if="!isOnline" class="text-gray-500 text-md">last seen recently</span>
+          <span v-show="typing === true" :class="`text-${chatStore.bgColor}-500`"
+            class="text-md typing-animation">typing</span>
+        </div>
+        <i v-show="!chatStore.side" @click="updateSide(true)" class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
+        <i v-show="chatStore.side" @click="updateSide(false)" class="pi pi-angle-right w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
+      </div>
       <div ref="chatBox" @scroll="handleScroll" id="chatBox"
-        class="w-[800px] h-[680px] bg-pink-300  overflow-y-auto p-2 flex flex-col-reverse">
+        class="w-[800px] h-[630px]  overflow-y-auto p-2 flex flex-col-reverse mt-[50px]"
+        :class="`bg-${chatStore.bgColor}-300`" :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
         <div v-for="(message, index) in messages" :key="index" class="flex my-1"
           :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
           <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
@@ -441,44 +564,78 @@ async function unfollow() {
           </div>
         </div>
       </div>
-      <div class="w-[280px] h-[650px] bg-white flex flex-col items-center justify-start">
-        <RouterLink v-if="user" :to="`/user/${user.username}`">
-          <img v-if="userImage" :src="userImage" class="rounded-full w-40 h-40 object-cover" />
-        </RouterLink>
-        <RouterLink v-if="user" :to="`/user/${user.username}`">
-          <span v-if="user" class="hover:underline text-2xl truncate px-4">{{ user.username }}</span>
-        </RouterLink>
-        <span v-if="isOnline" class="text-4xl text-pink-300">Online</span>
-        <span v-if="!isOnline" class="text-4xl text-gray-400">Offline</span>
-        <div class="flex">
-          <button @click="showFollowers = true" v-if="cntUserFollowers"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            {{ cntUserFollowers }} Подпищиков
-          </button>
-          <button @click="showFollowing = true" v-if="cntUserFollowing"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            {{ cntUserFollowing }} Подписок
-          </button>
+
+      <div v-show="chatStore.side" id="user-info" class="w-[280px] h-[650px] bg-white flex flex-col">
+        <div class="flex items-center space-x-2 justify-center ml-2 mr-4">
+          <!-- Аватар -->
+          <RouterLink :to="`/user/${chat.user.username}`">
+            <img :src="chat.userImage" class="rounded-full w-24 h-24 object-cover flex-shrink-0" />
+          </RouterLink>
+
+          <!-- Информация о пользователе -->
+          <div class="flex flex-col flex-1 min-w-0">
+            <RouterLink :to="`/user/${chat.user.username}`">
+              <span class="hover:underline text-xl truncate block">{{ chat.user.username }}</span>
+            </RouterLink>
+
+            <span v-if="isOnline" class="text-md" :class="`text-${chatStore.bgColor}-500`">online</span>
+            <span v-if="!isOnline" class="text-gray-500 text-md">last seen recently</span>
+          </div>
         </div>
-        <button v-if="!checkUserFollow" @click="follow"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-          Подписаться
+
+        <!-- Подписчики и подписки -->
+        <div v-show="sectionLoaded" v-if="cntUserFollowers || cntUserFollowing"
+          class="flex items-center justify-start space-x-2 text-sm mt-3 ml-2">
+          <i class="pi pi-users text-xl"></i>
+          <button :class="`hover:text-${chatStore.bgColor}-500`" class="hover:underline" @click="showFollowers = true"
+            v-if="cntUserFollowers">{{ cntUserFollowers }} Followers</button>
+          <button :class="`hover:text-${chatStore.bgColor}-500`" class="hover:underline" @click="showFollowing = true"
+            v-if="cntUserFollowing">{{ cntUserFollowing }} Following</button>
+        </div>
+
+        <!-- Описание (переместил ниже подписчиков) -->
+        <span v-show="sectionLoaded" v-if="chat.user.description"
+          class="text-gray-800 text-sm line-clamp-2 mr-4 mt-3 ml-2">
+          {{ chat.user.description }}
+        </span>
+
+        <!-- Кнопки Follow/Unfollow -->
+        <button v-show="sectionLoaded" v-if="!checkUserFollow" @click="follow"
+          :class="[`bg-${chatStore.bgColor}-300`, `hover:bg-${chatStore.bgColor}-400`]"
+          class="px-6 py-2 text-black   transition mt-3">
+          follow
         </button>
         <button v-if="checkUserFollow" @click="unfollow"
-          class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-          Отписаться
+          :class="[`bg-${chatStore.bgColor}-300`, `hover:bg-${chatStore.bgColor}-400`]"
+          class="px-6 py-2 text-black   transition mt-3">
+          unfollow
         </button>
+
+        <ClipLoader v-show="!sectionLoaded" :color="color" :size="size"
+          class="flex items-center justify-center h-96 font-extrabold" />
+
+        <!-- Выбор цвета -->
+        <div class="flex space-x-2 mt-auto pb-4 justify-center">
+          <div @click="updateColor('red')" class="w-6 h-6 rounded-full bg-red-300 cursor-pointer"></div>
+          <div @click="updateColor('blue')" class="w-6 h-6 rounded-full bg-blue-300 cursor-pointer"></div>
+          <div @click="updateColor('lime')" class="w-6 h-6 rounded-full bg-lime-300 cursor-pointer"></div>
+          <div @click="updateColor('yellow')" class="w-6 h-6 rounded-full bg-yellow-300 cursor-pointer"></div>
+          <div @click="updateColor('purple')" class="w-6 h-6 rounded-full bg-purple-300 cursor-pointer"></div>
+        </div>
       </div>
     </div>
 
+
+
     <!-- Поле ввода -->
-    <div class="w-[800px] h-[50px] flex relative border-r justify-center items-center">
+    <div class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
+    :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
       <label for="media">
-        <i class="absolute top-3 left-0 pi pi-paperclip text-2xl cursor-pointer"></i>
+        <i class="absolute top-0 left-0 pi pi-paperclip text-2xl cursor-pointer px-2 py-3"></i>
       </label>
       <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload" class="hidden">
-      <input id="messageInput" v-model="message" @keyup.enter="sendMessage" placeholder="Write a message..."
-        autocomplete="off" class="ml-6 flex-1 p-2 focus:outline-none focus:ring-none focus:ring-none" />
+      <input id="messageInput" v-model="message" @keyup.enter="sendMessage" placeholder="Write a message..." autofocus
+        autocomplete="off" class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
     </div>
   </div>
 </template>
@@ -525,18 +682,71 @@ async function unfollow() {
 
 #chatBox::-webkit-scrollbar {
   width: 5px;
-  /* Ширина скроллбара */
 }
 
 #chatBox::-webkit-scrollbar-track {
-  background: #fefefe;
-  /* Фон трека */
+  background: var(--scrollbar-track-bg);
+  /* ✅ Работает с Tailwind */
   border-radius: 10px;
 }
 
 #chatBox::-webkit-scrollbar-thumb {
-  background: rgba(28, 17, 21, 0.4);
-  /* Цвет ползунка */
+  background: var(--scrollbar-thumb-bg);
+  /* ✅ Работает с Tailwind */
   border-radius: 10px;
+}
+
+
+#user-info {
+  user-select: none;
+  /* Отключает выделение */
+}
+
+/* Для Firefox */
+#user-info ::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* Для Chrome, Edge, Safari */
+#user-info ::selection {
+  background: transparent;
+  color: inherit;
+}
+
+#websocket-chat ::selection {
+  background: var(--selection-bg);
+  /* Цвет фона выделения */
+  color: white;
+  /* Цвет текста */
+}
+
+#websocket-chat ::-moz-selection {
+  background: var(--selection-bg);
+  /* Для Firefox */
+  color: white;
+}
+
+.typing-animation::after {
+  content: ' .';
+  animation: dots 1.5s infinite steps(3);
+}
+
+@keyframes dots {
+  0% {
+    content: ' .';
+  }
+
+  33% {
+    content: ' ..';
+  }
+
+  66% {
+    content: ' ...';
+  }
+
+  100% {
+    content: ' .';
+  }
 }
 </style>

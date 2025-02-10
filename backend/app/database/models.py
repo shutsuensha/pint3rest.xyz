@@ -38,6 +38,11 @@ class UsersOrm(Base):
     email: Mapped[str | None] = mapped_column(String(200), default=None)
     verified: Mapped[bool | None] = mapped_column(Boolean, default=False)
 
+    chat_color: Mapped[str | None] = mapped_column(String(100), default="blue")
+    chat_size: Mapped[int | None] = mapped_column(Integer, default=384)
+    side_open: Mapped[bool | None] = mapped_column(Boolean, default=True)
+
+
 
 class PinsOrm(Base):
     __tablename__ = "pins"

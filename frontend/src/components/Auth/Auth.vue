@@ -1,7 +1,7 @@
 <script setup>
 import Aside from './Aside.vue';
 import { RouterView } from 'vue-router';
-import { ref, onMounted, computed  } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import { useRoute, RouterLink, useRouter } from 'vue-router';
@@ -79,16 +79,34 @@ const homeEvents = computed(() => {
 function handleCreatePinModelClose() {
   emit('createPinModelClose')
 }
+
+const cachedViews = computed(() =>
+  route.name === "home" ? ["HomeView", "PinView", "UserView"] : ["HomeView"]
+);
+
 </script>
 
 
 <template>
   <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
-  <RouterView v-slot="{ Component }">
-    <KeepAlive :max="10" exclude="NotFoundView,CreatePinView,MessagesView">
+  <!-- <RouterView v-slot="{ Component }">
+    <KeepAlive :max="10" include="HomeView,PinView,UserView">
       <component :is="Component" :key="$route.fullPath" v-bind="homeProps" v-on="homeEvents" />
     </KeepAlive>
+  </RouterView> -->
+
+  <RouterView v-slot="{ Component }">
+    <!-- KeepAlive для HomeView (никогда не удаляется) -->
+    <KeepAlive :include="['HomeView']">
+      <component v-if="$route.name === 'home'" :is="Component" :key="$route.name"  v-bind="homeProps" v-on="homeEvents" />
+    </KeepAlive>  
+
+    <!-- KeepAlive для PinView, UserView (кэшируются, но могут удаляться) -->
+    <KeepAlive :max="10" :include="['PinView', 'UserView']">
+      <component v-if="$route.name !== 'home'" :is="Component" :key="$route.fullPath" />
+    </KeepAlive>
   </RouterView>
+
 
 </template>

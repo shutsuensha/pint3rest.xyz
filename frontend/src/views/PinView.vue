@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick } from 'vue';
-import { useRoute, RouterLink, useRouter } from 'vue-router';
+import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick  } from 'vue';
+import { useRoute, RouterLink, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
 import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
@@ -8,6 +8,8 @@ import CommentSection from '@/components/Auth/CommentSection.vue';
 
 
 const route = useRoute();
+const router = useRouter();
+
 const pinId = route.params.id
 
 const videoPlayer = ref(null);
@@ -23,6 +25,22 @@ const showDislikeAnimation = ref(null)
 
 const isLoading = ref(false);
 const progress = ref(0);
+
+
+onBeforeRouteUpdate(async (to, from, next) => {
+  if (to.name !== 'home') {
+    // Переход сначала на HomeView
+    await router.push({ name: 'home' });
+
+    // Ждем рендеринга HomeView
+    await nextTick();
+
+    // Переход обратно на целевой маршрут
+    router.push(to.fullPath);
+  } else {
+    next();
+  }
+});
 
 
 
@@ -150,8 +168,6 @@ const checkUserLike = ref(null)
 const cntComments = ref(null)
 
 const showCommets = ref(false)
-
-const router = useRouter();
 
 
 const showPopover = ref(false); // State to control the popover visibility

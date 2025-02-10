@@ -424,6 +424,7 @@ async function sendMessage() {
   } catch (error) {
     console.error(error)
   }
+  checkUserChat.value = true
   redirectToChat()
 }
 

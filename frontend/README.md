@@ -2,6 +2,22 @@
 npm run dev
 
 
+### todo
+- typing
+- fix bug with read message send by me
+- chats design отображения времени + даты - userchat - gif display, video - muted + timer, fullscreen images + video
+- design right section
+- v-auto-animate options
+- color pics for chats + api
+- reseize cahts + api
+- открытия роуты в aside + закрытие сокетов onUnmount
+- перманентный кеш
+- тосты на новое сообщение если роут не /messages + отображения пользователя при нажатии делаем редирект начат, если от websocket делаем просто редирект на /messages + отображение пользователя и сообщение
+- тест нагрузку на цп + потребление памяти
+- перейти в чат -> редирект на кеш и выбор чата + тест непрочитанных сообщений + отображения онлайна
+- новый чат редирект создать чат + сокет соединения + сделать load чата + тест прочитанных + тест онлайна
+- userview новый чат меняем на перейти в чат + тестируем
+
 
 ### Easy
 - all pins hover buttons better

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 import Pin from '@/components/Auth/Pin.vue';
@@ -11,6 +11,7 @@ import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 
 const route = useRoute();
+const router = useRouter()
 
 const emit = defineEmits(['createPinModelClose'])
 
@@ -18,6 +19,7 @@ const isLoading = ref(false);
 const progress = ref(0);
 
 
+const lottieLoaded = ref(false)
 
 const pins = ref([]);
 const offset = ref(0);
@@ -27,7 +29,6 @@ const stagged = ref('0.03s')
 const duration = ref('0.4s')
 
 const cntLoading = ref(0)
-const limitCntLoading = ref(null)
 
 const isPinsLoading = ref(false);
 
@@ -59,9 +60,11 @@ const loadPins = async () => {
     });
 
     // Append new pins to the existing ones
-    pins.value.push({ pins: response.data, showAllPins: false });
 
-    limitCntLoading.value = response.data.length;
+    const pinsObj = { pins: response.data, showAllPins: false }
+    pinsObj.limitCntLoading = response.data.length
+    pinsObj.cntLoading = 0
+    pins.value.push(pinsObj);
 
     // Увеличиваем прогресс в зависимости от количества загруженных пинов
     const loadedPinsProgress = Math.round((response.data.length / limit.value) * 30); // 30% выделено на загрузку пинов
@@ -72,17 +75,14 @@ const loadPins = async () => {
 
     // После первого запроса изменяем лимит на 5
     if (limit.value === 10) {
-      limit.value = 10;
+      limit.value = 5;
     }
   } catch (error) {
     console.log(error);
   } finally {
-
-    // Если загрузка завершена, ставим прогресс на максимум
-    if (offset.value >= limitCntLoading.value) {
-      progress.value = 100;
-    }
+    progress.value = 100;
   }
+  isPinsLoading.value = false
 };
 
 
@@ -102,6 +102,18 @@ const randomBgColor = () => {
   return bgColors.value[randomIndex];
 };
 
+watch(available_tags, (newTags) => {
+  if (newTags) {
+    tagFromUrl.value = route.query.tag || '';
+    if (tagFromUrl.value) {
+      if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
+        loadPinsByTag(tagFromUrl.value);
+        clearQuery()
+      }
+    }
+  }
+});
+
 onMounted(async () => {
   isLoading.value = true;
   progress.value = 0;
@@ -111,6 +123,7 @@ onMounted(async () => {
 
   if (props.register === true) {
     setTimeout(() => {
+      
       showCreatePin.value = true;
       document.body.style.overflowY = 'clip';
     }, 2000);
@@ -206,13 +219,6 @@ onMounted(async () => {
     progress.value = 50 + Math.round((completedTags / totalTags) * 50);
   }
 
-  tagFromUrl.value = route.query.tag || '';
-  if (tagFromUrl.value) {
-    if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
-      loadPinsByTag(tagFromUrl.value);
-    }
-  }
-
   // Завершаем прогресс после полной загрузки
   progress.value = 100;
   isLoading.value = false;
@@ -228,14 +234,22 @@ function closeCreatePin() {
   emit('createPinModelClose')
 }
 
+const clearQuery = () => {
+  router.replace({ path: route.path, query: {} });
+};
+
 onActivated(() => {
   document.title = 'pinterest.xyz'
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
   }
-  if (tagFromUrl.value) {
-    if (tagFromUrl.value !== selectedTag.value) {
-      loadPinsByTag(tagFromUrl.value)
+  if (available_tags.value) {
+    tagFromUrl.value = route.query.tag || '';
+    if (tagFromUrl.value) {
+      if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
+        loadPinsByTag(tagFromUrl.value);
+        clearQuery()
+      }
     }
   }
 });
@@ -372,6 +386,8 @@ const filteredTags = computed(() => {
     :style="{ width: `${progress}%` }">
   </div>
 
+  <DotLottieVue v-if="register === true" src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" @load="lottieLoaded = true" class="hidden" />
+
   <transition name="fade" appear>
     <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 
@@ -441,9 +457,10 @@ const filteredTags = computed(() => {
           <div class="w-9 h-9 flex-shrink-0">
             <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
-            <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad" @mouseover="tag.videoPlayer.play()"
-              :ref="el => { if (el) tag.videoPlayer = el; }" class="w-full h-full object-cover rounded-full fade-in"
-              :class="{ 'fade-in-animation': tagsLoaded }" autoplay loop muted />
+            <video v-show="tagsLoaded" v-else-if="!tag.isImage && tag.file" :src="tag.file" @loadeddata="onTagLoad"
+              @mouseover="tag.videoPlayer.play()" :ref="el => { if (el) tag.videoPlayer = el; }"
+              class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }"
+              autoplay loop muted />
             <div v-show="!tagsLoaded" class="bg-gray-100 w-full h-full object-cover rounded-full animate-pulse">
             </div>
           </div>
@@ -464,11 +481,11 @@ const filteredTags = computed(() => {
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.001s"
-    item-selector=".item" stagger="0.001s">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.00001s"
+    item-selector=".item" stagger="0.00001s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item " v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
-        @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0; } }"
+        @pinLoaded="() => { pinGroup.cntLoading++; if (pinGroup.cntLoading === pinGroup.limitCntLoading) { pinGroup.showAllPins = true; } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
   </div>
