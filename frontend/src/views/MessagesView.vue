@@ -364,7 +364,7 @@ function setScrollbarColor(color) {
       class="w-auto h-auto rounded-2xl" @load="showimg = true" />
   </div>
   <div class="ml-20">
-    <div v-show="!showLoading"
+    <div v-show="!showLoading && chats && chats.length"
       class="fixed z-30 top-0 left-20 transform h-[50px] flex items-center justify-center shadow-sm"
       :style="{ width: chatStore.size + 'px' }">
       <input v-show="chatStore.size > 200" v-model="searchValue" type="text" placeholder="Search"
@@ -398,12 +398,12 @@ function setScrollbarColor(color) {
   border-radius: 10px;
 }
 
-/* #chats {
+#chats {
   user-select: none;
-} */
+}
 
 
-/* #chats ::-moz-selection {
+#chats ::-moz-selection {
   background: transparent;
   color: inherit;
 }
@@ -411,5 +411,5 @@ function setScrollbarColor(color) {
 #chats ::selection {
   background: transparent;
   color: inherit;
-} */
+}
 </style>
