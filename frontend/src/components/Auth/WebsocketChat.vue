@@ -352,6 +352,9 @@ const previewFile = (file) => {
 const messageContent = ref('')
 
 async function sendMediaMessage() {
+  openSendMedia.value = false
+  mediaPreview.value = null;
+  showPreview.value = false
   const response = await axios.post('/api/messages/', {
     content: messageContent.value,
     chat_id: props.chat_id
@@ -393,7 +396,6 @@ async function sendMediaMessage() {
     messageResp.is_read = true
     props.chat.last_message.is_read = true
   }
-  openSendMedia.value = false
   scrollToBottom();
   emit('updateLastMessage', props.chat_id, isOnline.value)
 }
@@ -471,6 +473,8 @@ async function updateSide(side) {
     console.log(error)
   }
 }
+
+const showPreview = ref(false)
 </script>
 
 
@@ -494,34 +498,30 @@ async function updateSide(side) {
     </div>
   </transition>
 
-  <transition name="fade" appear>
-    <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6">
+  <transition name="fade2" appear>
+    <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50">
 
-      <div class="flex justify-center">
-        <div
-          class="flex flex-col  bg-gray-200 h-auto max-h-[670px] text-2xl rounded-3xl  z-50 w-[700px] overflow-y-auto items-center scrollbar-hide">
-
-          <div v-if="isImage" class="relative mt-4">
-            <img :src="mediaPreview" class="h-full w-[400px]  rounded-t-2xl" alt="Media Preview" />
-          </div>
-          <div v-if="isVideo" class="relative mt-4">
-            <video :src="mediaPreview" class="h-full w-[400px]  rounded-t-2xl" autoplay loop muted />
-          </div>
-
-
-          <h1 class="text-center text-6xl text-black mt-4">Добавить описание</h1>
-          <textarea v-model="messageContent" name="messageContent" id="messageContent"
-            class="cursor-pointer text-black text-3xl rounded-3xl block w-3/4 min-h-[100px] max-h-[300px] focus:ring-black bg-white focus:border-4 focus:border-white px-5 py-5" />
-          <button @click="sendMediaMessage"
-            class="my-5 w-[400px] py-3 bg-white text-black font-semibold rounded-3xl hover:-translate-y-2">
-            Отправить
-          </button>
+      <div class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
+        <div v-if="isImage" class=" ">
+          <img v-show="showPreview === true" :src="mediaPreview" class="h-full w-[400px] max-h-[570px] object-contain rounded-t-xl mt-4" @load="showPreview = true"
+            alt="Media Preview" />
+          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white"></div>
         </div>
+        <div v-if="isVideo" class=" ">
+          <video v-show="showPreview === true" :src="mediaPreview" class="h-full w-[400px] max-h-[570px] object-contain  rounded-t-xl mt-4" @loadeddata="showPreview = true" autoplay loop 
+            muted />
+          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white"></div>
+        </div>
+        <input id="messageInput" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off" 
+          :class="`border-${chatStore.bgColor}-600`"
+          class="mt-4 py-2 focus:outline-none focus:ring-none focus:ring-none w-[400px] border-b-2" />
+        <div class="w-[400px]">
+          <div class="flex flex-row items-center justify-end w-full mt-4 gap-4 mb-2">
+            <button @click="openSendMedia = false;mediaPreview=null;showPreview=false"  :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`" class="bg-white   rounded-xl py-2 px-3">Cancel</button>
+            <button @click="sendMediaMessage"     :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`" class="bg-white   rounded-xl py-2 px-3">Send</button>
+          </div>
+        </div>  
       </div>
-
-      <i @click="openSendMedia = false"
-        class="bg-white rounded-3xl p-5  absolute right-20 top-5 pi pi-times text-black text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-110"
-        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
 
@@ -539,17 +539,20 @@ async function updateSide(side) {
           <span v-show="typing === true" :class="`text-${chatStore.bgColor}-500`"
             class="text-md typing-animation">typing</span>
         </div>
-        <i v-show="!chatStore.side" @click="updateSide(true)" class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
-        <i v-show="chatStore.side" @click="updateSide(false)" class="pi pi-angle-right w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
+        <i v-show="!chatStore.side" @click="updateSide(true)"
+          class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
+        <i v-show="chatStore.side" @click="updateSide(false)"
+          class="pi pi-angle-right w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
       </div>
       <div ref="chatBox" @scroll="handleScroll" id="chatBox"
         class="w-[800px] h-[630px]  overflow-y-auto p-2 flex flex-col-reverse mt-[50px]"
-        :class="`bg-${chatStore.bgColor}-300`" :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
+        :class="`bg-${chatStore.bgColor}-300`"
+        :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
         <div v-for="(message, index) in messages" :key="index" class="flex my-1"
           :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
           <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
-            <img v-if="message.media && message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl">
-            <video v-if="message.media && !message.isImage" :src="message.media" class="w-auto h-auto rounded-t-2xl"
+            <img v-if="message.media && message.isImage" :src="message.media" class="w-auto h-auto max-h-[500px] rounded-t-2xl">
+            <video v-if="message.media && !message.isImage" :src="message.media" class="w-auto h-auto max-h-[500px] rounded-t-2xl"
               autoplay loop muted></video>
             <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
               <span class="text-sm text-black ">{{ message.content }}</span>
@@ -629,7 +632,7 @@ async function updateSide(side) {
 
     <!-- Поле ввода -->
     <div class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
-    :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
+      :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
       <label for="media">
         <i class="absolute top-0 left-0 pi pi-paperclip text-2xl cursor-pointer px-2 py-3"></i>
       </label>
@@ -653,31 +656,15 @@ async function updateSide(side) {
   opacity: 0;
 }
 
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  /* Internet Explorer 10+ */
-  scrollbar-width: none;
-  /* Firefox */
+.fade2-enter-active,
+.fade2-leave-active {
+  transition: opacity 0.4s ease;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-  /* Chrome, Safari, Opera */
-}
-
-.fade-in-animation {
+.fade2-enter-from,
+.fade2-leave-to {
   opacity: 0;
-  transform: scale(0.95);
-  animation: fadeIn 0.3s ease-in-out forwards;
 }
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 
 
 #chatBox::-webkit-scrollbar {
