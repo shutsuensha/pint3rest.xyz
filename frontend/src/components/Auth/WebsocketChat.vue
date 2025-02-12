@@ -475,6 +475,38 @@ async function updateSide(side) {
 }
 
 const showPreview = ref(false)
+
+const fullscreenImage = ref(null);
+
+const videoElement = ref(null);
+
+const openFullscreen = (imageSrc) => {
+  fullscreenImage.value = imageSrc;
+};
+
+const closeFullscreen = () => {
+  fullscreenImage.value = null;
+};
+
+
+const fullscreenVideo = ref(null);
+
+const openFullscreenVideo = (videoSrc) => {
+  fullscreenVideo.value = videoSrc;
+};
+
+const closeFullscreenVideo = () => {
+  fullscreenVideo.value = null;
+};
+
+const setVolume = () => {
+  if (videoElement.value) {
+    videoElement.value.volume = 0.5;
+  }
+};
+
+
+
 </script>
 
 
@@ -501,29 +533,53 @@ const showPreview = ref(false)
   <transition name="fade2" appear>
     <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50">
 
-      <div class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
+      <div
+        class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
         <div v-if="isImage" class=" ">
-          <img v-show="showPreview === true" :src="mediaPreview" class="h-full w-[400px] max-h-[570px] object-contain rounded-t-xl mt-4" @load="showPreview = true"
+          <img v-show="showPreview === true" :src="mediaPreview"
+            class="h-full w-[400px] max-h-[570px] object-contain rounded-t-xl mt-4" @load="showPreview = true"
             alt="Media Preview" />
-          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white"></div>
+          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white">
+          </div>
         </div>
         <div v-if="isVideo" class=" ">
-          <video v-show="showPreview === true" :src="mediaPreview" class="h-full w-[400px] max-h-[570px] object-contain  rounded-t-xl mt-4" @loadeddata="showPreview = true" autoplay loop 
-            muted />
-          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white"></div>
+          <video v-show="showPreview === true" :src="mediaPreview"
+            class="h-full w-[400px] max-h-[570px] object-contain  rounded-t-xl mt-4" @loadeddata="showPreview = true"
+            autoplay loop muted />
+          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white">
+          </div>
         </div>
-        <input id="messageInput" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off" 
+        <input id="messageInput" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off"
           :class="`border-${chatStore.bgColor}-600`"
           class="mt-4 py-2 focus:outline-none focus:ring-none focus:ring-none w-[400px] border-b-2" />
         <div class="w-[400px]">
           <div class="flex flex-row items-center justify-end w-full mt-4 gap-4 mb-2">
-            <button @click="openSendMedia = false;mediaPreview=null;showPreview=false"  :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`" class="bg-white   rounded-xl py-2 px-3">Cancel</button>
-            <button @click="sendMediaMessage"     :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`" class="bg-white   rounded-xl py-2 px-3">Send</button>
+            <button @click="openSendMedia = false; mediaPreview = null; showPreview = false"
+              :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`"
+              class="bg-white   rounded-xl py-2 px-3">Cancel</button>
+            <button @click="sendMediaMessage" :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`"
+              class="bg-white   rounded-xl py-2 px-3">Send</button>
           </div>
-        </div>  
+        </div>
       </div>
     </div>
   </transition>
+
+  <div v-if="fullscreenImage" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <img :src="fullscreenImage" class="max-w-full max-h-full" />
+    <button @click="closeFullscreen" class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer">
+      ✕
+    </button>
+  </div>
+
+  <div v-if="fullscreenVideo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <video ref="videoElement"
+     :src="fullscreenVideo" class="w-auto h-auto max-w-full max-h-full rounded-lg" autoplay loop @loadedmetadata="setVolume"
+      controls></video>
+    <button @click="closeFullscreenVideo" class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer">
+      ✕
+    </button>
+  </div>
 
   <div id="websocket-chat" class="">
     <div class="flex flex-row">
@@ -551,9 +607,11 @@ const showPreview = ref(false)
         <div v-for="(message, index) in messages" :key="index" class="flex my-1"
           :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
           <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
-            <img v-if="message.media && message.isImage" :src="message.media" class="w-auto h-auto max-h-[500px] rounded-t-2xl">
-            <video v-if="message.media && !message.isImage" :src="message.media" class="w-auto h-auto max-h-[500px] rounded-t-2xl"
-              autoplay loop muted></video>
+            <img v-if="message.media && message.isImage" :src="message.media"
+              class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" @click="openFullscreen(message.media)" />
+            <video v-if="message.media && !message.isImage" :src="message.media"
+              class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" autoplay loop muted
+              @click="openFullscreenVideo(message.media)"></video>
             <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
               <span class="text-sm text-black ">{{ message.content }}</span>
             </div>
