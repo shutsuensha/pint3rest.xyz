@@ -1,5 +1,4 @@
 ## To Do
-- redis cache
 - middleware loguru / logging
 - celery for verification
 - celery beat[mail adds]
@@ -32,7 +31,12 @@ alembic upgrade head
 
 ### Redis
 sudo systemctl start redis-server
-redis-cli -h localhost -p 6379
+#### Redis celery backend
+redis-cli -h localhost -p 6379 -n 0
+#### Redis tokens revoke
+redis-cli -h localhost -p 6379 -n 1
+#### Redis cache
+redis-cli -h localhost -p 6379 -n 2
 
 
 ### Celery

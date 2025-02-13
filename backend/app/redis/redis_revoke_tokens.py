@@ -5,11 +5,16 @@ from app.config import settings
 redis_connection = None
 
 
-async def init_redis():
+async def init_redis_revoke_tokens():
     global redis_connection
     redis_connection = await aioredis.from_url(
-        settings.REDIS_URL, decode_responses=True
+        settings.REDIS_URL_REVOKE_TOKENS, decode_responses=True
     )
+    return redis_connection
+
+
+async def close_redis_revoke_tokens():
+    await redis_connection.close()
 
 
 async def revoke_token(token: str, ex: int) -> None:
@@ -26,3 +31,5 @@ async def is_token_revoked(token: str) -> bool:
         raise RuntimeError("Redis is not initialized. Call init_redis() first.")
     
     return await redis_connection.exists(token) > 0
+
+

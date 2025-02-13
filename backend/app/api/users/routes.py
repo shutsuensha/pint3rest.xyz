@@ -10,7 +10,7 @@ from app.config import settings
 from app.celery.tasks import send_email
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from app.redis.redis_app import revoke_token, is_token_revoked
+from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
 
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile
+from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Query, Request
 from app.api.dependencies import db, user_id, filter, filter_with_value
 from .schemas import PinOut, PinIn
 from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
@@ -7,21 +7,29 @@ from app.api.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
 from app.api.tags.routes import get_all_tags
+from fastapi_cache.decorator import cache
+from .cache import pins_cache_key, clear_all_pins_cache
 
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
 
 @router.get('/', response_model=list[PinOut])
-async def get_pins(user_id: user_id, db: db, filter: filter):
+@cache(expire=300, key_builder=pins_cache_key)
+async def get_pins(user_id: user_id, db: db, filter: filter, response: Response):
+    # Отключаем кеширование на стороне клиента
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     pins = await db.scalars(
         select(PinsOrm)
         .offset(filter.offset)
         .limit(filter.limit)
-        .order_by(desc(PinsOrm.id))  # Order by `id` in descending order
+        .order_by(desc(PinsOrm.id))
     )
 
-    return pins
+    return [PinOut.model_validate(el.__dict__) for el in pins]
 
 
 @router.get('/tag/{tag_name}', response_model=list[PinOut])
@@ -42,13 +50,6 @@ async def get_pins_by_tag(tag_name: str, user_id: user_id, db: db, filter: filte
 
 @router.get('/search', response_model=list[PinOut])
 async def search_pins(filter_with_value: filter_with_value, user_id: user_id, db: db):
-    """
-    split value 
-    title description by value
-    get tags by value
-    get pins by tag
-    unique
-    """
     result = {}
 
     split_and_clean = [part for part in filter_with_value.value.split(' ') if part.strip()]
@@ -91,6 +92,7 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
         .returning(PinsOrm)
     )
     await db.commit()
+    await clear_all_pins_cache()
     return pin
 
 
@@ -102,6 +104,7 @@ async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
 
     await db.execute(delete(PinsOrm).where(PinsOrm.user_id == user_id, PinsOrm.id == pin_id))
     await db.commit()
+    await clear_all_pins_cache()
     return {'status', 'ok'}
 
 

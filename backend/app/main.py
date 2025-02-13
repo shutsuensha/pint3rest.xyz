@@ -15,13 +15,22 @@ from app.api.chats.routes import router as chats_router
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
-from app.redis.redis_app import init_redis
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+
+from app.redis.redis_revoke_tokens import init_redis_revoke_tokens, close_redis_revoke_tokens
+from app.redis.redis_cache import init_redis_cache, close_redis_cache
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_redis()
+    await init_redis_revoke_tokens()
+    redis_cache = await init_redis_cache()
+    FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
     yield
+    await close_redis_revoke_tokens()
+    await close_redis_cache()
+    
 
 
 app = FastAPI(lifespan=lifespan)

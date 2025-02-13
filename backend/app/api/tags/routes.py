@@ -24,6 +24,7 @@ async def create_tags_on_pin(db: db, user_id: user_id, tags_model: TagsIn):
             await db.execute(insert(pins_tags).values(pin_id=pin.id, tag_id=tag.id))
             await db.commit()
 
+
 @router.get('/', response_model=list[TagOut])
 async def get_all_tags(db: db, user_id: user_id):
     tags = await db.scalars(select(TagsOrm))

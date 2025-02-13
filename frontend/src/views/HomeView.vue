@@ -54,6 +54,7 @@ const loadPins = async () => {
   isPinsLoading.value = true;
 
   try {
+    console.log('fetching pins')
     const response = await axios.get('/api/pins/', {
       params: { offset: offset.value, limit: limit.value },
       withCredentials: true,
@@ -73,7 +74,9 @@ const loadPins = async () => {
     // Increment the offset
     offset.value += limit.value;
 
-    // После первого запроса изменяем лимит на 5
+    if (pinsObj.limitCntLoading == limit.value) {
+      isPinsLoading.value = false
+    }
     if (limit.value === 10) {
       limit.value = 5;
     }
@@ -82,7 +85,6 @@ const loadPins = async () => {
   } finally {
     progress.value = 100;
   }
-  isPinsLoading.value = false
 };
 
 
@@ -148,6 +150,7 @@ onMounted(async () => {
         params: { offset: 0, limit: 1 },
         withCredentials: true,
       });
+      console.log(response.data)
       const pin_id = response.data[0].id;
 
       // Обновляем прогресс после получения первого пина

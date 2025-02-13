@@ -4,7 +4,7 @@ from fastapi import Depends, Request, HTTPException, Query
 from app.database.base import get_db
 from .utils import encode_token
 from app.api.pins.schemas import FilterParams, FilterWithValue
-from app.redis.redis_app import is_token_revoked
+from app.redis.redis_revoke_tokens import is_token_revoked
 
 
 async def get_token(request: Request):
