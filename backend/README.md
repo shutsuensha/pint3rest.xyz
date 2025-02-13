@@ -1,7 +1,6 @@
 ## To Do
-- token revoke
-- middleware loguru
 - redis cache
+- middleware loguru / logging
 - celery for verification
 - celery beat[mail adds]
 - celery flower
