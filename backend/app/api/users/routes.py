@@ -10,6 +10,7 @@ from app.config import settings
 from app.celery.tasks import send_email
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from app.redis.redis_app import revoke_token, is_token_revoked
 
 
 
@@ -152,6 +153,8 @@ async def get_new_access_token(request: Request, response: Response):
     refresh_token = request.cookies.get("refresh_token", None)
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Unauthorized")
+    if await is_token_revoked(refresh_token):
+        raise HTTPException(status_code=401, detail="Token is revoked")
     data = encode_token(refresh_token)
     access_token = create_access_token({"user_id": data["user_id"]})
     response.set_cookie("access_token", access_token)
@@ -159,8 +162,17 @@ async def get_new_access_token(request: Request, response: Response):
 
 
 @router.post("/logout")
-async def logout(response: Response):
-    response.delete_cookie("access_token")
+async def logout(response: Response, request: Request):
+    access_token = request.cookies.get("access_token", None)
+    refresh_token = request.cookies.get("refresh_token", None)
+
+    if (access_token):
+        await revoke_token(access_token, settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        response.delete_cookie("access_token")
+    if (refresh_token):
+        await revoke_token(refresh_token, settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        response.delete_cookie("refresh_token")
+
     return {"status": "OK"}
 
 

@@ -1,5 +1,4 @@
 ## To Do
-- token refresh
 - token revoke
 - middleware loguru
 - redis cache

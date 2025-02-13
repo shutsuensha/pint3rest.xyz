@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,8 +15,16 @@ from app.api.chats.routes import router as chats_router
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
+from app.redis.redis_app import init_redis
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_redis()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

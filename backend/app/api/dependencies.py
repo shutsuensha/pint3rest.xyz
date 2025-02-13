@@ -4,17 +4,19 @@ from fastapi import Depends, Request, HTTPException, Query
 from app.database.base import get_db
 from .utils import encode_token
 from app.api.pins.schemas import FilterParams, FilterWithValue
+from app.redis.redis_app import is_token_revoked
 
 
-
-def get_token(request: Request):
+async def get_token(request: Request):
     token = request.cookies.get("access_token", None)
     if not token:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return token
 
 
-def get_current_user_id(token: Annotated[str, Depends(get_token)]):
+async def get_current_user_id(token: Annotated[str, Depends(get_token)]):
+    if await is_token_revoked(token):
+        raise HTTPException(status_code=401, detail="Token is revoked")
     data = encode_token(token)
     return data["user_id"]
 
