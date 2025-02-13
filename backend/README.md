@@ -1,3 +1,24 @@
+## To Do
+- token refresh
+- token revoke
+- middleware loguru
+- redis cache
+- celery for verification
+- celery beat[mail adds]
+- celery flower
+- api documentation
+- docker
+- docker compose
+- testing
+- linter/formatter
+- vps
+- domain
+- nginx
+- ssl
+- gitlab ci/cd
+- repo descibe
+
+
 ### Web server
 uvicorn app.main:app --reload
 

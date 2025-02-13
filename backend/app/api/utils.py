@@ -34,11 +34,22 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
+def create_refresh_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    to_encode |= {"exp": expire}
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    return encoded_jwt
+
+
 def encode_token(token: str) -> dict:
     try:
         return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-    except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
-        raise HTTPException(status_code=401, detail="wrong token or token expire")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=403, detail="Token has expired") 
+    except jwt.DecodeError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
     
 
 def save_file(file, path):

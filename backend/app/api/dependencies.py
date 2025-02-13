@@ -10,7 +10,7 @@ from app.api.pins.schemas import FilterParams, FilterWithValue
 def get_token(request: Request):
     token = request.cookies.get("access_token", None)
     if not token:
-        raise HTTPException(status_code=401, detail="not auth token")
+        raise HTTPException(status_code=401, detail="Unauthorized")
     return token
 
 

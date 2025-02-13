@@ -3,7 +3,7 @@ from .schemas import UserIn, UserOut, PasswordResetRequestModel, UserPatch
 from app.api.dependencies import db, user_id
 from sqlalchemy import insert, select, update
 from app.database.models import UsersOrm
-from app.api.utils import hash_password, verify_password, create_access_token, save_file, create_url_safe_token, decode_url_safe_token, delete_file
+from app.api.utils import encode_token,hash_password, verify_password, create_access_token, create_refresh_token, save_file, create_url_safe_token, decode_url_safe_token, delete_file
 import uuid
 from fastapi.responses import FileResponse
 from app.config import settings
@@ -128,24 +128,34 @@ async def login_user(user_in: UserIn, response: Response, db: db):
     if not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="password dont match")
     if user.email and not user.verified:
-        token = create_url_safe_token({"username": user.username})
+        token = create_url_safe_token({"username": user_in.username})
         link = f"http://{settings.DOMAIN}/users/verify/{token}"
 
-        html_message = f"""
-        <h1>Verify your Email</h1>
-        <p>Please click this <a href="{link}">link</a> to verify your account {user.username}</p>
-        """
+        context = {"username": user.username, "link": link}
 
-        emails = [user.email]
+        emails = [user_in.email]
         subject = "Verify Your email"
-        send_email.delay(emails, subject, html_message)
+        send_email.delay(emails, subject, context, "mail_verification.html")
 
         raise HTTPException(status_code=403 , detail=f"Verification link is send to {user.email}")
         
 
     access_token = create_access_token({"user_id": user.id})
+    refresh_token = create_refresh_token({"user_id": user.id})
     response.set_cookie("access_token", access_token)
-    return {"access_token": access_token}
+    response.set_cookie("refresh_token", refresh_token)
+    return {"access_token": access_token, "refresh_token": refresh_token}
+
+
+@router.get('/refresh_token')
+async def get_new_access_token(request: Request, response: Response):
+    refresh_token = request.cookies.get("refresh_token", None)
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    data = encode_token(refresh_token)
+    access_token = create_access_token({"user_id": data["user_id"]})
+    response.set_cookie("access_token", access_token)
+    return {"access_token": access_token, "refresh_token": refresh_token}
 
 
 @router.post("/logout")
