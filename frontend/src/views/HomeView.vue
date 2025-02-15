@@ -54,7 +54,6 @@ const loadPins = async () => {
   isPinsLoading.value = true;
 
   try {
-    console.log('fetching pins')
     const response = await axios.get('/api/pins/', {
       params: { offset: offset.value, limit: limit.value },
       withCredentials: true,
@@ -150,7 +149,6 @@ onMounted(async () => {
         params: { offset: 0, limit: 1 },
         withCredentials: true,
       });
-      console.log(response.data)
       const pin_id = response.data[0].id;
 
       // Обновляем прогресс после получения первого пина

@@ -18,3 +18,12 @@ body {
   background-color: #FF0000; /* Цвет фона выделения (красный) */
   color: white; /* Цвет текста выделения */
 }
+
+
+.Vue-Toastification__toast--default.my-custom-toast-class {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 400px !important; /* Устанавливаем ширину */
+  height: 100px !important; /* Устанавливаем высоту */
+}

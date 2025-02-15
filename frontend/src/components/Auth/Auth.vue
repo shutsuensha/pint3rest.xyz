@@ -102,9 +102,13 @@ const cachedViews = computed(() =>
       <component v-if="$route.name === 'home'" :is="Component" :key="$route.name"  v-bind="homeProps" v-on="homeEvents" />
     </KeepAlive>  
 
+    <KeepAlive :include="['MessagesView']">
+      <component v-if="$route.name === 'messages'" :is="Component" :key="$route.name" />
+    </KeepAlive>  
+
     <!-- KeepAlive для PinView, UserView (кэшируются, но могут удаляться) -->
     <KeepAlive :max="10" :include="['PinView', 'UserView']">
-      <component v-if="$route.name !== 'home'" :is="Component" :key="$route.fullPath" />
+      <component v-if="$route.name !== 'home' && $route.name !== 'messages'" :is="Component" :key="$route.fullPath" />
     </KeepAlive>
   </RouterView>
 

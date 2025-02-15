@@ -19,4 +19,26 @@ const router = createRouter({
   ],
 });
 
+let hasVisitedMessages = false;
+let pendingRoute = null; // Храним изначально запрошенный маршрут
+
+router.beforeEach((to, from, next) => {
+  if (!hasVisitedMessages && to.path !== '/messages') {
+    hasVisitedMessages = true;
+    pendingRoute = to; // Сохраняем запрашиваемый маршрут
+    next('/messages'); // Перенаправляем на /messages
+  } else {
+    next();
+  }
+});
+
+router.afterEach(async (to) => {
+  if (to.path === '/messages' && pendingRoute) {
+    await nextTick(); // Ждём, пока обновится DOM
+    const routeToGo = pendingRoute;
+    pendingRoute = null; // Сбрасываем временный маршрут
+    router.push(routeToGo); // Перенаправляем на изначально запрошенный маршрут
+  }
+});
+
 export default router;

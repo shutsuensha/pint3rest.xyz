@@ -14,6 +14,8 @@ import { useChatStore } from "@/stores/useChatStore";
 
 const chatStore = useChatStore();
 
+const route = useRoute()
+
 const imageLoaded = ref(false)
 const sectionLoaded = ref(false)
 
@@ -184,6 +186,7 @@ const connectWebSocket = () => {
   socket = new WebSocket(`ws://127.0.0.1:8000/ws/${props.chat_id}/${props.auth_user_id}`);
 
   socket.onmessage = async (event) => {
+    let showToast = false
     try {
       const messageObj = JSON.parse(event.data);
       if ("online" in messageObj) {
@@ -227,11 +230,14 @@ const connectWebSocket = () => {
         }
       }
       messages.value.unshift(messageObj);
+      if (route.name !== 'messages') {
+        showToast = true
+      }
     } catch (error) {
       console.error("Ошибка при разборе JSON:", error);
     }
     scrollToBottom();
-    emit('updateLastMessage', props.chat_id)
+    emit('updateLastMessage', showToast, props.chat_id)
   };
 };
 
@@ -255,7 +261,7 @@ const sendMessage = async () => {
     socket.send(JSON.stringify(messageResp));
     message.value = "";
     scrollToBottom();
-    emit('updateLastMessage', props.chat_id, isOnline.value)
+    emit('updateLastMessage', false, props.chat_id, isOnline.value)
   }
 };
 
@@ -397,7 +403,7 @@ async function sendMediaMessage() {
     props.chat.last_message.is_read = true
   }
   scrollToBottom();
-  emit('updateLastMessage', props.chat_id, isOnline.value)
+  emit('updateLastMessage', false, props.chat_id, isOnline.value)
 }
 
 const openSendMedia = ref(false)
@@ -573,9 +579,8 @@ const setVolume = () => {
   </div>
 
   <div v-if="fullscreenVideo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <video ref="videoElement"
-     :src="fullscreenVideo" class="w-auto h-auto max-w-full max-h-full rounded-lg" autoplay loop @loadedmetadata="setVolume"
-      controls></video>
+    <video ref="videoElement" :src="fullscreenVideo" class="w-auto h-auto max-w-full max-h-full rounded-lg" autoplay
+      loop @loadedmetadata="setVolume" controls></video>
     <button @click="closeFullscreenVideo" class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer">
       ✕
     </button>

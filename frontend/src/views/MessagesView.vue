@@ -1,12 +1,20 @@
 <script setup>
-import { onMounted, ref, nextTick, watch, computed, onBeforeUnmount } from 'vue';
+import { onMounted, ref, nextTick, watch, computed, onBeforeUnmount, onActivated } from 'vue';
 import axios from 'axios'
 import UserChat from '@/components/Auth/UserChat.vue';
 import WebsocketChat from '@/components/Auth/WebsocketChat.vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
 import { useChatStore } from "@/stores/useChatStore";
+
+import NewMessageToastWebsocket from '@/components/Auth/NewMessageToastWebsocket.vue';
+import NewMessageToast from '@/components/Auth/NewMessageToast.vue';
+
+import { useToast } from "vue-toastification";
+
+
+const toast = useToast();
 
 const chatStore = useChatStore();
 
@@ -45,7 +53,7 @@ const color = ref('red')
 const size = ref('100px')
 
 const route = useRoute();
-
+const router = useRouter()
 
 const chats = ref(null)
 const auth_user_id = ref(null)
@@ -73,6 +81,29 @@ onBeforeUnmount(() => {
     if (chats.value[i].socket) {
       chats.value[i].socket.close()
     }
+  }
+});
+
+
+const clearQuery = () => {
+  router.replace({ path: route.path, query: {} });
+};
+
+onActivated(() => {
+  document.title = 'pinterest.xyz / chats'
+  const chat_id_redirect = route.query.chat_id || null;
+  if (chat_id_redirect !== null) {
+    let index = 0;
+    let chatObj = null;
+    for (let i = 0; i < sortedChats.value.length; i++) {
+      if (sortedChats.value[i].id == chat_id_redirect) {
+        index = i;
+        chatObj = sortedChats.value[i]
+        break;
+      }
+    }
+    loadChat(chatObj, index)
+    clearQuery()
   }
 });
 
@@ -175,20 +206,6 @@ onMounted(async () => {
   }
 
   showLoading.value = false
-
-  chat_id_redirect.value = route.query.chat_id || null;
-  if (chat_id_redirect.value !== null) {
-    let index = 0;
-    let chatObj = null;
-    for (let i = 0; i < sortedChats.value.length; i++) {
-      if (sortedChats.value[i].id == chat_id_redirect.value) {
-        index = i;
-        chatObj = sortedChats.value[i]
-        break;
-      }
-    }
-    loadChat(chatObj, index)
-  }
 })
 
 const showChat = ref(false)
@@ -265,12 +282,35 @@ async function updateChat2(chat_id) {
     } catch (error) {
       console.log(error)
     }
+    if (route.name !== 'messages') {
+      toast({
+        component: NewMessageToast,
+        props: { chat: JSON.parse(JSON.stringify(chatObj)) },
+        listeners: {
+          MyClick: () => router.push(`/messages?chat_id=${chatObj.id}`)
+        }
+      }, {
+        position: "bottom-left",
+        timeout: 5041,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: false,
+        icon: false,
+        rtl: false,
+        toastClassName: "my-custom-toast-class",
+      });
+    }
   } catch (error) {
     console.error(error)
   }
 }
 
-async function updateChat(chat_id, online) {
+async function updateChat(showToast, chat_id, online) {
   scrollToTop()
   try {
     const response = await axios.get(`/api/messages/last/${chat_id}`, { withCredentials: true })
@@ -294,6 +334,29 @@ async function updateChat(chat_id, online) {
       } catch (error) {
         console.error(error);
       }
+    }
+    if (showToast === true) {
+      toast({
+        component: NewMessageToastWebsocket,
+        props: { chat: JSON.parse(JSON.stringify(sortedChats.value[chat_selected.value])) },
+        listeners: {
+          MyClick: () => router.push('/messages')
+        }
+      }, {
+        position: "bottom-left",
+        timeout: 5041,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: false,
+        icon: false,
+        rtl: false,
+        toastClassName: "my-custom-toast-class",
+      });
     }
   } catch (error) {
     console.error(error)
@@ -347,7 +410,7 @@ function setScrollbarColor(color) {
 <template>
   <div v-if="showChat" class="fixed top-0 h-full w-full z-50" :style="{ left: `${chatStore.size + 80}px` }">
     <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load" :chat="chatObject"
-      @updateLastMessage="(chat_id_, online) => updateChat(chat_id_, online)" />
+      @updateLastMessage="(showToast, chat_id_, online) => updateChat(showToast, chat_id_, online)" />
   </div>
   <div v-if="chatStore.bgColor && chats && !showChat && !(chats.length === 0)" :class="`bg-${chatStore.bgColor}-300`"
     :style="{ left: `${chatStore.size + 80}px`, width: `calc(100vw - ${chatStore.size + 80}px)` }"
@@ -396,5 +459,14 @@ function setScrollbarColor(color) {
   background: var(--scrollbar-thumb-bg-chats);
   /* ✅ Работает с Tailwind */
   border-radius: 10px;
+}
+
+.my-custom-toast-class {
+  background-color: red !important;
+  /* ✅ Заменяем цвет */
+  box-shadow: none !important;
+  /* Убираем тень */
+  border: none !important;
+  /* Убираем границу */
 }
 </style>

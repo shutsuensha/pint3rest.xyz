@@ -16,3 +16,6 @@ def register_websocket(app: FastAPI):
             await manager.disconnect(chat_id, user_id, chat_connection)
         except RuntimeError as e:
             logger.error(f"Websocket Error: {str(e)}")
+        except Exception as e:
+            logger.critical(f"Unexpected WebSocket error: {str(e)}", exc_info=True)
+        
