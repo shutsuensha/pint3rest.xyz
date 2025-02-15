@@ -397,19 +397,4 @@ function setScrollbarColor(color) {
   /* ✅ Работает с Tailwind */
   border-radius: 10px;
 }
-
-#chats {
-  user-select: none;
-}
-
-
-#chats ::-moz-selection {
-  background: transparent;
-  color: inherit;
-}
-
-#chats ::selection {
-  background: transparent;
-  color: inherit;
-}
 </style>

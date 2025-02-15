@@ -8,7 +8,7 @@ import uuid
 from fastapi.responses import FileResponse
 from app.api.tags.routes import get_all_tags
 from fastapi_cache.decorator import cache
-from .cache import pins_cache_key, clear_all_pins_cache
+from .cache import pins_cache_key, clear_all_pins_cache, disable_client_cache
 
 
 router = APIRouter(prefix="/pins", tags=["pins"])
@@ -17,10 +17,8 @@ router = APIRouter(prefix="/pins", tags=["pins"])
 @router.get('/', response_model=list[PinOut])
 @cache(expire=300, key_builder=pins_cache_key)
 async def get_pins(user_id: user_id, db: db, filter: filter, response: Response):
-    # Отключаем кеширование на стороне клиента
-    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
+
+    disable_client_cache(response)
     
     pins = await db.scalars(
         select(PinsOrm)

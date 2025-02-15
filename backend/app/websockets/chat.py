@@ -1,7 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from .manager import manager
 from typing import Optional
-
+from app.logger import logger
 
 
 def register_websocket(app: FastAPI):
@@ -14,5 +14,5 @@ def register_websocket(app: FastAPI):
                 await manager.send_message(data, chat_id, user_id)
         except WebSocketDisconnect:
             await manager.disconnect(chat_id, user_id, chat_connection)
-        except RuntimeError:
-            pass
+        except RuntimeError as e:
+            logger.error(f"Websocket Error: {str(e)}")

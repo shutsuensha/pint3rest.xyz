@@ -21,23 +21,33 @@ from fastapi_cache.backends.redis import RedisBackend
 from app.redis.redis_revoke_tokens import init_redis_revoke_tokens, close_redis_revoke_tokens
 from app.redis.redis_cache import init_redis_cache, close_redis_cache
 
+from app.logger import logger
+
+from app.exceptions import register_exception_handlers
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_redis_revoke_tokens()
-    redis_cache = await init_redis_cache()
-    FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
-    yield
-    await close_redis_revoke_tokens()
-    await close_redis_cache()
+    try:
+        await init_redis_revoke_tokens()
+        redis_cache = await init_redis_cache()
+        FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+        logger.info("FastAPI cache connected.")
+        yield
+        
+    except Exception as e:
+        logger.error(f"Ошибка при инициализации приложения: {e}")
     
+    finally:
+        await close_redis_revoke_tokens()
+        await close_redis_cache()
 
 
 app = FastAPI(lifespan=lifespan)
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
 
 app.include_router(chats_router)
 app.include_router(messages_router)
@@ -48,14 +58,17 @@ app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(auth_router)
 
-
 register_middleware(app)
+
 register_websocket(app)
+
+register_exception_handlers(app)
 
 
 @app.get('/index/notauth/images/{id}')
 async def get_image(id: int):
     if id <= 10:
-        return FileResponse(f'app/media/carousel/{id}.jpg')
+        path = f'app/media/carousel/{id}.jpg'
     else:
-        return FileResponse(f'app/media/carousel/{id}.gif')
+        path = f'app/media/carousel/{id}.gif'
+    return FileResponse(path)

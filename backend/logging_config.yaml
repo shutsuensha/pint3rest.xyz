@@ -1,0 +1,33 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  detailed:
+    format: '%(levelname)s | %(asctime)s | %(message)s'
+    datefmt: '%H:%M'  # Часы и минуты
+  simple:
+    format: '%(levelname)s - %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: detailed
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: ERROR
+    formatter: detailed
+    filename: app/logs/server_errors.log
+
+loggers:
+  pinterest_api_logger:
+    level: INFO
+    handlers:
+      - console
+      - file
+    propagate: no
+
+root:
+  level: WARNING
+  handlers:
+    - console

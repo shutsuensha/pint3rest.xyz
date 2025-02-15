@@ -1,13 +1,13 @@
 ## To Do
-- middleware loguru / logging
+- redis cache
 - celery for verification
 - celery beat[mail adds]
 - celery flower
 - api documentation
-- docker
-- docker compose
 - testing
 - linter/formatter
+- docker
+- docker compose
 - vps
 - domain
 - nginx
