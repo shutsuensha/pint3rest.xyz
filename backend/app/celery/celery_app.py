@@ -1,11 +1,9 @@
 from celery import Celery
 
-from app.config import settings
-
 celery_instance = Celery(
     "tasks",
-    broker=settings.REDIS_URL_CELERY,
-    include=[
-        "app.celery.tasks",
-    ],
+    include=["app.celery.tasks"],  # Где искать задачи
 )
+
+# Загружаем настройки из файла
+celery_instance.config_from_object("app.celery.celeryconfig")

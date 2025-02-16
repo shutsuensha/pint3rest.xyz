@@ -30,7 +30,8 @@ class Settings(BaseSettings):
     USE_CREDENTIALS: bool
     VALIDATE_CERTS: bool
     
-    DOMAIN: str
+    API_DOMAIN: str
+    FRONTEND_DOMAIN: str
 
     
     @property

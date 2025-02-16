@@ -101,7 +101,6 @@ async function submitSignUp() {
             'Content-Type': 'multipart/form-data',
           },
         });
-
         try {
           const response = await axios.post('/api/users/login', {
             username: username,
@@ -286,6 +285,12 @@ async function submitPasswordReset() {
       errorMessagePasswordReset.value = error.response.data.detail
     }
     if (error.response.status === 400) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = error.response.data.detail
+    }
+    if (error.response.status === 405) {
       showPasswordResetLoader.value = false
       showErrorModalPasswordReset.value = true
       showPasswordReset.value = false

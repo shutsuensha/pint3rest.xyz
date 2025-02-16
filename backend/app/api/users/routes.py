@@ -11,7 +11,8 @@ from app.celery.tasks import send_email
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
-
+from app.celery.tasks import save_file_celery, save_file_celery_300x300
+from pathlib import Path
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -33,7 +34,7 @@ async def register_user(user_in: UserIn, db: db):
         await db.commit()
 
         token = create_url_safe_token({"username": user_in.username})
-        link = f"http://{settings.DOMAIN}/users/verify/{token}"
+        link = f"{settings.API_DOMAIN}/users/verify/{token}"
 
         context = {"username": user.username, "link": link}
 
@@ -69,7 +70,7 @@ async def verify_user_account(request: Request, token: str, db: db):
     await db.commit()
 
     return templates.TemplateResponse(
-        request=request, name="success_verification.html", context={"user": user}
+        request=request, name="success_verification.html", context={"user": user, "home_link": f"{settings.FRONTEND_DOMAIN}"}
     )
 
 
@@ -82,10 +83,22 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
         raise HTTPException(status_code=403, detail=f"{reset_model.username} does not have email, u cant do password reset :(")
     if reset_model.email != user.email:
         raise HTTPException(status_code=400 , detail=f"enter your email for account {user.username}")
+    if not user.verified:
+        
+        token = create_url_safe_token({"username": user.username})
+        link = f"{settings.API_DOMAIN}/users/verify/{token}"
+
+        context = {"username": user.username, "link": link}
+
+        emails = [user.email]
+        subject = "Verify Your email"
+        send_email.delay(emails, subject, context, "mail_verification.html")
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"first u need verify your email then u can password, verification link is send to your email")
+    
     
     
     token = create_url_safe_token({"username": user.username, "password": reset_model.password})
-    link = f"http://{settings.DOMAIN}/users/password-reset-confirm/{token}"
+    link = f"{settings.API_DOMAIN}/users/password-reset-confirm/{token}"
 
 
     subject = "Reset Your Password"
@@ -117,7 +130,7 @@ async def reset_account_password(request: Request, token: str, db: db):
     await db.commit()
 
     return templates.TemplateResponse(
-        request=request, name="success_password_reset.html", context={"user": user}
+        request=request, name="success_password_reset.html", context={"user": user, "home_link": f"{settings.FRONTEND_DOMAIN}"}
     )
     
 
@@ -130,11 +143,11 @@ async def login_user(user_in: UserIn, response: Response, db: db):
         raise HTTPException(status_code=401, detail="password dont match")
     if user.email and not user.verified:
         token = create_url_safe_token({"username": user_in.username})
-        link = f"http://{settings.DOMAIN}/users/verify/{token}"
+        link = f"{settings.API_DOMAIN}/users/verify/{token}"
 
         context = {"username": user.username, "link": link}
 
-        emails = [user_in.email]
+        emails = [user.email]
         subject = "Verify Your email"
         send_email.delay(emails, subject, context, "mail_verification.html")
 
@@ -205,10 +218,37 @@ async def upload_image(id: int, db: db, file: UploadFile):
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
     
-    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    file_extension = Path(file.filename).suffix
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
     image_path = f"app/media/users/{unique_filename}"
-    save_file(file.file, image_path)
+
+    task  = save_file_celery.delay(file.file.read(), image_path)
+    task_result = task.get()
+
+    if not task_result:
+        raise HTTPException(status_code=500, detail="Failed to save file")
     
+
+    save_file_celery_300x300.apply_async(
+        args=[image_path], 
+        countdown=10,  # Задержка перед выполнением задачи (в данном случае через 10 секунд)
+        expires=3600,  # Срок жизни задачи (через 1 час задача не будет выполняться)
+        retry=True,  # Если задача не выполнена, будет автоматически повторяться
+        retry_policy={
+            'max_retries': 5,  # Максимальное количество попыток
+            'interval_start': 0,  # Начальный интервал между попытками (в секундах)
+            'interval_step': 0.1,  # Увеличение интервала между попытками
+            'interval_max': 1,  # Максимальный интервал
+        },
+        priority=5,  # Устанавливает приоритет задачи (по умолчанию 0, 10 — самый высокий)
+        time_limit=120,  # Ограничение по времени на выполнение задачи (в секундах)
+        soft_time_limit=60,  # Мягкое ограничение времени, после которого задача может быть прервана
+        eta=None,  # Устанавливает точное время выполнения задачи (если None, выполняется сразу)
+        link=None,  # Задача, которая будет выполнена, если эта завершится успешно
+        link_error=None,  # Задача, которая будет выполнена, если эта завершится с ошибкой
+    )
+
+
 
     user = await db.scalar(
         update(UsersOrm)
