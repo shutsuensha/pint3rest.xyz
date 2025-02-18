@@ -3,7 +3,7 @@ disable_existing_loggers: False
 formatters:
   detailed:
     format: '%(levelname)s | %(asctime)s | %(message)s'
-    datefmt: '%H:%M'  # Часы и минуты
+    datefmt: '%H:%M'
   simple:
     format: '%(levelname)s - %(message)s'
 

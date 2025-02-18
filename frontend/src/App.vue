@@ -1,11 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import JSConfetti from 'js-confetti'
 import { useToast } from "vue-toastification";
+import { useRoute, useRouter } from 'vue-router';
+
+
 
 const confetti = new JSConfetti()
 
 const toast = useToast();
+
+const route = useRoute()
+const router = useRouter()
 
 import NotAuth from '@/components/NotAuth/NotAuth.vue'
 import Auth from '@/components/Auth/Auth.vue'
@@ -35,13 +41,15 @@ function logout() {
   toast.success('ꜱᴇᴇ ᴜ ɴᴇxᴛ ᴛɪᴍᴇ ', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
-function login(token) {
+
+async function login(token) {
   access_token.value = token;
   has_token.value = true;
   toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
 const register = ref(false)
+
 
 function signup(token) {
   access_token.value = token;
@@ -54,6 +62,6 @@ function signup(token) {
 </script>
 
 <template>
-  <Auth v-if="has_token" :access_token="access_token" @logout="logout()" :register="register" @createPinModelClose="register = false"/>
-  <NotAuth v-else @login="(token) => { login(token) }"  @signup="(token) => { signup(token) }"/>
+  <Auth v-if="has_token === true" :access_token="access_token" @logout="logout()" :register="register" @createPinModelClose="register = false"/>
+  <NotAuth v-if="has_token === false" @login="(token) => { login(token) }"  @signup="(token) => { signup(token) }"/>
 </template>

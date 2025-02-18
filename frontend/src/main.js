@@ -1,4 +1,5 @@
 import './assets/main.css'
+import { createPinia } from "pinia";
 import 'primeicons/primeicons.css'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
@@ -6,7 +7,6 @@ import router from './router';
 import mitt from 'mitt'
 import { VueMasonryPlugin } from "vue-masonry";
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
-import { createPinia } from "pinia";
 
 
 

@@ -1,5 +1,4 @@
 ## To Do
-- api documentation
 - testing
 - linter/formatter
 - docker
@@ -12,6 +11,7 @@
 - настройка local/remote development
 - hard full test project deployed + fix all bugs
 - repo descibe
+- api documentation
 
 
 ### Web server
@@ -29,6 +29,7 @@ psql -U evalshine -d pinterest
 ### Migrations
 alembic revision --autogenerate -m "init"
 alembic upgrade head
+
 
 ### Redis
 #### Redis tokens revoke

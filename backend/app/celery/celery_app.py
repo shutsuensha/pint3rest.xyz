@@ -15,8 +15,6 @@ celery_instance.config_from_object("app.celery.celeryconfig")
 celery_instance.conf.beat_schedule = {
     "run-every-10-seconds": {
         "task": "app.celery.tasks.send_email_adds",
-        "schedule": timedelta(seconds=10),  # Выполнение задачи каждые 10 секунд
+        "schedule": crontab(hour=10, minute=0, day_of_week="sunday")
     },
 }
-
-# "schedule": crontab(hour=10, minute=0, day_of_week="sunday"),  # Запуск каждое воскресенье в 10:00
