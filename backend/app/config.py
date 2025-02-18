@@ -10,9 +10,11 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: int
-    REDIS_DB_CELERY: int
     REDIS_DB_REVOKE_TOKENS: int
     REDIS_DB_CACHE: int
+    REDIS_DB_CELERY_BROKER: int
+    REDIS_DB_CELERY_RESULT: int
+    REDIS_DB_CELERY_REDBEAT: int
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
@@ -35,8 +37,16 @@ class Settings(BaseSettings):
 
     
     @property
-    def REDIS_URL_CELERY(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY}"
+    def REDIS_URL_CELERY_REDBEAT(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_REDBEAT}"
+    
+    @property
+    def REDIS_URL_CELERY_BROKER(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
+    
+    @property
+    def REDIS_URL_CELERY_RESULT(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
     
     @property
     def REDIS_URL_REVOKE_TOKENS(self):
@@ -51,6 +61,10 @@ class Settings(BaseSettings):
     def DB_URL(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     
+    @property
+    def DB_SYNC_URL(self):
+        return f"postgresql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
 
     model_config = SettingsConfigDict(env_file=".env")
 

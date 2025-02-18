@@ -249,7 +249,6 @@ async def upload_image(id: int, db: db, file: UploadFile):
     )
 
 
-
     user = await db.scalar(
         update(UsersOrm)
         .where(UsersOrm.id == id)

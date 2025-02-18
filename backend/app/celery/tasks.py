@@ -6,6 +6,42 @@ import shutil
 from pathlib import Path
 from PIL import Image
 import io
+from app.logger import logger
+from app.database.base import get_sync_db
+from app.database.models import UsersOrm
+from sqlalchemy import insert, select, update, delete, or_, desc
+from app.config import settings
+from sqlalchemy.exc import SQLAlchemyError
+
+
+
+@celery_instance.task
+def send_email_adds():
+    try:
+        db = next(get_sync_db())
+    except SQLAlchemyError as e:
+        logger.error(f"Error getting sync db session: {e}", exc_info=True)
+        return 
+
+    try:
+        users = db.scalars(
+            select(UsersOrm).where(UsersOrm.verified == True)
+        ).all()
+
+        unique_emails = list({user.email for user in users if user.email})
+
+        context = {"home_link": settings.FRONTEND_DOMAIN}
+        emails = unique_emails
+        subject = "Pinterest - create your ideas!"
+
+        send_email(emails, subject, context, "mail_adds.html")
+    except Exception as e:
+        logger.error(f"Celery error using sync db connection: {e}", exc_info=True)
+    finally:
+        try:
+            db.close() 
+        except Exception as e:
+            logger.error(f"Error closing db session: {e}", exc_info=True)
 
 
 

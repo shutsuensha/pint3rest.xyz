@@ -1,8 +1,13 @@
 
 from app.config import settings  # Загружаем настройки из .env или другого источника
+from app.logger import logger
 
-broker_url = settings.REDIS_URL_CELERY  # Например, redis://localhost:6379/0
-result_backend = settings.REDIS_URL_CELERY
+
+broker_url = settings.REDIS_URL_CELERY_BROKER
+result_backend = settings.REDIS_URL_CELERY_RESULT
+redbeat_redis_url = settings.REDIS_URL_CELERY_REDBEAT
+
+beat_scheduler = "redbeat.RedBeatScheduler"
 
 task_serializer = "json"
 accept_content = ["json"]
