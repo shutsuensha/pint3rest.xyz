@@ -4,7 +4,6 @@ from app.logger import logger
 from datetime import timedelta
 
 
-
 celery_instance = Celery(
     "tasks",
     include=["app.celery.tasks"], 

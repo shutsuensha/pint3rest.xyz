@@ -11,8 +11,10 @@ from app.celery.tasks import send_email
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
-from app.celery.tasks import save_file_celery, save_file_celery_300x300
+from app.celery.tasks import save_file_celery_and_crop_300x300
 from pathlib import Path
+from celery.result import AsyncResult
+from app.celery.celery_app import celery_instance
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -211,6 +213,41 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
     return user
 
 
+@router.post("/upload/celery/{id}")
+async def upload_image_celery(id: int, db: db, file: UploadFile):
+
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+    
+    file_extension = Path(file.filename).suffix
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    image_path = f"app/media/users/{unique_filename}"
+
+
+    task = save_file_celery_and_crop_300x300.delay(file.file.read(), image_path, id)
+
+    return {"message": "File upload is in progress", "task_id": task.id}
+
+
+@router.get("/upload/celery/status/{task_id}")
+async def get_upload_status(task_id: str):
+    task_result = AsyncResult(task_id, app=celery_instance)
+
+    if task_result.state == "PENDING":
+        return {"status": "pending", "message": "Task is waiting in queue"}
+    elif task_result.state == "STARTED":
+        return {"status": "processing", "message": "Task is in progress"}
+    elif task_result.state == "SUCCESS":
+        return {"status": "completed", "message": "File uploaded successfully", "result": task_result.result}
+    elif task_result.state == "FAILURE":
+        return {"status": "failed", "message": str(task_result.info)}
+    else:
+        return {"status": task_result.state, "message": "Unknown state"}
+
+
+
+
 @router.post("/upload/{id}", response_model=UserOut)
 async def upload_image(id: int, db: db, file: UploadFile):
 
@@ -222,32 +259,7 @@ async def upload_image(id: int, db: db, file: UploadFile):
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     image_path = f"app/media/users/{unique_filename}"
 
-    task  = save_file_celery.delay(file.file.read(), image_path)
-    task_result = task.get()
-
-    if not task_result:
-        raise HTTPException(status_code=500, detail="Failed to save file")
-    
-
-    save_file_celery_300x300.apply_async(
-        args=[image_path], 
-        countdown=10,  # Задержка перед выполнением задачи (в данном случае через 10 секунд)
-        expires=3600,  # Срок жизни задачи (через 1 час задача не будет выполняться)
-        retry=True,  # Если задача не выполнена, будет автоматически повторяться
-        retry_policy={
-            'max_retries': 5,  # Максимальное количество попыток
-            'interval_start': 0,  # Начальный интервал между попытками (в секундах)
-            'interval_step': 0.1,  # Увеличение интервала между попытками
-            'interval_max': 1,  # Максимальный интервал
-        },
-        priority=5,  # Устанавливает приоритет задачи (по умолчанию 0, 10 — самый высокий)
-        time_limit=120,  # Ограничение по времени на выполнение задачи (в секундах)
-        soft_time_limit=60,  # Мягкое ограничение времени, после которого задача может быть прервана
-        eta=None,  # Устанавливает точное время выполнения задачи (если None, выполняется сразу)
-        link=None,  # Задача, которая будет выполнена, если эта завершится успешно
-        link_error=None,  # Задача, которая будет выполнена, если эта завершится с ошибкой
-    )
-
+    save_file(file.file, image_path)
 
     user = await db.scalar(
         update(UsersOrm)
