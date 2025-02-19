@@ -64,6 +64,39 @@ const sortedChats = computed(() => {
 });
 
 
+const clearQuery = () => {
+  router.replace({ path: route.path, query: {} });
+};
+
+
+watch(
+  () => route.name,
+  (newName, oldName) => {
+    if (newName === "messages") {
+      document.title = 'pinterest.xyz / chats'
+      const chat_id_redirect = route.query.chat_id || null;
+      const new_chat = route.query.new_caht || null;
+      if (new_chat !== null) {
+        
+      }
+      if (chat_id_redirect !== null) {
+        let index = 0;
+        let chatObj = null;
+        for (let i = 0; i < sortedChats.value.length; i++) {
+          if (sortedChats.value[i].id == chat_id_redirect) {
+            index = i;
+            chatObj = sortedChats.value[i]
+            break;
+          }
+        }
+        loadChat(chatObj, index)
+        clearQuery()
+      }
+    }
+  }
+);
+
+
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -85,34 +118,11 @@ onBeforeUnmount(() => {
 });
 
 
-const clearQuery = () => {
-  router.replace({ path: route.path, query: {} });
-};
-
-onActivated(() => {
-  document.title = 'pinterest.xyz / chats'
-  const chat_id_redirect = route.query.chat_id || null;
-  if (chat_id_redirect !== null) {
-    let index = 0;
-    let chatObj = null;
-    for (let i = 0; i < sortedChats.value.length; i++) {
-      if (sortedChats.value[i].id == chat_id_redirect) {
-        index = i;
-        chatObj = sortedChats.value[i]
-        break;
-      }
-    }
-    loadChat(chatObj, index)
-    clearQuery()
-  }
-});
-
 onMounted(async () => {
   chatStore.fetchChatColor();
   chatStore.fetchChatSize();
   chatStore.fetchSide()
   showLoading.value = true
-  document.title = 'pinterest.xyz / chats'
   const accessToken = getCookie('access_token');
   // Decode the JWT (assuming the access_token is a JWT)
   const base64Url = accessToken.split('.')[1]; // Get the payload part

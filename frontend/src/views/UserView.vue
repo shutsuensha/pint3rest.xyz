@@ -431,7 +431,7 @@ async function sendMessage() {
 async function redirectToChat() {
   try {
     const response = await axios.get(`/api/messages/get_chat/${user.value.id}`, { withCredentials: true });
-    router.push(`/messages?chat_id=${response.data}`);
+    router.push(`/messages?chat_id=${response.data}?new_chat=true`);
   } catch (error) {
     console.error(error);
   }
