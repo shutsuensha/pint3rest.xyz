@@ -1,4 +1,7 @@
 ## To Do
+- graphql
+- mongodb
+- work with streaming audio/video
 - testing
 - linter/formatter
 - docker
@@ -12,6 +15,11 @@
 - hard full test project deployed + fix all bugs
 - repo descibe
 - api documentation
+- add boards, updates, websocket sending video/image + frontend
+- frontend for new message redirect in real time + new chat message + websockets multiply connectings fix
+- push notifications
+- google social auth
+- admin roles checks for rotues that generate information about database state
 
 
 ### Web server

@@ -335,7 +335,7 @@ onMounted(async () => {
   });
   try {
     for (let i = 1; i <= 15; i++) {
-      const response = await axios.get(`/api/index/notauth/images/${i}`, { responseType: 'blob' });
+      const response = await axios.get(`/api/notauth/images/${i}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(response.data);
       images.value.push(blobUrl)
     }
