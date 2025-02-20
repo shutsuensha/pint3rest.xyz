@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Query, Request
-from app.api.dependencies import db, user_id, filter, filter_with_value
+from app.api.rest.dependencies import db, user_id, filter, filter_with_value
 from .schemas import PinOut, PinIn
 from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
 from sqlalchemy import insert, select, update, delete, or_, desc
-from app.api.utils import save_file, get_primary_color, extract_first_frame
+from app.api.rest.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
-from app.api.tags.routes import get_all_tags
+from app.api.rest.tags.routes import get_all_tags
 from fastapi_cache.decorator import cache
 from .cache import pins_cache_key, clear_all_pins_cache, disable_client_cache
 

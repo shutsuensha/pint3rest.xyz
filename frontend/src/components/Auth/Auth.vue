@@ -98,7 +98,7 @@ const cachedViews = computed(() =>
 
   <RouterView v-slot="{ Component }">
     <div v-show="$route.name === 'messages'">
-        <component :is="MessagesView" :key="'messages'" />
+      <component :is="MessagesView" :key="'messages'" />
     </div>
 
     <KeepAlive :include="['HomeView']">

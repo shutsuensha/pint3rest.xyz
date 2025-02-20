@@ -1,4 +1,13 @@
-from sqlalchemy import Table, Column, ForeignKey, String, Boolean, ForeignKey, Integer, Text
+from sqlalchemy import (
+    Table,
+    Column,
+    ForeignKey,
+    String,
+    Boolean,
+    ForeignKey,
+    Integer,
+    Text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base
 from datetime import date, datetime
@@ -18,6 +27,7 @@ users_pins = Table(
     Column("pin_id", ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
 )
 
+
 class UsersOrm(Base):
     __tablename__ = "users"
 
@@ -34,14 +44,13 @@ class UsersOrm(Base):
     tiktok: Mapped[str | None] = mapped_column(String(200), default=None)
     telegram: Mapped[str | None] = mapped_column(String(200), default=None)
     pinterest: Mapped[str | None] = mapped_column(String(200), default=None)
-    
+
     email: Mapped[str | None] = mapped_column(String(200), default=None)
     verified: Mapped[bool | None] = mapped_column(Boolean, default=False)
 
     chat_color: Mapped[str | None] = mapped_column(String(100), default="blue")
     chat_size: Mapped[int | None] = mapped_column(Integer, default=384)
     side_open: Mapped[bool | None] = mapped_column(Boolean, default=True)
-
 
 
 class PinsOrm(Base):
@@ -51,7 +60,6 @@ class PinsOrm(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
-    
     title: Mapped[str | None] = mapped_column(String(200), default=None)
     description: Mapped[str | None] = mapped_column(String(400), default=None)
     href: Mapped[str | None] = mapped_column(String(200), default=None)
@@ -75,26 +83,33 @@ class CommentsOrm(Base):
     __tablename__ = "comments"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    
-    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), default=None)
+
+    pin_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pins.id", ondelete="CASCADE"), default=None
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
+    comment_id: Mapped[int | None] = mapped_column(
+        ForeignKey("comments.id", ondelete="CASCADE"), default=None
+    )
 
     content: Mapped[str | None] = mapped_column(String(400), default=None)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
 
 class LikesOrm(Base):
-    __tablename__ = 'likes'
+    __tablename__ = "likes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    
-    pin_id: Mapped[int | None] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), default=None)
+
+    pin_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pins.id", ondelete="CASCADE"), default=None
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    comment_id: Mapped[int | None] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), default=None)
+    comment_id: Mapped[int | None] = mapped_column(
+        ForeignKey("comments.id", ondelete="CASCADE"), default=None
+    )
 
 
 class SubsrciptionsOrm(Base):

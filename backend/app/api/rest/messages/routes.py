@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile, status
-from app.api.dependencies import db, user_id, filter
+from app.api.rest.dependencies import db, user_id, filter
 from .schemas import MessageIn, MessageOut, ChatOut
 from app.database.models import ChatOrm, MessageOrm
 from sqlalchemy import select, insert, update, func, or_, desc
 import uuid
-from app.api.utils import save_file
+from app.api.rest.utils import save_file
 from fastapi.responses import FileResponse
 
 

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, Request, HTTPException, Query
 from app.database.base import get_db
 from .utils import encode_token
-from app.api.pins.schemas import FilterParams, FilterWithValue
+from app.api.rest.pins.schemas import FilterParams, FilterWithValue
 from app.redis.redis_revoke_tokens import is_token_revoked
 
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.api.dependencies import user_id, db, filter
+from app.api.rest.dependencies import user_id, db, filter
 from .schemas import TagsIn, TagOut
 from app.database.models import PinsOrm, TagsOrm, pins_tags
 from sqlalchemy import select, insert

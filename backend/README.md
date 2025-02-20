@@ -1,9 +1,9 @@
 ## To Do
-- graphql
 - mongodb
-- work with streaming audio/video
+- vs code best extantions + .vscode setup for python development
 - testing
-- linter/formatter
+- linter/formatter/static typing
+- audio/video streaming
 - docker
 - docker compose
 - vps

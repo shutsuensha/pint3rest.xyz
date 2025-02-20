@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException
-from app.api.dependencies import db, user_id, filter
+from app.api.rest.dependencies import db, user_id, filter
 from app.database.models import UsersOrm, SubsrciptionsOrm
 from sqlalchemy import insert, select, update, delete, func
-from app.api.users.schemas import UserOut
+from app.api.rest.users.schemas import UserOut
 
 
 router = APIRouter(prefix="/subscription", tags=["subscriptions"])

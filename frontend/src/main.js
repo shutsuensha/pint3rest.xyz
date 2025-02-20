@@ -20,7 +20,7 @@ const app = createApp(App)
 
 app.config.globalProperties.emitter = emitter
 
-app.use(createPinia()); 
+app.use(createPinia());
 app.use(autoAnimatePlugin)
 app.use(VueMasonryPlugin)
 app.use(router);

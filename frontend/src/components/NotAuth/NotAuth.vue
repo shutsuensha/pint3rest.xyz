@@ -260,7 +260,7 @@ async function submitPasswordReset() {
     })
 
     toast.success(`Password Reset Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
-    
+
     showPasswordResetLoader.value = false
     showPasswordReset.value = false
     showLogin.value = true

@@ -77,7 +77,7 @@ watch(
       const chat_id_redirect = route.query.chat_id || null;
       const new_chat = route.query.new_caht || null;
       if (new_chat !== null) {
-        
+
       }
       if (chat_id_redirect !== null) {
         let index = 0;

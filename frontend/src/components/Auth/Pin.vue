@@ -18,7 +18,7 @@ const showPause = ref(false)
 const showFollowers = ref(false)
 const showFollowing = ref(false)
 
-onActivated(()=> {
+onActivated(() => {
   showPause.value = true
 })
 
@@ -268,17 +268,16 @@ async function save() {
             {{ formattedTimeRemaining }}
           </div>
           <video v-show="showAllPins && pinVideo" :src="pinVideo" @loadeddata="onVideoLoad" ref="videoPlayer"
-            @mouseover="videoPlayer.play(); showPause = false" @timeupdate="onTimeUpdate" class="w-full h-auto rounded-3xl" autoplay loop
-            muted />
-          <div v-if="pinVideo && showPause" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            @mouseover="videoPlayer.play(); showPause = false" @timeupdate="onTimeUpdate"
+            class="w-full h-auto rounded-3xl" autoplay loop muted />
+          <div v-if="pinVideo && showPause"
+            class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="relative flex items-center justify-center w-12 h-12">
               <transition name="flash2">
-                <i v-if="!showPause"
-                  class="absolute pi pi-pause text-5xl text-white glowing-icon"></i>
+                <i v-if="!showPause" class="absolute pi pi-pause text-5xl text-white glowing-icon"></i>
               </transition>
               <transition name="flash2">
-                <i v-if="showPause"
-                  class="absolute pi pi-play text-5xl text-white glowing-icon"></i>
+                <i v-if="showPause" class="absolute pi pi-play text-5xl text-white glowing-icon"></i>
               </transition>
             </div>
           </div>
@@ -403,5 +402,4 @@ async function save() {
 .glowing-icon {
   text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 0, 0, 0.5);
 }
-
 </style>

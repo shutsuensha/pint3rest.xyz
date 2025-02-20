@@ -9,14 +9,18 @@ body {
 
 
 ::selection {
-  background-color: #FF0000; /* Цвет фона выделения (красный) */
-  color: white; /* Цвет текста выделения */
+  background-color: #FF0000;
+  /* Цвет фона выделения (красный) */
+  color: white;
+  /* Цвет текста выделения */
 }
 
 /* Для браузера Firefox */
 ::-moz-selection {
-  background-color: #FF0000; /* Цвет фона выделения (красный) */
-  color: white; /* Цвет текста выделения */
+  background-color: #FF0000;
+  /* Цвет фона выделения (красный) */
+  color: white;
+  /* Цвет текста выделения */
 }
 
 
@@ -24,6 +28,8 @@ body {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  width: 400px !important; /* Устанавливаем ширину */
-  height: 100px !important; /* Устанавливаем высоту */
+  width: 400px !important;
+  /* Устанавливаем ширину */
+  height: 100px !important;
+  /* Устанавливаем высоту */
 }

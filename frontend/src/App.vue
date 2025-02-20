@@ -38,14 +38,12 @@ onMounted(() => {
 function logout() {
   has_token.value = false;
   access_token.value = null;
-  toast.success('ꜱᴇᴇ ᴜ ɴᴇxᴛ ᴛɪᴍᴇ ', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
 
 async function login(token) {
   access_token.value = token;
   has_token.value = true;
-  toast.success('ᴡᴇʟᴄᴏᴍᴇ 😽', { bodyClassName: ["cursor-pointer", "text-center"] })
 }
 
 const register = ref(false)
