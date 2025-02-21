@@ -10,9 +10,9 @@ async def init_redis_cache():
     global redis_connection
     try:
         redis_connection = await aioredis.from_url(settings.REDIS_URL_CACHE)
-        logger.info(f"{settings.REDIS_URL_CACHE} Redis cache connected.")
+        logger.info("✅ Успешное подключение к Redis CACHE")
     except Exception as e:
-        logger.error(f"Ошибка при подключении к Redis-кэшу: {e}")
+        logger.error(f"❌ Ошибка подключения к Redis CACHE: {e}")
         redis_connection = None  # Чтобы избежать использования сломанного соединения
     return redis_connection
 
@@ -23,6 +23,6 @@ async def close_redis_cache():
     if redis_connection:
         try:
             await redis_connection.close()
-            logger.info(f"{settings.REDIS_URL_CACHE} Redis cache closed.")
+            logger.info("🔴 Соединение с Redis CACHE закрыто")
         except Exception as e:
             logger.error(f"Ошибка при закрытии Redis-кэша: {e}")

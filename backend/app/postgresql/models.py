@@ -9,7 +9,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.database.base import Base
+from app.postgresql.database import Base
 from datetime import date, datetime
 
 

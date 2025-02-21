@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.exceptions import GraphQLError
 from .schemas import User
-from app.database.models import UsersOrm
+from app.postgresql.models import UsersOrm
 
 
 @strawberry.type

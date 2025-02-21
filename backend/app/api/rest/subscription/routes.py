@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException
 from app.api.rest.dependencies import db, user_id, filter
-from app.database.models import UsersOrm, SubsrciptionsOrm
+from app.postgresql.models import UsersOrm, SubsrciptionsOrm
 from sqlalchemy import insert, select, update, delete, func
 from app.api.rest.users.schemas import UserOut
 

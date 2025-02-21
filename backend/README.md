@@ -1,7 +1,10 @@
 ## To Do
 - mongodb
+- websockets .env url ws/wss
+- indent format python (zaebalo)
+- amazonm s3
 - vs code best extantions + .vscode setup for python development
-- testing
+- pytest + aiohttp
 - linter/formatter/static typing
 - audio/video streaming
 - docker
@@ -11,6 +14,7 @@
 - nginx
 - ssl
 - gitlab ci/cd
+- github ci/cd
 - настройка local/remote development
 - hard full test project deployed + fix all bugs
 - repo descibe
@@ -23,7 +27,6 @@
 
 
 ### Web server
-sudo systemctl start redis-server
 uvicorn app.main:app --reload
 celery -A app.celery.celery_app.celery_instance worker --loglevel=info
 celery -A app.celery.celery_app.celery_instance flower

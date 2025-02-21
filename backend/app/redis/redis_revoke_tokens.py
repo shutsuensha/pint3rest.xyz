@@ -12,9 +12,9 @@ async def init_redis_revoke_tokens():
         redis_connection = await aioredis.from_url(
             settings.REDIS_URL_REVOKE_TOKENS, decode_responses=True
         )
-        logger.info(f"{settings.REDIS_URL_REVOKE_TOKENS}- Redis revoke tokens connected.")
+        logger.info("✅ Успешное подключение к Redis REVOKE TOKENS")
     except Exception as e:
-        logger.error(f"Ошибка при подключении к Redis для отозванных токенов: {e}")
+        logger.error(f"❌ Ошибка подключения к Redis REVOKE TOKENS: {e}")
         redis_connection = None  # Чтобы избежать использования сломанного соединения
     return redis_connection
 
@@ -25,7 +25,7 @@ async def close_redis_revoke_tokens():
     if redis_connection:
         try:
             await redis_connection.close()
-            logger.info(f"{settings.REDIS_URL_REVOKE_TOKENS}- Redis revoke tokens closed.")
+            logger.info("🔴 Соединение с Redis REVOKE TOKENS закрыто")
         except Exception as e:
             logger.error(f"Ошибка при закрытии Redis для отозванных токенов: {e}")
 

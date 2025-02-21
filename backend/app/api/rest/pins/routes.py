@@ -1,25 +1,20 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Query, Request
 from app.api.rest.dependencies import db, user_id, filter, filter_with_value
 from .schemas import PinOut, PinIn
-from app.database.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
+from app.postgresql.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
 from sqlalchemy import insert, select, update, delete, or_, desc
 from app.api.rest.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
 from app.api.rest.tags.routes import get_all_tags
-from fastapi_cache.decorator import cache
-from .cache import pins_cache_key, clear_all_pins_cache, disable_client_cache
 
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
 
 @router.get('/', response_model=list[PinOut])
-@cache(expire=300, key_builder=pins_cache_key)
-async def get_pins(user_id: user_id, db: db, filter: filter, response: Response):
+async def get_pins(user_id: user_id, db: db, filter: filter):
 
-    disable_client_cache(response)
-    
     pins = await db.scalars(
         select(PinsOrm)
         .offset(filter.offset)
@@ -27,7 +22,7 @@ async def get_pins(user_id: user_id, db: db, filter: filter, response: Response)
         .order_by(desc(PinsOrm.id))
     )
 
-    return [PinOut.model_validate(el.__dict__) for el in pins]
+    return pins
 
 
 @router.get('/tag/{tag_name}', response_model=list[PinOut])
@@ -90,7 +85,6 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
         .returning(PinsOrm)
     )
     await db.commit()
-    await clear_all_pins_cache()
     return pin
 
 
@@ -102,7 +96,6 @@ async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
 
     await db.execute(delete(PinsOrm).where(PinsOrm.user_id == user_id, PinsOrm.id == pin_id))
     await db.commit()
-    await clear_all_pins_cache()
     return {'status', 'ok'}
 
 

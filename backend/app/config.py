@@ -2,11 +2,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    DB_HOST: str
-    DB_PORT: int
-    DB_USER: str
-    DB_PASS: str
-    DB_NAME: str
+    POSTGRES_DB_HOST: str
+    POSTGRES_DB_PORT: int
+    POSTGRES_DB_USER: str
+    POSTGRES_DB_PASS: str
+    POSTGRES_DB_NAME: str
+
+    MONGO_DB_HOST: str
+    MONGO_DB_PORT: int
+    MONGO_DB_USER: str
+    MONGO_DB_PASS: str
+    MONGO_DB_NAME: str
 
     REDIS_HOST: str
     REDIS_PORT: int
@@ -31,40 +37,50 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool
     USE_CREDENTIALS: bool
     VALIDATE_CERTS: bool
-    
+
     API_DOMAIN: str
     FRONTEND_DOMAIN: str
 
-    
+    LOGGING_CLIENT_ERRORS: bool
+    LOGGING_REQUESTS: bool
+
+    @property
+    def MONGO_URL(self):
+        return f"mongodb://{self.MONGO_DB_USER}:{self.MONGO_DB_PASS}@{self.MONGO_DB_HOST}:{self.MONGO_DB_PORT}/{self.MONGO_DB_NAME}"
+
     @property
     def REDIS_URL_CELERY_REDBEAT(self):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_REDBEAT}"
-    
+
     @property
     def REDIS_URL_CELERY_BROKER(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
-    
+        return (
+            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
+        )
+
     @property
     def REDIS_URL_CELERY_RESULT(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
-    
+        return (
+            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
+        )
+
     @property
     def REDIS_URL_REVOKE_TOKENS(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
+        return (
+            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
+        )
 
     @property
     def REDIS_URL_CACHE(self):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
-    
 
     @property
-    def DB_URL(self):
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-    
-    @property
-    def DB_SYNC_URL(self):
-        return f"postgresql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    def POSTGRES_URL_ASYNC(self):
+        return f"postgresql+asyncpg://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
 
+    @property
+    def POSTGRES_URL_SYNC(self):
+        return f"postgresql://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
 
     model_config = SettingsConfigDict(env_file=".env")
 

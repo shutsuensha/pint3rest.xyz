@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.rest.dependencies import db, user_id, filter
-from app.database.models import PinsOrm, LikesOrm, CommentsOrm
+from app.postgresql.models import PinsOrm, LikesOrm, CommentsOrm
 from .schemas import LikeOut
 from sqlalchemy import select, insert, delete, func
 

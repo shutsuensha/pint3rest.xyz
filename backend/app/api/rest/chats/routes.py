@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from app.api.rest.dependencies import db, user_id, filter
 from sqlalchemy import select, insert, update, func
-from app.database.models import UsersOrm
+from app.postgresql.models import UsersOrm
 
 
 router = APIRouter(prefix="/chats", tags=["chats"])

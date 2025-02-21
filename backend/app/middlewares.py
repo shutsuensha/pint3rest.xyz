@@ -3,12 +3,12 @@ from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
 from app.logger import logger
-
+from app.config import settings
 
 async def log_requests_and_server_http_exception_handler(request: Request, call_next):
     """Логирование входящих запросов с измерением времени выполнения и обработка ошибок сервера в обработке запросов"""
+
     start_time = time.time()  # Засекаем время начала запроса
 
     try:
@@ -16,10 +16,11 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
         elapsed_time = time.time() - start_time  # Вычисляем время выполнения
 
         # Запись в файл
-        with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
-            log_file.write(
-                f"{request.method} {request.url} {request.client.host} | Status: {response.status_code} | Time: {elapsed_time:.4f} сек.\n"
-            )
+        if settings.LOGGING_REQUESTS:
+            with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
+                log_file.write(
+                    f"{request.method} {request.url} {request.client.host} | Status: {response.status_code} | Time: {elapsed_time:.4f} сек.\n"
+                )
 
         return response
     except Exception as e:
@@ -29,10 +30,11 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
             exc_info=True,
         )
 
-        with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
-            log_file.write(
-                f"{request.method} {request.url} {request.client.host} | Status: ERROR | Time: {elapsed_time:.4f} сек. | Error: {e}\n"
-            )
+        if settings.LOGGING_REQUESTS:
+            with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
+                log_file.write(
+                    f"{request.method} {request.url} {request.client.host} | Status: ERROR | Time: {elapsed_time:.4f} сек. | Error: {e}\n"
+                )
 
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

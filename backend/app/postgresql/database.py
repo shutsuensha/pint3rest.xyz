@@ -6,8 +6,8 @@ from app.config import settings
 from app.logger import logger
 
 
-engine = create_async_engine(settings.DB_URL)
-sync_engine = create_engine(settings.DB_SYNC_URL)
+engine = create_async_engine(settings.POSTGRES_URL_ASYNC)
+sync_engine = create_engine(settings.POSTGRES_URL_SYNC)
 
 SyncSession = sessionmaker(bind=sync_engine, expire_on_commit=False)
 async_session_maker = async_sessionmaker(bind=engine, expire_on_commit=False)

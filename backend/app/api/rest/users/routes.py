@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Requ
 from .schemas import UserIn, UserOut, PasswordResetRequestModel, UserPatch
 from app.api.rest.dependencies import db, user_id
 from sqlalchemy import insert, select, update
-from app.database.models import UsersOrm
+from app.postgresql.models import UsersOrm
 from app.api.rest.utils import (
     encode_token,
     hash_password,
@@ -21,10 +21,7 @@ from app.celery.tasks import send_email
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
-from app.celery.tasks import save_file_celery_and_crop_300x300
 from pathlib import Path
-from celery.result import AsyncResult
-from app.celery.celery_app import celery_instance
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -253,43 +250,6 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
         )
     return user
 
-
-@router.post("/upload/celery/{id}")
-async def upload_image_celery(id: int, db: db, file: UploadFile):
-
-    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
-
-    file_extension = Path(file.filename).suffix
-    unique_filename = f"{uuid.uuid4()}{file_extension}"
-    image_path = f"app/media/users/{unique_filename}"
-
-    task = save_file_celery_and_crop_300x300.delay(file.file.read(), image_path, id)
-
-    return {"message": "File upload is in progress", "task_id": task.id}
-
-
-@router.get("/upload/celery/status/{task_id}")
-async def get_upload_status(task_id: str):
-    task_result = AsyncResult(task_id, app=celery_instance)
-
-    if task_result.state == "PENDING":
-        return {"status": "pending", "message": "Task is waiting in queue"}
-    elif task_result.state == "STARTED":
-        return {"status": "processing", "message": "Task is in progress"}
-    elif task_result.state == "SUCCESS":
-        return {
-            "status": "completed",
-            "message": "File uploaded successfully",
-            "result": task_result.result,
-        }
-    elif task_result.state == "FAILURE":
-        return {"status": "failed", "message": str(task_result.info)}
-    else:
-        return {"status": task_result.state, "message": "Unknown state"}
 
 
 @router.post("/upload/{id}", response_model=UserOut)

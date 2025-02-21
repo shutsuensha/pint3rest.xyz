@@ -8,12 +8,12 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from app.config import settings
-from app.database.base import Base
-from app.database.models import *
+from app.postgresql.database import Base
+from app.postgresql.models import *
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", f"{settings.DB_URL}")
+config.set_main_option("sqlalchemy.url", f"{settings.POSTGRES_URL_ASYNC}")
 
 target_metadata = Base.metadata
 

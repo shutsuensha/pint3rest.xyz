@@ -7,8 +7,8 @@ from pathlib import Path
 from PIL import Image
 import io
 from app.logger import logger
-from app.database.base import get_sync_db
-from app.database.models import UsersOrm
+from app.postgresql.database import get_sync_db
+from app.postgresql.models import UsersOrm
 from sqlalchemy import insert, select, update, delete, or_, desc
 from app.config import settings
 from sqlalchemy.exc import SQLAlchemyError
