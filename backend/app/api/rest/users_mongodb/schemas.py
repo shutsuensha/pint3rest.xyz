@@ -1,16 +1,20 @@
 from pydantic import BaseModel
 
 
-class User(BaseModel):
+class UserIn(BaseModel):
     name: str
     email: str
     age: int
 
-class UserInResponse(BaseModel):
+
+class UserInPatch(BaseModel):
+    name: str | None = None
+    email: str | None = None
+    age: int | None = None
+
+
+class UserOut(BaseModel):
     id: str
     name: str
     email: str
     age: int
-
-    # class Config:
-    #     json_encoders = {ObjectId: str}
