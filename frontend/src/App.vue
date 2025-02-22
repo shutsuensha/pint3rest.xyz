@@ -60,6 +60,7 @@ function signup(token) {
 </script>
 
 <template>
-  <Auth v-if="has_token === true" :access_token="access_token" @logout="logout()" :register="register" @createPinModelClose="register = false"/>
-  <NotAuth v-if="has_token === false" @login="(token) => { login(token) }"  @signup="(token) => { signup(token) }"/>
+  <Auth v-if="has_token === true" :access_token="access_token" @logout="logout()" :register="register"
+    @createPinModelClose="register = false" />
+  <NotAuth v-if="has_token === false" @login="(token) => { login(token) }" @signup="(token) => { signup(token) }" />
 </template>

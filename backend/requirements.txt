@@ -1,3 +1,4 @@
+aiomysql==0.2.0
 aiosmtplib==3.0.2
 alembic==1.13.3
 amqp==5.2.0
@@ -7,6 +8,7 @@ ariadne==0.26.1
 asgiref==3.8.1
 async-timeout==4.0.3
 asyncpg==0.30.0
+autopep8==2.3.2
 bcrypt==4.2.0
 billiard==4.2.1
 black==25.1.0
@@ -59,6 +61,7 @@ pluggy==1.5.0
 prometheus_client==0.21.1
 prompt_toolkit==3.0.48
 psycopg2-binary==2.9.10
+pycodestyle==2.12.1
 pydantic==2.10.3
 pydantic-extra-types==2.10.2
 pydantic-settings==2.7.0
@@ -66,6 +69,7 @@ pydantic_core==2.27.1
 Pygments==2.19.1
 PyJWT==2.9.0
 pymongo==4.11.1
+PyMySQL==1.1.1
 pytest==8.3.3
 pytest-asyncio==0.24.0
 pytest-dotenv==0.5.2
@@ -101,3 +105,4 @@ vine==5.1.0
 watchfiles==0.24.0
 wcwidth==0.2.13
 websockets==13.1
+yapf==0.43.0

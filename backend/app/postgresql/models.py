@@ -9,8 +9,12 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.postgresql.database import Base
 from datetime import date, datetime
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 pins_tags = Table(

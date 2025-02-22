@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     MONGO_DB_PASS: str
     MONGO_DB_NAME: str
 
+    MYSQL_DB_HOST: str
+    MYSQL_DB_PORT: int
+    MYSQL_DB_USER: str
+    MYSQL_DB_PASS: str
+    MYSQL_DB_NAME: str
+
     REDIS_HOST: str
     REDIS_PORT: int
     REDIS_DB_REVOKE_TOKENS: int
@@ -43,6 +49,10 @@ class Settings(BaseSettings):
 
     LOGGING_CLIENT_ERRORS: bool
     LOGGING_REQUESTS: bool
+
+    @property
+    def MYSQL_URL_ASYNC(self):
+        return f"mysql+aiomysql://{self.MYSQL_DB_USER}:{self.MYSQL_DB_PASS}@{self.MYSQL_DB_HOST}:{self.MYSQL_DB_PORT}/{self.MYSQL_DB_NAME}"
 
     @property
     def MONGO_URL(self):

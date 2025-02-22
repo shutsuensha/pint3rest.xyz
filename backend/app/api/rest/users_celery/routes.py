@@ -9,7 +9,7 @@ from celery.result import AsyncResult
 from app.celery.celery_app import celery_instance
 
 
-router = APIRouter(prefix="/users/celery", tags=["users-celery"])
+router = APIRouter(prefix="/celery/users", tags=["users-celery"])
 
 
 @router.post("/upload/{id}")

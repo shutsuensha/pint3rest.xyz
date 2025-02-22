@@ -16,6 +16,7 @@ async def init_redis_revoke_tokens():
     except Exception as e:
         logger.error(f"❌ Ошибка подключения к Redis REVOKE TOKENS: {e}")
         redis_connection = None  # Чтобы избежать использования сломанного соединения
+        raise e
     return redis_connection
 
 

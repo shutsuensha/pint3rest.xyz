@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from app.logger import logger
+
 from app.api.rest.users.routes import router as users_router
 from app.api.rest.pins.routes import router as pin_router
 from app.api.rest.tags.routes import router as tag_router
@@ -14,6 +16,7 @@ from app.api.rest.notauth.routes import router as notauth_router
 from app.api.rest.users_celery.routes import router as users_celery_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.pins_cache.routes import router as pins_cache_router
+from app.api.rest.users_mysql.routes import router as users_mysql_router
 
 
 from .middlewares import register_middleware
@@ -28,14 +31,14 @@ from app.redis.redis_revoke_tokens import (
 )
 from app.redis.redis_cache import init_redis_cache, close_redis_cache
 
-from app.logger import logger
-
 from app.exceptions import register_exception_handlers
 
 from app.api.graphql.users.router import graphql_app
 
 from app.mongodb.database import mongo
 
+from app.postgresql.test_connection import connect as postgre_connect
+from app.mysql.test_connection import connect as mysql_connect
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,8 +46,9 @@ async def lifespan(app: FastAPI):
         await init_redis_revoke_tokens()
         redis_cache = await init_redis_cache()
         FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
-        logger.info("✅ Успешное подключение к FastAPICache")
         await mongo.connect()
+        await postgre_connect()
+        await mysql_connect()
         yield
     except Exception as e:
         logger.error(f"❌ Ошибка при инициализации приложения: {e}")
@@ -69,6 +73,7 @@ app.include_router(tag_router)
 app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(users_router)
+app.include_router(users_mysql_router)
 app.include_router(users_mongodb_router)
 app.include_router(users_celery_router)
 app.include_router(notauth_router)

@@ -16,6 +16,7 @@ class MongoDB:
             logger.info("✅ Успешное подключение к MongoDB")
         except Exception as e:
             logger.error(f"❌ Ошибка подключения к MongoDB: {e}")
+            raise e
 
     async def close(self):
         if self.client:

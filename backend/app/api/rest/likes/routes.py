@@ -8,18 +8,19 @@ from sqlalchemy import select, insert, delete, func
 router = APIRouter(prefix="/likes", tags=["likes"])
 
 
-@router.post(
-    "/pin/{pin_id}", response_model=LikeOut, status_code=status.HTTP_201_CREATED
-)
+@router.post("/pin/{pin_id}", response_model=LikeOut,
+             status_code=status.HTTP_201_CREATED)
 async def create_like_on_pin(pin_id: int, user_id: user_id, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="pin not found"
         )
+    
 
     like = await db.scalar(
-        insert(LikesOrm).values(user_id=user_id, pin_id=pin_id).returning(LikesOrm)
+        insert(LikesOrm).values(user_id=user_id,
+                                pin_id=pin_id).returning(LikesOrm)
     )
     await db.commit()
     return like
@@ -34,7 +35,8 @@ async def delete_like_on_pin(pin_id: int, user_id: user_id, db: db):
         )
 
     await db.execute(
-        delete(LikesOrm).where(LikesOrm.pin_id == pin_id, LikesOrm.user_id == user_id)
+        delete(LikesOrm).where(LikesOrm.pin_id ==
+                               pin_id, LikesOrm.user_id == user_id)
     )
     await db.commit()
 
@@ -50,7 +52,8 @@ async def check_user_like_on_pin(pin_id: int, user_id: user_id, db: db):
         )
 
     like = await db.scalar(
-        select(LikesOrm).where(LikesOrm.user_id == user_id, LikesOrm.pin_id == pin_id)
+        select(LikesOrm).where(LikesOrm.user_id ==
+                               user_id, LikesOrm.pin_id == pin_id)
     )
     if like:
         return True
@@ -67,13 +70,18 @@ async def get_cnt_likes_on_pin(pin_id: int, db: db, user_id: user_id):
         )
 
     cnt_likes = await db.scalar(
-        select(func.count()).select_from(LikesOrm).where(LikesOrm.pin_id == pin_id)
+        select(func.count()).select_from(
+            LikesOrm).where(LikesOrm.pin_id == pin_id)
     )
     return cnt_likes
 
 
 @router.get("/pin/likes/{pin_id}", response_model=list[LikeOut])
-async def get_likes_on_pin(pin_id: int, db: db, user_id: user_id, filter: filter):
+async def get_likes_on_pin(
+        pin_id: int,
+        db: db,
+        user_id: user_id,
+        filter: filter):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(
@@ -90,9 +98,9 @@ async def get_likes_on_pin(pin_id: int, db: db, user_id: user_id, filter: filter
     return likes
 
 
-@router.post(
-    "/comment/{comment_id}", response_model=LikeOut, status_code=status.HTTP_201_CREATED
-)
+@router.post("/comment/{comment_id}",
+             response_model=LikeOut,
+             status_code=status.HTTP_201_CREATED)
 async def create_like_on_comment(comment_id: int, user_id: user_id, db: db):
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
@@ -114,8 +122,8 @@ async def delete_like_on_comment(comment_id: int, user_id: user_id, db: db):
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="comment not found"
-        )
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="comment not found")
 
     await db.execute(
         delete(LikesOrm).where(
@@ -128,7 +136,10 @@ async def delete_like_on_comment(comment_id: int, user_id: user_id, db: db):
 
 
 @router.get("/comment/user_like/{comment_id}")
-async def check_user_like_on_comment(comment_id: int, user_id: user_id, db: db):
+async def check_user_like_on_comment(
+        comment_id: int,
+        user_id: user_id,
+        db: db):
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
         raise HTTPException(

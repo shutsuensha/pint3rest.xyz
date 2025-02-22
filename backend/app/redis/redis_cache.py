@@ -14,6 +14,7 @@ async def init_redis_cache():
     except Exception as e:
         logger.error(f"❌ Ошибка подключения к Redis CACHE: {e}")
         redis_connection = None  # Чтобы избежать использования сломанного соединения
+        raise e
     return redis_connection
 
 

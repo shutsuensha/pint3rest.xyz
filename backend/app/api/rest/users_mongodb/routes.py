@@ -5,7 +5,7 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 
 
-router = APIRouter(prefix="/users/mongodb", tags=["users-mongodb"])
+router = APIRouter(prefix="/mongodb", tags=["users-mongodb"])
 
 
 @router.post("/users/", response_model=UserOut)
