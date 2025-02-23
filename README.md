@@ -8,3 +8,5 @@
   - logo, preview, descriptions
   - screenshots for every page
 - reddit piar project as vue as fastapi
+- repo - api table
+- repo - schema with all backend tech
