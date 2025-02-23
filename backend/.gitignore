@@ -2,5 +2,4 @@
 .env
 __pycache__
 app/media
-app/logs
 README.md

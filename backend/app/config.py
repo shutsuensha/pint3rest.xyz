@@ -45,10 +45,14 @@ class Settings(BaseSettings):
     VALIDATE_CERTS: bool
 
     API_DOMAIN: str
+    TRUSTED_HOST: str
     FRONTEND_DOMAIN: str
+    TRUSTED_ORIGIN: str
 
     LOGGING_CLIENT_ERRORS: bool
     LOGGING_REQUESTS: bool
+
+    LOGS_PATH: str
 
     @property
     def MYSQL_URL_ASYNC(self):

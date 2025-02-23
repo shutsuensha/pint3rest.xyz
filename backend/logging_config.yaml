@@ -17,7 +17,7 @@ handlers:
     class: logging.FileHandler
     level: ERROR
     formatter: detailed
-    filename: app/logs/server_errors.log
+    filename: 
 
 loggers:
   pinterest_api_logger:

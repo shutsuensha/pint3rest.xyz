@@ -17,7 +17,7 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
 
         # Запись в файл
         if settings.LOGGING_REQUESTS:
-            with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
+            with open(settings.LOGS_PATH + "requests.log", "a", encoding="utf-8") as log_file:
                 log_file.write(
                     f"{request.method} {request.url} {request.client.host} | Status: {response.status_code} | Time: {elapsed_time:.4f} сек.\n"
                 )
@@ -31,7 +31,7 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
         )
 
         if settings.LOGGING_REQUESTS:
-            with open("app/logs/requests.log", "a", encoding="utf-8") as log_file:
+            with open(settings.LOGS_PATH + "requests.log", "a", encoding="utf-8") as log_file:
                 log_file.write(
                     f"{request.method} {request.url} {request.client.host} | Status: ERROR | Time: {elapsed_time:.4f} сек. | Error: {e}\n"
                 )
@@ -46,11 +46,11 @@ def register_middleware(app: FastAPI):
     """Регистрация middleware."""
     app.middleware("http")(
         log_requests_and_server_http_exception_handler
-    )  # Логирование всех HTTP-запросов
+    ) 
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=[settings.TRUSTED_ORIGIN],
         allow_methods=["*"],
         allow_headers=["*"],
         allow_credentials=True,
@@ -58,5 +58,5 @@ def register_middleware(app: FastAPI):
 
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0"],
+        allowed_hosts=[settings.TRUSTED_HOST],
     )
