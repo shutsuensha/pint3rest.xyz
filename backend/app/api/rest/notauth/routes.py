@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
-
+from app.config import settings
 
 router = APIRouter(prefix="/notauth", tags=["notauth"])
 
@@ -8,7 +8,7 @@ router = APIRouter(prefix="/notauth", tags=["notauth"])
 @router.get('/images/{id}')
 async def get_image(id: int):
     if id <= 10:
-        path = f'app/media/notauth/{id}.jpg'
+        path = f'{settings.MEDIA_PATH}notauth/{id}.jpg'
     else:
-        path = f'app/media/notauth/{id}.gif'
+        path = f'{settings.MEDIA_PATH}notauth/{id}.gif'
     return FileResponse(path)

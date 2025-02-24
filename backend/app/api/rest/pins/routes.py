@@ -7,7 +7,7 @@ from app.api.rest.utils import save_file, get_primary_color, extract_first_frame
 import uuid
 from fastapi.responses import FileResponse
 from app.api.rest.tags.routes import get_all_tags
-
+from app.config import settings
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
@@ -107,7 +107,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
     
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    image_path = f"app/media/pins/{unique_filename}"
+    image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
     save_file(file.file, image_path)
 
     if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
@@ -115,7 +115,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     
     if file.content_type in ["video/mp4", "video/webm", "video/avi"]:
         new_unique_filename = f"{uuid.uuid4()}.jpg"
-        new_image_path = f"app/media/pins/{new_unique_filename}"
+        new_image_path = f"{settings.MEDIA_PATH}pins/{new_unique_filename}"
 
         extract_first_frame(image_path, new_image_path)
         rgb = get_primary_color(new_image_path)

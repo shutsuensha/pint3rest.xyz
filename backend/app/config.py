@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     LOGGING_REQUESTS: bool
 
     LOGS_PATH: str
+    MEDIA_PATH: str
 
     @property
     def MYSQL_URL_ASYNC(self):

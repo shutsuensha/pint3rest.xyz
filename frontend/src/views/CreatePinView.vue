@@ -122,7 +122,7 @@ async function submitPin() {
       const rect = document.getElementById('videoPreview').getBoundingClientRect();
       height = rect.height.toFixed(2);
     }
-    const response = await axios.post('/api/pins', {
+    const response = await axios.post('/api/pins/', {
       title: title,
       description: description,
       href: href,

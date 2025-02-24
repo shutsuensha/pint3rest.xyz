@@ -24,6 +24,12 @@ from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
 from pathlib import Path
 
 
+"""
+/home/evalshine/pinterest-media/users/6d61e069-446b-42ae-9c8f-f1ac616852e3_5c4de51d40d09243d10d7de828d23687.jpg
+/home/evalshine/pinterest-media/users/ccf16be9-f550-4fe7-9a7a-0f220bd303ca_aa2bd94c64b7b7f8d6dfa4ce7bdae598.jpg
+"""
+
+
 router = APIRouter(prefix="/users", tags=["users"])
 
 templates = Jinja2Templates(directory="app/templates")
@@ -263,9 +269,11 @@ async def upload_image(id: int, db: db, file: UploadFile):
 
     file_extension = Path(file.filename).suffix
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    image_path = f"app/media/users/{unique_filename}"
+    image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
 
     save_file(file.file, image_path)
+    if user.image:
+        delete_file(user.image)
 
     user = await db.scalar(
         update(UsersOrm)
@@ -278,16 +286,6 @@ async def upload_image(id: int, db: db, file: UploadFile):
     return user
 
 
-@router.get("/upload/banner/{id}")
-async def get_user_banner(id: int, user_id: user_id, db: db):
-    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
-
-    return FileResponse(user.banner_image)
-
 
 @router.get("/upload/{id}")
 async def get_image(user_id: user_id, id: int, db: db):
@@ -298,6 +296,41 @@ async def get_image(user_id: user_id, id: int, db: db):
         )
 
     return FileResponse(user.image)
+
+
+@router.post("/banner/upload/{id}", response_model=UserOut)
+async def update_user_banner_image(id: int, db: db, file: UploadFile):
+
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
+    save_file(file.file, image_path)
+    if user.banner_image:
+        delete_file(user.banner_image)
+
+    user = await db.scalar(
+        update(UsersOrm)
+        .where(UsersOrm.id == id)
+        .values(banner_image=image_path)
+        .returning(UsersOrm)
+    )
+    await db.commit()
+
+    return user
+
+
+
+@router.get("/banner/upload/{id}")
+async def get_user_banner(user_id: user_id, id: int, db: db):
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
+        )
+
+    return FileResponse(user.banner_image)
+
 
 
 @router.patch("/information", response_model=UserOut)
@@ -315,47 +348,4 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
         .returning(UsersOrm)
     )
     await db.commit()
-    return user
-
-
-@router.patch("/upload/profile", response_model=UserOut)
-async def update_user_profile_image(user_id: user_id, db: db, file: UploadFile):
-
-    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
-
-    unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    image_path = f"app/media/users/{unique_filename}"
-    save_file(file.file, image_path)
-    delete_file(user.image)
-
-    user = await db.scalar(
-        update(UsersOrm)
-        .where(UsersOrm.id == user_id)
-        .values(image=image_path)
-        .returning(UsersOrm)
-    )
-    await db.commit()
-
-    return user
-
-
-@router.patch("/upload/banner", response_model=UserOut)
-async def update_user_banner_image(user_id: user_id, db: db, file: UploadFile):
-
-    user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
-
-    unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    image_path = f"app/media/users/{unique_filename}"
-    save_file(file.file, image_path)
-    if user.banner_image:
-        delete_file(user.banner_image)
-
-    user = await db.scalar(
-        update(UsersOrm)
-        .where(UsersOrm.id == user_id)
-        .values(banner_image=image_path)
-        .returning(UsersOrm)
-    )
-    await db.commit()
-
     return user

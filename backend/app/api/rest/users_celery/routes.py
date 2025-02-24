@@ -7,6 +7,7 @@ import uuid
 from app.celery.tasks import save_file_celery_and_crop_300x300
 from celery.result import AsyncResult
 from app.celery.celery_app import celery_instance
+from app.config import settings
 
 
 router = APIRouter(prefix="/celery/users", tags=["users-celery"])
@@ -23,7 +24,7 @@ async def upload_image_celery(id: int, db: db, file: UploadFile):
 
     file_extension = Path(file.filename).suffix
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    image_path = f"app/media/users/{unique_filename}"
+    image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
 
     task = save_file_celery_and_crop_300x300.delay(file.file.read(), image_path, id)
 

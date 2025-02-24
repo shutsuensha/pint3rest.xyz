@@ -6,7 +6,7 @@ from sqlalchemy import select, insert, update, func, or_, desc
 import uuid
 from app.api.rest.utils import save_file
 from fastapi.responses import FileResponse
-
+from app.config import settings
 
 router = APIRouter(prefix="/messages", tags=["mssagees"])
 
@@ -106,7 +106,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="message not found")
     
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    image_path = f"app/media/messages/{unique_filename}"
+    image_path = f"{settings.MEDIA_PATH}messages/{unique_filename}"
     save_file(file.file, image_path)
     
 

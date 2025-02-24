@@ -126,7 +126,7 @@ onMounted(async () => {
     if (user.value.banner_image) {
       try {
         const userResponse = await axios.get(
-          `/api/users/upload/banner/${user.value.id}`,
+          `/api/users/banner/upload/${user.value.id}`,
           {
             responseType: 'blob', // Treat the response as a binary file
             withCredentials: true, // Include credentials such as cookies or client certificates
@@ -292,8 +292,8 @@ async function editProfileImage() {
       const formData = new FormData();
       formData.append('file', imageFile.value);
 
-      const response = await axios.patch(
-        `/api/users/upload/profile`,
+      const response = await axios.post(
+        `/api/users/upload/${auth_user_id.value}`,
         formData,
         {
           headers: {
@@ -328,8 +328,8 @@ async function editBannerImage() {
       const formData = new FormData();
       formData.append('file', bannerImageFile.value);
 
-      const response = await axios.patch(
-        `/api/users/upload/banner`,
+      const response = await axios.post(
+        `/api/users/banner/upload/${auth_user_id.value}`,
         formData,
         {
           headers: {
@@ -344,7 +344,7 @@ async function editBannerImage() {
 
       try {
         const userResponse = await axios.get(
-          `/api/users/upload/banner/${user.value.id}`,
+          `/api/users/banner/upload/${auth_user_id.value}`,
           {
             responseType: 'blob', // Treat the response as a binary file
             withCredentials: true, // Include credentials such as cookies or client certificates
