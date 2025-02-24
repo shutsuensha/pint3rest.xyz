@@ -16,11 +16,13 @@ blinker==1.9.0
 celery==5.4.0
 celery-redbeat==2.2.0
 certifi==2024.8.30
+cffi==1.17.1
 click==8.1.7
 click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.3.0
 colorlog==6.9.0
+cryptography==44.0.1
 dnspython==2.7.0
 email_validator==2.2.0
 exceptiongroup==1.2.2
@@ -62,6 +64,7 @@ prometheus_client==0.21.1
 prompt_toolkit==3.0.48
 psycopg2-binary==2.9.10
 pycodestyle==2.12.1
+pycparser==2.22
 pydantic==2.10.3
 pydantic-extra-types==2.10.2
 pydantic-settings==2.7.0
