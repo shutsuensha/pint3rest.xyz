@@ -24,12 +24,6 @@ from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
 from pathlib import Path
 
 
-"""
-/home/evalshine/pinterest-media/users/6d61e069-446b-42ae-9c8f-f1ac616852e3_5c4de51d40d09243d10d7de828d23687.jpg
-/home/evalshine/pinterest-media/users/ccf16be9-f550-4fe7-9a7a-0f220bd303ca_aa2bd94c64b7b7f8d6dfa4ce7bdae598.jpg
-"""
-
-
 router = APIRouter(prefix="/users", tags=["users"])
 
 templates = Jinja2Templates(directory="app/templates")

@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     LOGS_PATH: str
     MEDIA_PATH: str
 
+    YANDEX_STORAGE_KEY: str
+    YANDEX_STORAGE_SECRET_KEY: str
+    YANDEX_STORAGE_BUCKET: str
+
     @property
     def MYSQL_URL_ASYNC(self):
         return f"mysql+aiomysql://{self.MYSQL_DB_USER}:{self.MYSQL_DB_PASS}@{self.MYSQL_DB_HOST}:{self.MYSQL_DB_PORT}/{self.MYSQL_DB_NAME}"
