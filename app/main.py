@@ -17,6 +17,7 @@ from app.api.rest.users_celery.routes import router as users_celery_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.pins_cache.routes import router as pins_cache_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
+from app.api.rest.users_httpx.routes import router as users_httpx_router
 
 
 from .middlewares import register_middleware
@@ -73,6 +74,7 @@ app.include_router(tag_router)
 app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(users_router)
+app.include_router(users_httpx_router)
 app.include_router(users_mysql_router)
 app.include_router(users_mongodb_router)
 app.include_router(users_celery_router)
