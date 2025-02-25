@@ -23,7 +23,6 @@ from fastapi.responses import HTMLResponse
 from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
 from pathlib import Path
 
-
 router = APIRouter(prefix="/users", tags=["users"])
 
 templates = Jinja2Templates(directory="app/templates")
@@ -343,3 +342,5 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
     )
     await db.commit()
     return user
+
+

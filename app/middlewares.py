@@ -21,7 +21,6 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
                 log_file.write(
                     f"{request.method} {request.url} {request.client.host} | Status: {response.status_code} | Time: {elapsed_time:.4f} сек.\n"
                 )
-
         return response
     except Exception as e:
         elapsed_time = time.time() - start_time  # Записываем время даже в случае ошибки

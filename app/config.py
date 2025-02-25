@@ -59,6 +59,10 @@ class Settings(BaseSettings):
     YANDEX_STORAGE_SECRET_KEY: str
     YANDEX_STORAGE_BUCKET: str
 
+    GOOGLE_OAUTH2_CLIENT_ID: str
+    GOOGLE_OAUTH2_CLIENT_SECRET: str
+    GOOGLE_OAUTH2_REDIRECT_URI: str
+
     @property
     def MYSQL_URL_ASYNC(self):
         return f"mysql+aiomysql://{self.MYSQL_DB_USER}:{self.MYSQL_DB_PASS}@{self.MYSQL_DB_HOST}:{self.MYSQL_DB_PORT}/{self.MYSQL_DB_NAME}"

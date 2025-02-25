@@ -19,6 +19,7 @@ from app.api.rest.pins_cache.routes import router as pins_cache_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.api.rest.users_google_auth.routes import router as users_google_auth_router
 
 
 from .middlewares import register_middleware
@@ -43,6 +44,7 @@ from app.postgresql.test_connection import connect as postgre_connect
 from app.mysql.test_connection import connect as mysql_connect
 
 from app.yandex_s3.app import init_s3_client, close_s3_client
+from app.httpx.app import init_httpx_client, close_httpx_client
 
 
 @asynccontextmanager
@@ -55,6 +57,7 @@ async def lifespan(app: FastAPI):
         await postgre_connect()
         await mysql_connect()
         await init_s3_client()
+        await init_httpx_client()
         yield
     except Exception as e:
         logger.error(f"❌ Ошибка при инициализации приложения: {e}")
@@ -63,6 +66,7 @@ async def lifespan(app: FastAPI):
         await close_redis_cache()
         await mongo.close()
         await close_s3_client()
+        await close_httpx_client()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -80,6 +84,7 @@ app.include_router(tag_router)
 app.include_router(comment_router)
 app.include_router(like_router)
 app.include_router(users_router)
+app.include_router(users_google_auth_router)
 app.include_router(users_yandex_s3_router)
 app.include_router(users_httpx_router)
 app.include_router(users_mysql_router)
