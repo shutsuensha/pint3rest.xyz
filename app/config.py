@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     GOOGLE_OAUTH2_CLIENT_SECRET: str
     GOOGLE_OAUTH2_REDIRECT_URI: str
 
+    PATH_VIDEO_STREAM: str
+
     @property
     def MYSQL_URL_ASYNC(self):
         return f"mysql+aiomysql://{self.MYSQL_DB_USER}:{self.MYSQL_DB_PASS}@{self.MYSQL_DB_HOST}:{self.MYSQL_DB_PORT}/{self.MYSQL_DB_NAME}"

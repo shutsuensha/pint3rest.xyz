@@ -20,6 +20,7 @@ from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
 from app.api.rest.users_google_auth.routes import router as users_google_auth_router
+from app.api.rest.sse.routes import router as sse_router
 
 
 from .middlewares import register_middleware
@@ -91,6 +92,7 @@ app.include_router(users_mysql_router)
 app.include_router(users_mongodb_router)
 app.include_router(users_celery_router)
 app.include_router(notauth_router)
+app.include_router(sse_router)
 
 
 register_middleware(app)
