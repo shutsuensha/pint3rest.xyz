@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+addopts = "--asyncio-mode=auto -v --tb=short"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

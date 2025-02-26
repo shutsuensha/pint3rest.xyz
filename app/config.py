@@ -8,6 +8,12 @@ class Settings(BaseSettings):
     POSTGRES_DB_PASS: str
     POSTGRES_DB_NAME: str
 
+    TEST_POSTGRES_DB_HOST: str
+    TEST_POSTGRES_DB_PORT: int
+    TEST_POSTGRES_DB_USER: str
+    TEST_POSTGRES_DB_PASS: str
+    TEST_POSTGRES_DB_NAME: str
+
     MONGO_DB_HOST: str
     MONGO_DB_PORT: int
     MONGO_DB_USER: str
@@ -102,10 +108,15 @@ class Settings(BaseSettings):
     @property
     def POSTGRES_URL_ASYNC(self):
         return f"postgresql+asyncpg://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
+    
+    @property
+    def TEST_POSTGRES_URL_ASYNC(self):
+        return f"postgresql+asyncpg://{self.TEST_POSTGRES_DB_USER}:{self.TEST_POSTGRES_DB_PASS}@{self.TEST_POSTGRES_DB_HOST}:{self.TEST_POSTGRES_DB_PORT}/{self.TEST_POSTGRES_DB_NAME}"
 
     @property
     def POSTGRES_URL_SYNC(self):
         return f"postgresql://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
+
 
     model_config = SettingsConfigDict(env_file=".env")
 

@@ -1,9 +1,10 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 class User(Base):
     __tablename__ = "users"

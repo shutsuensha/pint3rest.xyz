@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 async def video_streamer():
     async with aiofiles.open(settings.PATH_VIDEO_STREAM, mode="rb") as video:
-        while chunk := await video.read(1024 * 1024):  # Читаем чанками по 1MB
+        while chunk := await video.read(1024 * 1024):  # Читаем чанками по 1BM
             yield chunk  
 
 
