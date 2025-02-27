@@ -46,9 +46,7 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
 
 def register_middleware(app: FastAPI):
     """Регистрация middleware."""
-    app.middleware("http")(
-        log_requests_and_server_http_exception_handler
-    ) 
+    app.middleware("http")(log_requests_and_server_http_exception_handler)
 
     app.add_middleware(
         CORSMiddleware,

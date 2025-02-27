@@ -5,7 +5,9 @@ import pytest
 
 @pytest.fixture(scope="function")
 def mock_revoke_token():
-    with mock.patch("app.api.rest.users.routes.revoke_token", new_callable=mock.AsyncMock) as mock_func:
+    with mock.patch(
+        "app.api.rest.users.routes.revoke_token", new_callable=mock.AsyncMock
+    ) as mock_func:
         yield mock_func
 
 
@@ -19,7 +21,9 @@ def mock_revoke_token():
         ("@random133", "1235", 201),
     ],
 )
-async def test_auth_flow_users(username: str, password: str, status_code: int, ac, mock_revoke_token, mock_is_token_revoked):
+async def test_auth_flow_users(
+    username: str, password: str, status_code: int, ac, mock_revoke_token, mock_is_token_revoked
+):
     # /register
     resp_register = await ac.post(
         "/users/register",

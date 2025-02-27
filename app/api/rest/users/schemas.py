@@ -30,7 +30,6 @@ class UserPatch(BaseModel):
     pinterest: str | None = None
 
 
-
 class PasswordResetRequestModel(BaseModel):
     username: str
     email: EmailStr

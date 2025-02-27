@@ -1,4 +1,3 @@
-
 from app.config import settings  # Загружаем настройки из .env или другого источника
 
 broker_url = settings.REDIS_URL_CELERY_BROKER

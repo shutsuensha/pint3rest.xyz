@@ -32,9 +32,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def register_user(user_in: UserIn, db: db):
-    user = await db.scalar(
-        select(UsersOrm).where(UsersOrm.username == user_in.username)
-    )
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
     if user:
         raise HTTPException(status_code=409, detail="user already exists")
     if user_in.email:
@@ -96,9 +94,7 @@ async def verify_user_account(request: Request, token: str, db: db):
 
 @router.post("/password-reset-request")
 async def password_reset_request(reset_model: PasswordResetRequestModel, db: db):
-    user = await db.scalar(
-        select(UsersOrm).where(UsersOrm.username == reset_model.username)
-    )
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.username == reset_model.username))
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
     if not user.email:
@@ -107,11 +103,8 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
             detail=f"{reset_model.username} does not have email, u cant do password reset :(",
         )
     if reset_model.email != user.email:
-        raise HTTPException(
-            status_code=400, detail=f"enter your email for account {user.username}"
-        )
+        raise HTTPException(status_code=400, detail=f"enter your email for account {user.username}")
     if not user.verified:
-
         token = create_url_safe_token({"username": user.username})
         link = f"{settings.API_DOMAIN}/users/verify/{token}"
 
@@ -125,9 +118,7 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
             detail="first u need verify your email then u can password, verification link is send to your email",
         )
 
-    token = create_url_safe_token(
-        {"username": user.username, "password": reset_model.password}
-    )
+    token = create_url_safe_token({"username": user.username, "password": reset_model.password})
     link = f"{settings.API_DOMAIN}/users/password-reset-confirm/{token}"
 
     subject = "Reset Your Password"
@@ -170,9 +161,7 @@ async def reset_account_password(request: Request, token: str, db: db):
 
 @router.post("/login")
 async def login_user(user_in: UserIn, response: Response, db: db):
-    user = await db.scalar(
-        select(UsersOrm).where(UsersOrm.username == user_in.username)
-    )
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
     if not verify_password(user_in.password, user.hashed_password):
@@ -187,9 +176,7 @@ async def login_user(user_in: UserIn, response: Response, db: db):
         subject = "Verify Your email"
         send_email.delay(emails, subject, context, "mail_verification.html")
 
-        raise HTTPException(
-            status_code=403, detail=f"Verification link is send to {user.email}"
-        )
+        raise HTTPException(status_code=403, detail=f"Verification link is send to {user.email}")
 
     access_token = create_access_token({"user_id": user.id})
     refresh_token = create_refresh_token({"user_id": user.id})
@@ -236,9 +223,7 @@ async def get_me(user_id: user_id, db: db):
 async def get_user_by_id(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
     return user
 
 
@@ -246,21 +231,15 @@ async def get_user_by_id(user_id: user_id, id: int, db: db):
 async def get_user_by_username(user_id: user_id, username: str, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == username))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
     return user
-
 
 
 @router.post("/upload/{id}", response_model=UserOut)
 async def upload_image(id: int, db: db, file: UploadFile):
-
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     file_extension = Path(file.filename).suffix
     unique_filename = f"{uuid.uuid4()}{file_extension}"
@@ -271,31 +250,24 @@ async def upload_image(id: int, db: db, file: UploadFile):
         delete_file(user.image)
 
     user = await db.scalar(
-        update(UsersOrm)
-        .where(UsersOrm.id == id)
-        .values(image=image_path)
-        .returning(UsersOrm)
+        update(UsersOrm).where(UsersOrm.id == id).values(image=image_path).returning(UsersOrm)
     )
     await db.commit()
 
     return user
 
 
-
 @router.get("/upload/{id}")
 async def get_image(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     return FileResponse(user.image)
 
 
 @router.post("/banner/upload/{id}", response_model=UserOut)
 async def update_user_banner_image(id: int, db: db, file: UploadFile):
-
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
@@ -315,25 +287,19 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
     return user
 
 
-
 @router.get("/banner/upload/{id}")
 async def get_user_banner(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     return FileResponse(user.banner_image)
-
 
 
 @router.patch("/information", response_model=UserOut)
 async def update_user_information(user_model: UserPatch, user_id: user_id, db: db):
     if user_model.username:
-        user = await db.scalar(
-            select(UsersOrm).where(UsersOrm.username == user_model.username)
-        )
+        user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_model.username))
         if user:
             raise HTTPException(status_code=409, detail="user already exists")
     user = await db.scalar(
@@ -344,5 +310,3 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
     )
     await db.commit()
     return user
-
-

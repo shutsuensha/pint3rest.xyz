@@ -9,4 +9,3 @@ class TagsIn(BaseModel):
 class TagOut(BaseModel):
     id: int
     name: str
-

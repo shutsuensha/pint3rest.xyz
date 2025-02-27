@@ -5,6 +5,7 @@ from app.logger import logger
 
 s3_client = None
 
+
 async def init_s3_client():
     global s3_client
     try:
@@ -15,7 +16,7 @@ async def init_s3_client():
             endpoint_url="https://storage.yandexcloud.net",
             aws_access_key_id=settings.YANDEX_STORAGE_KEY,
             aws_secret_access_key=settings.YANDEX_STORAGE_SECRET_KEY,
-            region_name="ru-central1"
+            region_name="ru-central1",
         ) as client:
             s3_client = client
             logger.info("✅ Успешное подключение к Yandex Object Storage")
@@ -23,11 +24,11 @@ async def init_s3_client():
     except Exception as e:
         logger.error(f"❌ Ошибка подключения к Yandex Object Storage: {str(e)}")
         raise e
-    
+
 
 def get_s3_client():
     return s3_client
-    
+
 
 async def close_s3_client():
     global s3_client

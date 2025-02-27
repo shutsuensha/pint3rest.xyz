@@ -29,6 +29,9 @@ async def auth_google(code: str):
     response = await client.post(token_url, data=data)
     access_token = response.json().get("access_token")
 
-    user_info = await client.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token}"})
-    
+    user_info = await client.get(
+        "https://www.googleapis.com/oauth2/v1/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
     return user_info.json()

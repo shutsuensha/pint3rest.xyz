@@ -14,9 +14,7 @@ class Mutation:
     async def create_user(self, username: str, info: strawberry.Info) -> User:
         db: AsyncSession = info.context["db"]
 
-        existing_user = await db.execute(
-            select(UsersOrm).filter(UsersOrm.username == username)
-        )
+        existing_user = await db.execute(select(UsersOrm).filter(UsersOrm.username == username))
         user = existing_user.scalars().first()
 
         if user:

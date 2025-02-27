@@ -23,21 +23,21 @@ async def upload_file(file: UploadFile):
         return {"message": f"Файл {file.filename} успешно загружен"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
 
 @router.get("/download/{filename}")
 async def download_file(filename: str):
     try:
         s3_client = get_s3_client()
         response = await s3_client.get_object(Bucket=settings.YANDEX_STORAGE_BUCKET, Key=filename)
-        file_data = await response['Body'].read()
+        file_data = await response["Body"].read()
 
-        file_extension = filename.split('.')[-1].lower()
-        if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+        file_extension = filename.split(".")[-1].lower()
+        if file_extension in ["jpg", "jpeg", "png", "gif"]:
             media_type = "image/" + file_extension
-        elif file_extension == 'pdf':
+        elif file_extension == "pdf":
             media_type = "application/pdf"
-        elif file_extension == 'mp4':
+        elif file_extension == "mp4":
             media_type = "video/mp4"
         else:
             media_type = "application/octet-stream"

@@ -15,9 +15,7 @@ from app.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-serializer = URLSafeTimedSerializer(
-    secret_key=settings.JWT_SECRET_KEY
-)
+serializer = URLSafeTimedSerializer(secret_key=settings.JWT_SECRET_KEY)
 
 
 def hash_password(password: str) -> str:
@@ -48,11 +46,10 @@ def encode_token(token: str) -> dict:
     try:
         return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=403, detail="Token has expired") 
+        raise HTTPException(status_code=403, detail="Token has expired")
     except jwt.DecodeError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    
 
 def save_file(file, path):
     with open(path, "bw+") as new_file:
@@ -81,7 +78,7 @@ def get_primary_color(image_path, n_colors=1):
     image = Image.open(image_path)
 
     if getattr(image, "is_animated", False):
-        image.seek(0)  
+        image.seek(0)
 
     image = image.convert("RGB")
 
@@ -90,24 +87,24 @@ def get_primary_color(image_path, n_colors=1):
 
     kmeans = KMeans(n_clusters=n_colors, random_state=42)
     kmeans.fit(pixels)
-    dominant_color = kmeans.cluster_centers_[0]  
+    dominant_color = kmeans.cluster_centers_[0]
 
     return tuple(map(int, dominant_color))
 
 
 def extract_first_frame(video_path, output_image_path=None):
     video = cv2.VideoCapture(video_path)
-    
+
     if not video.isOpened():
         raise ValueError(f"Cannot open video file: {video_path}")
-    
+
     success, frame = video.read()
     if not success:
         raise ValueError(f"Cannot read the first frame from {video_path}")
-    
+
     if output_image_path:
         cv2.imwrite(output_image_path, frame)
-    
+
     video.release()
-    
+
     return frame

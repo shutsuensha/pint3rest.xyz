@@ -13,7 +13,9 @@ async def get_users():
     client = get_httpx_client()
     response = await client.get(f"{BASE_URL}/users")
     if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Ошибка при получении пользователей")
+        raise HTTPException(
+            status_code=response.status_code, detail="Ошибка при получении пользователей"
+        )
     return response.json()
 
 
@@ -33,7 +35,9 @@ async def create_user(user_data: dict):
     client = get_httpx_client()
     response = await client.post(f"{BASE_URL}/users", json=user_data)
     if response.status_code != 201:
-        raise HTTPException(status_code=response.status_code, detail="Ошибка при создании пользователя")
+        raise HTTPException(
+            status_code=response.status_code, detail="Ошибка при создании пользователя"
+        )
     return response.json()
 
 
@@ -43,7 +47,9 @@ async def update_user(user_id: int, user_data: dict):
     client = get_httpx_client()
     response = await client.put(f"{BASE_URL}/users/{user_id}", json=user_data)
     if response.status_code not in {200, 204}:
-        raise HTTPException(status_code=response.status_code, detail="Ошибка при обновлении пользователя")
+        raise HTTPException(
+            status_code=response.status_code, detail="Ошибка при обновлении пользователя"
+        )
     return response.json()
 
 
@@ -53,5 +59,7 @@ async def delete_user(user_id: int):
     client = get_httpx_client()
     response = await client.delete(f"{BASE_URL}/users/{user_id}")
     if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Ошибка при удалении пользователя")
+        raise HTTPException(
+            status_code=response.status_code, detail="Ошибка при удалении пользователя"
+        )
     return {"message": "Пользователь удален"}

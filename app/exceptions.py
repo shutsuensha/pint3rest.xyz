@@ -18,7 +18,7 @@ def register_exception_handlers(app: FastAPI):
                 "url": str(request.url),
                 "client_ip": request.client.host,
                 "headers": dict(request.headers),
-                "body": None
+                "body": None,
             }
 
             with open(settings.LOGS_PATH + "client_errors.log", "a", encoding="utf-8") as log_file:
@@ -26,17 +26,17 @@ def register_exception_handlers(app: FastAPI):
                 log_file.write(f"Метод: {request_data['method']}\n")
                 log_file.write(f"URL: {request_data['url']}\n")
                 log_file.write(f"IP клиента: {request_data['client_ip']}\n")
-                log_file.write(f"Заголовки: {json.dumps(request_data['headers'], ensure_ascii=False)}\n")
+                log_file.write(
+                    f"Заголовки: {json.dumps(request_data['headers'], ensure_ascii=False)}\n"
+                )
                 log_file.write("-" * 80 + "\n")
 
-        
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
         """Обработчик неожиданных ошибок"""
-        
+
         logger.error(f"Непредвиденная ошибка: {str(exc)}\n")
 
         return JSONResponse(status_code=500, content={"detail": "Внутренняя ошибка сервера"})

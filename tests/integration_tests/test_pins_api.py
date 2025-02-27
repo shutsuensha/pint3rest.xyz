@@ -7,18 +7,18 @@ from sqlalchemy import select
 
 async def test_get_pins(authenticated_ac):
     response = await authenticated_ac.get("/pins/", params={"offset": 0, "limit": 10})
-    
+
     assert response.status_code == 200
-    
+
     response_data = response.json()
 
     assert isinstance(response_data, list)
     for pin in response_data:
         try:
-            PinOut(**pin)  
+            PinOut(**pin)
         except ValidationError as e:
             pytest.fail(f"Response does not match PinOut schema: {e}")
-    
+
     assert response_data == sorted(response_data, key=lambda x: x["id"], reverse=True)
 
 
@@ -34,8 +34,7 @@ async def test_get_pins(authenticated_ac):
 )
 async def test_create_pin(title: str, description: str, authenticated_ac, db):
     response = await authenticated_ac.post(
-        "/pins/",
-        json={"title": title, "description": description}
+        "/pins/", json={"title": title, "description": description}
     )
 
     assert response.status_code == 201
@@ -54,20 +53,18 @@ async def test_create_pin(title: str, description: str, authenticated_ac, db):
     assert pin_in_db.description == description
 
 
-
 async def test_user_delete_created_pin(authenticated_ac, db):
     response_post = await authenticated_ac.post(
-        "/pins/",
-        json={"title": "test title", "description": "test description"}
+        "/pins/", json={"title": "test title", "description": "test description"}
     )
 
     pin_data = response_post.json()
-    
+
     response_delete = await authenticated_ac.delete(f"/pins/{pin_data['id']}")
-    
+
     assert response_delete.status_code == 204
 
-    result = await db.execute(select(PinsOrm).where(PinsOrm.id == pin_data['id']))
+    result = await db.execute(select(PinsOrm).where(PinsOrm.id == pin_data["id"]))
     deleted_pin = result.scalars().first()
     assert deleted_pin is None
 

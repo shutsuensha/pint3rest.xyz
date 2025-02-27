@@ -16,12 +16,9 @@ router = APIRouter(prefix="/celery/users", tags=["users-celery"])
 
 @router.post("/upload/{id}")
 async def upload_image_celery(id: int, db: db, file: UploadFile):
-
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     file_extension = Path(file.filename).suffix
     unique_filename = f"{uuid.uuid4()}{file_extension}"

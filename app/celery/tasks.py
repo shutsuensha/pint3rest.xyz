@@ -19,12 +19,10 @@ def send_email_adds():
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         logger.error(f"Error getting sync db session: {e}", exc_info=True)
-        raise e 
+        raise e
 
     try:
-        users = db.scalars(
-            select(UsersOrm).where(UsersOrm.verified == True)
-        ).all()
+        users = db.scalars(select(UsersOrm).where(UsersOrm.verified == True)).all()
 
         unique_emails = list({user.email for user in users if user.email})
 
@@ -39,11 +37,10 @@ def send_email_adds():
         raise e
     finally:
         try:
-            db.close() 
+            db.close()
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-
 
 
 @celery_instance.task
@@ -67,13 +64,13 @@ def save_file_celery_and_crop_300x300(file_content: bytes, path: str, user_id: i
         raise e
 
     image_path = path
-    size=(300,300)
+    size = (300, 300)
 
     try:
-        with open(image_path, 'rb') as file:
+        with open(image_path, "rb") as file:
             image = Image.open(file)
-            image.load()  
-        
+            image.load()
+
         image.thumbnail(size)
 
         original_path = Path(image_path)
@@ -95,10 +92,7 @@ def save_file_celery_and_crop_300x300(file_content: bytes, path: str, user_id: i
 
     try:
         db.execute(
-            update(UsersOrm)
-            .where(UsersOrm.id == user_id)
-            .values(image=path)
-            .returning(UsersOrm)
+            update(UsersOrm).where(UsersOrm.id == user_id).values(image=path).returning(UsersOrm)
         )
         db.commit()
         logger.info(f"User {user_id} image path updated in database")
@@ -112,5 +106,5 @@ def save_file_celery_and_crop_300x300(file_content: bytes, path: str, user_id: i
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-        
-    return {"image saved path": path, "image saved 300x300 path" : str(new_path)}
+
+    return {"image saved path": path, "image saved 300x300 path": str(new_path)}

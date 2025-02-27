@@ -85,21 +85,15 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL_CELERY_BROKER(self):
-        return (
-            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
-        )
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
 
     @property
     def REDIS_URL_CELERY_RESULT(self):
-        return (
-            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
-        )
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
 
     @property
     def REDIS_URL_REVOKE_TOKENS(self):
-        return (
-            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
-        )
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
 
     @property
     def REDIS_URL_CACHE(self):
@@ -108,7 +102,7 @@ class Settings(BaseSettings):
     @property
     def POSTGRES_URL_ASYNC(self):
         return f"postgresql+asyncpg://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
-    
+
     @property
     def TEST_POSTGRES_URL_ASYNC(self):
         return f"postgresql+asyncpg://{self.TEST_POSTGRES_DB_USER}:{self.TEST_POSTGRES_DB_PASS}@{self.TEST_POSTGRES_DB_HOST}:{self.TEST_POSTGRES_DB_PORT}/{self.TEST_POSTGRES_DB_NAME}"
@@ -116,7 +110,6 @@ class Settings(BaseSettings):
     @property
     def POSTGRES_URL_SYNC(self):
         return f"postgresql://{self.POSTGRES_DB_USER}:{self.POSTGRES_DB_PASS}@{self.POSTGRES_DB_HOST}:{self.POSTGRES_DB_PORT}/{self.POSTGRES_DB_NAME}"
-
 
     model_config = SettingsConfigDict(env_file=".env")
 

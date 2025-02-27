@@ -32,13 +32,14 @@ async def db():
         yield db
 
 
-
 app.dependency_overrides[get_db] = get_db_null_pool
 
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://127.0.0.1:8000") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://127.0.0.1:8000"
+    ) as ac:
         yield ac
 
 
@@ -69,15 +70,19 @@ async def setup_database():
 
 @pytest.fixture(scope="session")
 def mock_is_token_revoked():
-    with mock.patch("app.api.rest.dependencies.is_token_revoked", new_callable=mock.AsyncMock) as mock_func:
-        mock_func.return_value = False 
+    with mock.patch(
+        "app.api.rest.dependencies.is_token_revoked", new_callable=mock.AsyncMock
+    ) as mock_func:
+        mock_func.return_value = False
         yield mock_func
 
 
 @pytest.fixture(scope="session", autouse=True)
 async def register_user(ac, setup_database):
-    response = await ac.post("/users/register", json={"username": "random-username", "password": "1234"})
-    assert response.status_code == 201 
+    response = await ac.post(
+        "/users/register", json={"username": "random-username", "password": "1234"}
+    )
+    assert response.status_code == 201
 
     response_data = response.json()
 
@@ -91,10 +96,11 @@ async def register_user(ac, setup_database):
     return user
 
 
-
 @pytest.fixture(scope="session")
 async def authenticated_ac(register_user, ac, mock_is_token_revoked):
-    response = await ac.post("/users/login", json={"username": "random-username", "password": "1234"})
+    response = await ac.post(
+        "/users/login", json={"username": "random-username", "password": "1234"}
+    )
     assert response.status_code == 200
     assert ac.cookies["access_token"]
     assert ac.cookies["refresh_token"]

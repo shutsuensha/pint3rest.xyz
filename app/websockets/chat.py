@@ -7,7 +7,9 @@ from .manager import manager
 
 def register_websocket(app: FastAPI):
     @app.websocket("/ws/{chat_id}/{user_id}")
-    async def chat_endpoint(websocket: WebSocket, chat_id: int, user_id: int, chat_connection: bool | None = None):
+    async def chat_endpoint(
+        websocket: WebSocket, chat_id: int, user_id: int, chat_connection: bool | None = None
+    ):
         try:
             await manager.connect(websocket, chat_id, user_id, chat_connection)
             while True:
@@ -19,4 +21,3 @@ def register_websocket(app: FastAPI):
             logger.error(f"Websocket Error: {str(e)}")
         except Exception as e:
             logger.critical(f"Unexpected WebSocket error: {str(e)}", exc_info=True)
-        
