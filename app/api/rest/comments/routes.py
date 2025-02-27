@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile
-from app.api.rest.dependencies import db, user_id, filter
-from .schemas import CommentIn, CommentOut
-from app.postgresql.models import CommentsOrm, PinsOrm
-from sqlalchemy import select, insert, update, func
 import uuid
-from app.api.rest.utils import save_file
+
+from fastapi import APIRouter, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+from sqlalchemy import func, insert, select, update
+
+from app.api.rest.dependencies import db, filter, user_id
+from app.api.rest.utils import save_file
 from app.config import settings
+from app.postgresql.models import CommentsOrm, PinsOrm
+
+from .schemas import CommentIn, CommentOut
 
 router = APIRouter(prefix="/comments", tags=["comments"])
 

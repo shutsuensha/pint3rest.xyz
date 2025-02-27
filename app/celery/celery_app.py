@@ -1,8 +1,6 @@
-from celery import Celery
-from celery.schedules import crontab
-from app.logger import logger
 from datetime import timedelta
 
+from celery import Celery
 
 celery_instance = Celery(
     "tasks",

@@ -1,10 +1,8 @@
-from app.api.rest.utils import create_access_token, create_refresh_token, verify_password, hash_password, encode_token, create_url_safe_token, decode_url_safe_token
-import pytest
 from unittest import mock
-from app.config import settings
-import jwt
-from fastapi import HTTPException
-from itsdangerous import SignatureExpired, BadSignature
+
+import pytest
+from app.api.rest.utils import hash_password, verify_password
+
 
 @pytest.fixture(scope="function")
 def mock_pwd_context():

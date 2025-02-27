@@ -1,8 +1,12 @@
-import pytest
 from unittest import mock
-from app.api.rest.utils import create_access_token, create_refresh_token, verify_password, hash_password, encode_token, create_url_safe_token, decode_url_safe_token
+
+import pytest
+from app.api.rest.utils import (
+    create_url_safe_token,
+    decode_url_safe_token,
+)
 from fastapi import HTTPException
-from itsdangerous import SignatureExpired, BadSignature
+from itsdangerous import BadSignature, SignatureExpired
 
 
 @pytest.fixture(scope="function")

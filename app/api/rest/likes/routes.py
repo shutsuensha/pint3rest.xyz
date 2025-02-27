@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile
-from app.api.rest.dependencies import db, user_id, filter
-from app.postgresql.models import PinsOrm, LikesOrm, CommentsOrm
-from .schemas import LikeOut
-from sqlalchemy import select, insert, delete, func
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import delete, func, insert, select
 
+from app.api.rest.dependencies import db, filter, user_id
+from app.postgresql.models import CommentsOrm, LikesOrm, PinsOrm
+
+from .schemas import LikeOut
 
 router = APIRouter(prefix="/likes", tags=["likes"])
 

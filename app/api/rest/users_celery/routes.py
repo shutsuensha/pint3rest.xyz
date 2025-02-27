@@ -1,14 +1,15 @@
-from fastapi import APIRouter, UploadFile, HTTPException, status
-from app.api.rest.dependencies import db
-from sqlalchemy import select
-from app.postgresql.models import UsersOrm
-from pathlib import Path
 import uuid
-from app.celery.tasks import save_file_celery_and_crop_300x300
-from celery.result import AsyncResult
-from app.celery.celery_app import celery_instance
-from app.config import settings
+from pathlib import Path
 
+from fastapi import APIRouter, HTTPException, UploadFile, status
+from sqlalchemy import select
+
+from app.api.rest.dependencies import db
+from app.celery.celery_app import celery_instance
+from app.celery.tasks import save_file_celery_and_crop_300x300
+from app.config import settings
+from app.postgresql.models import UsersOrm
+from celery.result import AsyncResult
 
 router = APIRouter(prefix="/celery/users", tags=["users-celery"])
 

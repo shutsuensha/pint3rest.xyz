@@ -1,5 +1,6 @@
-from fastapi_cache import FastAPICache
 from fastapi import Response
+from fastapi_cache import FastAPICache
+
 
 def pins_cache_key(func, *args, **kwargs):
     filter = kwargs['kwargs']['filter']

@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Response, status, HTTPException
-from .schemas import PinOut, PinIn
-from .cache import pins_cache_key, clear_all_pins_cache, disable_client_cache
+from fastapi import APIRouter, HTTPException, Response, status
 from fastapi_cache.decorator import cache
-from app.api.rest.dependencies import user_id, db, filter
-from sqlalchemy import select, desc, insert, delete
+from sqlalchemy import delete, desc, insert, select
+
+from app.api.rest.dependencies import db, filter, user_id
 from app.postgresql.models import PinsOrm
 
+from .cache import clear_all_pins_cache, disable_client_cache, pins_cache_key
+from .schemas import PinIn, PinOut
 
 router = APIRouter(prefix="/pins/cache", tags=["pins-cache"])
 

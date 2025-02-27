@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+
 from app.httpx.app import get_httpx_client
 
 router = APIRouter(prefix="/httpx", tags=["users-httpx"])

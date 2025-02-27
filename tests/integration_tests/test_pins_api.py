@@ -1,7 +1,7 @@
-from pydantic import ValidationError
-from app.api.rest.pins.schemas import PinOut
 import pytest
-from app.postgresql.models import TagsOrm, PinsOrm, UsersOrm
+from app.api.rest.pins.schemas import PinOut
+from app.postgresql.models import PinsOrm
+from pydantic import ValidationError
 from sqlalchemy import select
 
 

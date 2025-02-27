@@ -1,10 +1,13 @@
 import time
+
 from fastapi import FastAPI, Request, Response, status
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from app.logger import logger
+from fastapi.responses import JSONResponse
+
 from app.config import settings
+from app.logger import logger
+
 
 async def log_requests_and_server_http_exception_handler(request: Request, call_next):
     """Логирование входящих запросов с измерением времени выполнения и обработка ошибок сервера в обработке запросов"""

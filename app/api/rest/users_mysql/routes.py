@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.mysql.database import get_db
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
-from .schemas import *
-from app.mysql.models import User, Post
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.mysql.database import get_db
+from app.mysql.models import Post, User
+
+from .schemas import *
 
 db = Annotated[AsyncSession, Depends(get_db)]
 

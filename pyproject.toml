@@ -7,7 +7,7 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["app", "tests"]  
+src = ["app", "tests"] 
 exclude = ["app/migrations"]  
 
 [tool.ruff.format]
@@ -16,4 +16,4 @@ indent-style = "space"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
-ignore = ["E501"]
+ignore = ["E501", "E402", "F841", "E712", "E711", "F405", "F403"]

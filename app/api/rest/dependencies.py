@@ -1,10 +1,13 @@
 from typing import Annotated
+
+from fastapi import Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, Request, HTTPException, Query
-from app.postgresql.database import get_db
-from .utils import encode_token
+
 from app.api.rest.pins.schemas import FilterParams, FilterWithValue
+from app.postgresql.database import get_db
 from app.redis.redis_revoke_tokens import is_token_revoked
+
+from .utils import encode_token
 
 
 async def get_token(request: Request):

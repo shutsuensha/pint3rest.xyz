@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from .schemas import UserIn, UserOut, UserInPatch
-from app.mongodb.database import mongo
 from bson import ObjectId
+from fastapi import APIRouter, HTTPException
 from pymongo import ReturnDocument
 
+from app.mongodb.database import mongo
+
+from .schemas import UserIn, UserInPatch, UserOut
 
 router = APIRouter(prefix="/mongodb", tags=["users-mongodb"])
 
@@ -39,7 +40,7 @@ async def get_user(user_id: str):
 
 
 @router.put("/users/{user_id}", response_model=UserOut)
-async def update_user(user_id: str, user_in: UserIn):
+async def update_user_put(user_id: str, user_in: UserIn):
     users_collection = mongo.get_collection("users")
 
     updated_user = await users_collection.find_one_and_update(
@@ -60,7 +61,7 @@ async def update_user(user_id: str, user_in: UserIn):
 
 
 @router.patch("/users/{user_id}", response_model=UserOut)
-async def update_user(user_id: str, user_in: UserInPatch):
+async def update_user_patch(user_id: str, user_in: UserInPatch):
     users_collection = mongo.get_collection("users")
 
     updated_user = await users_collection.find_one_and_update(

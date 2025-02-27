@@ -1,5 +1,6 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 from fastapi.websockets import WebSocketState
+
 
 class ConnectionManager:
     def __init__(self):

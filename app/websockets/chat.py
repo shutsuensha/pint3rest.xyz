@@ -1,7 +1,8 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
-from .manager import manager
-from typing import Optional
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
 from app.logger import logger
+
+from .manager import manager
 
 
 def register_websocket(app: FastAPI):

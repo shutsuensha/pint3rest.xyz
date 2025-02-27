@@ -1,18 +1,16 @@
-from app.celery.celery_app import celery_instance
-from app.mail.mail import mail, create_message
-from asgiref.sync import async_to_sync  
-from app.logger import logger
-import shutil
 from pathlib import Path
+
+from asgiref.sync import async_to_sync
 from PIL import Image
-import io
-from app.logger import logger
-from app.postgresql.database import get_sync_db
-from app.postgresql.models import UsersOrm
-from sqlalchemy import insert, select, update, delete, or_, desc
-from app.config import settings
+from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.celery.celery_app import celery_instance
+from app.config import settings
+from app.logger import logger
+from app.mail.mail import create_message, mail
+from app.postgresql.database import get_sync_db
+from app.postgresql.models import UsersOrm
 
 
 @celery_instance.task

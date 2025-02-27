@@ -1,6 +1,9 @@
-from .database import get_db
-from app.logger import logger
 from sqlalchemy import text
+
+from app.logger import logger
+
+from .database import get_db
+
 
 async def connect():
     try:

@@ -1,6 +1,8 @@
-from fastapi import APIRouter, UploadFile, HTTPException
-from fastapi.responses import StreamingResponse
 from io import BytesIO
+
+from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
+
 from app.config import settings
 from app.yandex_s3.app import get_s3_client
 

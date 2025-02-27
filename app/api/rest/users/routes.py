@@ -1,27 +1,29 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Request
-from .schemas import UserIn, UserOut, PasswordResetRequestModel, UserPatch
-from app.api.rest.dependencies import db, user_id
+import uuid
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, status
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import insert, select, update
-from app.postgresql.models import UsersOrm
+
+from app.api.rest.dependencies import db, user_id
 from app.api.rest.utils import (
-    encode_token,
-    hash_password,
-    verify_password,
     create_access_token,
     create_refresh_token,
-    save_file,
     create_url_safe_token,
     decode_url_safe_token,
     delete_file,
+    encode_token,
+    hash_password,
+    save_file,
+    verify_password,
 )
-import uuid
-from fastapi.responses import FileResponse
-from app.config import settings
 from app.celery.tasks import send_email
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-from app.redis.redis_revoke_tokens import revoke_token, is_token_revoked
-from pathlib import Path
+from app.config import settings
+from app.postgresql.models import UsersOrm
+from app.redis.redis_revoke_tokens import is_token_revoked, revoke_token
+
+from .schemas import PasswordResetRequestModel, UserIn, UserOut, UserPatch
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -120,7 +122,7 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
         send_email.delay(emails, subject, context, "mail_verification.html")
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            detail=f"first u need verify your email then u can password, verification link is send to your email",
+            detail="first u need verify your email then u can password, verification link is send to your email",
         )
 
     token = create_url_safe_token(

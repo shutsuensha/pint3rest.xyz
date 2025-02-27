@@ -1,7 +1,7 @@
 from fastapi import APIRouter
+
 from app.config import settings
 from app.httpx.app import get_httpx_client
-
 
 router = APIRouter(prefix="/users/google/auth", tags=["users-google-auth"])
 

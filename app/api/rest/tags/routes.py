@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status
-from app.api.rest.dependencies import user_id, db, filter
-from .schemas import TagsIn, TagOut
-from app.postgresql.models import PinsOrm, TagsOrm, pins_tags
-from sqlalchemy import select, insert
+from sqlalchemy import insert, select
 
+from app.api.rest.dependencies import db, filter, user_id
+from app.postgresql.models import PinsOrm, TagsOrm, pins_tags
+
+from .schemas import TagOut, TagsIn
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 

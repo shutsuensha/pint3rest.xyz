@@ -1,51 +1,43 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-
-from app.logger import logger
-
-from app.api.rest.users.routes import router as users_router
-from app.api.rest.pins.routes import router as pin_router
-from app.api.rest.tags.routes import router as tag_router
-from app.api.rest.comments.routes import router as comment_router
-from app.api.rest.likes.routes import router as like_router
-from app.api.rest.subscription.routes import router as subscription_router
-from app.api.rest.messages.routes import router as messages_router
-from app.api.rest.chats.routes import router as chats_router
-from app.api.rest.notauth.routes import router as notauth_router
-from app.api.rest.users_celery.routes import router as users_celery_router
-from app.api.rest.users_mongodb.routes import router as users_mongodb_router
-from app.api.rest.pins_cache.routes import router as pins_cache_router
-from app.api.rest.users_mysql.routes import router as users_mysql_router
-from app.api.rest.users_httpx.routes import router as users_httpx_router
-from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
-from app.api.rest.users_google_auth.routes import router as users_google_auth_router
-from app.api.rest.sse.routes import router as sse_router
-
-
-from .middlewares import register_middleware
-from .websockets.chat import register_websocket
-
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
-from app.redis.redis_revoke_tokens import (
-    init_redis_revoke_tokens,
-    close_redis_revoke_tokens,
-)
-from app.redis.redis_cache import init_redis_cache, close_redis_cache
-
-from app.exceptions import register_exception_handlers
-
 from app.api.graphql.users.router import graphql_app
-
+from app.api.rest.chats.routes import router as chats_router
+from app.api.rest.comments.routes import router as comment_router
+from app.api.rest.likes.routes import router as like_router
+from app.api.rest.messages.routes import router as messages_router
+from app.api.rest.notauth.routes import router as notauth_router
+from app.api.rest.pins.routes import router as pin_router
+from app.api.rest.pins_cache.routes import router as pins_cache_router
+from app.api.rest.sse.routes import router as sse_router
+from app.api.rest.subscription.routes import router as subscription_router
+from app.api.rest.tags.routes import router as tag_router
+from app.api.rest.users.routes import router as users_router
+from app.api.rest.users_celery.routes import router as users_celery_router
+from app.api.rest.users_google_auth.routes import router as users_google_auth_router
+from app.api.rest.users_httpx.routes import router as users_httpx_router
+from app.api.rest.users_mongodb.routes import router as users_mongodb_router
+from app.api.rest.users_mysql.routes import router as users_mysql_router
+from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.exceptions import register_exception_handlers
+from app.httpx.app import close_httpx_client, init_httpx_client
+from app.logger import logger
 from app.mongodb.database import mongo
-
-from app.postgresql.test_connection import connect as postgre_connect
 from app.mysql.test_connection import connect as mysql_connect
+from app.postgresql.test_connection import connect as postgre_connect
+from app.redis.redis_cache import close_redis_cache, init_redis_cache
+from app.redis.redis_revoke_tokens import (
+    close_redis_revoke_tokens,
+    init_redis_revoke_tokens,
+)
+from app.yandex_s3.app import close_s3_client, init_s3_client
 
-from app.yandex_s3.app import init_s3_client, close_s3_client
-from app.httpx.app import init_httpx_client, close_httpx_client
+from .middlewares import register_middleware
+from .websockets.chat import register_websocket
 
 
 @asynccontextmanager

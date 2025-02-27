@@ -2,27 +2,20 @@ from unittest import mock
 
 mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
 
-import pytest 
-from app.config import settings
-
-from pydantic import ValidationError
-
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy import NullPool
-from httpx import AsyncClient
-from httpx import ASGITransport
-from app.main import app
-from app.postgresql.models import Base, PinsOrm, UsersOrm
-
-from app.postgresql.database import get_db
-
-from app.api.rest.users.schemas import UserOut
-
 import json
-
 from typing import AsyncGenerator
 
+import pytest
+from app.api.rest.users.schemas import UserOut
+from app.config import settings
+from app.main import app
+from app.postgresql.database import get_db
+from app.postgresql.models import Base, PinsOrm, UsersOrm
+from pydantic import ValidationError
+from sqlalchemy import NullPool
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+from httpx import ASGITransport, AsyncClient
 
 engine_null_pool = create_async_engine(settings.TEST_POSTGRES_URL_ASYNC, poolclass=NullPool)
 async_session_maker_null_pool = async_sessionmaker(bind=engine_null_pool, expire_on_commit=False)

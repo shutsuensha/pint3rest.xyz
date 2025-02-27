@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
+
 from app.config import settings
 
 router = APIRouter(prefix="/notauth", tags=["notauth"])

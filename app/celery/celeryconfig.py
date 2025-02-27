@@ -1,7 +1,5 @@
 
 from app.config import settings  # Загружаем настройки из .env или другого источника
-from app.logger import logger
-
 
 broker_url = settings.REDIS_URL_CELERY_BROKER
 result_backend = settings.REDIS_URL_CELERY_RESULT

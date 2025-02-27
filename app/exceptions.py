@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Request, status
+import json
+
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
-import time
-import json
-from app.logger import logger
+
 from app.config import settings
+from app.logger import logger
+
 
 def register_exception_handlers(app: FastAPI):
     @app.exception_handler(StarletteHTTPException)

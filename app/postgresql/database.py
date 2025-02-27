@@ -1,9 +1,8 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from app.config import settings
-from app.logger import logger
 
+from app.config import settings
 
 engine = create_async_engine(settings.POSTGRES_URL_ASYNC)
 sync_engine = create_engine(settings.POSTGRES_URL_SYNC)

@@ -1,6 +1,7 @@
+import asyncio
+
 from app.mysql.database import async_engine
 from app.mysql.models import Base
-import asyncio
 
 
 async def create_tables():

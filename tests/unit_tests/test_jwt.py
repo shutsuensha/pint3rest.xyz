@@ -1,9 +1,11 @@
-from app.api.rest.utils import create_access_token, create_refresh_token, encode_token
-import pytest
 from unittest import mock
-from app.config import settings
+
 import jwt
+import pytest
+from app.api.rest.utils import create_access_token, create_refresh_token, encode_token
+from app.config import settings
 from fastapi import HTTPException
+
 
 @pytest.fixture(scope="function")
 def mock_jwt_encode():

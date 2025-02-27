@@ -1,5 +1,6 @@
+from datetime import datetime
+
 from pydantic import BaseModel
-from datetime import date, datetime
 
 
 class CommentIn(BaseModel):

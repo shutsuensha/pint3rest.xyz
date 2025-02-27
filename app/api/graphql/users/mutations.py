@@ -2,8 +2,10 @@ import strawberry
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.exceptions import GraphQLError
-from .schemas import User
+
 from app.postgresql.models import UsersOrm
+
+from .schemas import User
 
 
 @strawberry.type

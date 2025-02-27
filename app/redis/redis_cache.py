@@ -1,6 +1,6 @@
-from redis import asyncio as aioredis
 from app.config import settings
 from app.logger import logger
+from redis import asyncio as aioredis
 
 redis_connection = None
 

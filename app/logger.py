@@ -1,7 +1,8 @@
 import logging.config
-import yaml
-from app.config import settings
 
+import yaml
+
+from app.config import settings
 
 with open("logging_config.yaml", "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)

@@ -1,15 +1,17 @@
-from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone, date
-from app.config import settings
-import jwt
-from fastapi import HTTPException
+import os
 import shutil
+from datetime import datetime, timedelta, timezone
+
+import cv2
+import jwt
+import numpy as np
+from fastapi import HTTPException
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+from passlib.context import CryptContext
 from PIL import Image
 from sklearn.cluster import KMeans
-import numpy as np
-import cv2
-import os
+
+from app.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

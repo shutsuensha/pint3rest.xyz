@@ -1,13 +1,16 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile, Query, Request
-from app.api.rest.dependencies import db, user_id, filter, filter_with_value
-from .schemas import PinOut, PinIn
-from app.postgresql.models import PinsOrm, UsersOrm, users_pins, TagsOrm, pins_tags, LikesOrm
-from sqlalchemy import insert, select, update, delete, or_, desc
-from app.api.rest.utils import save_file, get_primary_color, extract_first_frame
 import uuid
+
+from fastapi import APIRouter, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+from sqlalchemy import delete, desc, insert, or_, select, update
+
+from app.api.rest.dependencies import db, filter, filter_with_value, user_id
 from app.api.rest.tags.routes import get_all_tags
+from app.api.rest.utils import extract_first_frame, get_primary_color, save_file
 from app.config import settings
+from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins
+
+from .schemas import PinIn, PinOut
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
