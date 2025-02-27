@@ -2,3 +2,18 @@
 addopts = "--asyncio-mode=auto -v --tb=short"
 testpaths = ["tests"]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["app", "tests"]  
+exclude = ["app/migrations"]  
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
