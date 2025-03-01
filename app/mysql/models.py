@@ -13,7 +13,9 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(100), unique=True, index=True)
 
-    posts: Mapped[list["Post"]] = relationship("Post", back_populates="owner")
+    posts: Mapped[list["Post"]] = relationship(
+        "Post", back_populates="owner", lazy="selectin", cascade="all, delete-orphan"
+    )
 
 
 class Post(Base):

@@ -37,9 +37,7 @@ app.dependency_overrides[get_db] = get_db_null_pool
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://127.0.0.1:8000"
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url=settings.API_DOMAIN) as ac:
         yield ac
 
 

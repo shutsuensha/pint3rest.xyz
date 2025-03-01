@@ -98,7 +98,9 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL_CACHE(self):
-        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
+        return (
+            f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
+        )
 
     @property
     def POSTGRES_URL_ASYNC(self):

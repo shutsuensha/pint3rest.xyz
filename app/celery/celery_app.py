@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta  # noqa
 
 from celery import Celery
+from celery.schedules import crontab
 
 celery_instance = Celery(
     "tasks",
@@ -10,9 +11,9 @@ celery_instance = Celery(
 celery_instance.config_from_object("app.celery.celeryconfig")
 
 celery_instance.conf.beat_schedule = {
-    "run-every-10-seconds": {
+    "mail-adds": {
         "task": "app.celery.tasks.send_email_adds",
-        # "schedule": crontab(hour=10, minute=0, day_of_week="sunday")
-        "schedule": timedelta(seconds=10),
+        "schedule": crontab(hour=10, minute=0, day_of_week="sunday"),
+        # "schedule": timedelta(seconds=10),
     },
 }

@@ -24,4 +24,6 @@ async def video_stream():
 
 @router.get("/", response_class=HTMLResponse)
 async def ss_template(request: Request):
-    return templates.TemplateResponse(request=request, name="sse.html")
+    return templates.TemplateResponse(
+        request=request, name="sse.html", context={"API_DOMAIN": settings.API_DOMAIN}
+    )

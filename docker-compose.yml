@@ -118,6 +118,42 @@ services:
       - mongodb
       - mysql
 
+  celery-worker:
+    build: .
+    container_name: celery-worker-container
+    command: "celery -A app.celery.celery_app.celery_instance worker --loglevel=info"
+    restart: always
+    volumes:
+      - .:/pinterest
+      - ${MEDIA_PATH}:${MEDIA_PATH}
+      - ${LOGS_PATH}:${LOGS_PATH}
+    depends_on:
+      - fastapi-app
+
+  celery-beat:
+    build: .
+    container_name: celery-beat-container
+    command: "celery -A app.celery.celery_app.celery_instance beat --loglevel=info"
+    restart: always
+    volumes:
+      - .:/pinterest
+      - ${MEDIA_PATH}:${MEDIA_PATH}
+      - ${LOGS_PATH}:${LOGS_PATH}
+    depends_on:
+      - celery-worker
+
+  flower:
+    image: mher/flower
+    restart: always
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://:${REDIS_PASS}@${REDIS_HOST}:6379/3
+      - FLOWER_PORT=5555
+    depends_on:
+      - celery-beat
+
+
 
   
 
