@@ -28,6 +28,7 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: int
+    REDIS_PASS: str
     REDIS_DB_REVOKE_TOKENS: int
     REDIS_DB_CACHE: int
     REDIS_DB_CELERY_BROKER: int
@@ -77,27 +78,27 @@ class Settings(BaseSettings):
 
     @property
     def MONGO_URL(self):
-        return f"mongodb://{self.MONGO_DB_USER}:{self.MONGO_DB_PASS}@{self.MONGO_DB_HOST}:{self.MONGO_DB_PORT}/{self.MONGO_DB_NAME}"
+        return f"mongodb://{self.MONGO_DB_USER}:{self.MONGO_DB_PASS}@{self.MONGO_DB_HOST}:{self.MONGO_DB_PORT}/{self.MONGO_DB_NAME}?authSource=admin"
 
     @property
     def REDIS_URL_CELERY_REDBEAT(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_REDBEAT}"
+        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_REDBEAT}"
 
     @property
     def REDIS_URL_CELERY_BROKER(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
+        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_BROKER}"
 
     @property
     def REDIS_URL_CELERY_RESULT(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
+        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CELERY_RESULT}"
 
     @property
     def REDIS_URL_REVOKE_TOKENS(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
+        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_REVOKE_TOKENS}"
 
     @property
     def REDIS_URL_CACHE(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
+        return f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
 
     @property
     def POSTGRES_URL_ASYNC(self):
