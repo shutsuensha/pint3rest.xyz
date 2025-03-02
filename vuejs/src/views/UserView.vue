@@ -12,6 +12,9 @@ import FollowingSection from '@/components/Auth/FollowingSection.vue';
 const isLoading = ref(false);
 const progress = ref(0);
 
+const activeTab = ref('created');
+
+
 
 onActivated(() => {
   if (user.value) {
@@ -418,14 +421,14 @@ async function sendMessage() {
     const response = await axios.post('/api/messages/', {
       content: messageContent.value,
       to_user_id: user.value.id
-    }, {withCredentials: true})
+    }, { withCredentials: true })
     messageContent.value = ''
     openSendMessage.value = false
   } catch (error) {
     console.error(error)
   }
   checkUserChat.value = true
-  redirectToChat()
+  // redirectToChat()
 }
 
 async function redirectToChat() {
@@ -659,7 +662,7 @@ async function redirectToChat() {
         </div>
         <p v-if="user && user.description"
           class="text-center mt-4 text-lg font-semibold  truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
-        <div class="flex flex-row gap-2 text-4xl">
+        <div class="flex flex-row gap-2 text-4xl text-red-600">
           <a v-if="user && user.instagram" :href="user.instagram">
             <i class="pi pi-instagram"></i>
           </a>
@@ -673,47 +676,52 @@ async function redirectToChat() {
             <i class="pi pi-pinterest"></i>
           </a>
         </div>
-        <div class="flex">
-          <button @click="showFollowers = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            {{ cntUserFollowers }} Подпищиков
-          </button>
-          <button @click="showFollowing = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            {{ cntUserFollowing }} Подписок
-          </button>
+        <div class="flex gap-4">
+          <a @click="showFollowers = true"
+            class=" text-red-600 cursor-pointer hover:underline">
+            {{ cntUserFollowers }} Follower
+          </a>
+          <a @click="showFollowing = true"
+            class=" text-red-600 cursor-pointer hover:underline">
+            {{ cntUserFollowing }} Following
+          </a>
         </div>
         <div class="flex flex-row gap-4">
           <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            Подписаться
+            class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
+            Follow
           </button>
           <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            Отписаться
+          class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
+            Unfollow
           </button>
           <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            Написать
+            class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Send Message
           </button>
           <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            Перейти в чат
+            class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            Go to Chat
           </button>
         </div>
       </div>
       <div class="flex items-center mt-6 justify-center space-x-4">
-        <button @click="createdPins"
-          :class="`px-6 py-2 text-black border-b-4 ${bgCreated} transition hover:border-red-600`">
-          Созданные
+        <button @click="createdPins(); activeTab = 'created'"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          :class="{ 'active': activeTab === 'created' }">
+          Created
         </button>
-        <button @click="savedPins"
-          :class="`px-6 py-2 text-black border-b-4 ${bgSaved} transition hover:border-red-600`">
-          Сохраненные
+
+        <button @click="savedPins(); activeTab = 'saved'"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          :class="{ 'active': activeTab === 'saved' }">
+          Saved
         </button>
-        <button @click="likedPins"
-          :class="`px-6 py-2 text-black border-b-4 ${bgLiked} transition hover:border-red-600`">
-          Понравившиеся
+
+        <button @click="likedPins(); activeTab = 'liked'"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          :class="{ 'active': activeTab === 'liked' }">
+          Liked
         </button>
       </div>
     </div>
@@ -729,6 +737,42 @@ async function redirectToChat() {
 
 
 <style scoped>
+.animated-border {
+  position: relative;
+  transition: color 0.3s ease-in-out, transform 0.2s ease-out;
+}
+
+.animated-border::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: red;
+  transition: width 0.3s ease-out, transform 0.3s ease-out;
+  transform: translateX(-50%);
+}
+
+.active::after {
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.animated-border:hover {
+  color: red;
+  transform: scale(1.05);
+}
+
+.animated-border:hover::after {
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+
 /* Define transition animations */
 .fade-enter-active,
 .fade-leave-active {

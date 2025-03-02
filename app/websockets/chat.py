@@ -6,7 +6,7 @@ from .manager import manager
 
 
 def register_websocket(app: FastAPI):
-    @app.websocket("/ws/{chat_id}/{user_id}")
+    @app.websocket("/{chat_id}/{user_id}")
     async def chat_endpoint(
         websocket: WebSocket, chat_id: int, user_id: int, chat_connection: bool | None = None
     ):

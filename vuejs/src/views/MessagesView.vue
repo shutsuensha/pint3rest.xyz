@@ -157,7 +157,7 @@ onMounted(async () => {
         console.error(error);
       }
       chats.value[i].online = false
-      chats.value[i].socket = new WebSocket(`ws://127.0.0.1:8000/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
+      chats.value[i].socket = new WebSocket(`/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
       chats.value[i].socket.onmessage = async (event) => {
         const message = JSON.parse(event.data);
         if ("online" in message) {

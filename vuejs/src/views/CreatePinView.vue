@@ -243,19 +243,19 @@ function checkPinAded(name) {
           <div>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
               class="hover:bg-purple-100 transition duration-100  cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Добавить название" />
+              placeholder="Add title" />
           </div>
           <!-- Description Field -->
           <div>
             <textarea v-model="formPin.description" name="description" id="description"
               class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Добавить описание"></textarea>
+              placeholder="Add description"></textarea>
           </div>
           <!-- Href Field -->
           <div>
             <input v-model="formPin.href" type="url" name="href" id="href" autocomplete="off"
               class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Добавить ссылку" />
+              placeholder="Add link (any website link)" />
           </div>
           <!-- Tags Field -->
           <div>
@@ -264,17 +264,17 @@ function checkPinAded(name) {
               <!-- Add Button -->
               <button type="button" @click="addTag"
                 class="bg-purple-500 hover:bg-purple-600 transition duration-100 text-white font-medium rounded-3xl text-sm px-4 py-2">
-                Создать
+                Create
               </button>
 
               <!-- Tags Input -->
               <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
                 class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Создать тег" />
+                placeholder="Create Tag" />
             </div>
             <div class="mt-5">
               <!-- Heading -->
-              <h3 class="text-md mb-2 text-gray-600">Выберите теги</h3>
+              <h3 class="text-md mb-2 text-gray-600">Choose Tags for your Pin</h3>
 
               <!-- Tags List -->
               <div class="flex flex-wrap gap-2" v-auto-animate>
@@ -288,7 +288,7 @@ function checkPinAded(name) {
           <!-- Submit Button -->
           <button @click="submitPin"
             class="w-full transition duration-100 text-white bg-purple-500 hover:bg-purple-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
-            Создать Пин
+            Create Pin
           </button>
         </div>
       </div>

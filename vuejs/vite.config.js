@@ -19,6 +19,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/ws': {
+        target: 'ws://fastapi-container:8000', // Проксирование WebSocket-соединений
+        ws: true,  // Включаем поддержку WebSockets
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ws/, ''),
+      },
     },
   },
   resolve: {

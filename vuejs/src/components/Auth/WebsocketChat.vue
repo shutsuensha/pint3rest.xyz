@@ -183,7 +183,7 @@ const typing = ref(false)
 
 
 const connectWebSocket = () => {
-  socket = new WebSocket(`ws://127.0.0.1:8000/ws/${props.chat_id}/${props.auth_user_id}`);
+  socket = new WebSocket(`/ws/${props.chat_id}/${props.auth_user_id}`);
 
   socket.onmessage = async (event) => {
     let showToast = false
