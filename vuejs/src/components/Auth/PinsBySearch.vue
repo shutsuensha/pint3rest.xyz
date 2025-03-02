@@ -24,7 +24,7 @@ const loadPins = async () => {
 
   isPinsLoading.value = true;
   try {
-    const response = await axios.get(`/api/pins/search/`, {
+    const response = await axios.get(`/api/pins/search`, {
       params: { offset: offset.value, limit: limit.value, value: props.value },
       withCredentials: true,
     });

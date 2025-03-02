@@ -50,7 +50,7 @@ def register_middleware(app: FastAPI):
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[settings.TRUSTED_ORIGIN],
+        allow_origins=["*"],
         allow_methods=["*"],
         allow_headers=["*"],
         allow_credentials=True,
@@ -58,5 +58,5 @@ def register_middleware(app: FastAPI):
 
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=[settings.TRUSTED_HOST],
+        allowed_hosts=["*"],
     )

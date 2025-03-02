@@ -639,18 +639,18 @@ async function showVideoControls() {
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
-            class="transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
+            class="transition transform hover:scale-105 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
             placeholder="Добавить комментарий" />
 
           <button type="button" @click="addComment" :style="{
             backgroundColor: pin.rgb
           }"
-            class="transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
+            class="transition transform hover:scale-105 text-white font-medium rounded-3xl text-sm px-4 py-2">
             Add
           </button>
 
           <label for="media">
-            <i :style="{ color: pin.rgb }" class="pi pi-images text-4xl cursor-pointer transition duration-300"></i>
+            <i :style="{ color: pin.rgb }" class="pi pi-images text-4xl cursor-pointer transition transform hover:scale-105"></i>
           </label>
           <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
             class="hidden hover:bg-red-100 transition duration-300 w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">

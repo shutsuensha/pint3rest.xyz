@@ -153,10 +153,19 @@ services:
     depends_on:
       - celery-beat
 
-
-
-  
-
+  vuejs-app:
+    build:
+      context: ./vuejs
+      dockerfile: Dockerfile
+    container_name: vuejs-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./vuejs/.:/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - fastapi-app
 
 
 volumes:
