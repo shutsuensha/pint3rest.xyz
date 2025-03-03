@@ -1,59 +1,59 @@
-# stages:
-#   - build
-#   - lint_format
-#   - migrations
-#   - test
-#   - deploy
+stages:
+  - build
+  - lint_format
+  - migrations
+  - test
+  - deploy
 
-# before_script:
-#   - cp ${ENV} .env
+before_script:
+  - cp ${ENV} .env
   
-# build-fastapi:
+build-fastapi:
+  stage: build
+  script:
+    - docker image prune -f
+    - docker build -t fastapi-image -f Dockerfile-fastapi .
+
+# build-vuejs:  
 #   stage: build
 #   script:
-#     - docker image prune -f
-#     - docker build -t fastapi-image -f Dockerfile-fastapi .
+#     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
-# # build-vuejs:  
-# #   stage: build
-# #   script:
-# #     - docker build -t vuejs-image -f Dockerfile-vuejs .
-
-# lint:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff check
-
-# format:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff format --check
-
-# migrations:
-#   stage: migrations
-#   script:
-#     - docker run --rm --network mynetwork fastapi-image alembic upgrade head
-
-# tests:
-#   stage: test
-#   script:
-#     - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
-
-# deploy-job:
-#   stage: deploy
-#   script:
-#     - docker-compose up -d
-#     - docker exec nginx-container nginx -s reload
-
-
-
-stages:
-  - reload-services
-
-reload-services:
-  stage: reload-services
-  before_script:
-    - cp ${ENV} .env
+lint:
+  stage: lint_format
   script:
-    - docker-compose -f docker-compose-services.yml down
-    - docker-compose -f docker-compose-services.yml up -d
+    - docker run --rm fastapi-image ruff check
+
+format:
+  stage: lint_format
+  script:
+    - docker run --rm fastapi-image ruff format --check
+
+migrations:
+  stage: migrations
+  script:
+    - docker run --rm --network mynetwork fastapi-image alembic upgrade head
+
+tests:
+  stage: test
+  script:
+    - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+
+deploy-job:
+  stage: deploy
+  script:
+    - docker-compose up -d
+    - docker exec nginx-container nginx -s reload
+
+
+
+# stages:
+#   - reload-services
+
+# reload-services:
+#   stage: reload-services
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-services.yml down
+#     - docker-compose -f docker-compose-services.yml up -d
