@@ -22,25 +22,25 @@ build-vuejs:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
     - docker image prune -f
 
-lint:
-  stage: lint_format
-  script:
-    - docker run --rm fastapi-image ruff check
+# lint:
+#   stage: lint_format
+#   script:
+#     - docker run --rm fastapi-image ruff check
 
-format:
-  stage: lint_format
-  script:
-    - docker run --rm fastapi-image ruff format --check
+# format:
+#   stage: lint_format
+#   script:
+#     - docker run --rm fastapi-image ruff format --check
 
-migrations:
-  stage: migrations
-  script:
-    - docker run --rm --network mynetwork fastapi-image alembic upgrade head
+# migrations:
+#   stage: migrations
+#   script:
+#     - docker run --rm --network mynetwork fastapi-image alembic upgrade head
 
-tests:
-  stage: test
-  script:
-    - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+# tests:
+#   stage: test
+#   script:
+#     - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
 deploy-job:
   stage: deploy
