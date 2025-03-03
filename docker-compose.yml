@@ -5,7 +5,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
 
@@ -14,7 +13,6 @@ services:
     container_name: celery-worker-container
     command: "celery -A app.celery.celery_app.celery_instance worker --loglevel=info"
     volumes:
-      - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
 
@@ -23,7 +21,6 @@ services:
     container_name: celery-beat-container
     command: "celery -A app.celery.celery_app.celery_instance beat --loglevel=info"
     volumes:
-      - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
 
@@ -32,7 +29,5 @@ services:
     container_name: vuejs-container
     ports:
       - "3000:3000"
-    volumes:
-      - ./vuejs/.:/app
     environment:
       - NODE_ENV=development

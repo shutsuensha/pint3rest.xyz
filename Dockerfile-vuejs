@@ -1,7 +1,5 @@
 FROM node:18-alpine
 
-WORKDIR /app
-
 # Copy package.json and package-lock.json
 COPY vuejs/package*.json ./
 
@@ -9,7 +7,7 @@ COPY vuejs/package*.json ./
 RUN npm install
 
 # Copy the rest of the project files
-COPY vuejs/ ./
+COPY . .
 
 # Run the project
 CMD ["npm", "run", "dev", "--", "--host"]

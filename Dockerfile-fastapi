@@ -1,26 +1,22 @@
-FROM python:3.10-slim AS build
+FROM python:3.10
 
-# Install system dependencies (for PostgreSQL client and libgl)
+
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
-WORKDIR /pinterest
 
-# Copy requirements to leverage Docker cache
-COPY ./requirements.txt /pinterest/requirements.txt
+COPY requirements.txt requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade -r /pinterest/requirements.txt
 
-# Copy all files to the container
-COPY . /pinterest
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set environment variables for Python behavior
+
+COPY . .
+
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Command to run the app with Uvicorn
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
