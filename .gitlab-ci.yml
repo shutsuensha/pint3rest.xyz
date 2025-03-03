@@ -53,4 +53,4 @@ reload-services:
     - cp ${ENV} .env
   script:
     - docker-compose -f docker-compose-services.yml down
-    - docker-compose -f docker-compose-services.yml up -d
+    - docker-compose -f docker-compose-services.yml up --build -d
