@@ -2,8 +2,6 @@ services:
   fastapi-app:
     image: fastapi-image:latest
     container_name: fastapi-container
-    ports:
-      - "8000:8000"
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
@@ -24,11 +22,10 @@ services:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
 
-  vuejs-app:
-    image: vuejs-image:latest
-    container_name: vuejs-container
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    network_mode: host
+  # vuejs-app:
+  #   image: vuejs-image:latest
+  #   container_name: vuejs-container
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=production

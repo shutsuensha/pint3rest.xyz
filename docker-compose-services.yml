@@ -113,6 +113,14 @@ services:
     depends_on:
       - redis
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+
 
 volumes:
   pinterest_postgres_volume:
