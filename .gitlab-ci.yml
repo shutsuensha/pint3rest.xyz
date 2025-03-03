@@ -14,7 +14,7 @@ build-fastapi:
 build-vuejs:
   stage: build
   script:
-    - docker build -t vuejs-image -f vuejs/Dockerfile vuejs/
+    - docker build -t vuejs-image -f Dockerfile-vuejs vuejs/
 
 # migrations:
 #   stage: migrations
