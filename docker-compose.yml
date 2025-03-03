@@ -5,6 +5,9 @@ services:
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
+    networks:
+      - mynetwork
+
 
   celery-worker:
     image: fastapi-image:latest
@@ -13,6 +16,9 @@ services:
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
+    networks:
+      - mynetwork
+
 
   celery-beat:
     image: fastapi-image:latest
@@ -21,6 +27,9 @@ services:
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
+    networks:
+      - mynetwork
+
 
   # vuejs-app:
   #   image: vuejs-image:latest
@@ -29,3 +38,19 @@ services:
   #     - "3000:3000"
   #   environment:
   #     - NODE_ENV=production
+
+    nginx:
+      image: nginx:latest
+      container_name: nginx-container
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      depends_on:
+        - fastapi-app
+      networks:
+        - mynetwork
+      ports:
+        - "80:80"  # Чтобы Nginx был доступен извне
+
+
+networks:
+  mynetwork:
