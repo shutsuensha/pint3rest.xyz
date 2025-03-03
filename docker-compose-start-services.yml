@@ -1,0 +1,121 @@
+services:
+  postgresql:
+    image: postgres:16
+    container_name: ${POSTGRES_DB_HOST}
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASS}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+    volumes:
+      - pinterest_postgres_volume:/var/lib/postgresql/data
+
+  test_postgresql:
+    image: postgres:16
+    container_name: ${TEST_POSTGRES_DB_HOST}
+    restart: always
+    environment:
+      POSTGRES_USER: ${TEST_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${TEST_POSTGRES_DB_PASS}
+      POSTGRES_DB: ${TEST_POSTGRES_DB_NAME}
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports: 
+      - "5050:80"
+    depends_on:
+      - postgresql
+      - test_postgresql
+
+  mongodb:
+    image: mongo:latest
+    container_name: ${MONGO_DB_HOST}
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASS}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    volumes:
+      - mongodb_data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: ${MONGO_DB_HOST}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
+      ME_CONFIG_MONGODB_DATABASE: ${MONGO_DB_NAME}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER} 
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASS}  
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+
+  mysql:
+    image: mysql:8
+    container_name: ${MYSQL_DB_HOST}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DB_PASS_ROOT}    
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}            
+      MYSQL_USER: ${MYSQL_DB_USER}           
+      MYSQL_PASSWORD: ${MYSQL_DB_PASS}         
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  redis:
+    image: redis:7.4
+    container_name: ${REDIS_HOST}
+    restart: always
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASS}
+    command: redis-server --requirepass ${REDIS_PASS}
+    volumes:
+      - redis_data:/data
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=tokens-revoke:${REDIS_HOST}:6379:1:${REDIS_PASS},cache:${REDIS_HOST}:6379:2:${REDIS_PASS},celery-BROKER:${REDIS_HOST}:6379:3:${REDIS_PASS},celery-RESULT:${REDIS_HOST}:6379:4:${REDIS_PASS},celery-REDBEAT:${REDIS_HOST}:6379:5:${REDIS_PASS}
+    ports:
+    - "8082:8081"
+    depends_on:
+    - redis
+
+  flower:
+    image: mher/flower
+    restart: always
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://:${REDIS_PASS}@${REDIS_HOST}:6379/3
+      - FLOWER_PORT=5555
+    depends_on:
+      - redis
+
+
+volumes:
+  pinterest_postgres_volume:
+  mongodb_data:
+  mysql_data:
+  redis_data:
