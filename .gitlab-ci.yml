@@ -33,7 +33,7 @@ migrations:
   script:
     - docker run --rm --network mynetwork fastapi-image alembic upgrade head
 
-Tests:
+tests:
   stage: test
   script:
     - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
