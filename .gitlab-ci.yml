@@ -44,15 +44,13 @@
 
 
 
-# stages:
-#   - reload-services
+stages:
+  - reload-services
 
-# reload-services:
-#   stage: reload-services
-#   before_script:
-#     - cp ${ENV} .env
-#   script:
-#     - docker run --name booking_nginx \
-#     --volume ./nginx.conf:/etc/nginx/nginx.conf \
-#     --network=myNetwork \
-#     --rm -p 80:80 -d nginx
+reload-services:
+  stage: reload-services
+  before_script:
+    - cp ${ENV} .env
+  script:
+    - docker-compose -f docker-compose-services.yml down
+    - docker-compose -f docker-compose-services.yml up -d
