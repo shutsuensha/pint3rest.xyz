@@ -49,10 +49,12 @@ deploy-api:
 
 deploy-frontend:
   stage: deploy-frontend
+  script:
     - docker run -d -p 80:80 vuejs-image
 
 clear-images:
   stage: clear-images
+  script:
     - docker image prune -f
 
 
