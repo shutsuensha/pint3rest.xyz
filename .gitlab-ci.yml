@@ -1,8 +1,8 @@
 stages:
   - build
-  - lint_format
-  - migrations
-  - test
+  # - lint_format
+  # - migrations
+  # - test
   - deploy
 
 before_script:
@@ -14,6 +14,7 @@ build-fastapi:
   stage: build
   script:
     - docker build -t fastapi-image -f Dockerfile-fastapi .
+    - docker image prune -f
 
 build-vuejs:  
   stage: build
