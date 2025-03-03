@@ -16,16 +16,16 @@ build-vuejs:
   script:
     - docker build -t vuejs-image -f vuejs/Dockerfile vuejs/
 
-migrations:
-  stage: migrations
-  script:
-    - docker run --rm fastapi-image alembic upgrade head
+# migrations:
+#   stage: migrations
+#   script:
+#     - docker run --rm fastapi-image alembic upgrade head
 
 deploy-job:
   stage: deploy
   script:
-    - docker image prune -f
     - docker-compose up -d
+    - docker image prune -f
 
 
 
