@@ -36,7 +36,7 @@ migrations:
 Tests:
   stage: test
   script:
-    - docker run --rm --network mynetwork fastapi-image pytest
+    - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
 deploy-job:
   stage: deploy
