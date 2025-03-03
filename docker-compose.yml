@@ -4,7 +4,6 @@ services:
     container_name: fastapi-container
     ports:
       - "8000:8000"
-    restart: always
     volumes:
       - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}
@@ -14,7 +13,6 @@ services:
     image: fastapi-image:latest
     container_name: celery-worker-container
     command: "celery -A app.celery.celery_app.celery_instance worker --loglevel=info"
-    restart: always
     volumes:
       - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}
@@ -24,7 +22,6 @@ services:
     image: fastapi-image:latest
     container_name: celery-beat-container
     command: "celery -A app.celery.celery_app.celery_instance beat --loglevel=info"
-    restart: always
     volumes:
       - .:/pinterest
       - ${MEDIA_PATH}:${MEDIA_PATH}

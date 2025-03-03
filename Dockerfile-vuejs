@@ -2,13 +2,14 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
-COPY package*.json ./
+# Copy package.json and package-lock.json
+COPY vuejs/package*.json ./
 
-# Устанавливаем зависимости
+# Install dependencies
 RUN npm install
 
-COPY . .
+# Copy the rest of the project files
+COPY vuejs/ ./
 
-# Запускаем проект
+# Run the project
 CMD ["npm", "run", "dev", "--", "--host"]
