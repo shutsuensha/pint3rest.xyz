@@ -1,6 +1,8 @@
 stages:
   - build
+  - lint_format
   - migrations
+  - test
   - deploy
 
 before_script:
@@ -16,10 +18,25 @@ build-fastapi:
 #   script:
 #     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
+Lint:
+  stage: lint_format
+  script:
+    - docker run --rm fastapi-image ruff check
+
+Format:
+  stage: lint_format
+  script:
+    - docker run --rm fastapi-image ruff format --check
+
 migrations:
   stage: migrations
   script:
     - docker run --rm --network mynetwork fastapi-image alembic upgrade head
+
+Tests:
+  stage: test
+  script:
+    - docker run --rm --network mynetwork fastapi-image pytest
 
 deploy-job:
   stage: deploy
@@ -27,21 +44,6 @@ deploy-job:
     - docker-compose up -d
     - docker image prune -f
     - docker exec nginx-container nginx -s reload
-
-# Lint:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff check
-
-# Format:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff format --check
-
-# Tests:
-#   stage: test
-#   script:
-#     - docker run --rm fastapi-image pytest -s -v
 
 
 
