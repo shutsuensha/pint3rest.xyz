@@ -31,6 +31,8 @@ services:
   vuejs-app:
     image: vuejs-image:latest
     container_name: vuejs-container
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
     networks:
