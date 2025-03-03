@@ -1,13 +1,23 @@
-FROM node:18-alpine
 
-# Copy package.json and package-lock.json
+FROM node:18 AS builder
+WORKDIR /app
+
+# Копируем файлы package.json и package-lock.json (если есть) для установки зависимостей
 COPY ./vuejs/package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the project files
+# Копируем весь исходный код и собираем приложение
 COPY ./vuejs/ .
+RUN npm run build
 
-# Run the project
-CMD ["npm", "run", "dev", "--", "--host"]
+# Этап 2: запуск через Nginx
+FROM nginx:stable-alpine
+# Копируем собранные файлы в директорию, обслуживаемую Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Если необходимо, можно заменить конфигурацию Nginx (опционально)
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Открываем порт 80 для доступа
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
