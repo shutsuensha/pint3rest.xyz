@@ -143,3 +143,4 @@ volumes:
 
 networks:
   mynetwork:
+    external: true

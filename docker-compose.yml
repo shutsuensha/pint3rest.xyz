@@ -30,7 +30,7 @@ services:
 
 
 
-      
+
 
 
   # vuejs-app:
@@ -45,3 +45,4 @@ services:
 
 networks:
   mynetwork:
+    external: true
