@@ -13,13 +13,13 @@ before_script:
 build-fastapi:
   stage: build
   script:
-    - docker image prune -f
     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
-# build-vuejs:  
-#   stage: build
-#   script:
-#     - docker build -t vuejs-image -f Dockerfile-vuejs .
+build-vuejs:  
+  stage: build
+  script:
+    - docker build -t vuejs-image -f Dockerfile-vuejs .
+    - docker image prune -f
 
 lint:
   stage: lint_format

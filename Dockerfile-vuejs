@@ -1,13 +1,25 @@
-FROM node:18-alpine
+# Используем официальный Node.js образ
+FROM node:18-alpine AS build
 
-# Copy package.json and package-lock.json
+WORKDIR /app
+
+# Копируем package.json и package-lock.json в рабочую директорию
 COPY ./vuejs/package*.json ./
 
-# Install dependencies
+# Устанавливаем зависимости
 RUN npm install
 
-# Copy the rest of the project files
+# Копируем все остальные файлы проекта в рабочую директорию
 COPY ./vuejs/ .
 
-# Run the project
-CMD ["npm", "run", "dev", "--", "--host"]
+# Строим приложение для продакшн
+RUN npm run build
+
+# Устанавливаем рабочую директорию для продакшн сборки
+WORKDIR /app/dist
+
+# Открываем порт 3000 для сервера
+EXPOSE 3000
+
+# Запускаем сервер для обслуживания статических файлов (понадобится npx serve)
+CMD ["npx", "serve", "-s", ".", "-l", "3000"]
