@@ -1,15 +1,15 @@
-# stages:
-#   - build
-#   # - migrations
-#   - deploy
+stages:
+  - build
+  # - migrations
+  - deploy
 
-# before_script:
-#   - cp ${ENV} .env
+before_script:
+  - cp ${ENV} .env
 
-# build-fastapi:
-#   stage: build
-#   script:
-#     - docker build -t fastapi-image -f Dockerfile-fastapi .
+build-fastapi:
+  stage: build
+  script:
+    - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 # build-vuejs:  
 #   stage: build
@@ -21,11 +21,11 @@
 #   script:
 #     - docker run --rm fastapi-image alembic upgrade head
 
-# deploy-job:
-#   stage: deploy
-#   script:
-#     - docker-compose up -d
-#     - docker image prune -f
+deploy-job:
+  stage: deploy
+  script:
+    - docker-compose up -d
+    - docker image prune -f
 
 # Lint:
 #   stage: lint_format
@@ -44,13 +44,13 @@
 
 
 
-stages:
-  - reload-services
+# stages:
+#   - reload-services
 
-reload-services:
-  stage: reload-services
-  before_script:
-    - cp ${ENV} .env
-  script:
-    - docker-compose -f docker-compose-services.yml down
-    - docker-compose -f docker-compose-services.yml up -d
+# reload-services:
+#   stage: reload-services
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-services.yml down
+#     - docker-compose -f docker-compose-services.yml up -d
