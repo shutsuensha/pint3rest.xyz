@@ -1,29 +1,42 @@
 stages:
-  - start-services
+  - build
+  - migrations
+  - deploy
 
-start-services:
-  stage: start-services
-  before_script:
-    - cp ${ENV} .env
+before_script:
+  - cp ${ENV} .env
+
+build-fastapi:
+  stage: build
   script:
-    - docker-compose -f docker-compose-start-services.yml up --build -d
+    - docker build -t fastapi-image .
+
+build-vuejs:
+  stage: build
+  script:
+    - docker build -t vuejs-image -f vuejs/Dockerfile vuejs/
+
+migrations:
+  stage: migrations
+  script:
+    - docker run --rm fastapi-image alembic upgrade head
+
+deploy-job:
+  stage: deploy
+  script:
+    - docker image prune -f
+    - docker-compose up -d
 
 
 
-# build-fastapi:
-#   stage: build
+# reload-services:
+#   stage: reload-services
 #   before_script:
 #     - cp ${ENV} .env
-#   script:
-#     - docker build -t fastapi-image .
+    # script:
+    # - docker-compose -f docker-compose-services.yml down
+    # - docker-compose -f docker-compose-services.yml up -d
 
-# build-vuejs:
-#   stage: build
-#   before_script:
-#     - cp ${ENV} .env
-#   script:
-#     - docker build -t vuejs-image -f vuejs/Dockerfile vuejs/
-  
 # Lint:
 #   stage: lint_format
 #   script:
@@ -38,8 +51,3 @@ start-services:
 #   stage: test
 #   script:
 #     - docker run --rm fastapi-image pytest -s -v
-
-# deploy-job:
-#   stage: deploy
-#   script:
-#     - sudo docker image prune -f && sudo docker-compose up -d
