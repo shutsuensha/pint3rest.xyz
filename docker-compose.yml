@@ -29,6 +29,10 @@ services:
       - mynetwork
 
 
+
+      
+
+
   # vuejs-app:
   #   image: vuejs-image:latest
   #   container_name: vuejs-container
