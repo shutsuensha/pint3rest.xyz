@@ -18,12 +18,12 @@ build-fastapi:
 #   script:
 #     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
-Lint:
+lint:
   stage: lint_format
   script:
     - docker run --rm fastapi-image ruff check
 
-Format:
+format:
   stage: lint_format
   script:
     - docker run --rm fastapi-image ruff format --check
