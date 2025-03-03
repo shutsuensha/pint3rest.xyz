@@ -11,10 +11,10 @@ build-fastapi:
   script:
     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
-# build-vuejs:
-#   stage: build
-#   script:
-#     - docker build -t vuejs-image -f Dockerfile-vuejs .
+build-vuejs:  
+  stage: build
+  script:
+    - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 # migrations:
 #   stage: migrations
