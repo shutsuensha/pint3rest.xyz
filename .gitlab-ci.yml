@@ -48,11 +48,12 @@ deploy:
   script:
     - docker-compose up -d
     # - docker exec nginx-container nginx -s reload
-    
+
 clear-images:
   stage: clear-images
   script:
     - docker image prune -f
+
 
 
 # stages:
