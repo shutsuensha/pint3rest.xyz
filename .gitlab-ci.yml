@@ -1,67 +1,67 @@
-# stages:
-#   - build
-#   - lint_format
-#   - migrations
-#   - test
-#   - deploy
-#   - clear-images
-
-# before_script:
-#   - cp ${ENV} .env
-#   - export $(grep -v '^#' .env | xargs)
-  
-# build-fastapi:
-#   stage: build
-#   script:
-#     - docker build -t fastapi-image -f Dockerfile-fastapi .
-
-# build-vuejs:  
-#   stage: build
-#   script:
-#     - docker build -t vuejs-image -f Dockerfile-vuejs .
-
-# lint:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff check
-
-# format:
-#   stage: lint_format
-#   script:
-#     - docker run --rm fastapi-image ruff format --check
-
-# migrations:
-#   stage: migrations
-#   script:
-#     - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
-
-# tests:
-#   stage: test
-#   script:
-#     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
-
-# deploy:
-#   stage: deploy
-#   script:
-#     - docker-compose up -d
-
-# clear-images:
-#   stage: clear-images
-#   script:
-#     - docker image prune -f
-
-
-
 stages:
-  - reload-services
+  - build
+  - lint_format
+  - migrations
+  - test
+  - deploy
+  - clear-images
 
-reload-services:
-  stage: reload-services
-  before_script:
-    - cp ${ENV} .env
+before_script:
+  - cp ${ENV} .env
+  - export $(grep -v '^#' .env | xargs)
+  
+build-fastapi:
+  stage: build
   script:
-    - docker-compose -f docker-compose-services.yml down
-    - docker-compose -f docker-compose-services.yml up -d
+    - docker build -t fastapi-image -f Dockerfile-fastapi .
+
+build-vuejs:  
+  stage: build
+  script:
+    - docker build -t vuejs-image -f Dockerfile-vuejs .
+
+lint:
+  stage: lint_format
+  script:
+    - docker run --rm fastapi-image ruff check
+
+format:
+  stage: lint_format
+  script:
+    - docker run --rm fastapi-image ruff format --check
+
+migrations:
+  stage: migrations
+  script:
+    - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
+
+tests:
+  stage: test
+  script:
+    - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+
+deploy:
+  stage: deploy
+  script:
+    - docker-compose up -d
+
+clear-images:
+  stage: clear-images
+  script:
+    - docker image prune -f
+
+
+
+# stages:
+#   - reload-services
+
+# reload-services:
+#   stage: reload-services
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-services.yml down
+#     - docker-compose -f docker-compose-services.yml up -d
 
 
 # stages:
