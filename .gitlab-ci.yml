@@ -22,7 +22,7 @@ build-vuejs:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 
-    
+
 
 # lint:
 #   stage: lint_format
@@ -53,7 +53,7 @@ deploy-api:
 deploy-frontend:
   stage: deploy-frontend
   script:
-    - docker run -d -p 80:80 vuejs-image
+    - docker run --network mynetwork -d -p 80:80 vuejs-image
 
 clear-images:
   stage: clear-images
