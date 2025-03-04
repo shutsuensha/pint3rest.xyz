@@ -28,6 +28,14 @@ services:
     networks:
       - mynetwork
 
+  vuejs:
+    image: vuejs-image:latest
+    container_name: vuejs-container
+    ports: 
+      - "80:80"
+    networks:
+      - mynetwork
+
 
 
 networks:

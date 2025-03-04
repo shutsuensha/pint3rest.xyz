@@ -3,8 +3,7 @@ stages:
   # - lint_format
   # - migrations
   # - test
-  - deploy-api
-  - deploy-frontend
+  - deploy
   - clear-images
 
 before_script:
@@ -44,17 +43,12 @@ build-vuejs:
 #   script:
 #     - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-deploy-api:
-  stage: deploy-api
+deploy:
+  stage: deploy
   script:
     - docker-compose up -d
     # - docker exec nginx-container nginx -s reload
-
-deploy-frontend:
-  stage: deploy-frontend
-  script:
-    - docker run --network mynetwork -d -p 80:80 vuejs-image
-
+    
 clear-images:
   stage: clear-images
   script:
