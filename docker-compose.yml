@@ -6,7 +6,7 @@ services:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
     networks:
-      - mynetwork
+      - pinterest-network
 
   celery-worker:
     image: fastapi-image:latest
@@ -16,7 +16,7 @@ services:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
     networks:
-      - mynetwork
+      - pinterest-network
 
   celery-beat:
     image: fastapi-image:latest
@@ -26,7 +26,7 @@ services:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
     networks:
-      - mynetwork
+      - pinterest-network
 
   vuejs:
     image: vuejs-image:latest
@@ -34,7 +34,7 @@ services:
     ports: 
       - "80:80"
     networks:
-      - mynetwork
+      - pinterest-network
 
 networks:
   pinterest-network:
