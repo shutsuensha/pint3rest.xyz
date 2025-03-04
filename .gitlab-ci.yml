@@ -1,24 +1,24 @@
-stages:
-  - build
-  # - lint_format
-  # - migrations
-  # - test
-  - deploy
-  - clear-images
+# stages:
+#   - build
+#   # - lint_format
+#   # - migrations
+#   # - test
+#   - deploy
+#   - clear-images
 
-before_script:
-  - cp ${ENV} .env
-  - export $(grep -v '^#' .env | xargs)
+# before_script:
+#   - cp ${ENV} .env
+#   - export $(grep -v '^#' .env | xargs)
   
-build-fastapi:
-  stage: build
-  script:
-    - docker build -t fastapi-image -f Dockerfile-fastapi .
+# build-fastapi:
+#   stage: build
+#   script:
+#     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
-build-vuejs:  
-  stage: build
-  script:
-    - docker build -t vuejs-image -f Dockerfile-vuejs .
+# build-vuejs:  
+#   stage: build
+#   script:
+#     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 
 
@@ -43,26 +43,25 @@ build-vuejs:
 #   script:
 #     - docker run --rm --network mynetwork -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-deploy:
-  stage: deploy
-  script:
-    - docker-compose up -d
-    # - docker exec nginx-container nginx -s reload
-
-clear-images:
-  stage: clear-images
-  script:
-    - docker image prune -f
-
-
-
-# stages:
-#   - reload-services
-
-# reload-services:
-#   stage: reload-services
-#   before_script:
-#     - cp ${ENV} .env
+# deploy:
+#   stage: deploy
 #   script:
-#     - docker-compose -f docker-compose-services.yml down
-#     - docker-compose -f docker-compose-services.yml up -d
+#     - docker-compose up -d
+
+# clear-images:
+#   stage: clear-images
+#   script:
+#     - docker image prune -f
+
+
+
+stages:
+  - start-services
+
+reload-services:
+  stage: start-services
+  before_script:
+    - cp ${ENV} .env
+  script:
+    - docker-compose -f docker-compose-services.yml down
+    - docker-compose -f docker-compose-services.yml up -d

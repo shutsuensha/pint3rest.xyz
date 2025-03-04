@@ -1,0 +1,75 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports: 
+      - "5050:80"
+    depends_on:
+      - postgresql
+      - test_postgresql
+    networks:
+      - pinterest-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: ${MONGO_DB_HOST}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
+      ME_CONFIG_MONGODB_DATABASE: ${MONGO_DB_NAME}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER} 
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASS}  
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - pinterest-network
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - pinterest-network
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=tokens-revoke:${REDIS_HOST}:6379:1:${REDIS_PASS},cache:${REDIS_HOST}:6379:2:${REDIS_PASS},celery-BROKER:${REDIS_HOST}:6379:3:${REDIS_PASS},celery-RESULT:${REDIS_HOST}:6379:4:${REDIS_PASS},celery-REDBEAT:${REDIS_HOST}:6379:5:${REDIS_PASS}
+    ports:
+    - "8082:8081"
+    depends_on:
+    - redis
+    networks:
+      - pinterest-network
+
+  flower:
+    image: mher/flower
+    container_name: flower
+    restart: always
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://:${REDIS_PASS}@${REDIS_HOST}:6379/3
+      - FLOWER_PORT=5555
+    depends_on:
+      - redis
+    networks:
+      - pinterest-network
+
+networks:
+  pinterest-network:

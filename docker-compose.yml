@@ -36,8 +36,5 @@ services:
     networks:
       - mynetwork
 
-
-
 networks:
-  mynetwork:
-    external: true
+  pinterest-network:
