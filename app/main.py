@@ -64,6 +64,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url="/docs", 
+    openapi_url="/openapi.json"
+)
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
