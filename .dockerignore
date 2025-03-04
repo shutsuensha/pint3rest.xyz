@@ -1,4 +1,1 @@
-.venv
-.ruff_cache
-.pytest_cache
-.git
+README.md

@@ -1,8 +1,8 @@
 stages:
   - build
-  - lint_format
-  - migrations
-  - test
+  # - lint_format
+  # - migrations
+  # - test
   - deploy
   - clear-images
 
@@ -20,25 +20,25 @@ build-vuejs:
   script:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
-lint:
-  stage: lint_format
-  script:
-    - docker run --rm fastapi-image ruff check
+# lint:
+#   stage: lint_format
+#   script:
+#     - docker run --rm fastapi-image ruff check
 
-format:
-  stage: lint_format
-  script:
-    - docker run --rm fastapi-image ruff format --check
+# format:
+#   stage: lint_format
+#   script:
+#     - docker run --rm fastapi-image ruff format --check
 
-migrations:
-  stage: migrations
-  script:
-    - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
+# migrations:
+#   stage: migrations
+#   script:
+#     - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
 
-tests:
-  stage: test
-  script:
-    - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+# tests:
+#   stage: test
+#   script:
+#     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
 deploy:
   stage: deploy

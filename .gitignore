@@ -1,7 +1,7 @@
 .venv
-.env
-__pycache__
-.pytest_cache
-NOTES.md
 .ruff_cache
+.pytest_cache
+__pycache__
+NOTES.md
+.env
 .env-ci
