@@ -5,8 +5,6 @@ services:
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
       - ${LOGS_PATH}:${LOGS_PATH}
-    ports:
-      - "8000:8000"
     networks:
       - pinterest-network
 
