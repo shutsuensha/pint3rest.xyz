@@ -62,8 +62,7 @@ async def lifespan(app: FastAPI):
         await close_httpx_client()
 
 
-app = FastAPI(lifespan=lifespan
-              root_path="/api")
+app = FastAPI(lifespan=lifespan, root_path="/api")
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
