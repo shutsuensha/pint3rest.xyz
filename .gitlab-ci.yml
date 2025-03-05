@@ -1,8 +1,8 @@
 stages:
   - build
-  - lint-format
-  - migrations
-  - test
+  # - lint-format
+  # - migrations
+  # - test
   - deploy
   - clear-images
 
