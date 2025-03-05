@@ -11,16 +11,16 @@ export default defineConfig({
     vueDevTools(),
   ],
   server: {
-    host: '0.0.0.0',
+    host: '127.0.0.1',
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://fastapi-container:8000', // Убедитесь, что используете http://
+        target: 'http://127.0.0.1:8000', // Убедитесь, что используете http://
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/ws': {
-        target: 'ws://fastapi-container:8000', // Проксирование WebSocket-соединений
+        target: 'ws://127.0.0.1:8000', // Проксирование WebSocket-соединений
         ws: true,  // Включаем поддержку WebSockets
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/ws/, ''),
