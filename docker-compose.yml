@@ -31,10 +31,15 @@ services:
   vuejs:
     image: vuejs-image:latest
     container_name: vuejs-container
-    ports: 
+    ports:
       - "80:80"
+      - "443:443"
     networks:
       - pinterest-network
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - /var/log/nginx:/var/log/nginx
 
 networks:
   pinterest-network:
