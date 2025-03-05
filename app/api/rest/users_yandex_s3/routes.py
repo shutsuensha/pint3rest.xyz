@@ -2,9 +2,9 @@ from io import BytesIO
 import hashlib
 import base64
 
-
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
+from botocore.config import Config
 
 from app.config import settings
 from app.yandex_s3.app import get_s3_client
@@ -15,11 +15,11 @@ router = APIRouter(prefix="/yandex/s3", tags=["yandex-s3"])
 @router.post("/upload/")
 async def upload_file(file: UploadFile):
     try:
+        # Передаем конфигурацию при получении клиента
         s3_client = get_s3_client()
         file_content = await file.read()
         file_stream = BytesIO(file_content)
 
-        # Убираем MD5 и UNSIGNED-PAYLOAD заголовок
         await s3_client.put_object(
             Bucket=settings.YANDEX_STORAGE_BUCKET,
             Key=file.filename,

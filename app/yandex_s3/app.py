@@ -1,4 +1,6 @@
 import aioboto3
+from botocore.config import Config
+
 
 from app.config import settings
 from app.logger import logger
@@ -11,12 +13,19 @@ async def init_s3_client():
     try:
         session = aioboto3.Session()
 
+        s3_config = Config(
+            signature_version='s3v4',
+            s3={'payload_signing_enabled': False},
+        )
+
+
         async with session.client(
             "s3",
             endpoint_url="https://storage.yandexcloud.net",
             aws_access_key_id=settings.YANDEX_STORAGE_KEY,
             aws_secret_access_key=settings.YANDEX_STORAGE_SECRET_KEY,
             region_name="ru-central1",
+            config=s3_config
         ) as client:
             s3_client = client
             logger.info("✅ Успешное подключение к Yandex Object Storage")
