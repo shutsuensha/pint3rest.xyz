@@ -20,6 +20,9 @@ build-vuejs:
   script:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
+
+    
+
 # lint:
 #   stage: lint-format
 #   script:
