@@ -43,12 +43,12 @@ from .websockets.chat import register_websocket
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        await init_redis_revoke_tokens()
-        redis_cache = await init_redis_cache()
-        FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
-        await mongo.connect()
-        await postgre_connect()
-        await mysql_connect()
+        # await init_redis_revoke_tokens()
+        # redis_cache = await init_redis_cache()
+        # FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+        # await mongo.connect()
+        # await postgre_connect()
+        # await mysql_connect()
         await init_s3_client()
         await init_httpx_client()
         yield
