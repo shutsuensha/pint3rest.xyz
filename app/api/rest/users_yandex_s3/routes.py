@@ -1,4 +1,4 @@
-from io import BytesIO
+import io
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
@@ -13,11 +13,13 @@ router = APIRouter(prefix="/yandex/s3", tags=["yandex-s3"])
 async def upload_file(file: UploadFile):
     try:
         s3_client = get_s3_client()
-        file_content = await file.read()
+        file_content = await file.read()  # Читаем файл
+        file_stream = io.BytesIO(file_content)  # Оборачиваем в BytesIO
+
         await s3_client.put_object(
             Bucket=settings.YANDEX_STORAGE_BUCKET,
             Key=file.filename,
-            Body=file_content,
+            Body=file_stream,
             ContentType=file.content_type,
         )
         return {"message": f"Файл {file.filename} успешно загружен"}
