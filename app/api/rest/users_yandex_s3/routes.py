@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 import hashlib
 import base64
 
@@ -17,7 +17,7 @@ async def upload_file(file: UploadFile):
     try:
         s3_client = get_s3_client()
         file_content = await file.read()
-        file_stream = io.BytesIO(file_content)
+        file_stream = BytesIO(file_content)
 
         # Убираем MD5 и UNSIGNED-PAYLOAD заголовок
         await s3_client.put_object(
