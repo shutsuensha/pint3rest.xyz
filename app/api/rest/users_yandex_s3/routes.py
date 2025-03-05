@@ -19,18 +19,13 @@ async def upload_file(file: UploadFile):
         file_content = await file.read()
         file_stream = io.BytesIO(file_content)
 
-        # Хеш MD5 для проверки целостности (если требуется)
-        md5_hash = hashlib.md5(file_content).digest()
-        content_md5 = base64.b64encode(md5_hash).decode('utf-8')
-
+        # Убираем MD5 и UNSIGNED-PAYLOAD заголовок
         await s3_client.put_object(
             Bucket=settings.YANDEX_STORAGE_BUCKET,
             Key=file.filename,
             Body=file_stream,
             ContentType=file.content_type,
-            ContentMD5=content_md5,  # Если требуется MD5
-            Metadata={"x-amz-content-sha256": "UNSIGNED-PAYLOAD"}  # Если запрос не подписан
-        )
+        )           
         return {"message": f"Файл {file.filename} успешно загружен"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
