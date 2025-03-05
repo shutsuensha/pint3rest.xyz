@@ -34,7 +34,6 @@ from app.redis.redis_revoke_tokens import (
     close_redis_revoke_tokens,
     init_redis_revoke_tokens,
 )
-from app.yandex_s3.app import close_s3_client, init_s3_client
 
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
@@ -49,7 +48,6 @@ async def lifespan(app: FastAPI):
         await mongo.connect()
         await postgre_connect()
         await mysql_connect()
-        await init_s3_client()
         await init_httpx_client()
         yield
     except Exception as e:
@@ -58,7 +56,6 @@ async def lifespan(app: FastAPI):
         await close_redis_revoke_tokens()
         await close_redis_cache()
         await mongo.close()
-        await close_s3_client()
         await close_httpx_client()
 
 
