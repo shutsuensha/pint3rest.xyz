@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
@@ -61,9 +60,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, root_path="/api")
 
-
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-    
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
 app.include_router(chats_router)
