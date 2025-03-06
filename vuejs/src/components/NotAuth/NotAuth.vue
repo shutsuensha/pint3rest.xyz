@@ -5,6 +5,7 @@ import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useToast } from "vue-toastification";
+import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
 
 
 const toast = useToast();
@@ -328,7 +329,7 @@ function handleImageUpload(event) {
 }
 
 onMounted(async () => {
-  document.title = 'pinterest.xyz'
+  document.title = 'Pint3rest Next-Gen'
   AOS.init({
     duration: 3000,  // Длительность анимации
     once: true,      // Анимация будет воспроизводиться только один раз
@@ -350,12 +351,13 @@ onMounted(async () => {
 </script>
 
 <template>
+  <DescriptionApp />
   <div v-if="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
       <div class="relative bg-white rounded-3xl">
         <!-- Modal header -->
-        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+        <div class="flex items-cent er justify-between p-4 md:p-5 border-b rounded-t">
           <h3 class="text-lg  font-semibold text-gray-900">
             Sign Up to our platform 😇
           </h3>
@@ -612,6 +614,5 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-
   </div>
 </template>

@@ -13,6 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@lottiefiles/dotlottie-vue": "^0.5.4",
     "@vueuse/components": "^12.2.0",
+    "@vueuse/motion": "^2.2.6",
     "@yeger/vue-masonry-wall": "^5.0.16",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
