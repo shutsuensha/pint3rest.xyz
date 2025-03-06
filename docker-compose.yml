@@ -7,6 +7,11 @@ services:
       - ${LOGS_PATH}:${LOGS_PATH}
     networks:
       - pinterest-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   celery-worker:
     image: fastapi-image:latest
@@ -36,6 +41,9 @@ services:
       - "443:443"
     networks:
       - pinterest-network
+    depends_on:
+      fastapi-app:
+        condition: service_healthy
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
       - /var/lib/letsencrypt:/var/lib/letsencrypt

@@ -84,3 +84,8 @@ app.include_router(sse_router)
 register_middleware(app)
 register_websocket(app)
 register_exception_handlers(app)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
