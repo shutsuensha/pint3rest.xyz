@@ -1,16 +1,25 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, computed  } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useToast } from "vue-toastification";
 import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
+import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
+
+const tailwindColors = {
+  "bg-red-100": "#fee2e2",
+  "bg-green-100": "#dcfce7",
+  // Добавь другие цвета, если нужно
+};
 
 
 const toast = useToast();
 
-const bg = ref('bg-gray-100')
+const bg = ref('bg-white')
+
+const colorBg = computed(() => tailwindColors[bg.value] || "#ffffff");
 
 const loading = ref(true)
 const color = ref('red')
@@ -61,6 +70,14 @@ const showSignUpLoader = ref(false)
 const showLoginLoader = ref(false)
 const showPasswordResetLoader = ref(false)
 
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // For smooth scrolling
+  });
+}
+
+
 async function submitSignUp() {
   const username = formSignUp.username
   const password = formSignUp.password
@@ -109,6 +126,7 @@ async function submitSignUp() {
           })
           const access_token = response.data.access_token
 
+          scrollToTop()
           showSignUpLoader.value = false
           showSignUp.value = false
 
@@ -206,6 +224,7 @@ async function submitLogin() {
       password: password
     })
     const access_token = response.data.access_token
+    scrollToTop()
 
     showLoginLoader.value = false
     showLogin.value = false
@@ -310,7 +329,7 @@ function changeBgColor2() {
 }
 
 function changeDefaultColor() {
-  bg.value = 'bg-gray-100'
+  bg.value = 'bg-white'
   textWelcome.value = 'Welcome to Our Platform 🩸'
 }
 
@@ -328,6 +347,7 @@ function handleImageUpload(event) {
 
 onMounted(async () => {
   document.title = 'Pint3rest Next-Gen'
+  initializeKinesis()
   AOS.init({
     duration: 3000,  // Длительность анимации
     once: true,      // Анимация будет воспроизводиться только один раз
@@ -403,8 +423,8 @@ onMounted(async () => {
               class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
-              Already have an account? <a @click="showSignUp = false; showLogin = true" href="#"
-                class="text-red-500 hover:underline">Login</a>
+              Already have an account? <a @click="showSignUp = false; showLogin = true"
+                class="text-red-500 hover:underline cursor-pointer">Login</a>
             </div>
           </form>
         </div>
@@ -451,12 +471,12 @@ onMounted(async () => {
               class=" transition duration-300 w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Log
               In</button>
             <div class="text-sm font-medium text-black ">
-              Dont have an account? <a @click="showLogin = false; showSignUp = true" href="#"
-                class="text-red-500 hover:underline ">Sign Up</a>
+              Dont have an account? <a @click="showLogin = false; showSignUp = true"
+                class="text-red-500 hover:underline cursor-pointer">Sign Up</a>
             </div>
             <div class="flex">
-              <a @click="showLogin = false; showPasswordReset = true" href="#"
-                class="text-sm text-red-500 hover:underline">Lost Password?</a>
+              <a @click="showLogin = false; showPasswordReset = true"
+                class="text-sm text-red-500 hover:underline cursor-pointer">Lost Password?</a>
             </div>
           </form>
         </div>
@@ -576,11 +596,14 @@ onMounted(async () => {
 
   <ClipLoader v-if="loading" :color="color" :size="size"
     class="flex items-center justify-center h-screen font-extrabold" />
-  <div v-else :class="`${bg} flex items-center justify-center h-screen`">
+  <div v-else :style="{ background: `linear-gradient(to top, ${colorBg}, white)` }"
+    class="flex items-center justify-center h-screen">
+
     <div class="items-center space-y-6 flex flex-col">
-      <div v-if="bg === 'bg-gray-100'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-white'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(0, 5)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
+          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'"
+          >
           <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
         </div>
       </div>
@@ -600,12 +623,12 @@ onMounted(async () => {
         <h1 class="text-4xl  text-black mb-6">{{ textWelcome }}</h1>
         <div class="space-x-4">
           <!-- Signup Button -->
-          <button @mouseenter="changeBgColor1" @mouseleave="changeDefaultColor" @click="showSignUp = true"
+          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
             class="hover:-translate-y-2 px-6 py-3 bg-red-400 text-black font-semibold rounded-3xl transition hover:bg-red-600 hover:text-white">
             Sign Up
           </button>
           <!-- Login Button -->
-          <button @mouseenter="changeBgColor2" @mouseleave="changeDefaultColor" @click="showLogin = true"
+          <button @mouseenter="changeBgColor2" @click="showLogin = true"
             class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
             Log In
           </button>

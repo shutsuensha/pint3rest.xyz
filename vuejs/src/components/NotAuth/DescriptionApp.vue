@@ -1,60 +1,97 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 text-gray-900">
+  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-200 to-white text-gray-900 relative">
     <div class="max-w-7xl mx-auto px-6 py-12">
       <!-- Заголовок с динамическим градиентом -->
-      <h1 
-        class="text-6xl font-extrabold text-center mb-10 cursor-default" 
-        @mousemove="updateHeaderGradient"
-        @mouseleave="resetHeaderGradient"
-        :style="headerStyle"
-      >
-        🚀 Pint3rest Next-Gen
-      </h1>
-      <p class="text-xl text-center text-gray-700 mb-14">
-        Добро пожаловать в будущее. Стиль, скорость, инновации.
-      </p>
+
+
+      <div data-kinesistransformer>
+        <h1 class="text-6xl font-extrabold text-center mb-10 cursor-default" @mousemove="updateHeaderGradient"
+          data-kinesistransformer-element data-ks-transform="translate" @mouseleave="resetHeaderGradient"
+          :style="headerStyle">
+          🚀 Pint3rest Next-Gen
+        </h1>
+      </div>
+
 
       <!-- Галерея -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-        <ScreenshotCard
-          v-for="(card, index) in screenshots"
-          :key="index"
-          :card="card"
-          @click="openFullscreen(index)"
-        />
+      <div class="grid grid-cols-2 ">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(0, 2)" :key="index" :card="card"
+          @click="openFullscreen(index)" />
       </div>
+
+      <div class="overflow-hidden relative">
+        <!-- Первая строка -->
+        <div class="marquee-wrapper animate-marquee">
+          <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-red-800">
+            Vuejs3,
+            Tailwind CSS,
+            Pinia,
+            Vue Router,
+            Vue Masonry,
+            Vue Keep Alive,
+            Vue Spinner, JsConfetti, DaysJs, Aos, Auto-animate, Kenesis
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(2, 4)" :key="index" :card="card"
+          @click="openFullscreen(index + 2)" />
+      </div>
+
+      <div class="overflow-hidden relative">
+        <div class="marquee-wrapper2 animate-marquee">
+          <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-indigo-800">
+            FastAPI, Postgresql, Redis, Asyncio, Jwt, Mail, Celery, Httpx, Yandex S3, Google Auth, Mysql, Mongodb,
+            GraphQL, Pydantic, Sqlalchemy, Logging, Docker, Docker-compose, Gitlab ci/cd, Pytests, Ruff, Nginx, Ssl/Vps
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(4, 6)" :key="index" :card="card"
+          @click="openFullscreen(index + 4)" />
+      </div>
+
     </div>
 
     <!-- Полноэкранное модальное окно -->
     <transition name="fade">
-      <div v-if="fullscreenIndex !== null" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+      <div @click="closeFullscreen" v-if="fullscreenIndex !== null"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
         <div class="relative flex items-center justify-center max-w-full w-full">
           <!-- Стрелка слева -->
-          <button @click="prevImage" class="p-4 bg-black/70 rounded-full text-white text-4xl hover:text-gray-300 transition mr-4 z-20">
+          <button @click.stop="prevImage"
+            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition mr-4 z-20 items-center justify-center">
             &larr;
           </button>
           <!-- Контент модального окна -->
-          <div class="relative max-w-4xl w-full p-6 bg-gray-900/80 rounded-xl">
-            <button @click="closeFullscreen" class="absolute top-4 right-4 z-20 p-2 bg-black/70 rounded-full text-white text-3xl hover:text-gray-300 transition">
-              &times;
-            </button>
-            <img :src="currentCard.src" alt="" class="w-full h-auto rounded-lg shadow-2xl mb-4 object-cover" />
-            <h2 class="text-3xl font-bold text-white mb-2">{{ currentCard.title }}</h2>
-            <p class="text-xl text-gray-200">{{ currentCard.description }}</p>
+          <div class="relative max-w-6xl w-full p-6 rounded-xl" @click.stop>
+            <img :src="currentCard.src" alt="" class="w-full h-auto rounded-lg shadow-2xl mb-4 object-cover"
+              @click.stop />
+            <h2 class="text-5xl font-bold text-white mb-2">{{ currentCard.title }}</h2>
+            <p class="text-2xl text-gray-200">{{ currentCard.description }}</p>
           </div>
           <!-- Стрелка справа -->
-          <button @click="nextImage" class="p-4 bg-black/70 rounded-full text-white text-4xl hover:text-gray-300 transition ml-4 z-20">
+          <button @click.stop="nextImage"
+            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition ml-4 z-20">
             &rarr;
           </button>
         </div>
       </div>
     </transition>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
+import { initializeKinesis } from "@amineyarman/kinesis";
+
+onMounted(() => {
+  initializeKinesis();
+});
 
 const screenshots = ref([
   { src: '/screenshots/home.png', title: '🏠 Главная', description: 'Стильный фид для вдохновения.' },
@@ -117,11 +154,85 @@ const resetHeaderGradient = () => {
 }
 </script>
 
-<style>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease;
+<style scoped>
+.marquee-wrapper {
+  display: inline-block;
+  /* Элементы в одном ряду */
+  animation: marquee 40s linear infinite;
+  font-size: 5rem;
+  /* Увеличиваем размер шрифта */
+  font-weight: bold;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  /* Прокрутка в одном ряду */
+  overflow: hidden;
 }
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
+
+.marquee-wrapper2 {
+  display: inline-block;
+  /* Элементы в одном ряду */
+  animation: marquee2 40s linear infinite;
+  font-size: 5rem;
+  /* Увеличиваем размер шрифта */
+  font-weight: bold;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  /* Прокрутка в одном ряду */
+  overflow: hidden;
+}
+
+
+.animate-marquee {
+  font-size: 5rem;
+  /* Увеличиваем размер шрифта для анимации */
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(20%);
+    /* Начало прокрутки с правого края */
+  }
+
+  100% {
+    transform: translateX(-100%);
+    /* Конец прокрутки слева */
+  }
+}
+
+@keyframes marquee2 {
+  0% {
+    transform: translateX(-100%);
+    /* Начало прокрутки с правого края */
+  }
+
+  100% {
+    transform: translateX(0%);
+    /* Конец прокрутки слева */
+  }
+}
+
+.bg-clip-text {
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, #f0f, rgb(233, 52, 11));
+}
+
+.relative {
+  position: relative;
+}
+
+@keyframes cloudAnimation {
+  0% {
+    left: -100%;
+    right: -100%;
+  }
+
+  100% {
+    left: 100%;
+    right: 100%;
+  }
 }
 </style>

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amineyarman/kinesis": "^1.0.6",
     "@asika32764/vue-animate": "^3.0.2",
     "@formkit/auto-animate": "^0.8.2",
     "@lottiefiles/dotlottie-vue": "^0.5.4",
