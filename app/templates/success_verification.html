@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success Verification</title>
-    <link href="{{ url_for('static', path='/success_verification.css') }}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Проверка успешна - 🚀 Pint3rest Next-Gen</title>
+  <link href="{{ url_for('static', path='success_verification.css') }}" rel="stylesheet">
 </head>
-
 <body>
-    <div class="container">
-        <div class="success-icon">✔</div>
-        <div class="message">Verification Successful!</div>
-        <div class="sub-message">Hi, {{user.username}}.Your {{user.email}} has been successfully verified. Thank you!
-        </div>
-        <a href="{{home_link}}" class="button">Go to Homepage</a>
-    </div>
+  <div class="container">
+    <div class="rocket">🚀</div>
+    <h1>Проверка успешна!</h1>
+    <p>Вы успешно прошли верификацию на <strong>🚀 Pint3rest Next-Gen</strong>.<br>Добро пожаловать в будущее!</p>
+    <a href="{{home_link}}" class="button">Перейти на главную</a>
+  </div>
 </body>
-
 </html>

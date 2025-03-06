@@ -1,50 +1,67 @@
+/* Общие стили страницы */
 body {
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-    background-color: #f3f4f6;
-}
-
-.container {
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f6f9fc, #e9eff5);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Контейнер с эффектом прозрачности и блюра */
+  .container {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 500px;
     text-align: center;
-    background: #ffffff;
-    padding: 30px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.success-icon {
-    font-size: 50px;
-    color: #4CAF50;
-    margin-bottom: 15px;
-}
-
-.message {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.sub-message {
-    font-size: 16px;
-    color: #555;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  
+  /* Заголовок */
+  h1 {
     margin-bottom: 20px;
-}
-
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: #fff;
-    background: #4CAF50;
+    font-size: 2.5em;
+    color: #1d1f21;
+  }
+  
+  /* Описание */
+  p {
+    font-size: 1.2em;
+    color: #3d3f41;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  
+  /* Кнопка перехода */
+  .button {
     text-decoration: none;
-    border-radius: 5px;
-    transition: background 0.3s;
-}
-
-.button:hover {
-    background: #45a049;
-}
+    background: #ff6f61;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.1em;
+    transition: background 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
+  }
+  
+  .button:hover {
+    background: #ff8a7d;
+  }
+  
+  /* Анимация ракеты */
+  .rocket {
+    font-size: 3em;
+    margin-bottom: 20px;
+    animation: rocketAnimation 2s ease-in-out infinite;
+  }
+  
+  @keyframes rocketAnimation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  

@@ -63,7 +63,7 @@ app = FastAPI(lifespan=lifespan, root_path="/api")
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
+    
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
 app.include_router(chats_router)

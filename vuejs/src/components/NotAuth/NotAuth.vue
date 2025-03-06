@@ -159,7 +159,6 @@ async function submitSignUp() {
         showLogin.value = true
 
         toast.success(`Verification Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
-        toast.success(`After verification u can Login in ${username} account`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
 
       } catch (error) {
         showSignUpLoader.value = false
@@ -225,7 +224,6 @@ async function submitLogin() {
       showLogin.value = false
       errorMessageLogin.value = 'You need verify your account to login'
       toast.success(`${error.response.data.detail}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
-      toast.success(`After verification on can Login in ${username} account`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     }
   }
 }
