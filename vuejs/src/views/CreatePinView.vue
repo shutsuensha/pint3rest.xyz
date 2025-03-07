@@ -13,7 +13,7 @@ const isVideo = ref(false);
 
 const isDragging = ref(false);
 
-const routerBack = useRouter(); 
+const routerBack = useRouter();
 
 
 const toast = useToast();
@@ -122,32 +122,41 @@ async function submitPin() {
       const rect = document.getElementById('videoPreview').getBoundingClientRect();
       height = rect.height.toFixed(2);
     }
-    const response = await axios.post('/api/pins/', {
+    const formData = new FormData();
+    formData.append("file", mediaFile.value); // Файл
+
+    const jsonData = JSON.stringify({
       title: title,
       description: description,
       href: href,
       height: `${height}`
-    },
-      {
-        withCredentials: true
+    });
+
+    formData.append("pin_model", jsonData); // Передаем строку, а не Blob
+
+    const response = await axios.post("/api/pins/create-pin-entity", formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data"
       }
-    )
+    });
+
 
     const pin_id = response.data.id
 
-    try {
-      const formData = new FormData();
-      formData.append('file', mediaFile.value);
+    // try {
+    //   const formData = new FormData();
+    //   formData.append('file', mediaFile.value);
 
-      const response = await axios.post(`/api/pins/upload/${pin_id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+    //   const response = await axios.post(`/api/pins/upload/${pin_id}`, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   });
 
-    } catch (error) {
-      console.log(error)
-    }
+    // } catch (error) {
+    //   console.log(error)
+    // }
 
     if (tags.value.length !== 0) {
       try {
@@ -156,13 +165,13 @@ async function submitPin() {
           tags: tags.value
         })
         sendingPin.value = false
-        router.push(`/pin/${pin_id}`);  
+        router.push(`/pin/${pin_id}`);
       } catch (error) {
         console.error(error)
       }
     } else {
       sendingPin.value = false
-      router.push(`/pin/${pin_id}`);  
+      router.push(`/pin/${pin_id}`);
     }
   } catch (error) {
     console.log(error)
@@ -209,11 +218,12 @@ function checkPinAded(name) {
         </svg>
       </button>
       <div class="ml-56">
-        <label for="media" class="cursor-pointer" 
-        @dragover.prevent="onDragOver" @dragleave="onDragLeave" @drop.prevent="onDrop">
+        <label for="media" class="cursor-pointer" @dragover.prevent="onDragOver" @dragleave="onDragLeave"
+          @drop.prevent="onDrop">
           <!-- Media Preview -->
-          <div id="mediaPreview" v-if="mediaPreview" class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-purple-500 hover:bg-purple-100 transition duration-100"
-          :class="{ 'border-purple-500 bg-purple-100': isDragging }">
+          <div id="mediaPreview" v-if="mediaPreview"
+            class="mt-2 border border-dashed border-gray-400 rounded-3xl hover:border-purple-500 hover:bg-purple-100 transition duration-100"
+            :class="{ 'border-purple-500 bg-purple-100': isDragging }">
             <img id="imagePreview" v-if="isImage" :src="mediaPreview"
               class="h-auto w-[271.84px] rounded-3xl mx-auto my-8" alt="Media Preview" />
             <video id="videoPreview" v-if="isVideo" :src="mediaPreview"

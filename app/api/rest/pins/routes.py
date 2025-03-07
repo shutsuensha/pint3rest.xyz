@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, HTTPException, UploadFile, status, Form
 from fastapi.responses import FileResponse
 from sqlalchemy import delete, desc, insert, or_, select, update
 
@@ -11,6 +11,9 @@ from app.config import settings
 from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins
 
 from .schemas import PinIn, PinOut
+
+import json
+
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
@@ -87,6 +90,43 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
     return pin
 
 
+@router.post("/create-pin-entity", response_model=PinOut, status_code=status.HTTP_201_CREATED)
+async def create_pin_entity(
+    user_id: user_id,
+    db: db,
+    pin_model: str = Form(...),  
+    file: UploadFile = File(...)
+):
+    pin_data = json.loads(pin_model) 
+    pin = await db.scalar(
+        insert(PinsOrm).values(**pin_data, user_id=user_id).returning(PinsOrm)
+    )
+
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
+    save_file(file.file, image_path)
+
+    if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
+        rgb = get_primary_color(image_path)
+
+    if file.content_type in ["video/mp4", "video/webm", "video/avi"]:
+        new_unique_filename = f"{uuid.uuid4()}.jpg"
+        new_image_path = f"{settings.MEDIA_PATH}pins/{new_unique_filename}"
+
+        extract_first_frame(image_path, new_image_path)
+        rgb = get_primary_color(new_image_path)
+
+    pin = await db.scalar(
+        update(PinsOrm)
+        .where(PinsOrm.id == pin.id)
+        .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})")
+        .returning(PinsOrm)
+    )
+    await db.commit()
+
+    return pin
+
+
 @router.delete("/{pin_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
@@ -102,7 +142,8 @@ async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
 async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")  
+    
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
@@ -127,6 +168,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     await db.commit()
 
     return pin
+
 
 
 @router.get("/upload/{id}")
