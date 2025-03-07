@@ -94,12 +94,12 @@ onMounted(() => {
 });
 
 const screenshots = ref([
-  { src: '/screenshots/home.png', title: '🏠 Главная', description: 'Стильный фид для вдохновения.', video: "/screenshots/home.mp4" },
-  { src: '/screenshots/search.png', title: '🔍 Поиск', description: 'Находите лучшие идеи.', video: "/screenshots/search.mp4"},
-  { src: '/screenshots/user.png', title: '👤 Профиль', description: 'Ваш личный космический кабинет.', video: "/screenshots/user.mp4" },
-  { src: '/screenshots/pin-detail.png', title: '📌 Пин', description: 'Подробности, лайки, сохранения.', video: "/screenshots/pin-detail.mp4" },
-  { src: '/screenshots/create-pin.png', title: '✨ Новый Пин', description: 'Создавайте шедевры за секунды.', video: "/screenshots/pin-create.mp4" },
-  { src: '/screenshots/chats.png', title: '💬 Чаты', description: 'Мгновенное общение без границ.', video: "/screenshots/chats.mp4" },
+  { src: '/screenshots/home.png', title: '🏠 Главная', description: 'Стильный фид для вдохновения.' },
+  { src: '/screenshots/search.png', title: '🔍 Поиск', description: 'Находите лучшие идеи.'},
+  { src: '/screenshots/user.png', title: '👤 Профиль', description: 'Ваш личный космический кабинет.' },
+  { src: '/screenshots/pin-detail.png', title: '📌 Пин', description: 'Подробности, лайки, сохранения.' },
+  { src: '/screenshots/create-pin.png', title: '✨ Новый Пин', description: 'Создавайте шедевры за секунды.' },
+  { src: '/screenshots/chats.png', title: '💬 Чаты', description: 'Мгновенное общение без границ.' },
 ])
 
 const fullscreenIndex = ref(null)
