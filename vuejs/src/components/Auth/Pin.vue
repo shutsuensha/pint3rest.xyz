@@ -125,6 +125,7 @@ onMounted(async () => {
         pinVideo.value = blobUrl;
       }
     } catch (error) {
+      pinImage.value = "https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
       console.error(error);
     }
   } catch (error) {
