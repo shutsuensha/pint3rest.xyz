@@ -708,19 +708,19 @@ async function redirectToChat() {
       <div class="flex items-center mt-6 justify-center space-x-4">
         <button @click="createdPins(); activeTab = 'created'"
           class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
-          :class="{ 'active': activeTab === 'created' }">
+          :class="{ 'active scale-105': activeTab === 'created' }">
           Created
         </button>
 
         <button @click="savedPins(); activeTab = 'saved'"
           class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
-          :class="{ 'active': activeTab === 'saved' }">
+          :class="{ 'active scale-105': activeTab === 'saved' }">
           Saved
         </button>
 
         <button @click="likedPins(); activeTab = 'liked'"
           class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
-          :class="{ 'active': activeTab === 'liked' }">
+          :class="{ 'active scale-105': activeTab === 'liked' }">
           Liked
         </button>
       </div>

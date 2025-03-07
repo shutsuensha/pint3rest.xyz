@@ -104,7 +104,7 @@ async def create_pin_entity(
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
-    save_file(file.file, image_path)
+    await save_file(file.file, image_path)
 
     if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
         rgb = get_primary_color(image_path)
@@ -147,7 +147,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
-    save_file(file.file, image_path)
+    await save_file(file.file, image_path)
 
     if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
         rgb = get_primary_color(image_path)

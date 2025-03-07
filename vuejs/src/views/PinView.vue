@@ -639,7 +639,7 @@ async function showVideoControls() {
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
-            class="transition transform hover:scale-105 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
+            class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
             placeholder="Добавить комментарий" />
 
           <button type="button" @click="addComment" :style="{

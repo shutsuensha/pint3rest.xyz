@@ -604,19 +604,19 @@ onMounted(async () => {
         <div v-for="(image, index) in images.slice(0, 5)" :key="index" class="p-2"
           :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'"
           >
-          <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
+          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-red-100'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
           :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'">
-          <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
+          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-green-100'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
           :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
-          <img :src="image" alt="Image" class="w-full h-80 rounded-3xl object-cover">
+          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div class="text-center">

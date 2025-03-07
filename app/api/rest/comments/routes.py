@@ -77,7 +77,7 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}comments/{unique_filename}"
-    save_file(file.file, image_path)
+    await save_file(file.file, image_path)
 
     comment = await db.scalar(
         update(CommentsOrm)

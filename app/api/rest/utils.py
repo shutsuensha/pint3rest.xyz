@@ -1,7 +1,7 @@
 import os
 import shutil
 from datetime import datetime, timedelta, timezone
-
+import aiofiles
 import cv2
 import jwt
 import numpy as np
@@ -51,13 +51,18 @@ def encode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def save_file(file, path):
-    with open(path, "bw+") as new_file:
-        shutil.copyfileobj(file, new_file)
+async def save_file(file, path):
+    async with aiofiles.open(path, "wb") as new_file:
+        while chunk := file.read(1024 * 64):  # Читаем файл частями
+            await new_file.write(chunk)
 
 
-def delete_file(path):
-    os.remove(path)
+
+async def delete_file(path):
+    try:
+        os.remove(path)  # Удаление файла — это синхронная операция, но она обычно очень быстрая
+    except FileNotFoundError:
+        pass
 
 
 def create_url_safe_token(data: dict, expiration=3600):

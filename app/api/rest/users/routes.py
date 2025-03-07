@@ -245,9 +245,9 @@ async def upload_image(id: int, db: db, file: UploadFile):
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
 
-    save_file(file.file, image_path)
+    await save_file(file.file, image_path)
     if user.image:
-        delete_file(user.image)
+        await delete_file(user.image)
 
     user = await db.scalar(
         update(UsersOrm).where(UsersOrm.id == id).values(image=image_path).returning(UsersOrm)
@@ -272,9 +272,9 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
-    save_file(file.file, image_path)
+    await save_file(file.file, image_path)
     if user.banner_image:
-        delete_file(user.banner_image)
+        await delete_file(user.banner_image)
 
     user = await db.scalar(
         update(UsersOrm)

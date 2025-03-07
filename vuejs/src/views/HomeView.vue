@@ -124,7 +124,7 @@ onMounted(async () => {
 
   if (props.register === true) {
     setTimeout(() => {
-      
+
       showCreatePin.value = true;
       document.body.style.overflowY = 'clip';
     }, 2000);
@@ -379,6 +379,9 @@ const filteredTags = computed(() => {
 
   return filtered;
 });
+
+const isActive = ref(false)
+
 </script>
 
 <template>
@@ -387,7 +390,9 @@ const filteredTags = computed(() => {
     :style="{ width: `${progress}%` }">
   </div>
 
-  <DotLottieVue v-if="register === true" src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" @load="lottieLoaded = true" class="hidden" />
+  <DotLottieVue v-if="register === true"
+    src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" @load="lottieLoaded = true"
+    class="hidden" />
 
   <transition name="fade" appear>
     <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
@@ -418,19 +423,20 @@ const filteredTags = computed(() => {
 
   <nav :class="['fixed top-0 left-20 w-full bg-white z-30', 'bg-opacity-20 backdrop-blur-sm']">
     <div class="flex items-center justify-between px-6 py-2">
-      <!-- Search Bar -->
-
       <div class="relative flex-1 mr-20">
-        <input v-model="searchValue" type="text" placeholder="Search"
-          class="transition duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300 text-md rounded-3xl block w-full py-3 px-10 outline-none border-none focus:ring-0" />
+        <input v-model="searchValue" type="text" placeholder="Search" class="transition-all duration-300 cursor-text
+               bg-white bg-opacity-20 backdrop-blur-sm text-black
+               text-md rounded-3xl block w-full py-3 pl-12 pr-10
+               outline-none border border-black
+                focus:shadow-sm" />
         <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
-          <i class="pi pi-search text-gray-600"></i>
+          <i class="pi pi-search text-black"></i>
         </div>
       </div>
     </div>
   </nav>
 
-
+  <!-- Контейнер с тегами -->
   <div class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
     <!-- Левая стрелка -->
     <button
@@ -441,7 +447,7 @@ const filteredTags = computed(() => {
 
     <!-- Контейнер с градиентами -->
     <div class="relative overflow-hidden">
-      <!-- Облака (градиенты) видны только при наведении на контейнер -->
+      <!-- Градиенты для эффекта свечения -->
       <div
         class="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white via-white/70 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
       </div>
@@ -454,7 +460,7 @@ const filteredTags = computed(() => {
         v-auto-animate>
         <div v-for="tag in filteredTags" :key="tag.id" @click="loadPinsByTag(tag.name)"
           :class="[tag.name == selectedTag ? 'bg-black text-white shadow-lg scale-105' : `${tag.color}`, 'flex', 'items-center', 'gap-1', 'text-sm', 'rounded-3xl', 'pl-2 pr-5', 'py-1', 'cursor-pointer', 'transition-transform', 'duration-100', 'transform', 'hover:scale-110']">
-          <!-- Отображение изображения или видео -->
+          <!-- Изображение или видео -->
           <div class="w-9 h-9 flex-shrink-0">
             <img v-show="tagsLoaded" v-if="tag.isImage && tag.file" :src="tag.file" alt="Tag Image" @load="onTagLoad"
               class="w-full h-full object-cover rounded-full fade-in" :class="{ 'fade-in-animation': tagsLoaded }" />
@@ -496,6 +502,32 @@ const filteredTags = computed(() => {
 
 
 <style scoped>
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Лёгкое свечение при фокусе */
+input:focus {
+  box-shadow: 0 0 8px rgba(199, 88, 151, 0.9);
+}
+
+
+
+
+
 /* Define transition animations */
 .fade-enter-active,
 .fade-leave-active {
