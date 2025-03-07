@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, computed  } from 'vue';
+import { onMounted, ref, reactive, computed } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import AOS from 'aos';
@@ -10,14 +10,36 @@ import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
 const tailwindColors = {
   "bg-red-100": "#fee2e2",
+  "bg-red-200": "#fecaca",
+  "bg-red-300": "#fca5a5",
   "bg-green-100": "#dcfce7",
+  "bg-green-200": "#bbf7d0",
+  "bg-green-300": "#86efac",
+  "bg-violet-100": "#f5f3ff",
+  "bg-violet-200": "#ddd6fe",
+  "bg-violet-300": "#c4b5fd",
+  "bg-pink-100": "#fce7f3",
+  "bg-pink-200": "#fbcfe8",
+  "bg-pink-300": "#f9a8d4",
   // Добавь другие цвета, если нужно
 };
 
 
+const buttonBg = ref('bg-indigo-400')
+const buttonText = ref('text-white')
+const buttonBgHover = ref('hover:bg-indigo-600')
+const buttonBgHoverText = ref('hover:text-white')
+
+
+const buttonBg2 = ref('bg-red-400')
+const buttonText2 = ref('text-white')
+const buttonBgHover2 = ref('hover:bg-red-600')
+const buttonBgHoverText2 = ref('hover:text-white')
+
+
 const toast = useToast();
 
-const bg = ref('bg-white')
+const bg = ref('bg-green-300')
 
 const colorBg = computed(() => tailwindColors[bg.value] || "#ffffff");
 
@@ -319,12 +341,12 @@ async function submitPasswordReset() {
 
 
 function changeBgColor1() {
-  bg.value = 'bg-red-100'
+  bg.value = 'bg-violet-300'
   textWelcome.value = 'First time here ? - Sign Up 😇'
 }
 
 function changeBgColor2() {
-  bg.value = 'bg-green-100'
+  bg.value = 'bg-red-300'
   textWelcome.value = 'Already have an account ? 🤫'
 }
 
@@ -600,20 +622,19 @@ onMounted(async () => {
     class="flex items-center justify-center h-screen">
 
     <div class="items-center space-y-6 flex flex-col">
-      <div v-if="bg === 'bg-white'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-green-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(0, 5)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'"
-          >
+          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
-      <div v-if="bg === 'bg-red-100'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
           :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
-      <div v-if="bg === 'bg-green-100'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
           :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
@@ -624,12 +645,13 @@ onMounted(async () => {
         <div class="space-x-4">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @click="showSignUp = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-red-400 text-black font-semibold rounded-3xl transition hover:bg-red-600 hover:text-white">
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
             Sign Up
           </button>
+
           <!-- Login Button -->
           <button @mouseenter="changeBgColor2" @click="showLogin = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
             Log In
           </button>
         </div>
