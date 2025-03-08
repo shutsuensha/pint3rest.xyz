@@ -11,7 +11,7 @@ from app.postgresql.models import ChatOrm, MessageOrm
 
 from .schemas import ChatOut, MessageIn, MessageOut
 
-router = APIRouter(prefix="/messages", tags=["mssagees"])
+router = APIRouter(prefix="/messages", tags=["messages"])
 
 
 @router.post("/", response_model=MessageOut, status_code=status.HTTP_201_CREATED)

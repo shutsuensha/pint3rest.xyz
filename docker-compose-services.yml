@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
     networks:
       - pinterest-network
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
 
   test_postgresql:
     image: postgres:16
@@ -18,6 +20,8 @@ services:
       POSTGRES_DB: ${TEST_POSTGRES_DB_NAME}
     networks:
       - pinterest-network
+    volumes:
+      - test-postgresql-data:/var/lib/postgresql/data
 
   mongodb:
     image: mongo:latest
@@ -28,6 +32,8 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
     networks:
       - pinterest-network
+    volumes:
+      - mongodb-data:/data/db
 
   mysql:
     image: mysql:8
@@ -39,6 +45,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_DB_PASS}         
     networks:
       - pinterest-network
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   redis:
     image: redis:7.4
@@ -48,7 +56,16 @@ services:
     command: redis-server --requirepass ${REDIS_PASS}
     networks:
       - pinterest-network
+    volumes:
+      - redis-data:/data
 
 networks:
   pinterest-network:
     external: true
+
+volumes:
+  postgresql-data:
+  test-postgresql-data:
+  mongodb-data:
+  mysql-data:
+  redis-data:

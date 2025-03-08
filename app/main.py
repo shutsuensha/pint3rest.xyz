@@ -37,6 +37,8 @@ from app.redis.redis_revoke_tokens import (
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
+from .api_metadata import tags_metadata, title, description, version, license_info
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,10 +57,20 @@ async def lifespan(app: FastAPI):
         await close_redis_revoke_tokens()
         await close_redis_cache()
         # await mongo.close()
-        await close_httpx_client()
+        await close_httpx_client()  
 
 
-app = FastAPI(lifespan=lifespan, root_path="/api")
+
+app = FastAPI(
+    lifespan=lifespan,
+    root_path="/api",
+    title=title,
+    description=description,
+    version=version,
+    license_info=license_info,
+    openapi_tags=tags_metadata
+)
+
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
@@ -86,6 +98,6 @@ register_websocket(app)
 register_exception_handlers(app)
 
 
-@app.get("/health")
+@app.get("/health", tags=["health"])
 def health():
     return {"status": "ok"}
