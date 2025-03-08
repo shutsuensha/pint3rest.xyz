@@ -15,22 +15,26 @@
 
 <div align="center">
 
-### 👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  
+<h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  </h2>
 
 </div>
 
 <div align="center">
-  <h3>⭐ Show Your Support 💖</h3>
+  <h2>⭐ Show Your Support 💖</h2>
   <p>Love it? Smash that <strong>⭐ on GitHub</strong>! 👍🎉</p>
 </div>
 
 ![Logo](.github/assets/logo.png)
 
+
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
 
+
 ## 🤝 Contribute 🤩
 Got ideas? Report bugs, add features, or just join the fun! 🛠️💬
+
+
 
 ## 📜 License 📝
 MIT License – free to use & share! 🔓
