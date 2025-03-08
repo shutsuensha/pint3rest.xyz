@@ -13,16 +13,16 @@
   Fast, cool, and creative! 😎✨</p>
 </div>
 
-![Logo](.github/logo2.png)
+![Logo](.github/assets/logo.png)
 
-## 🎥 Demo 📽️  
-<video width="100%" controls>
-  <source src=".github/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
 
 ## ⭐ Show Your Support 💖
-Love it? Smash that **⭐ on GitHub**! 👍🎉
+Love it? Smash that **⭐ on GitHub**! 👍🎉  
+
+
+## 📊 Project Architecture
+![Architecture](.github/assets/architecture.png)
+
 
 ## 🤝 Contribute 🤩
 Got ideas? Report bugs, add features, or just join the fun! 🛠️💬
