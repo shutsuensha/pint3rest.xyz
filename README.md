@@ -15,6 +15,12 @@
 
 ![Logo](.github/logo2.png)
 
+## 🎥 Demo 📽️  
+<video width="100%" autoplay loop>
+  <source src=".github/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## ⭐ Show Your Support 💖
 Love it? Smash that **⭐ on GitHub**! 👍🎉
 
