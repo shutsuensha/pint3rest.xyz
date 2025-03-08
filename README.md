@@ -13,16 +13,25 @@
   Fast, cool, and creative! 😎✨</p>
 </div>
 
+<div align="center">
+  <h2>🌟 Core Features 🌟</h2>
+</div>
+
+<div align="center">
+
+### 👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  
+
+</div>
+
+<div align="center">
+  <h2>⭐ Show Your Support 💖</h2>
+  <p>Love it? Smash that <strong>⭐ on GitHub</strong>! 👍🎉</p>
+</div>
+
 ![Logo](.github/assets/logo.png)
-
-
-## ⭐ Show Your Support 💖
-Love it? Smash that **⭐ on GitHub**! 👍🎉  
-
 
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
-
 
 ## 🤝 Contribute 🤩
 Got ideas? Report bugs, add features, or just join the fun! 🛠️💬
