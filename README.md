@@ -14,17 +14,13 @@
 </div>
 
 <div align="center">
-  <h2>🌟 Core Features 🌟</h2>
-</div>
-
-<div align="center">
 
 ### 👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  
 
 </div>
 
 <div align="center">
-  <h2>⭐ Show Your Support 💖</h2>
+  <h3>⭐ Show Your Support 💖</h3>
   <p>Love it? Smash that <strong>⭐ on GitHub</strong>! 👍🎉</p>
 </div>
 
