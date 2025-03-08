@@ -1,11 +1,6 @@
 <div align="center">
-  <h1>Pint3rest 🚀✨</h1>
+  <h1> <a href="https://pint3rest.xyz" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🌐 Pint3rest 🚀✨</a></h1>
 </div>
-
-<div align="center">
-  <a href="https://pint3rest.xyz" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🌐 Website</a>
-</div>
-
 <div align="center">
   <a href="https://pint3rest.xyz/api/docs" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">📚 API Docs</a>
   <a href="https://pint3rest.xyz/api/graphql" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🔥 GraphQL API</a>
