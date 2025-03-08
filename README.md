@@ -13,9 +13,7 @@
   Fast, cool, and creative! 😎✨</p>
 </div>
 
-<div align="center">
-  ![Logo](.github/logo.png)
-</div>
+![Logo](.github/logo.png)
 
 ## ⭐ Show Your Support 💖
 Love it? Smash that **⭐ on GitHub**! 👍🎉
