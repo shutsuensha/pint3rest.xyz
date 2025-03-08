@@ -1,6 +1,7 @@
+import json
 import uuid
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status, Form
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy import delete, desc, insert, or_, select, update
 
@@ -11,9 +12,6 @@ from app.config import settings
 from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins
 
 from .schemas import PinIn, PinOut
-
-import json
-
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
@@ -92,15 +90,10 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
 
 @router.post("/create-pin-entity", response_model=PinOut, status_code=status.HTTP_201_CREATED)
 async def create_pin_entity(
-    user_id: user_id,
-    db: db,
-    pin_model: str = Form(...),  
-    file: UploadFile = File(...)
+    user_id: user_id, db: db, pin_model: str = Form(...), file: UploadFile = File(...)
 ):
-    pin_data = json.loads(pin_model) 
-    pin = await db.scalar(
-        insert(PinsOrm).values(**pin_data, user_id=user_id).returning(PinsOrm)
-    )
+    pin_data = json.loads(pin_model)
+    pin = await db.scalar(insert(PinsOrm).values(**pin_data, user_id=user_id).returning(PinsOrm))
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
@@ -142,8 +135,7 @@ async def user_delete_created_pin(pin_id: int, user_id: user_id, db: db):
 async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")  
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
@@ -168,7 +160,6 @@ async def upload_image(user_id: user_id, id: int, db: db, file: UploadFile):
     await db.commit()
 
     return pin
-
 
 
 @router.get("/upload/{id}")

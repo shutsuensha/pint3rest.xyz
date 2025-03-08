@@ -1,6 +1,6 @@
 import os
-import shutil
 from datetime import datetime, timedelta, timezone
+
 import aiofiles
 import cv2
 import jwt
@@ -55,7 +55,6 @@ async def save_file(file, path):
     async with aiofiles.open(path, "wb") as new_file:
         while chunk := file.read(1024 * 64):  # Читаем файл частями
             await new_file.write(chunk)
-
 
 
 async def delete_file(path):

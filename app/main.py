@@ -34,10 +34,9 @@ from app.redis.redis_revoke_tokens import (
     init_redis_revoke_tokens,
 )
 
+from .api_metadata import description, license_info, tags_metadata, title, version
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
-
-from .api_metadata import tags_metadata, title, description, version, license_info
 
 
 @asynccontextmanager
@@ -46,9 +45,9 @@ async def lifespan(app: FastAPI):
         await init_redis_revoke_tokens()
         redis_cache = await init_redis_cache()
         FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
-        # await mongo.connect()
+        await mongo.connect()
         await postgre_connect()
-        # await mysql_connect()
+        await mysql_connect()
         await init_httpx_client()
         yield
     except Exception as e:
@@ -56,9 +55,8 @@ async def lifespan(app: FastAPI):
     finally:
         await close_redis_revoke_tokens()
         await close_redis_cache()
-        # await mongo.close()
-        await close_httpx_client()  
-
+        await mongo.close()
+        await close_httpx_client()
 
 
 app = FastAPI(
@@ -68,7 +66,7 @@ app = FastAPI(
     description=description,
     version=version,
     license_info=license_info,
-    openapi_tags=tags_metadata
+    openapi_tags=tags_metadata,
 )
 
 

@@ -30,8 +30,11 @@ router = APIRouter(prefix="/users", tags=["users"])
 templates = Jinja2Templates(directory="app/templates")
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED,
-             responses={
+@router.post(
+    "/register",
+    response_model=UserOut,
+    status_code=status.HTTP_201_CREATED,
+    responses={
         201: {
             "description": "Пользователь успешно зарегистрирован. Если указан email, отправляется письмо с подтверждением.",
             "content": {
@@ -54,13 +57,10 @@ templates = Jinja2Templates(directory="app/templates")
         },
         409: {
             "description": "Пользователь с таким именем уже существует.",
-            "content": {
-                "application/json": {
-                    "example": {"detail": "user already exists"}
-                }
-            },
+            "content": {"application/json": {"example": {"detail": "user already exists"}}},
         },
-    },)
+    },
+)
 async def register_user(user_in: UserIn, db: db):
     """
     Регистрирует нового пользователя.
@@ -106,16 +106,23 @@ async def register_user(user_in: UserIn, db: db):
     return user
 
 
-@router.get("/verify/{token}", response_class=HTMLResponse, responses={
-    200: {
-        "description": "Учетная запись пользователя успешно подтверждена",
-        "content": {"text/html": {"example": "<html><body><h1>Аккаунт успешно подтвержден</h1></body></html>"}}
+@router.get(
+    "/verify/{token}",
+    response_class=HTMLResponse,
+    responses={
+        200: {
+            "description": "Учетная запись пользователя успешно подтверждена",
+            "content": {
+                "text/html": {
+                    "example": "<html><body><h1>Аккаунт успешно подтвержден</h1></body></html>"
+                }
+            },
+        },
+        409: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "Пользователь не найден"}}},
+        },
     },
-    409: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "Пользователь не найден"}}}
-    }
-}
 )
 async def verify_user_account(request: Request, token: str, db: db):
     """
@@ -124,7 +131,7 @@ async def verify_user_account(request: Request, token: str, db: db):
     - **token**: Токен, используемый для подтверждения пользователя, содержащий имя пользователя.
     - Возвращает страницу с успешным подтверждением, если пользователь найден и успешно подтвержден.
     - Возвращает ошибку 409, если пользователь не найден.
-    
+
     **Ответы:**
     - 200: Успешное подтверждение учетной записи.
     """
@@ -150,28 +157,49 @@ async def verify_user_account(request: Request, token: str, db: db):
     )
 
 
-@router.post("/password-reset-request", responses={
-    200: {
-        "description": "Ссылка для сброса пароля успешно отправлена на вашу почту",
-        "content": {"application/json": {"example": {"message": "password reset link is send to your email"}}}
+@router.post(
+    "/password-reset-request",
+    responses={
+        200: {
+            "description": "Ссылка для сброса пароля успешно отправлена на вашу почту",
+            "content": {
+                "application/json": {
+                    "example": {"message": "password reset link is send to your email"}
+                }
+            },
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "user not found"}}},
+        },
+        403: {
+            "description": "Пользователь не имеет привязанного email для сброса пароля",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "user does not have email, u cant do password reset"}
+                }
+            },
+        },
+        400: {
+            "description": "Неверный email для сброса пароля",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "enter your email for account <username>"}
+                }
+            },
+        },
+        405: {
+            "description": "Ошибка при сбросе пароля, требуется подтверждение email",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "first u need verify your email then u can password, verification link is send to your email"
+                    }
+                }
+            },
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "user not found"}}}
-    },
-    403: {
-        "description": "Пользователь не имеет привязанного email для сброса пароля",
-        "content": {"application/json": {"example": {"detail": "user does not have email, u cant do password reset"}}}
-    },
-    400: {
-        "description": "Неверный email для сброса пароля",
-        "content": {"application/json": {"example": {"detail": "enter your email for account <username>"}}}
-    },
-    405: {
-        "description": "Ошибка при сбросе пароля, требуется подтверждение email",
-        "content": {"application/json": {"example": {"detail": "first u need verify your email then u can password, verification link is send to your email"}}}
-    }
-})
+)
 async def password_reset_request(reset_model: PasswordResetRequestModel, db: db):
     """
     Запрос на сброс пароля пользователя.
@@ -227,20 +255,30 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
     return {"message": "password reset link is send to your email"}
 
 
-@router.get("/password-reset-confirm/{token}", response_class=HTMLResponse, responses={
-    200: {
-        "description": "Пароль успешно сброшен",
-        "content": {"text/html": {"example": "<html><body><h1>Пароль успешно сброшен</h1></body></html>"}}
+@router.get(
+    "/password-reset-confirm/{token}",
+    response_class=HTMLResponse,
+    responses={
+        200: {
+            "description": "Пароль успешно сброшен",
+            "content": {
+                "text/html": {
+                    "example": "<html><body><h1>Пароль успешно сброшен</h1></body></html>"
+                }
+            },
+        },
+        409: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "user not found"}}},
+        },
+        400: {
+            "description": "Неверный токен для сброса пароля",
+            "content": {
+                "application/json": {"example": {"detail": "Invalid token for password reset"}}
+            },
+        },
     },
-    409: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "user not found"}}}
-    },
-    400: {
-        "description": "Неверный токен для сброса пароля",
-        "content": {"application/json": {"example": {"detail": "Invalid token for password reset"}}}
-    }
-})
+)
 async def reset_account_password(request: Request, token: str, db: db):
     """
     Сброс пароля пользователя с помощью токена.
@@ -278,20 +316,32 @@ async def reset_account_password(request: Request, token: str, db: db):
     )
 
 
-@router.post("/login", responses={
-    200: {
-        "description": "Пользователь успешно вошел в систему",
-        "content": {"application/json": {"example": {"access_token": "<access_token>", "refresh_token": "<refresh_token>"}}}
+@router.post(
+    "/login",
+    responses={
+        200: {
+            "description": "Пользователь успешно вошел в систему",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "access_token": "<access_token>",
+                        "refresh_token": "<refresh_token>",
+                    }
+                }
+            },
+        },
+        401: {
+            "description": "Неверные данные для входа",
+            "content": {"application/json": {"example": {"detail": "user not found"}}},
+        },
+        403: {
+            "description": "Пользователь не подтвердил email",
+            "content": {
+                "application/json": {"example": {"detail": "Verification link is send to <email>"}}
+            },
+        },
     },
-    401: {
-        "description": "Неверные данные для входа",
-        "content": {"application/json": {"example": {"detail": "user not found"}}}
-    },
-    403: {
-        "description": "Пользователь не подтвердил email",
-        "content": {"application/json": {"example": {"detail": "Verification link is send to <email>"}}}
-    }
-})
+)
 async def login_user(user_in: UserIn, response: Response, db: db):
     """
     Вход пользователя в систему.
@@ -328,16 +378,26 @@ async def login_user(user_in: UserIn, response: Response, db: db):
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
-@router.get("/refresh_token", responses={
-    200: {
-        "description": "Новый access токен успешно выдан",
-        "content": {"application/json": {"example": {"access_token": "<access_token>", "refresh_token": "<refresh_token>"}}}
+@router.get(
+    "/refresh_token",
+    responses={
+        200: {
+            "description": "Новый access токен успешно выдан",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "access_token": "<access_token>",
+                        "refresh_token": "<refresh_token>",
+                    }
+                }
+            },
+        },
+        401: {
+            "description": "Ошибка авторизации, токен не предоставлен или был отозван",
+            "content": {"application/json": {"example": {"detail": "Unauthorized"}}},
+        },
     },
-    401: {
-        "description": "Ошибка авторизации, токен не предоставлен или был отозван",
-        "content": {"application/json": {"example": {"detail": "Unauthorized"}}}
-    }
-})
+)
 async def get_new_access_token(request: Request, response: Response):
     """
     Получение нового access токена с использованием refresh токена.
@@ -359,12 +419,15 @@ async def get_new_access_token(request: Request, response: Response):
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
-@router.post("/logout", responses={
-    200: {
-        "description": "Пользователь успешно вышел из системы",
-        "content": {"application/json": {"example": {"status": "OK"}}}
-    }
-})
+@router.post(
+    "/logout",
+    responses={
+        200: {
+            "description": "Пользователь успешно вышел из системы",
+            "content": {"application/json": {"example": {"status": "OK"}}},
+        }
+    },
+)
 async def logout(response: Response, request: Request):
     """
     Выход пользователя из системы.
@@ -387,12 +450,20 @@ async def logout(response: Response, request: Request):
     return {"status": "OK"}
 
 
-@router.get("/me", response_model=UserOut,responses={
-    200: {
-        "description": "Пользователь найден и возвращен",
-        "content": {"application/json": {"example": {"id": 1, "username": "username", "image": "image.jpg"}}}
-    }
-})
+@router.get(
+    "/me",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Пользователь найден и возвращен",
+            "content": {
+                "application/json": {
+                    "example": {"id": 1, "username": "username", "image": "image.jpg"}
+                }
+            },
+        }
+    },
+)
 async def get_me(user_id: user_id, db: db):
     """
     Получение информации о текущем пользователе по ID.
@@ -406,16 +477,24 @@ async def get_me(user_id: user_id, db: db):
     return user
 
 
-@router.get("/user_id/{id}", response_model=UserOut, responses={
-    200: {
-        "description": "Пользователь найден и возвращен",
-        "content": {"application/json": {"example": {"id": 1, "username": "username", "image": "image.jpg"}}}
+@router.get(
+    "/user_id/{id}",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Пользователь найден и возвращен",
+            "content": {
+                "application/json": {
+                    "example": {"id": 1, "username": "username", "image": "image.jpg"}
+                }
+            },
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def get_user_by_id(user_id: user_id, id: int, db: db):
     """
     Получение информации о пользователе по ID.
@@ -432,16 +511,24 @@ async def get_user_by_id(user_id: user_id, id: int, db: db):
     return user
 
 
-@router.get("/user_username/{username}", response_model=UserOut, responses={
-    200: {
-        "description": "Пользователь найден и возвращен",
-        "content": {"application/json": {"example": {"id": 1, "username": "username", "image": "image.jpg"}}}
+@router.get(
+    "/user_username/{username}",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Пользователь найден и возвращен",
+            "content": {
+                "application/json": {
+                    "example": {"id": 1, "username": "username", "image": "image.jpg"}
+                }
+            },
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def get_user_by_username(user_id: user_id, username: str, db: db):
     """
     Получение информации о пользователе по имени пользователя (username).
@@ -458,16 +545,24 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
     return user
 
 
-@router.post("/upload/{id}", response_model=UserOut, responses={
-    200: {
-        "description": "Изображение успешно загружено и обновлено",
-        "content": {"application/json": {"example": {"id": 1, "username": "username", "image": "image_path"}}}
+@router.post(
+    "/upload/{id}",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Изображение успешно загружено и обновлено",
+            "content": {
+                "application/json": {
+                    "example": {"id": 1, "username": "username", "image": "image_path"}
+                }
+            },
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def upload_image(id: int, db: db, file: UploadFile):
     """
     Загрузка изображения для пользователя.
@@ -500,16 +595,19 @@ async def upload_image(id: int, db: db, file: UploadFile):
     return user
 
 
-@router.get("/upload/{id}", responses={
-    200: {
-        "description": "Изображение пользователя успешно найдено и возвращено",
-        "content": {"application/octet-stream": {}}
+@router.get(
+    "/upload/{id}",
+    responses={
+        200: {
+            "description": "Изображение пользователя успешно найдено и возвращено",
+            "content": {"application/octet-stream": {}},
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def get_image(user_id: user_id, id: int, db: db):
     """
     Получение изображения пользователя по ID.
@@ -527,12 +625,20 @@ async def get_image(user_id: user_id, id: int, db: db):
     return FileResponse(user.image)
 
 
-@router.post("/banner/upload/{id}", response_model=UserOut, responses={
-    200: {
-        "description": "Изображение баннера успешно загружено и обновлено.",
-        "content": {"application/json": {"example": {"id": 1, "username": "user1", "banner_image": "path/to/banner.jpg"}}}
-    }
-})
+@router.post(
+    "/banner/upload/{id}",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Изображение баннера успешно загружено и обновлено.",
+            "content": {
+                "application/json": {
+                    "example": {"id": 1, "username": "user1", "banner_image": "path/to/banner.jpg"}
+                }
+            },
+        }
+    },
+)
 async def update_user_banner_image(id: int, db: db, file: UploadFile):
     """
     Обновление изображения баннера пользователя по ID.
@@ -562,16 +668,19 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
     return user
 
 
-@router.get("/banner/upload/{id}", responses={
-    200: {
-        "description": "Изображение баннера пользователя успешно найдено и возвращено.",
-        "content": {"application/octet-stream": {}}
+@router.get(
+    "/banner/upload/{id}",
+    responses={
+        200: {
+            "description": "Изображение баннера пользователя успешно найдено и возвращено.",
+            "content": {"application/octet-stream": {}},
+        },
+        404: {
+            "description": "Пользователь не найден",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    404: {
-        "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def get_user_banner(user_id: user_id, id: int, db: db):
     """
     Получение изображения баннера пользователя по ID.
@@ -589,16 +698,20 @@ async def get_user_banner(user_id: user_id, id: int, db: db):
     return FileResponse(user.banner_image)
 
 
-@router.patch("/information", response_model=UserOut, responses={
-    200: {
-        "description": "Информация пользователя успешно обновлена.",
-        "content": {"application/json": {"example": {"id": 1, "username": "new_username"}}}
+@router.patch(
+    "/information",
+    response_model=UserOut,
+    responses={
+        200: {
+            "description": "Информация пользователя успешно обновлена.",
+            "content": {"application/json": {"example": {"id": 1, "username": "new_username"}}},
+        },
+        409: {
+            "description": "Пользователь не найден.",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
+        },
     },
-    409: {
-        "description": "Пользователь не найден.",
-        "content": {"application/json": {"example": {"detail": "User not found"}}}
-    }
-})
+)
 async def update_user_information(user_model: UserPatch, user_id: user_id, db: db):
     """
     Обновление информации пользователя (например, имени пользователя, описания и т. д.).
