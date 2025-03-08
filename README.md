@@ -3,9 +3,12 @@
 </div>
 
 <div align="center">
-  <a href="https://pint3rest.xyz" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #4A90E2; text-decoration: none;">🌐 Website</a>
-  <a href="https://pint3rest.xyz/api/docs" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #50E3C2; text-decoration: none;">📚 API Docs</a>
-  <a href="https://pint3rest.xyz/api/graphql" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #F5A623; text-decoration: none;">🔥 GraphQL API</a>
+  <a href="https://pint3rest.xyz" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🌐 Website</a>
+</div>
+
+<div align="center">
+  <a href="https://pint3rest.xyz/api/docs" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">📚 API Docs</a>
+  <a href="https://pint3rest.xyz/api/graphql" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🔥 GraphQL API</a>
 </div>
 
 <div align="center">
@@ -14,9 +17,7 @@
 </div>
 
 <div align="center">
-
 <h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  </h2>
-
 </div>
 
 <div align="center">
@@ -26,15 +27,11 @@
 
 ![Logo](.github/assets/logo.png)
 
-
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
 
-
 ## 🤝 Contribute 🤩
 Got ideas? Report bugs, add features, or just join the fun! 🛠️💬
-
-
 
 ## 📜 License 📝
 MIT License – free to use & share! 🔓
