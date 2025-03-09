@@ -1,9 +1,18 @@
 <div align="center">
-  <h1> <a href="https://pint3rest.xyz" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🌐 Pint3rest 🚀✨</a></h1>
+  <h1> 
+    <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+      🌐 Pint3rest 🚀✨
+    </a>
+  </h1>
 </div>
+
 <div align="center">
-  <a href="https://pint3rest.xyz/api/docs" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">📚 API Docs</a>
-  <a href="https://pint3rest.xyz/api/graphql" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">🔥 GraphQL API</a>
+  <a href="https://pint3rest.xyz/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+    📚 API Docs
+  </a>
+  <a href="https://pint3rest.xyz/api/graphql" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+    🔥 GraphQL API
+  </a>
 </div>
 
 <div align="center">
@@ -12,7 +21,7 @@
 </div>
 
 <div align="center">
-<h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats  </h2>
+  <h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats</h2>
 </div>
 
 <div align="center">
@@ -33,5 +42,5 @@ MIT License – free to use & share! 🔓
 
 ## 📬 Contact 📞
 - 📧 [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- 💬 [Telegram @evalshine](https://t.me/evalshine)
-- 🐙 [GitHub shutsuensha](https://github.com/shutsuensha)
+- 💬 <a href="https://t.me/evalshine" target="_blank" rel="noopener noreferrer">Telegram @evalshine</a>
+- 🐙 <a href="https://github.com/shutsuensha" target="_blank" rel="noopener noreferrer">GitHub shutsuensha</a>
