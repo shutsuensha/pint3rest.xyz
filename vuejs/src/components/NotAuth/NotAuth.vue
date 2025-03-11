@@ -124,46 +124,40 @@ async function submitSignUp() {
 
   if (!email.trim()) {
     try {
+      const formData = new FormData();
+      formData.append("file", imageFile.value); // Файл
 
-      const response = await axios.post('/api/users/register', {
+      const jsonData = JSON.stringify({
         username: username,
         password: password
-      })
+      });
 
-      const user_id = response.data.id
+      formData.append("user_model", jsonData); // Передаем строку, а не Blob
+
+      const response = await axios.post("/api/users/create-user-entity", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
 
       try {
-        const formData = new FormData();
-        formData.append('file', imageFile.value);
+        const response = await axios.post('/api/users/login', {
+          username: username,
+          password: password
+        })
+        const access_token = response.data.access_token
 
-        const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        try {
-          const response = await axios.post('/api/users/login', {
-            username: username,
-            password: password
-          })
-          const access_token = response.data.access_token
+        scrollToTop()
+        showSignUpLoader.value = false
+        showSignUp.value = false
 
-          scrollToTop()
-          showSignUpLoader.value = false
-          showSignUp.value = false
-
-          emit('signup', access_token)
-        } catch (error) {
-          showSignUpLoader.value = false
-          showErrorModalSignup.value = true
-          showSignUp.value = false
-          errorMessageSignup.value = 'Unknown error, try later'
-        }
+        emit('signup', access_token)
       } catch (error) {
         showSignUpLoader.value = false
         showErrorModalSignup.value = true
         showSignUp.value = false
-        errorMessageSignup.value = 'Error uploading image, try registration again'
+        errorMessageSignup.value = 'Unknown error, try later'
       }
 
     } catch (error) {
@@ -176,36 +170,30 @@ async function submitSignUp() {
     }
   } else {
     try {
-      const response = await axios.post('/api/users/register', {
+      const formData = new FormData();
+      formData.append("file", imageFile.value); // Файл
+
+      const jsonData = JSON.stringify({
         username: username,
         password: password,
         email: email
-      })
+      });
 
-      const user_id = response.data.id
+      formData.append("user_model", jsonData); // Передаем строку, а не Blob
 
-      try {
-        const formData = new FormData();
-        formData.append('file', imageFile.value);
+      const response = await axios.post("/api/users/create-user-entity", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
 
-        const response = await axios.post(`/api/users/upload/${user_id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+      showSignUpLoader.value = false
+      showSignUp.value = false
+      showLogin.value = true
 
-        showSignUpLoader.value = false
-        showSignUp.value = false
-        showLogin.value = true
+      toast.success(`Verification Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
 
-        toast.success(`Verification Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
-
-      } catch (error) {
-        showSignUpLoader.value = false
-        showErrorModalSignup.value = true
-        showSignUp.value = false
-        errorMessageSignup.value = 'Error uploading image, try registration again'
-      }
     } catch (error) {
       if (error.response.status === 409) {
         showSignUpLoader.value = false

@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, HTTPException, UploadFile, status, Form, File
 from fastapi.responses import FileResponse
 from sqlalchemy import func, insert, select, update
 
@@ -8,6 +8,9 @@ from app.api.rest.dependencies import db, filter, user_id
 from app.api.rest.utils import save_file
 from app.config import settings
 from app.postgresql.models import CommentsOrm, PinsOrm
+from pydantic import ValidationError
+
+import json
 
 from .schemas import CommentIn, CommentOut
 
@@ -132,3 +135,71 @@ async def get_comments_on_comment(comment_id: int, db: db, user_id: user_id, fil
         .limit(filter.limit)
     )
     return comments
+
+
+@router.post("/create-comment-on-pin-entity/{pin_id}", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
+async def create_comment_on_pin_entity(pin_id: int, db: db, user_id: user_id, comment_model: str = Form(...), file: UploadFile = File(...)):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+
+    try:
+        comment_model = json.loads(comment_model)
+        comment_model = CommentIn(**comment_model)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
+
+    comment = await db.scalar(
+        insert(CommentsOrm)
+        .values(content=comment_model.content, pin_id=pin_id, user_id=user_id)
+        .returning(CommentsOrm)
+    )
+
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"{settings.MEDIA_PATH}comments/{unique_filename}"
+    await save_file(file.file, image_path)
+
+    comment = await db.scalar(
+        update(CommentsOrm)
+        .where(CommentsOrm.id == comment.id)
+        .values(image=image_path)
+        .returning(CommentsOrm)
+    )
+
+    await db.commit()
+    return comment
+
+
+@router.post("/create-comment-on-comment-entity/{comment_id}", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
+async def create_comment_on_comment_entity(comment_id: int, db: db, user_id: user_id, comment_model: str = Form(...), file: UploadFile = File(...)):
+    comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
+    if comment is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
+    
+
+    try:
+        comment_model = json.loads(comment_model)
+        comment_model = CommentIn(**comment_model)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
+
+    comment = await db.scalar(
+        insert(CommentsOrm)
+        .values(content=comment_model.content, comment_id=comment_id, user_id=user_id)
+        .returning(CommentsOrm)
+    )
+
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"{settings.MEDIA_PATH}comments/{unique_filename}"
+    await save_file(file.file, image_path)
+
+    comment = await db.scalar(
+        update(CommentsOrm)
+        .where(CommentsOrm.id == comment.id)
+        .values(image=image_path)
+        .returning(CommentsOrm)
+    )
+
+    await db.commit()
+    return comment

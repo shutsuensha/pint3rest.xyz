@@ -1,10 +1,13 @@
 import uuid
 from pathlib import Path
+import json
 
-from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, status
+from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, status, Form, File
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import insert, select, update
+
+from pydantic import ValidationError, model_validator
 
 from app.api.rest.dependencies import db, user_id
 from app.api.rest.utils import (
@@ -621,7 +624,7 @@ async def get_image(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
-
+    
     return FileResponse(user.image)
 
 
@@ -733,5 +736,75 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
         .where(UsersOrm.id == user_id)
         .returning(UsersOrm)
     )
+    await db.commit()
+    return user
+
+
+
+@router.post("/create-user-entity", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+async def create_user_entity(
+    db: db, user_model: str = Form(...), file: UploadFile = File(...)
+):
+    try:
+        user_in = json.loads(user_model)
+        user_in = UserIn(**user_in)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
+
+    user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
+    if user:
+        raise HTTPException(status_code=409, detail="user already exists")
+    if user_in.email:
+        user = await db.scalar(
+            insert(UsersOrm)
+            .values(
+                username=user_in.username,
+                hashed_password=hash_password(user_in.password),
+                email=user_in.email,
+            )
+            .returning(UsersOrm)
+        )
+        file_extension = Path(file.filename).suffix
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
+
+        await save_file(file.file, image_path)
+        if user.image:
+            await delete_file(user.image)
+
+        user = await db.scalar(
+            update(UsersOrm).where(UsersOrm.id == user.id).values(image=image_path).returning(UsersOrm)
+        )
+
+        token = create_url_safe_token({"username": user_in.username})
+        link = f"{settings.API_DOMAIN}/users/verify/{token}"
+
+        context = {"username": user.username, "link": link}
+
+        emails = [user_in.email]
+        subject = "Verify Your email"
+        send_email.delay(emails, subject, context, "mail_verification.html")
+    else:
+        user = await db.scalar(
+            insert(UsersOrm)
+            .values(
+                username=user_in.username,
+                hashed_password=hash_password(user_in.password),
+            )
+            .returning(UsersOrm)
+        )
+
+        file_extension = Path(file.filename).suffix
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        image_path = f"{settings.MEDIA_PATH}users/{unique_filename}"
+
+        await save_file(file.file, image_path)
+        if user.image:
+            await delete_file(user.image)
+
+        user = await db.scalar(
+            update(UsersOrm).where(UsersOrm.id == user.id).values(image=image_path).returning(UsersOrm)
+        )
+        
     await db.commit()
     return user

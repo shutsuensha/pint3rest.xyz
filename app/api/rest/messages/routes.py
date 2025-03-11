@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, HTTPException, UploadFile, status, Form, File
 from fastapi.responses import FileResponse
 from sqlalchemy import desc, func, insert, or_, select, update
 
@@ -10,6 +10,8 @@ from app.config import settings
 from app.postgresql.models import ChatOrm, MessageOrm
 
 from .schemas import ChatOut, MessageIn, MessageOut
+import json
+from pydantic import ValidationError
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -42,6 +44,36 @@ async def user_send_message_in_chat(db: db, user_id: user_id, message: MessageIn
         )
 
         await db.commit()
+    return message_orm
+
+
+@router.post("/create-message-entity", response_model=MessageOut, status_code=status.HTTP_201_CREATED)
+async def create_message_entity(db: db, user_id: user_id, message: str = Form(...), file: UploadFile = File(...)):
+    try:
+        message = json.loads(message)
+        message = MessageIn(**message)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
+    
+    chat = await db.scalar(select(ChatOrm).where(ChatOrm.id == message.chat_id))
+    if chat is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="chat not found")
+
+    message_orm = await db.scalar(
+        insert(MessageOrm)
+        .values(chat_id=chat.id, user_id_=user_id, content=message.content)
+        .returning(MessageOrm)
+    )
+
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    image_path = f"{settings.MEDIA_PATH}messages/{unique_filename}"
+    await save_file(file.file, image_path)
+
+    message_orm = await db.scalar(
+        update(MessageOrm).where(MessageOrm.id == message_orm.id).values(image=image_path).returning(MessageOrm)
+    )
+    await db.commit()
+
     return message_orm
 
 

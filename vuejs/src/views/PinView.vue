@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick  } from 'vue';
+import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick } from 'vue';
 import { useRoute, RouterLink, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
@@ -389,31 +389,43 @@ const previewFile = (file) => {
 };
 
 async function addComment() {
-  if (comment.value.trim() !== '' || mediaFile.value) {
+  if (comment.value.trim() !== '' && !mediaFile.value) {
     try {
       const response = await axios.post(`/api/comments/${pin.value.id}`, {
         content: comment.value.trim()
       })
       comment.value = ''
-      const commentId = response.data.id
-      if (mediaFile.value) {
-        try {
-          const formData = new FormData();
-          formData.append('file', mediaFile.value);
-
-          const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-
-        } catch (error) {
-          console.log(error)
-        }
-      }
     } catch (error) {
       console.error(error)
     }
+    cntComments.value += 1
+    showCommets.value = false
+    await nextTick()
+    showCommets.value = true
+    return;
+  }
+
+  if (mediaFile.value) {
+    try {
+      const formData = new FormData();
+      formData.append("file", mediaFile.value); // Файл
+
+      const jsonData = JSON.stringify({
+        content: comment.value.trim()
+      });
+
+      formData.append("comment_model", jsonData); // Передаем строку, а не Blob
+
+      const response = await axios.post(`/api/comments/create-comment-on-pin-entity/${pin.value.id}`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+    } catch (error) {
+      console.error(error)
+    }
+    comment.value = ''
     cntComments.value += 1
     showCommets.value = false
     await nextTick()
@@ -447,7 +459,8 @@ async function showVideoControls() {
 
 
 <template>
-  <div v-if="isLoading" class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
+  <div v-if="isLoading"
+    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
     :style="{ width: `${progress}%` }">
   </div>
   <div class="mt-4 ml-20">
@@ -644,13 +657,13 @@ async function showVideoControls() {
 
           <button type="button" @click="addComment" :style="{
             backgroundColor: pin.rgb
-          }"
-            class="transition transform hover:scale-105 text-white font-medium rounded-3xl text-sm px-4 py-2">
+          }" class="transition transform hover:scale-105 text-white font-medium rounded-3xl text-sm px-4 py-2">
             Add
           </button>
 
           <label for="media">
-            <i :style="{ color: pin.rgb }" class="pi pi-images text-4xl cursor-pointer transition transform hover:scale-105"></i>
+            <i :style="{ color: pin.rgb }"
+              class="pi pi-images text-4xl cursor-pointer transition transform hover:scale-105"></i>
           </label>
           <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
             class="hidden hover:bg-red-100 transition duration-300 w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">

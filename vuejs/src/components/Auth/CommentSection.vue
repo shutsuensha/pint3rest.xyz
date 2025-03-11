@@ -123,35 +123,53 @@ onMounted(() => {
   loadComments();  // Initial load
 });
 
+// async function addComment(comment) {
+//   if (comment.replyContent.trim() !== '' || comment.replyMediaFile) {
+//     try {
+//       const response = await axios.post(`/api/comments/comment/${comment.id}`, {
+//         content: comment.replyContent.trim()
+//       })
+//       comment.replyContent = ''
+//       const commentId = response.data.id
+//       if (comment.replyMediaFile) {
+//         try {
+//           const formData = new FormData();
+//           formData.append('file', comment.replyMediaFile);
+
+//           const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
+//             headers: {
+//               'Content-Type': 'multipart/form-data',
+//             },
+//           });
+
+//           comment.replyMediaPreview = null
+//           comment.replyMediaFile = null
+//           comment.replyIsImage = false
+//           comment.replyIsVideo = false
+
+
+//         } catch (error) {
+//           console.log(error)
+//         }
+//       }
+//     } catch (error) {
+//       console.error(error)
+//     }
+//     comment.cntReplies += 1
+//     comment.showReplies = false
+//     await nextTick()
+//     comment.showReplies = true
+//     comment.showReply = false
+//   }
+// }
+
 async function addComment(comment) {
-  if (comment.replyContent.trim() !== '' || comment.replyMediaFile) {
+  if (comment.replyContent.trim() !== '' && !comment.replyMediaFile) {
     try {
       const response = await axios.post(`/api/comments/comment/${comment.id}`, {
         content: comment.replyContent.trim()
       })
       comment.replyContent = ''
-      const commentId = response.data.id
-      if (comment.replyMediaFile) {
-        try {
-          const formData = new FormData();
-          formData.append('file', comment.replyMediaFile);
-
-          const response = await axios.post(`/api/comments/upload/${commentId}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-
-          comment.replyMediaPreview = null
-          comment.replyMediaFile = null
-          comment.replyIsImage = false
-          comment.replyIsVideo = false
-
-
-        } catch (error) {
-          console.log(error)
-        }
-      }
     } catch (error) {
       console.error(error)
     }
@@ -160,8 +178,43 @@ async function addComment(comment) {
     await nextTick()
     comment.showReplies = true
     comment.showReply = false
+    return;
+  }
+
+  if (comment.replyMediaFile) {
+    try {
+      const formData = new FormData();
+      formData.append("file", comment.replyMediaFile); // Файл
+
+      const jsonData = JSON.stringify({
+        content: comment.replyContent.trim()
+      });
+
+      formData.append("comment_model", jsonData); // Передаем строку, а не Blob
+
+      const response = await axios.post(`/api/comments/create-comment-on-comment-entity/${comment.id}`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+    } catch (error) {
+      console.error(error)
+    }
+    comment.replyContent = ''
+    comment.replyMediaPreview = null
+    comment.replyMediaFile = null
+    comment.replyIsImage = false
+    comment.replyIsVideo = false
+
+    comment.cntReplies += 1
+    comment.showReplies = false
+    await nextTick()
+    comment.showReplies = true
+    comment.showReply = false
   }
 }
+
 
 function handleMediaUpload(event, comment) {
   const file = event.target.files[0];

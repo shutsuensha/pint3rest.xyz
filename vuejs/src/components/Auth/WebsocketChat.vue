@@ -358,46 +358,67 @@ const previewFile = (file) => {
 const messageContent = ref('')
 
 async function sendMediaMessage() {
+  const formData = new FormData();
+  formData.append("file", mediaFile.value); // Файл
+
+  const jsonData = JSON.stringify({
+    content: messageContent.value,
+    chat_id: props.chat_id
+  });
+
+  formData.append("message", jsonData); // Передаем строку, а не Blob
+
+  const response = await axios.post("/api/messages/create-message-entity", formData, {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  });
+
+  const messageResp = response.data
+
+  // const response = await axios.post('/api/messages/', {
+  //   content: messageContent.value,
+  //   chat_id: props.chat_id
+  // }, { withCredentials: true })
+
+  // const messageResp = response.data
+
+  // const formData = new FormData();
+  // formData.append('file', mediaFile.value);
+
+  // const response = await axios.post(`/api/messages/upload/${messageResp.id}`, formData, {
+  //   headers: {
+  //     'Content-Type': 'multipart/form-data',
+  //   },
+  // });
+
+
+  // const data = response.data
+  // messageResp.image = data.image
+
+  try {
+    const response = await axios.get(`/api/messages/upload/${messageResp.id}`, { responseType: 'blob' });
+    const blobUrl = URL.createObjectURL(response.data);
+    messageResp.media = blobUrl
+    const contentType = response.headers['content-type'];
+    if (contentType.startsWith('image/')) {
+      messageResp.isImage = true;
+    } else {
+      messageResp.isImage = false;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  messages.value.unshift(messageResp)
+  socket.send(JSON.stringify(messageResp));
+  messageContent.value = "";
+
   openSendMedia.value = false
   mediaPreview.value = null;
   showPreview.value = false
-  const response = await axios.post('/api/messages/', {
-    content: messageContent.value,
-    chat_id: props.chat_id
-  }, { withCredentials: true })
-  const messageResp = response.data
-  try {
-    const formData = new FormData();
-    formData.append('file', mediaFile.value);
 
-    const response = await axios.post(`/api/messages/upload/${messageResp.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    const data = response.data
-    messageResp.image = data.image
-
-    try {
-      const response = await axios.get(`/api/messages/upload/${data.id}`, { responseType: 'blob' });
-      const blobUrl = URL.createObjectURL(response.data);
-      messageResp.media = blobUrl
-      const contentType = response.headers['content-type'];
-      if (contentType.startsWith('image/')) {
-        messageResp.isImage = true;
-      } else {
-        messageResp.isImage = false;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    messages.value.unshift(messageResp)
-    socket.send(JSON.stringify(messageResp));
-    messageContent.value = "";
-  } catch (error) {
-    console.log(error)
-  }
   if (isOnline.value === true) {
     messageResp.is_read = true
     props.chat.last_message.is_read = true
