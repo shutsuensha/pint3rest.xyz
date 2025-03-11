@@ -1,7 +1,9 @@
+import json
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile, status, Form, File
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+from pydantic import ValidationError
 from sqlalchemy import desc, func, insert, or_, select, update
 
 from app.api.rest.dependencies import db, filter, user_id
@@ -10,8 +12,6 @@ from app.config import settings
 from app.postgresql.models import ChatOrm, MessageOrm
 
 from .schemas import ChatOut, MessageIn, MessageOut
-import json
-from pydantic import ValidationError
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -47,14 +47,18 @@ async def user_send_message_in_chat(db: db, user_id: user_id, message: MessageIn
     return message_orm
 
 
-@router.post("/create-message-entity", response_model=MessageOut, status_code=status.HTTP_201_CREATED)
-async def create_message_entity(db: db, user_id: user_id, message: str = Form(...), file: UploadFile = File(...)):
+@router.post(
+    "/create-message-entity", response_model=MessageOut, status_code=status.HTTP_201_CREATED
+)
+async def create_message_entity(
+    db: db, user_id: user_id, message: str = Form(...), file: UploadFile = File(...)
+):
     try:
         message = json.loads(message)
         message = MessageIn(**message)
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
-    
+
     chat = await db.scalar(select(ChatOrm).where(ChatOrm.id == message.chat_id))
     if chat is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="chat not found")
@@ -70,7 +74,10 @@ async def create_message_entity(db: db, user_id: user_id, message: str = Form(..
     await save_file(file.file, image_path)
 
     message_orm = await db.scalar(
-        update(MessageOrm).where(MessageOrm.id == message_orm.id).values(image=image_path).returning(MessageOrm)
+        update(MessageOrm)
+        .where(MessageOrm.id == message_orm.id)
+        .values(image=image_path)
+        .returning(MessageOrm)
     )
     await db.commit()
 

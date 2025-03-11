@@ -1,16 +1,15 @@
+import json
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile, status, Form, File
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+from pydantic import ValidationError
 from sqlalchemy import func, insert, select, update
 
 from app.api.rest.dependencies import db, filter, user_id
 from app.api.rest.utils import save_file
 from app.config import settings
 from app.postgresql.models import CommentsOrm, PinsOrm
-from pydantic import ValidationError
-
-import json
 
 from .schemas import CommentIn, CommentOut
 
@@ -137,12 +136,21 @@ async def get_comments_on_comment(comment_id: int, db: db, user_id: user_id, fil
     return comments
 
 
-@router.post("/create-comment-on-pin-entity/{pin_id}", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
-async def create_comment_on_pin_entity(pin_id: int, db: db, user_id: user_id, comment_model: str = Form(...), file: UploadFile = File(...)):
+@router.post(
+    "/create-comment-on-pin-entity/{pin_id}",
+    response_model=CommentOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment_on_pin_entity(
+    pin_id: int,
+    db: db,
+    user_id: user_id,
+    comment_model: str = Form(...),
+    file: UploadFile = File(...),
+):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
-    
 
     try:
         comment_model = json.loads(comment_model)
@@ -171,12 +179,21 @@ async def create_comment_on_pin_entity(pin_id: int, db: db, user_id: user_id, co
     return comment
 
 
-@router.post("/create-comment-on-comment-entity/{comment_id}", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
-async def create_comment_on_comment_entity(comment_id: int, db: db, user_id: user_id, comment_model: str = Form(...), file: UploadFile = File(...)):
+@router.post(
+    "/create-comment-on-comment-entity/{comment_id}",
+    response_model=CommentOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment_on_comment_entity(
+    comment_id: int,
+    db: db,
+    user_id: user_id,
+    comment_model: str = Form(...),
+    file: UploadFile = File(...),
+):
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
-    
 
     try:
         comment_model = json.loads(comment_model)

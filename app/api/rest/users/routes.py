@@ -1,13 +1,12 @@
+import json
 import uuid
 from pathlib import Path
-import json
 
-from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, status, Form, File
+from fastapi import APIRouter, File, Form, HTTPException, Request, Response, UploadFile, status
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import ValidationError
 from sqlalchemy import insert, select, update
-
-from pydantic import ValidationError, model_validator
 
 from app.api.rest.dependencies import db, user_id
 from app.api.rest.utils import (
@@ -624,7 +623,7 @@ async def get_image(user_id: user_id, id: int, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
-    
+
     return FileResponse(user.image)
 
 
@@ -740,11 +739,8 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
     return user
 
 
-
 @router.post("/create-user-entity", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def create_user_entity(
-    db: db, user_model: str = Form(...), file: UploadFile = File(...)
-):
+async def create_user_entity(db: db, user_model: str = Form(...), file: UploadFile = File(...)):
     try:
         user_in = json.loads(user_model)
         user_in = UserIn(**user_in)
@@ -773,7 +769,10 @@ async def create_user_entity(
             await delete_file(user.image)
 
         user = await db.scalar(
-            update(UsersOrm).where(UsersOrm.id == user.id).values(image=image_path).returning(UsersOrm)
+            update(UsersOrm)
+            .where(UsersOrm.id == user.id)
+            .values(image=image_path)
+            .returning(UsersOrm)
         )
 
         token = create_url_safe_token({"username": user_in.username})
@@ -803,8 +802,11 @@ async def create_user_entity(
             await delete_file(user.image)
 
         user = await db.scalar(
-            update(UsersOrm).where(UsersOrm.id == user.id).values(image=image_path).returning(UsersOrm)
+            update(UsersOrm)
+            .where(UsersOrm.id == user.id)
+            .values(image=image_path)
+            .returning(UsersOrm)
         )
-        
+
     await db.commit()
     return user

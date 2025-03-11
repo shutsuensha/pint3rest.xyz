@@ -25,8 +25,6 @@ from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
-from app.mongodb.database import mongo
-from app.mysql.test_connection import connect as mysql_connect
 from app.postgresql.test_connection import connect as postgre_connect
 from app.redis.redis_cache import close_redis_cache, init_redis_cache
 from app.redis.redis_revoke_tokens import (
