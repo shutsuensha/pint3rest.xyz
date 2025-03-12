@@ -118,6 +118,8 @@ onBeforeUnmount(() => {
 });
 
 
+const userConnected = ref(null)
+
 onMounted(async () => {
   chatStore.fetchChatColor();
   chatStore.fetchChatSize();
@@ -141,6 +143,17 @@ onMounted(async () => {
   try {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
+    try {
+      const response = await axios.get(`/api/chats/check_connection/${chats.value[0].id}/${auth_user_id.value}`);
+
+      if (response.data.active) {
+        userConnected.value = true
+      } else {
+        userConnected.value = false
+      }
+    } catch (error) {
+      console.error("Error checking connection:", error);
+    }
     for (let i = 0; i < chats.value.length; i++) {
       const userId = auth_user_id.value === chats.value[i].user_1_id ? chats.value[i].user_2_id : chats.value[i].user_1_id
       try {
@@ -157,31 +170,33 @@ onMounted(async () => {
         console.error(error);
       }
       chats.value[i].online = false
-      chats.value[i].socket = new WebSocket(`/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
-      chats.value[i].socket.onmessage = async (event) => {
-        const message = JSON.parse(event.data);
-        if ("online" in message) {
-          if (message.online == true) {
-            chats.value[i].online = true
-          } else {
-            chats.value[i].online = false
+      if (!userConnected.value) {
+        chats.value[i].socket = new WebSocket(`/ws/${chats.value[i].id}/${auth_user_id.value}?chat_connection=true`);
+        chats.value[i].socket.onmessage = async (event) => {
+          const message = JSON.parse(event.data);
+          if ("online" in message) {
+            if (message.online == true) {
+              chats.value[i].online = true
+            } else {
+              chats.value[i].online = false
+            }
+            return
           }
-          return
+          if ("user_read_messages" in message) {
+            chats.value[i].last_message.is_read = true
+            return
+          }
+          if ("user_start_typing" in message) {
+            chats.value[i].typing = true
+            return
+          }
+          if ("user_stop_typing" in message) {
+            chats.value[i].typing = false
+            return
+          }
+          unreadMessagesStore.increment()
+          updateChat2(message.chat_id)
         }
-        if ("user_read_messages" in message) {
-          chats.value[i].last_message.is_read = true
-          return
-        }
-        if ("user_start_typing" in message) {
-          chats.value[i].typing = true
-          return
-        }
-        if ("user_stop_typing" in message) {
-          chats.value[i].typing = false
-          return
-        }
-        unreadMessagesStore.increment()
-        updateChat2(message.chat_id)
       }
       try {
         const response = await axios.get(`/api/messages/last/${chats.value[i].id}`, { withCredentials: true })
@@ -418,6 +433,23 @@ function setScrollbarColor(color) {
 </script>
 
 <template>
+  <div v-if="userConnected"
+  class="left-20 fixed inset-0 flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500 z-50 bg-opacity-30"
+  >
+    <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center max-w-lg mx-4 animate-fadeInUp">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Ой!</h1>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+        Кажется, у вас уже есть активное подключение!
+      </h1>
+      <p class="text-lg md:text-xl text-gray-600 mb-8">
+        Проверьте открытые вкладки
+      </p>
+      <p class="text-sm text-gray-500">
+        Если вы уверены, что это ошибка, попробуйте обновить страницу.
+      </p>
+    </div>
+  </div>
+
   <div v-if="showChat" class="fixed top-0 h-full w-full z-50" :style="{ left: `${chatStore.size + 80}px` }">
     <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load" :chat="chatObject"
       @updateLastMessage="(showToast, chat_id_, online) => updateChat(showToast, chat_id_, online)" />
@@ -478,5 +510,21 @@ function setScrollbarColor(color) {
   /* Убираем тень */
   border: none !important;
   /* Убираем границу */
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 1.5s ease-out forwards;
 }
 </style>

@@ -1,8 +1,10 @@
 from fastapi import APIRouter, status
 from sqlalchemy import select, update
+from fastapi.responses import JSONResponse
 
 from app.api.rest.dependencies import db, user_id
 from app.postgresql.models import UsersOrm
+from app.websockets.manager import manager
 
 router = APIRouter(prefix="/chats", tags=["chats"])
 
@@ -47,3 +49,13 @@ async def update_user_chats_side(db: db, user_id: user_id, side: bool):
         update(UsersOrm).where(UsersOrm.id == user_id).values(side_open=side).returning(UsersOrm)
     )
     await db.commit()
+
+
+@router.get("/check_connection/{chat_id}/{user_id}")
+async def check_connection(chat_id: int, user_id: int):
+    if chat_id not in manager.chats:
+        return JSONResponse(content={"active": False})
+    if manager.chats[chat_id]["chat_connections"]["user_1"]["user_id"] == user_id or \
+        manager.chats[chat_id]["chat_connections"]["user_2"]["user_id"] == user_id:
+            return JSONResponse(content={"active": True})
+    return JSONResponse(content={"active": False})
