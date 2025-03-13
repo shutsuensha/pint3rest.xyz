@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, nextTick, watch, computed, onBeforeUnmount, onActivated } from 'vue';
+import { onMounted, ref, nextTick, watch, computed, onBeforeUnmount, onActivated, reactive } from 'vue';
 import axios from 'axios'
 import UserChat from '@/components/Auth/UserChat.vue';
 import WebsocketChat from '@/components/Auth/WebsocketChat.vue';
@@ -71,15 +71,15 @@ const clearQuery = () => {
 
 watch(
   () => route.name,
-  (newName, oldName) => {
+  async (newName, oldName) => {
     if (newName === "messages") {
       document.title = 'pinterest.xyz / chats'
       const chat_id_redirect = route.query.chat_id || null;
-      const new_chat = route.query.new_caht || null;
-      if (new_chat !== null) {
-
+      const new_chat = route.query.new_chat || null;
+      if (new_chat !== null && !userConnected.value) {
+        await addChat(chat_id_redirect)
       }
-      if (chat_id_redirect !== null) {
+      if (chat_id_redirect !== null && !userConnected.value) {
         let index = 0;
         let chatObj = null;
         for (let i = 0; i < sortedChats.value.length; i++) {
@@ -89,13 +89,132 @@ watch(
             break;
           }
         }
-        loadChat(chatObj, index)
-        clearQuery()
+        if (new_chat !== null) {
+          loadChat2(chatObj, index)
+        } else {
+          loadChat(chatObj, index)
+        }
       }
+      clearQuery()
     }
   }
 );
 
+
+async function addChat(chat_id) {
+  try {
+    const response = await axios.get(`/api/messages/get_chat_by_id/${chat_id}`, { withCredentials: true });
+    const chat = response.data
+
+    const userId = auth_user_id.value === chat.user_1_id ? chat.user_2_id : chat.user_1_id
+    try {
+      const response = await axios.get(`/api/users/user_id/${userId}`, { withCredentials: true })
+      chat.user = response.data
+    } catch (error) {
+      console.error(error)
+    }
+
+    try {
+      const userResponse = await axios.get(`/api/users/upload/${userId}`, { responseType: 'blob' });
+      const blobUrl = URL.createObjectURL(userResponse.data);
+      chat.userImage = blobUrl;
+    } catch (error) {
+      console.error(error);
+    }
+
+    chat.online = false
+
+    chat.socket = new WebSocket(`/ws/${chat.id}/${auth_user_id.value}?chat_connection=true`);
+    chat.socket.onmessage = async (event) => {
+      const message = JSON.parse(event.data);
+      if ("online" in message) {
+        if (message.online == true) {
+          chat.online = true
+        } else {
+          chat.online = false
+        }
+        chats.value = [...chats.value];
+        return
+      }
+      if ("user_read_messages" in message) {
+        chat.last_message.is_read = true
+        chats.value = [...chats.value];
+        return
+      }
+      if ("user_start_typing" in message) {
+        chat.typing = true
+        chats.value = [...chats.value];
+        return
+      }
+      if ("user_stop_typing" in message) {
+        chat.typing = false
+        chats.value = [...chats.value];
+        return
+      }
+      unreadMessagesStore.increment()
+      updateChat2(message.chat_id)
+    }
+
+    try {
+      const response = await axios.get(`/api/messages/last/${chat.id}`, { withCredentials: true })
+      chat.last_message = response.data
+      if (chat.last_message.image !== null) {
+        try {
+          const response = await axios.get(`/api/messages/upload/${chat.last_message.id}`, { responseType: 'blob' });
+          const blobUrl = URL.createObjectURL(response.data);
+          chat.last_message.media = blobUrl
+          const contentType = response.headers['content-type'];
+          if (contentType.startsWith('image/')) {
+            chat.last_message.isImage = true;
+          } else {
+            chat.last_message.isImage = false;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+
+    try {
+      const response = await axios.get(`/api/messages/unread/cnt/${chat.id}`, { withCredentials: true })
+      chat.cntUnreadMessages = response.data
+    } catch (error) {
+      console.log(error)
+    }
+
+    chats.value.push(reactive(chat));
+
+    if (route.name !== 'messages') {
+      toast({
+        component: NewMessageToast,
+        props: { chat: JSON.parse(JSON.stringify(chat)) },
+        listeners: {
+          MyClick: () => router.push(`/messages?chat_id=${chat.id}`)
+        }
+      }, {
+        position: "bottom-left",
+        timeout: 5041,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: false,
+        icon: false,
+        rtl: false,
+        toastClassName: "my-custom-toast-class",
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+  
+}
 
 
 function getCookie(name) {
@@ -110,6 +229,10 @@ const chat_id_redirect = ref(null)
 const showLoading = ref(null)
 
 onBeforeUnmount(() => {
+  if (eventSource) {
+    eventSource.close();
+  }
+
   for (let i = 0; i < chats.value.length; i++) {
     if (chats.value[i].socket) {
       chats.value[i].socket.close()
@@ -119,6 +242,9 @@ onBeforeUnmount(() => {
 
 
 const userConnected = ref(null)
+
+let eventSource = null;
+
 
 onMounted(async () => {
   chatStore.fetchChatColor();
@@ -140,6 +266,7 @@ onMounted(async () => {
 
   // Log user_id to the console
   auth_user_id.value = payload.user_id;
+
   try {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
@@ -154,6 +281,23 @@ onMounted(async () => {
     } catch (error) {
       console.error("Error checking connection:", error);
     }
+
+    if (!userConnected.value) {
+      eventSource = new EventSource(`/api/messages/stream/${auth_user_id.value}`);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        addChat(data.message.chat_id)
+        unreadMessagesStore.increment()
+      };
+
+      eventSource.onerror = () => {
+        console.error("Ошибка SSE!");
+        eventSource.close();
+      };
+    }
+
+
     for (let i = 0; i < chats.value.length; i++) {
       const userId = auth_user_id.value === chats.value[i].user_1_id ? chats.value[i].user_2_id : chats.value[i].user_1_id
       try {
@@ -249,6 +393,27 @@ async function loadChat(chat, index) {
   if (id !== chat_id.value) {
     if (chat_selected.value !== null) {
       sortedChats.value[chat_selected.value].selected = false
+    }
+    chatObject.value = chat
+    chat.selected = true
+    chat_selected.value = index
+    showChat.value = false
+    await nextTick()
+    chat_id.value = id
+    user_to_load.value = chat.user_1_id === auth_user_id.value ? chat.user_2_id : chat.user_1_id
+    showChat.value = true
+  }
+}
+
+async function loadChat2(chat, index) {
+  if (searchValue.value.trim()) {
+    searchValue.value = ''
+    index = sortedChats.value.findIndex(c => c.id === chat.id);
+  }
+  let id = chat.id
+  if (id !== chat_id.value) {
+    if (chat_selected.value !== null) {
+      sortedChats.value[chat_selected.value + 1].selected = false
     }
     chatObject.value = chat
     chat.selected = true
@@ -434,8 +599,7 @@ function setScrollbarColor(color) {
 
 <template>
   <div v-if="userConnected"
-  class="left-20 fixed inset-0 flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500 z-50 bg-opacity-30"
-  >
+    class="left-20 fixed inset-0 flex items-center justify-center bg-indigo-500 z-50 bg-opacity-50">
     <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center max-w-lg mx-4 animate-fadeInUp">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Ой!</h1>
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
@@ -450,7 +614,8 @@ function setScrollbarColor(color) {
     </div>
   </div>
 
-  <div v-if="showChat" class="fixed top-0 h-full w-full z-50" :style="{ left: `${chatStore.size + 80}px` }">
+  <div v-if="showChat && !userConnected" class="fixed top-0 h-full w-full z-50"
+    :style="{ left: `${chatStore.size + 80}px` }">
     <WebsocketChat :chat_id="chat_id" :auth_user_id="auth_user_id" :user_to_load="user_to_load" :chat="chatObject"
       @updateLastMessage="(showToast, chat_id_, online) => updateChat(showToast, chat_id_, online)" />
   </div>

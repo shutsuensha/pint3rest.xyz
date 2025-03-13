@@ -133,7 +133,7 @@ async function loadMessages() {
         props.chat.cntUnreadMessages -= 1
         if (unreadMessagesStore.count > 0) {
           unreadMessagesStore.decrement()
-          if (unreadMessagesStore.count === 0) {
+          if (cntUnreadMessages.value === 0) {
             socket.send(JSON.stringify({ 'user_read_messages': true }));
           }
         }

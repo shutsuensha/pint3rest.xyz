@@ -5,3 +5,4 @@ __pycache__
 NOTES.md
 .env
 .env-ci
+.vscode

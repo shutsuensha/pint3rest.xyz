@@ -1,8 +1,10 @@
+import asyncio
 import json
 import uuid
+from typing import Dict
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import ValidationError
 from sqlalchemy import desc, func, insert, or_, select, update
 
@@ -14,6 +16,27 @@ from app.postgresql.models import ChatOrm, MessageOrm
 from .schemas import ChatOut, MessageIn, MessageOut
 
 router = APIRouter(prefix="/messages", tags=["messages"])
+
+active_connections: Dict[int, asyncio.Queue] = {}
+
+
+async def event_stream(user_id: int):
+    queue = asyncio.Queue()
+    active_connections[user_id] = queue
+
+    try:
+        while True:
+            message = await queue.get()  # Ждем нового сообщения для пользователя
+            yield f"data: {json.dumps({'message': message})}\n\n"
+    except asyncio.CancelledError:
+        pass
+    finally:
+        del active_connections[user_id]  # Удаляем соединение при закрытии
+
+
+@router.get("/stream/{user_id}")
+async def stream(user_id: int):
+    return StreamingResponse(event_stream(user_id), media_type="text/event-stream")
 
 
 @router.post("/", response_model=MessageOut, status_code=status.HTTP_201_CREATED)
@@ -32,6 +55,10 @@ async def user_send_message_in_chat(db: db, user_id: user_id, message: MessageIn
         )
 
         await db.commit()
+        if message.to_user_id in active_connections:
+            queue = active_connections[message.to_user_id]
+            await queue.put({"chat_id": chat.id})
+
     else:
         chat = await db.scalar(select(ChatOrm).where(ChatOrm.id == message.chat_id))
         if chat is None:
@@ -150,6 +177,12 @@ async def get_users_chat(user_id: user_id, db: db):
         select(ChatOrm).where(or_(ChatOrm.user_1_id == user_id, ChatOrm.user_2_id == user_id))
     )
     return chats
+
+
+@router.get("/get_chat_by_id/{chat_id}", response_model=ChatOut)
+async def get_user_chat_by_id(user_id: user_id, db: db, chat_id: int):
+    chat = await db.scalar(select(ChatOrm).where(ChatOrm.id == chat_id))
+    return chat
 
 
 @router.post("/upload/{id}", response_model=MessageOut)

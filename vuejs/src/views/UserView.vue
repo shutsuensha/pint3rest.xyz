@@ -428,13 +428,22 @@ async function sendMessage() {
     console.error(error)
   }
   checkUserChat.value = true
-  // redirectToChat()
+  redirectToNewChat()
+}
+
+async function redirectToNewChat() {
+  try {
+    const response = await axios.get(`/api/messages/get_chat/${user.value.id}`, { withCredentials: true });
+    router.push(`/messages?chat_id=${response.data}&new_chat=true`);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function redirectToChat() {
   try {
     const response = await axios.get(`/api/messages/get_chat/${user.value.id}`, { withCredentials: true });
-    router.push(`/messages?chat_id=${response.data}?new_chat=true`);
+    router.push(`/messages?chat_id=${response.data}`);
   } catch (error) {
     console.error(error);
   }
