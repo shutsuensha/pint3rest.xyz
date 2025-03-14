@@ -36,10 +36,10 @@
 
 
 ### ⚙️ Backend Technologies  
-FastAPI, FastAPI-Cache, FastAPI-Mail, SQLAlchemy, Pydantic, pydantic-settings, JWT, OAuth2, PostgreSQL, MySQL, MongoDB, Redis, Celery, Celery Beat, Docker, Docker Compose, Nginx, SSL, VPS, Yandex S3, httpx, Websockets, SSE, Asyncio, Aiofiles, Logging, Pytest, Ruff, Alembic, GitLab CI/CD, GraphQL (Strawberry).  
+#### FastAPI, FastAPI-Cache, FastAPI-Mail, SQLAlchemy, Pydantic, pydantic-settings, JWT, OAuth2, PostgreSQL, MySQL, MongoDB, Redis, Celery, Celery Beat, Docker, Docker Compose, Nginx, SSL, VPS, Yandex S3, httpx, Websockets, SSE, Asyncio, Aiofiles, Logging, Pytest, Ruff, Alembic, GitLab CI/CD, GraphQL (Strawberry).  
 
 ### 🌐 Frontend Technologies  
-Vue.js 3, Tailwind CSS, Pinia, Vue Router, Vue Masonry, Vue Keep Alive, Vue Spinner, JsConfetti, Day.js, AOS, Auto-animate, Kinesis.  
+#### Vue.js 3, Tailwind CSS, Pinia, Vue Router, Vue Masonry, Vue Keep Alive, Vue Spinner, JsConfetti, Day.js, AOS, Auto-animate, Kinesis.  
 
 
 ## 🤝 Contribute 🤩
