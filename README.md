@@ -34,7 +34,7 @@
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
 
-## 📸 Comparison of Pint3rest and Pinterest Interfaces  
+## 📸 Pint3rest vs Pinterest  
 
 ### 🏠 Home  
 <p align="center">
