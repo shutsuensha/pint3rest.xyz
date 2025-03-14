@@ -34,10 +34,62 @@
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
 
-| **Category**        | **Technologies**                                                                                                                                                       |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **⚙️ Backend**       | FastAPI, FastAPI-Cache, FastAPI-Mail, SQLAlchemy, Pydantic, pydantic-settings, JWT, OAuth2, PostgreSQL, MySQL, MongoDB, Redis, Celery, Celery Beat, Docker, Docker Compose, Nginx, SSL, VPS, Yandex S3, httpx, Websockets, SSE, Asyncio, Aiofiles, Logging, Pytest, Ruff, Alembic, GitLab CI/CD, GraphQL (Strawberry). |
-| **🌐 Frontend**      | Vue.js 3, Tailwind CSS, Pinia, Vue Router, Vue Masonry, Vue Keep Alive, Vue Spinner, JsConfetti, Day.js, AOS, Auto-animate, Kinesis.                                     |
+
+<table>
+  <tr>
+    <th style="text-align: center;">🐍 Backend (Python)</th>
+    <th style="text-align: center;">🎨 Frontend</th>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: left;">
+      <b>FastAPI</b> ⚡<br>
+      <b>FastAPI-Cache</b> 🧊<br>
+      <b>FastAPI-Mail</b> 📧<br>
+      <b>SQLAlchemy</b> 🛠️<br>
+      <b>Pydantic</b> 📜<br>
+      <b>pydantic-settings</b> 🔧<br>
+      <b>JWT</b> 🔑<br>
+      <b>OAuth2</b> 🔒<br>
+      <b>PostgreSQL</b> 🐘<br>
+      <b>MySQL</b> 💾<br>
+      <b>MongoDB</b> 🗄️<br>
+      <b>Redis</b> 🔴<br>
+      <b>Celery</b> ⏱️<br>
+      <b>Celery Beat</b> 🕒<br>
+      <b>Docker</b> 🐳<br>
+      <b>Docker Compose</b> 📦<br>
+      <b>Nginx</b> ⚙️<br>
+      <b>SSL</b> 🔒<br>
+      <b>VPS</b> 🌍<br>
+      <b>Yandex S3</b> ☁️<br>
+      <b>httpx</b> 🌐<br>
+      <b>Websockets</b> 🔗<br>
+      <b>SSE</b> 📡<br>
+      <b>Asyncio</b> 🌀<br>
+      <b>Aiofiles</b> 📂<br>
+      <b>Logging</b> 📝<br>
+      <b>Pytest</b> 🧪<br>
+      <b>Ruff</b> 🦊<br>
+      <b>Alembic</b> 🏛️<br>
+      <b>GitLab CI/CD</b> 🚀<br>
+      <b>GraphQL (Strawberry)</b> 🍓<br>
+    </td>
+    <td style="vertical-align: top; text-align: left;">
+      <b>Vue.js 3</b> 🌐<br>
+      <b>Tailwind CSS</b> 💨<br>
+      <b>Pinia</b> 📦<br>
+      <b>Vue Router</b> 🛣️<br>
+      <b>Vue Masonry</b> 🧱<br>
+      <b>Vue Keep Alive</b> ♾️<br>
+      <b>Vue Spinner</b> 🔄<br>
+      <b>JsConfetti</b> 🎉<br>
+      <b>Day.js</b> 📅<br>
+      <b>AOS</b> ✨<br>
+      <b>Auto-animate</b> 💫<br>
+      <b>Kinesis</b> ⚡<br>
+    </td>
+  </tr>
+</table>
 
 
 
