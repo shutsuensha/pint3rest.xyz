@@ -37,22 +37,41 @@
 ## 📸 Comparison of Pint3rest and Pinterest Interfaces  
 
 ### 🏠 Home  
-![Home Pint3rest](.github/assets/pint3rest-home.png) ![Home Pinterest](.github/assets/pinterest-home.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-home.png" width="49%">
+  <img src=".github/assets/pinterest-home.png" width="49%">
+</p>
 
 ### 📌 Detail Page  
-![Detail Pint3rest](.github/assets/pint3rest-detail.png) ![Detail Pinterest](.github/assets/pinterest-detail.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-detail.png" width="49%">
+  <img src=".github/assets/pinterest-detail.png" width="49%">
+</p>
 
 ### ➕ Create  
-![Create Pint3rest](.github/assets/pint3rest-create.png) ![Create Pinterest](.github/assets/pinterest-create.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-create.png" width="49%">
+  <img src=".github/assets/pinterest-create.png" width="49%">
+</p>
 
 ### 👤 User Profile  
-![User Pint3rest](.github/assets/pint3rest-user.png) ![User Pinterest](.github/assets/pinterest-user.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-user.png" width="49%">
+  <img src=".github/assets/pinterest-user.png" width="49%">
+</p>
 
 ### 💬 Chats  
-![Chats Pint3rest](.github/assets/pint3rest-chats.png) ![Chats Pinterest](.github/assets/pinterest-chats.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-chats.png" width="49%">
+  <img src=".github/assets/pinterest-chats.png" width="49%">
+</p>
 
 ### 🔎 Search  
-![Search Pint3rest](.github/assets/pint3rest-search.png) ![Search Pinterest](.github/assets/pinterest-search.png)  
+<p align="center">
+  <img src=".github/assets/pint3rest-search.png" width="49%">
+  <img src=".github/assets/pinterest-search.png" width="49%">
+</p>
+
 
 
 
