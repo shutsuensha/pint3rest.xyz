@@ -35,10 +35,11 @@
 ![Architecture](.github/assets/architecture.png)
 
 
-<table>
+### ⚙️ Technologies  
+<table style="width: 100%; border-collapse: collapse;">
   <tr>
-    <th style="text-align: center;">🐍 Backend (Python)</th>
-    <th style="text-align: center;">🎨 Frontend</th>
+    <th style="text-align: center; width: 50%;">🐍 Backend (Python)</th>
+    <th style="text-align: center; width: 50%;">🎨 Frontend</th>
   </tr>
   <tr>
     <td style="vertical-align: top; text-align: left;">
