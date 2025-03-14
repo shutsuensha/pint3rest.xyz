@@ -2,6 +2,7 @@
   <div
   data-kinesisdepth
   data-ks-sensitivity="20"
+
     class="p-10 relative group overflow-hidden rounded-2xl bg-white/20 border border-white/30 backdrop-blur-lg shadow-xl transition transform hover:scale-105 hover:shadow-2xl cursor-pointer"
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
@@ -11,7 +12,7 @@
 
     <!-- Неоновое свечение под курсором -->
     <div
-      class="pointer-events-none absolute w-48 h-48 rounded-full bg-gradient-radial from-pink-700 via-pink-600 to-transparent blur-3xl transition duration-300 mix-blend-screen z-10"
+      class="pointer-events-none absolute w-48 h-48 rounded-full bg-gradient-radial from-pink-700 via-pink-600 to-transparent blur-3xl transition duration-300 mix-blend-screen z-50"
       :style="{
         top: glowY + 'px',
         left: glowX + 'px',
@@ -31,7 +32,7 @@
           <h2
           data-kinesisdepth-element
         data-ks-depth="800"
-            class="text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-500 mb-2 drop-shadow-lg">
+            class="text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-black to-red-600 mb-2 drop-shadow-lg">
             {{ card.title }}
           </h2>
         </div>

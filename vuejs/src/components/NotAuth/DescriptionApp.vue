@@ -1,58 +1,48 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-200 to-white text-gray-900 relative">
+  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-300 to-white text-gray-900 relative">
     <div class="max-w-7xl mx-auto px-6 py-12">
       <!-- Заголовок с динамическим градиентом -->
-
-
-      <div data-kinesistransformer>
-        <h1 class="text-6xl font-extrabold text-center mb-10 cursor-default" @mousemove="updateHeaderGradient"
-          data-kinesistransformer-element data-ks-transform="translate" @mouseleave="resetHeaderGradient"
-          :style="headerStyle">
-          🚀 Pint3rest Next-Gen
+      <div>
+        <h1
+          class="text-6xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-red-500 text-transparent bg-clip-text">
+          Pint3rest Next-Gen
         </h1>
+        <h2
+          class="text-4xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-red-500 text-transparent bg-clip-text">
+          your fun space to share art & ideas!
+        </h2>
       </div>
 
 
-      <!-- Галерея -->
-      <div class="grid grid-cols-2 ">
+      <!-- Первая галерея -->
+      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(0, 2)" :key="index" :card="card"
           @click="openFullscreen(index)" />
       </div>
 
-      <div class="overflow-hidden relative">
-        <!-- Первая строка -->
-        <div class="marquee-wrapper animate-marquee">
-          <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-red-800">
-            Vuejs3,
-            Tailwind CSS,
-            Pinia,
-            Vue Router,
-            Vue Masonry,
-            Vue Keep Alive,
-            Vue Spinner, JsConfetti, DaysJs, Aos, Auto-animate, Kenesis
-          </span>
-        </div>
+      <!-- Текстовый блок -->
+      <div class=" text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg" data-kinesisscroll-item
+        data-ks-strength="30" data-ks-transformaxis="Y">
+        <h2 class="text-4xl font-bold mb-4">👤 Users 📌 Pins ❤️ Likes 💬 Comments</h2>
       </div>
 
-      <div class="grid grid-cols-2">
+      <!-- Вторая галерея -->
+      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(2, 4)" :key="index" :card="card"
           @click="openFullscreen(index + 2)" />
       </div>
 
-      <div class="overflow-hidden relative">
-        <div class="marquee-wrapper2 animate-marquee">
-          <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-indigo-800">
-            FastAPI, Postgresql, Redis, Asyncio, Jwt, Mail, Celery, Httpx, Yandex S3, Google Auth, Mysql, Mongodb,
-            GraphQL, Pydantic, Sqlalchemy, Logging, Docker, Docker-compose, Gitlab ci/cd, Pytests, Ruff, Nginx, Ssl/Vps
-          </span>
-        </div>
+      <!-- Текстовый блок -->
+      <div class=" text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg" data-kinesisscroll-item
+        data-ks-strength="30" data-ks-transformaxis="Y">
+        <h2 class="text-4xl font-bold mb-4">💡 Fast, cool, and creative! 😎✨</h2>
       </div>
 
-      <div class="grid grid-cols-2">
+      <!-- Третья галерея -->
+      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(4, 6)" :key="index" :card="card"
           @click="openFullscreen(index + 4)" />
       </div>
-
     </div>
 
     <!-- Полноэкранное модальное окно -->
@@ -80,7 +70,6 @@
         </div>
       </div>
     </transition>
-
   </div>
 </template>
 
@@ -94,12 +83,36 @@ onMounted(() => {
 });
 
 const screenshots = ref([
-  { src: '/screenshots/home.png', title: '🏠 Главная', description: 'Стильный фид для вдохновения.' },
-  { src: '/screenshots/search.png', title: '🔍 Поиск', description: 'Находите лучшие идеи.'},
-  { src: '/screenshots/user.png', title: '👤 Профиль', description: 'Ваш личный космический кабинет.' },
-  { src: '/screenshots/pin-detail.png', title: '📌 Пин', description: 'Подробности, лайки, сохранения.' },
-  { src: '/screenshots/create-pin.png', title: '✨ Новый Пин', description: 'Создавайте шедевры за секунды.' },
-  { src: '/screenshots/chats.png', title: '💬 Чаты', description: 'Мгновенное общение без границ.' },
+  {
+    src: '/screenshots/pint3rest-home.png',
+    title: '🏠 Home',
+    description: 'A stylish feed designed to spark creativity and inspiration. Explore a curated collection of visually stunning content that fuels your imagination.'
+  },
+  {
+    src: '/screenshots/pint3rest-search.png',
+    title: '🔍 Search',
+    description: 'Discover trending ideas and the latest content with our advanced search tools. Quickly find inspiration and innovative concepts.'
+  },
+  {
+    src: '/screenshots/pint3rest-user.png',
+    title: '👤 Profile',
+    description: 'Your personalized profile where your creativity shines. Showcase your interests, connect with others, and manage your content effortlessly.'
+  },
+  {
+    src: '/screenshots/pint3rest-detail.png',
+    title: '📌 Pin',
+    description: 'Dive into detailed insights on every pin, including likes, comments, and saves. Gain a deeper understanding of what makes each pin unique.'
+  },
+  {
+    src: '/screenshots/pint3rest-create.png',
+    title: '✨ New Pin',
+    description: 'Easily create and share stunning pins with our intuitive interface. Turn your ideas into captivating visuals in seconds.'
+  },
+  {
+    src: '/screenshots/pint3rest-chats.png',
+    title: '💬 Chats',
+    description: 'Engage in real-time, limitless conversations with fellow creatives. Share ideas, feedback, and inspiration instantly.'
+  },
 ])
 
 const fullscreenIndex = ref(null)
@@ -157,57 +170,45 @@ const resetHeaderGradient = () => {
 <style scoped>
 .marquee-wrapper {
   display: inline-block;
-  /* Элементы в одном ряду */
   animation: marquee 40s linear infinite;
   font-size: 5rem;
-  /* Увеличиваем размер шрифта */
   font-weight: bold;
   letter-spacing: 2px;
   white-space: nowrap;
-  /* Прокрутка в одном ряду */
   overflow: hidden;
 }
 
 .marquee-wrapper2 {
   display: inline-block;
-  /* Элементы в одном ряду */
   animation: marquee2 40s linear infinite;
   font-size: 5rem;
-  /* Увеличиваем размер шрифта */
   font-weight: bold;
   letter-spacing: 2px;
   white-space: nowrap;
-  /* Прокрутка в одном ряду */
   overflow: hidden;
 }
 
-
 .animate-marquee {
   font-size: 5rem;
-  /* Увеличиваем размер шрифта для анимации */
 }
 
 @keyframes marquee {
   0% {
     transform: translateX(20%);
-    /* Начало прокрутки с правого края */
   }
 
   100% {
     transform: translateX(-100%);
-    /* Конец прокрутки слева */
   }
 }
 
 @keyframes marquee2 {
   0% {
     transform: translateX(-100%);
-    /* Начало прокрутки с правого края */
   }
 
   100% {
     transform: translateX(0%);
-    /* Конец прокрутки слева */
   }
 }
 
@@ -216,9 +217,9 @@ const resetHeaderGradient = () => {
   color: transparent;
 }
 
-.bg-gradient-to-r {
+/* .bg-gradient-to-r {
   background-image: linear-gradient(to right, #f0f, rgb(233, 52, 11));
-}
+} */
 
 .relative {
   position: relative;
