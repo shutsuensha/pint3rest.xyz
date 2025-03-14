@@ -34,6 +34,19 @@
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture.png)
 
+## 📸 Comparison of Pint3rest and Pinterest Interfaces
+
+| Page  | Pint3rest 🚀 | Pinterest 🔥 |
+|-----------|------------|-------------|
+| **🏠 Home**  | ![Home Pint3rest](.github/assets/pint3rest-home.png) | ![Home Pinterest](.github/assets/pinterest-home.png) |
+| **📌 Detail** | ![Detail Pint3rest](.github/assets/pint3rest-detail.png) | ![Detail Pinterest](.github/assets/pinterest-detail.png) |
+| **➕ Create** | ![Create Pint3rest](.github/assets/pint3rest-create.png) | ![Create Pinterest](.github/assets/pinterest-create.png) |
+| **👤 User Profile** | ![User Pint3rest](.github/assets/pint3rest-user.png) | ![User Pinterest](.github/assets/pinterest-user.png) |
+| **💬 Chats** | ![Chats Pint3rest](.github/assets/pint3rest-chats.png) | ![Chats Pinterest](.github/assets/pinterest-chats.png) |
+| **🔎 Search** | ![Search Pint3rest](.github/assets/pint3rest-search.png) | ![Search Pinterest](.github/assets/pinterest-search.png) |
+
+
+
 
 ## 🤝 Contribute 🤩
 Got ideas? Report bugs, add features, or just join the fun! 🛠️💬
