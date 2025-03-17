@@ -66,7 +66,7 @@ const showChat = ref(false)
         </span>
       </div>
 
-      <div v-show="!chat.typing" class="flex items-center min-w-0">
+      <div v-show="!chat.typing && !chat.isSendingMedia" class="flex items-center min-w-0">
         <!-- Миниатюра изображения -->
         <img v-if="chat.last_message?.media && chat.last_message.isImage" :src="chat.last_message.media"
           class="w-5 h-5 min-w-5 min-h-5 flex-none" />
@@ -113,7 +113,7 @@ const showChat = ref(false)
         <span class="text-gray-700 text-sm typing-animation">typing</span>
       </div>
       <div v-show="chat.isSendingMedia" class="flex items-center min-w-0">
-        <span class="text-gray-700 text-sm typing-animation">sending media</span>
+        <span class="text-gray-700 text-sm sending-animation">📤 sending media</span>
       </div>
     </div>
   </div>
@@ -143,5 +143,33 @@ const showChat = ref(false)
   100% {
     content: ' .';
   }
+}
+
+
+@keyframes sending-file {
+  0% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+}
+
+.sending-animation {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  animation: sending-file 1s infinite ease-in-out;
+}
+
+.sending-animation::after {
+  content: "📤"; /* Иконка отправки */
+  animation: sending-file 1s infinite ease-in-out;
 }
 </style>

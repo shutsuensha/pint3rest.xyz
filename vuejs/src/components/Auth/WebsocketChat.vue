@@ -378,7 +378,6 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (socket) {
-    socket.send(JSON.stringify({ 'user_stop_typing': true }));
     socket.close();
   }
 });
@@ -703,7 +702,7 @@ function showVideo(message) {
           <span v-show="typing === true && !isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
             class="text-md typing-animation">typing</span>
           <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
-            class="text-md typing-animation">sending media</span>
+            class="text-md sending-animation">📤 sending media</span>
         </div>
         <i v-show="!chatStore.side" @click="updateSide(true)"
           class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
@@ -948,4 +947,32 @@ function showVideo(message) {
     content: ' .';
   }
 }
+
+@keyframes sending-file {
+  0% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+}
+
+.sending-animation {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  animation: sending-file 1s infinite ease-in-out;
+}
+
+.sending-animation::after {
+  content: "📤"; /* Иконка отправки */
+  animation: sending-file 1s infinite ease-in-out;
+}
+
 </style>
