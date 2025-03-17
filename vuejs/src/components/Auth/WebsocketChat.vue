@@ -231,7 +231,7 @@ const isOnline = ref(false)
 const typing = ref(false)
 
 
-const connectWebSocket = () => {
+const connectWebSocket = async () => {
   socket = new WebSocket(`/ws/${props.chat_id}/${props.auth_user_id}`);
 
   socket.onmessage = async (event) => {
@@ -348,7 +348,7 @@ onMounted(async () => {
   } catch (error) {
     console.log(error)
   }
-  connectWebSocket();
+  await connectWebSocket();
   loadMessages();
   try {
     const response = await axios.get(`/api/subscription/followers/cnt/${props.chat.user.id}`, { withCredentials: true });
