@@ -232,9 +232,18 @@ const typing = ref(false)
 
 
 const connectWebSocket = async () => {
-  socket = new WebSocket(`/ws/${props.chat_id}/${props.auth_user_id}`);
+  return new Promise((resolve, reject) => {
+    socket = new WebSocket(`/ws/${props.chat_id}/${props.auth_user_id}`);
 
-  socket.onmessage = async (event) => {
+    socket.onopen = () => {
+      resolve(); // Соединение установлено, можно продолжать
+    };
+
+    socket.onerror = (error) => {
+      reject(error); // Ошибка подключения
+    };
+
+    socket.onmessage = async (event) => {
     let showToast = false
     try {
       const messageObj = JSON.parse(event.data);
@@ -296,7 +305,75 @@ const connectWebSocket = async () => {
     scrollToBottom();
     emit('updateLastMessage', showToast, props.chat_id)
   };
+  });
 };
+
+// const connectWebSocket = async () => {
+//   socket = new WebSocket(`/ws/${props.chat_id}/${props.auth_user_id}`);
+
+//   socket.onmessage = async (event) => {
+//     let showToast = false
+//     try {
+//       const messageObj = JSON.parse(event.data);
+//       if ("online" in messageObj) {
+//         if (messageObj.online == true) {
+//           isOnline.value = true
+//           props.chat.last_message.is_read = true
+//         } else {
+//           isOnline.value = false
+//         }
+//         for (let i = 0; i < messages.value.length; i++) {
+//           if (messages.value[i].user_id_ === props.auth_user_id) {
+//             if (messages.value[i].is_read === false) {
+//               messages.value[i].is_read = true
+//             } else {
+//               break
+//             }
+//           }
+//         }
+//         return
+//       }
+//       if ("user_start_sending_media" in messageObj) {
+//         isSendingMedia.value = true
+//         return
+//       }
+//       if ("user_stop_sending_media" in messageObj) {
+//         isSendingMedia.value = false
+//         return
+//       }
+//       if ("user_start_typing" in messageObj) {
+//         typing.value = true
+//         return
+//       }
+//       if ("user_stop_typing" in messageObj) {
+//         typing.value = false
+//         return
+//       }
+//       try {
+//         await axios.patch(`/api/messages/read/${messageObj.id}`)
+//       } catch (error) {
+//         console.log(error)
+//       }
+//       if (messageObj.image) {
+//         try {
+//           const response = await axios.get(`/api/messages/upload/${messageObj.id}`, { responseType: 'blob' });
+//           const blobUrl = URL.createObjectURL(response.data);
+//           messageObj.media = blobUrl
+//         } catch (error) {
+//           console.error(error);
+//         }
+//       }
+//       messages.value.unshift(messageObj);
+//       if (route.name !== 'messages') {
+//         showToast = true
+//       }
+//     } catch (error) {
+//       console.error("Ошибка при разборе JSON:", error);
+//     }
+//     scrollToBottom();
+//     emit('updateLastMessage', showToast, props.chat_id)
+//   };
+// };
 
 const sendMessage = async () => {
   if (message.value.trim() && socket.readyState === WebSocket.OPEN) {
