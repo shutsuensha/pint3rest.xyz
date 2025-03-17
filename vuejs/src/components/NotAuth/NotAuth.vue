@@ -25,6 +25,7 @@ const tailwindColors = {
 };
 
 
+
 const buttonBg = ref('bg-indigo-400')
 const buttonText = ref('text-white')
 const buttonBgHover = ref('hover:bg-indigo-600')
@@ -359,8 +360,8 @@ onMounted(async () => {
   document.title = 'Pint3rest Next-Gen'
   initializeKinesis()
   AOS.init({
-    duration: 3000,  // Длительность анимации
-    once: true,      // Анимация будет воспроизводиться только один раз
+    duration: 3000,  // 800 мс (быстрее)
+    once: false     // Позволит анимации повторяться при повторном наведении
   });
   try {
     for (let i = 1; i <= 15; i++) {
@@ -618,17 +619,17 @@ onMounted(async () => {
       </div>
       <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
-          :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'">
+          :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'" >
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
+          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'" >
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
-      <div class="text-center">
+      <div class="text-center z-30">
         <h1 class="text-4xl  text-black mb-6">{{ textWelcome }}</h1>
         <div class="space-x-4">
           <!-- Signup Button -->

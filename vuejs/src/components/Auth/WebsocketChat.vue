@@ -1,16 +1,28 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, onBeforeUnmount, ref, nextTick, watch } from 'vue';
+import { onMounted, onBeforeUnmount, ref, nextTick, watch, watchEffect } from 'vue';
 import FollowersSection from './FollowersSection.vue';
 import FollowingSection from './FollowingSection.vue';
 import { RouterLink, useRoute } from 'vue-router';
 import double_check from '@/assets/double_check.png';
 import single_check from '@/assets/single_check.png';
+import EmojiPicker from 'vue3-emoji-picker'
+import 'vue3-emoji-picker/css'
+
 
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 const unreadMessagesStore = useUnreadMessagesStore();
 
 import { useChatStore } from "@/stores/useChatStore";
+
+
+const isNewDay = (index) => {
+  if (index === messages.value.length - 1) return true;
+  const currentDate = dayjs(messages.value[index].created_at).format('YYYY-MM-DD');
+  const previousDate = dayjs(messages.value[index + 1].created_at).format('YYYY-MM-DD');
+  return currentDate !== previousDate;
+};
+
 
 const chatStore = useChatStore();
 
@@ -23,6 +35,12 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 
 const color = ref('red')
 const size = ref('100px')
+
+function onSelectEmoji(emoji) {
+  message.value += emoji.i
+}
+
+const showPicker = ref(false)
 
 const colorMap = {
   red: { track: "#fca5a5", thumb: "#ef4444" }, // bg-red-300 / bg-red-500
@@ -148,6 +166,7 @@ async function loadMessages() {
             messagesTemp.value[i].isImage = true;
           } else {
             messagesTemp.value[i].isImage = false;
+            messagesTemp.value[i].loaded = false
           }
         } catch (error) {
           console.error(error);
@@ -243,6 +262,7 @@ const connectWebSocket = () => {
 
 const sendMessage = async () => {
   if (message.value.trim() && socket.readyState === WebSocket.OPEN) {
+    showPicker.value = false
     const response = await axios.post('/api/messages/', {
       content: message.value,
       chat_id: props.chat_id
@@ -280,6 +300,7 @@ const cntUserFollowing = ref(null)
 const checkUserFollow = ref(null)
 const showFollowers = ref(null)
 const showFollowing = ref(null)
+
 
 
 onMounted(async () => {
@@ -511,6 +532,7 @@ const openFullscreen = (imageSrc) => {
   fullscreenImage.value = imageSrc;
 };
 
+
 const closeFullscreen = () => {
   fullscreenImage.value = null;
 };
@@ -532,6 +554,9 @@ const setVolume = () => {
   }
 };
 
+function showVideo(message) {
+  message.loaded = true
+}
 
 
 </script>
@@ -626,30 +651,59 @@ const setVolume = () => {
         <i v-show="chatStore.side" @click="updateSide(false)"
           class="pi pi-angle-right w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
       </div>
+
       <div ref="chatBox" @scroll="handleScroll" id="chatBox"
-        class="w-[800px] h-[630px]  overflow-y-auto p-2 flex flex-col-reverse mt-[50px]"
+        class="w-[800px] h-[630px]  overflow-y-auto p-1 flex flex-col-reverse mt-[50px] relative"
         :class="`bg-${chatStore.bgColor}-300`"
         :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
-        <div v-for="(message, index) in messages" :key="index" class="flex my-1"
-          :class="[message.user_id_ === auth_user_id ? 'justify-end' : '']">
-          <div class="flex flex-col  max-w-[400px]  rounded-3xl  bg-white">
-            <img v-if="message.media && message.isImage" :src="message.media"
-              class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" @click="openFullscreen(message.media)" />
-            <video v-if="message.media && !message.isImage" :src="message.media"
-              class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" autoplay loop muted
-              @click="openFullscreenVideo(message.media)"></video>
-            <div v-if="message.content" class="mt-4 truncate text-wrap px-4">
-              <span class="text-sm text-black ">{{ message.content }}</span>
-            </div>
-            <div class="flex flex-row items-center m-3 gap-2">
-              <span class="text-sm text-gray-500">{{ dayjs(message.created_at).fromNow() }}</span>
-              <div v-if="message.user_id_ === auth_user_id" class="flex ml-auto justify-end items-center gap-1">
-                <img v-if="message.is_read === false" :src="single_check" alt="Single Check" class="h-4 w-4" />
-                <img v-if="message.is_read === true" :src="double_check" alt="Double Check" class="h-4 w-4" />
+
+
+        <div v-for="(message, index) in messages" :key="message.id" class="w-full">
+          <!-- Если новый день, выводим разделитель с датой -->
+          <div v-if="isNewDay(index)" class="text-center my-2 z-10">
+            <span class="bg-white px-2 py-1 rounded-full text-xs inline-block">
+              {{ dayjs(message.created_at).format('D MMM') }}
+            </span>
+          </div>
+
+          <!-- Само сообщение -->
+          <div class="flex my-1" :class="[message.user_id_ === auth_user_id ? 'justify-end' : 'justify-start']">
+            <div class="relative flex flex-col max-w-[400px] bg-white"
+              :class="message.user_id_ === auth_user_id ? 'rounded-t-3xl rounded-l-3xl' : 'rounded-t-3xl rounded-r-3xl'">
+              <!-- Изображение -->
+              <img v-if="message.media && message.isImage" :src="message.media"
+                class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer"
+                @click="openFullscreen(message.media)" />
+
+              <!-- Видео -->
+              <video v-show="message.loaded" v-if="message.media && !message.isImage" :src="message.media"
+                class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" autoplay loop muted
+                @click="openFullscreenVideo(message.media)" @loadeddata="message.loaded = true">
+              </video>
+
+              <ClipLoader v-show="!message.loaded && !message.isImage && message.media" :color="color" size="50px"
+                class="flex items-center justify-center h-96 font-extrabold" />
+
+
+              <!-- Текст сообщения -->
+              <div v-if="message.content" class="mt-2 text-wrap px-2">
+                <span class="text-sm text-black">{{ message.content }}</span>
+              </div>
+
+              <!-- Время и статус сообщения -->
+              <div class="flex flex-row items-center ml-4 gap-1">
+                <span class="text-sm text-gray-500 flex ml-auto justify-end">{{
+                  dayjs(message.created_at).format('HH:mm') }}</span>
+                <div v-if="message.user_id_ === auth_user_id" class="items-center gap-1 mr-1">
+                  <img v-if="message.is_read === false" :src="single_check" alt="Single Check" class="h-4 w-4" />
+                  <img v-if="message.is_read === true" :src="double_check" alt="Double Check" class="h-4 w-4" />
+                </div>
+                <div v-else class="mr-4"></div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
 
       <div v-show="chatStore.side" id="user-info" class="w-[280px] h-[650px] bg-white flex flex-col">
@@ -723,6 +777,17 @@ const setVolume = () => {
       <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload" class="hidden">
       <input id="messageInput" v-model="message" @keyup.enter="sendMessage" placeholder="Write a message..." autofocus
         autocomplete="off" class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
+      <EmojiPicker v-show="showPicker" :native="true" @select="onSelectEmoji" class="absolute bottom-10 right-0" />
+      <button @click="showPicker = !showPicker" class="p-5">
+        <!-- Смайлик в SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <circle cx="12" cy="12" r="10" fill="#FFEB3B" />
+          <circle cx="9" cy="9" r="1.5" fill="black" />
+          <circle cx="15" cy="9" r="1.5" fill="black" />
+          <path d="M8 15c1.5 1 4.5 1 6 0" stroke="black" />
+        </svg>
+      </button>
     </div>
   </div>
 </template>

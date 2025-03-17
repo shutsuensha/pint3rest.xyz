@@ -18,16 +18,16 @@ dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 
 const formattedTime = (timestamp) => {
-    const date = dayjs(timestamp);
-    const now = dayjs();
+  const date = dayjs(timestamp);
+  const now = dayjs();
 
-    return date.isToday()
-        ? date.format('HH:mm')
-        : date.isYesterday()
-            ? 'Вчера'
-            : now.diff(date.startOf('day'), 'days') > 7
-                ? date.format('DD.MM') 
-                : date.format('dddd');
+  return date.isToday()
+    ? date.format('HH:mm')
+    : date.isYesterday()
+      ? 'Вчера'
+      : now.diff(date.startOf('day'), 'days') > 7
+        ? date.format('MMM D')
+        : date.format('ddd'); // Сокращенное название дня недели
 };
 
 
@@ -49,7 +49,8 @@ const showChat = ref(false)
     <div class="relative flex-none">
       <img :src="chat.userImage" alt="User Image"
         class="w-[60px] h-[60px] min-w-[60px] min-h-[60px] rounded-full object-cover m-2" />
-      <div  :class="`bg-${chatStore.bgColor}-500`" v-if="chat.online" class="absolute bottom-2 right-3  w-3 h-3 rounded-full border-2 border-white">
+      <div :class="`bg-${chatStore.bgColor}-500`" v-if="chat.online"
+        class="absolute bottom-2 right-3  w-3 h-3 rounded-full border-2 border-white">
       </div>
     </div>
 
@@ -57,7 +58,7 @@ const showChat = ref(false)
     <div class="flex flex-col w-full min-w-0 gap-1">
       <div class="flex justify-between items-center w-full min-w-0">
         <!-- Имя пользователя с truncate -->
-        <span  class="w-0 flex-1 truncate">{{ chat.user.username }}</span>
+        <span class="w-0 flex-1 truncate">{{ chat.user.username }}</span>
 
         <!-- Время последнего сообщения -->
         <span v-if="chat.last_message" class="text-sm text-gray-700 text-nowrap mr-1">
@@ -81,10 +82,12 @@ const showChat = ref(false)
         </span>
 
         <!-- Если сообщение - фото -->
-        <span v-if="chat.last_message?.media && chat.last_message.isImage && !chat.last_message.content && !chat.last_message.isGif"
+        <span
+          v-if="chat.last_message?.media && chat.last_message.isImage && !chat.last_message.content && !chat.last_message.isGif"
           class="ml-1 text-sm text-gray-700">Photo</span>
 
-        <span v-if="chat.last_message?.media && chat.last_message.isImage && !chat.last_message.content && chat.last_message.isGif"
+        <span
+          v-if="chat.last_message?.media && chat.last_message.isImage && !chat.last_message.content && chat.last_message.isGif"
           class="ml-1 text-sm text-gray-700">Gif</span>
 
         <!-- Если сообщение - видео -->
@@ -106,7 +109,7 @@ const showChat = ref(false)
             class="h-4 w-4 flex-none" />
         </div>
       </div>
-      <div v-show="chat.typing && chat.typing===true" class="flex items-center min-w-0">
+      <div v-show="chat.typing && chat.typing === true" class="flex items-center min-w-0">
         <span class="text-gray-700 text-sm typing-animation">typing</span>
       </div>
     </div>
@@ -122,9 +125,20 @@ const showChat = ref(false)
 }
 
 @keyframes dots {
-  0% { content: ' .'; }
-  33% { content: ' ..'; }
-  66% { content: ' ...'; }
-  100% { content: ' .'; }
+  0% {
+    content: ' .';
+  }
+
+  33% {
+    content: ' ..';
+  }
+
+  66% {
+    content: ' ...';
+  }
+
+  100% {
+    content: ' .';
+  }
 }
 </style>
