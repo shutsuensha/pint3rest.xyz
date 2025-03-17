@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, onBeforeUnmount, ref, nextTick, watch, watchEffect } from 'vue';
+import { onMounted, onBeforeUnmount, ref, nextTick, watch, computed } from 'vue';
 import FollowersSection from './FollowersSection.vue';
 import FollowingSection from './FollowingSection.vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -93,6 +93,33 @@ const message = ref("");
 const isTyping = ref(false)
 let typingTimeout = null;
 
+const isSendingMedia = ref(false)
+
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Вычисляем оставшееся время для каждого сообщения
+const formattedTimeRemaining = (message) => {
+  return computed(() => {
+    if (!message.videoDuration) return "0:00"; // Если нет данных о длительности, вернуть "0:00"
+    const timeRemaining = Math.max(message.videoDuration - message.currentTime, 0);
+    return formatTime(timeRemaining);
+  });
+};
+
+// Функция обновления текущего времени видео
+const onTimeUpdate = (message, event) => {
+  message.currentTime = event.target.currentTime;
+};
+
+// Функция загрузки видео
+const onVideoLoad = (message, event) => {
+  message.videoDuration = event.target.duration; // Получаем продолжительность видео
+};
+
 
 watch(message, (newValue, oldValue) => {
   if (newValue.trim() !== '') {
@@ -166,7 +193,10 @@ async function loadMessages() {
             messagesTemp.value[i].isImage = true;
           } else {
             messagesTemp.value[i].isImage = false;
-            messagesTemp.value[i].loaded = false
+            messagesTemp.value[i].videPlayer = null
+            messagesTemp.value[i].videoLoaded = false
+            messagesTemp.value[i].videoDuration = 0
+            messagesTemp.value[i].currentTime = 0
           }
         } catch (error) {
           console.error(error);
@@ -224,6 +254,14 @@ const connectWebSocket = () => {
             }
           }
         }
+        return
+      }
+      if ("user_start_sending_media" in messageObj) {
+        isSendingMedia.value = true
+        return
+      }
+      if ("user_stop_sending_media" in messageObj) {
+        isSendingMedia.value = false
         return
       }
       if ("user_start_typing" in messageObj) {
@@ -340,6 +378,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (socket) {
+    socket.send(JSON.stringify({ 'user_stop_typing': true }));
     socket.close();
   }
 });
@@ -379,6 +418,9 @@ const previewFile = (file) => {
 const messageContent = ref('')
 
 async function sendMediaMessage() {
+
+  socket.send(JSON.stringify({ 'user_start_sending_media': true }));
+
   const formData = new FormData();
   formData.append("file", mediaFile.value); // Файл
 
@@ -397,6 +439,7 @@ async function sendMediaMessage() {
   });
 
   const messageResp = response.data
+
 
   // const response = await axios.post('/api/messages/', {
   //   content: messageContent.value,
@@ -434,6 +477,7 @@ async function sendMediaMessage() {
 
   messages.value.unshift(messageResp)
   socket.send(JSON.stringify(messageResp));
+  socket.send(JSON.stringify({ 'user_stop_sending_media': true }));
   messageContent.value = "";
 
   openSendMedia.value = false
@@ -617,17 +661,30 @@ function showVideo(message) {
     </div>
   </transition>
 
-  <div v-if="fullscreenImage" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <img :src="fullscreenImage" class="max-w-full max-h-full" />
-    <button @click="closeFullscreen" class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer">
+  <div v-if="fullscreenImage" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+    @click="closeFullscreen">
+
+    <!-- Изображение: предотвращаем закрытие при клике на него -->
+    <img :src="fullscreenImage" class="max-w-full max-h-full" @click.stop />
+
+    <!-- Кнопка закрытия -->
+    <button @click="closeFullscreen"
+      class="absolute top-4 right-4 text-gray-300 text-3xl font-bold cursor-pointer hover:text-white">
       ✕
     </button>
   </div>
 
-  <div v-if="fullscreenVideo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+  <div v-if="fullscreenVideo" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+    @click="closeFullscreenVideo">
+
+    <!-- Видео: предотвращаем закрытие при клике на него -->
     <video ref="videoElement" :src="fullscreenVideo" class="w-auto h-auto max-w-full max-h-full rounded-lg" autoplay
-      loop @loadedmetadata="setVolume" controls></video>
-    <button @click="closeFullscreenVideo" class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer">
+      loop controls @click.stop>
+    </video>
+
+    <!-- Кнопка закрытия -->
+    <button @click="closeFullscreenVideo"
+      class="absolute top-4 right-4 text-gray-300 text-3xl font-bold cursor-pointer hover:text-white">
       ✕
     </button>
   </div>
@@ -641,10 +698,12 @@ function showVideo(message) {
         :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
         <div class="flex flex-col">
           <span class="text-md"> {{ chat.user.username }}</span>
-          <span v-show="!typing" v-if="isOnline" class="text-md" :class="`text-${chatStore.bgColor}-500`">online</span>
-          <span v-show="!typing" v-if="!isOnline" class="text-gray-500 text-md">last seen recently</span>
-          <span v-show="typing === true" :class="`text-${chatStore.bgColor}-500`"
+          <span v-show="!typing && !isSendingMedia" v-if="isOnline" class="text-md" :class="`text-${chatStore.bgColor}-500`">online</span>
+          <span v-show="!typing && !isSendingMedia" v-if="!isOnline" class="text-gray-500 text-md">last seen recently</span>
+          <span v-show="typing === true && !isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
             class="text-md typing-animation">typing</span>
+          <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
+            class="text-md typing-animation">sending media</span>
         </div>
         <i v-show="!chatStore.side" @click="updateSide(true)"
           class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
@@ -676,13 +735,17 @@ function showVideo(message) {
                 @click="openFullscreen(message.media)" />
 
               <!-- Видео -->
-              <video v-show="message.loaded" v-if="message.media && !message.isImage" :src="message.media"
-                class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" autoplay loop muted
-                @click="openFullscreenVideo(message.media)" @loadeddata="message.loaded = true">
-              </video>
-
-              <ClipLoader v-show="!message.loaded && !message.isImage && message.media" :color="color" size="50px"
-                class="flex items-center justify-center h-96 font-extrabold" />
+              <div class="relative">
+                <div v-if="message.videoDuration"
+                  class="absolute top-2 left-2 bg-gray-100 text-black rounded-2xl px-3 py-1 text-sm">
+                  {{ formattedTimeRemaining(message).value }}
+                </div>
+                <video :ref="el => { if (el) message.videoPlayer = el; }" @loadeddata="onVideoLoad(message, $event)"
+                  @timeupdate="onTimeUpdate(message, $event)" v-if="message.media && !message.isImage"
+                  :src="message.media" class="w-auto h-auto max-h-[500px] rounded-t-2xl cursor-pointer" autoplay loop
+                  muted @click="openFullscreenVideo(message.media)">
+                </video>
+              </div>
 
 
               <!-- Текст сообщения -->

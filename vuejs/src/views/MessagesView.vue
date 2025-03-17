@@ -136,6 +136,16 @@ async function addChat(chat_id) {
         chats.value = [...chats.value];
         return
       }
+      if ("user_start_sending_media" in message) {
+        chat.isSendingMedia = true
+        chats.value = [...chats.value];
+        return
+      }
+      if ("user_stop_sending_media" in message) {
+        chat.isSendingMedia = false
+        chats.value = [...chats.value];
+        return
+      }
       if ("user_read_messages" in message) {
         chat.last_message.is_read = true
         chats.value = [...chats.value];
@@ -213,7 +223,7 @@ async function addChat(chat_id) {
   } catch (error) {
     console.error(error);
   }
-  
+
 }
 
 
@@ -289,6 +299,7 @@ onMounted(async () => {
         const data = JSON.parse(event.data);
         addChat(data.message.chat_id)
         unreadMessagesStore.increment()
+        chat_selected.value += 1
       };
 
       eventSource.onerror = () => {
@@ -326,6 +337,14 @@ onMounted(async () => {
             }
             return
           }
+          if ("user_start_sending_media" in message) {
+            chats.value[i].isSendingMedia = true
+            return
+          }
+          if ("user_stop_sending_media" in message) {
+            chats.value[i].isSendingMedia = false
+            return
+          } 
           if ("user_read_messages" in message) {
             chats.value[i].last_message.is_read = true
             return

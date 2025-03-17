@@ -109,8 +109,11 @@ const showChat = ref(false)
             class="h-4 w-4 flex-none" />
         </div>
       </div>
-      <div v-show="chat.typing && chat.typing === true" class="flex items-center min-w-0">
+      <div v-show="chat.typing && chat.typing === true && !chat.isSendingMedia" class="flex items-center min-w-0">
         <span class="text-gray-700 text-sm typing-animation">typing</span>
+      </div>
+      <div v-show="chat.isSendingMedia" class="flex items-center min-w-0">
+        <span class="text-gray-700 text-sm typing-animation">sending media</span>
       </div>
     </div>
   </div>
