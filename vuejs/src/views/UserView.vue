@@ -649,7 +649,7 @@ async function redirectToChat() {
         <div class="relative">
           <i v-if="user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl"></i>
           <img v-if="userImage" :src="userImage" alt="Profile Picture"
-            class="rounded-full w-32 h-32 object-cover border-4 border-black" />
+            class="rounded-full w-32 h-32 object-cover border-4 border-white" />
         </div>
         <p v-if="user" class="mt-4 text-lg font-semibold">{{ user.username }}</p>
         <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons"
@@ -670,7 +670,7 @@ async function redirectToChat() {
           </button>
         </div>
         <p v-if="user && user.description"
-          class="text-center mt-4 text-lg font-semibold  truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
+          class="text-center mt-4 text-lg truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
         <div class="flex flex-row gap-2 text-4xl text-red-600">
           <a v-if="user && user.instagram" :href="user.instagram">
             <i class="pi pi-instagram"></i>
@@ -686,13 +686,13 @@ async function redirectToChat() {
           </a>
         </div>
         <div class="flex gap-4">
-          <a @click="showFollowers = true"
-            class=" text-red-600 cursor-pointer hover:underline">
-            {{ cntUserFollowers }} Follower
+          <a v-show="cntUserFollowers > 0" @click="showFollowers = true"
+            class=" text-black cursor-pointer hover:underline ">
+            {{ cntUserFollowers }} follower
           </a>
-          <a @click="showFollowing = true"
-            class=" text-red-600 cursor-pointer hover:underline">
-            {{ cntUserFollowing }} Following
+          <a v-show="cntUserFollowing > 0" @click="showFollowing = true"
+            class=" text-black cursor-pointer hover:underline">
+            {{ cntUserFollowing }} following
           </a>
         </div>
         <div class="flex flex-row gap-4">
@@ -705,11 +705,11 @@ async function redirectToChat() {
             Unfollow
           </button>
           <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
-            class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
             Send Message
           </button>
           <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
-            class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
+            class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
             Go to Chat
           </button>
         </div>

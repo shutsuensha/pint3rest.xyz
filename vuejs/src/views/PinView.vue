@@ -617,7 +617,7 @@ async function showVideoControls() {
         <div>
           <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
             class="inline-flex items-center mt-2 hover:underline cursor-pointer">
-            <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full" />
+            <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full object-cover" />
             <span class="ml-2 text-md font-medium">@{{ pinUser.username }}</span>
           </RouterLink>
         </div>
