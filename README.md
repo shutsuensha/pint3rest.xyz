@@ -32,7 +32,7 @@
 ![Logo](.github/assets/logo.png)
 
 ## 📊 Project Architecture
-![Architecture](.github/assets/architecture.jpg)
+![Architecture](.github/assets/architecture-pint3rest.jpg)
 
 ## 📸 Pint3rest vs Pinterest  
 
