@@ -8,6 +8,8 @@ import { useToast } from "vue-toastification";
 import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
+import google_logo from '@/assets/g-logo.png';
+
 const tailwindColors = {
   "bg-red-100": "#fee2e2",
   "bg-red-200": "#fecaca",
@@ -325,6 +327,12 @@ async function submitPasswordReset() {
       showPasswordReset.value = false
       errorMessagePasswordReset.value = error.response.data.detail
     }
+    if (error.response.status === 406) {
+      showPasswordResetLoader.value = false
+      showErrorModalPasswordReset.value = true
+      showPasswordReset.value = false
+      errorMessagePasswordReset.value = error.response.data.detail
+    }
   }
 }
 
@@ -430,8 +438,13 @@ onMounted(async () => {
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
+            <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
+              class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
+              <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
+              <span class="text-sm font-semibold text-white">Continue with Google</span>
+            </a>
             <button type="submit"
-              class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Sign
+              class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
               Already have an account? <a @click="showSignUp = false; showLogin = true"
@@ -478,8 +491,13 @@ onMounted(async () => {
               <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
+            <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
+              class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
+              <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
+              <span class="text-sm font-semibold text-white">Continue with Google</span>
+            </a>
             <button type="submit"
-              class=" transition duration-300 w-full text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Log
+              class=" transition duration-300 w-full text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Log
               In</button>
             <div class="text-sm font-medium text-black ">
               Dont have an account? <a @click="showLogin = false; showSignUp = true"
@@ -619,13 +637,13 @@ onMounted(async () => {
       </div>
       <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
-          :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'" >
+          :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'" >
+          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>

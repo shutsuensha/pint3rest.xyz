@@ -35,8 +35,10 @@ class UsersOrm(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
+    google_id: Mapped[str | None] = mapped_column(String(200), default=None)
+
     username: Mapped[str] = mapped_column(String(200), unique=True)
-    hashed_password: Mapped[str] = mapped_column(String(200))
+    hashed_password: Mapped[str | None] = mapped_column(String(200), default=None)
     image: Mapped[str | None] = mapped_column(String(200), default=None)
     banner_image: Mapped[str | None] = mapped_column(String(200), default=None)
 

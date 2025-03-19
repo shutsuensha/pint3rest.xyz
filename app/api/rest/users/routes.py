@@ -240,6 +240,11 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="first u need verify your email then u can password, verification link is send to your email",
         )
+    if user.google_id:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="HTTP_406_NOT_ACCEPTABLE "
+        )
 
     token = create_url_safe_token({"username": user.username, "password": reset_model.password})
     link = f"{settings.API_DOMAIN}/users/password-reset-confirm/{token}"
@@ -359,7 +364,7 @@ async def login_user(user_in: UserIn, response: Response, db: db):
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
-    if not verify_password(user_in.password, user.hashed_password):
+    if not user_in.password or not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="password dont match")
     if user.email and not user.verified:
         token = create_url_safe_token({"username": user_in.username})

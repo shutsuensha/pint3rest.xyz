@@ -57,6 +57,12 @@ async def save_file(file, path):
             await new_file.write(chunk)
 
 
+async def save_file_bytes(file_content: bytes, path: str):
+    async with aiofiles.open(path, "wb") as new_file:
+        await new_file.write(file_content)  # Записываем весь файл сразу
+
+
+
 async def delete_file(path):
     try:
         os.remove(path)  # Удаление файла — это синхронная операция, но она обычно очень быстрая
