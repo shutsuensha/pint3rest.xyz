@@ -4,7 +4,7 @@ stages:
   # - migrations
   # - test
   - deploy
-  - clear-docker
+  - clear-images
 
 before_script:
   - cp ${ENV} .env
@@ -51,8 +51,8 @@ deploy:
   script:
     - docker-compose up -d
 
-clear-docker:
-  stage: clear-docker
+clear-images:
+  stage: clear-images
   script:
     - docker system prune -af
 
