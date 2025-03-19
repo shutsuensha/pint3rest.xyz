@@ -242,8 +242,7 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
         )
     if user.google_id:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="HTTP_406_NOT_ACCEPTABLE "
+            status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="HTTP_406_NOT_ACCEPTABLE "
         )
 
     token = create_url_safe_token({"username": user.username, "password": reset_model.password})

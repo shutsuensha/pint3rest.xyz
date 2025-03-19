@@ -116,7 +116,7 @@ class ConnectionManager:
                     if websocket1.client_state == WebSocketState.CONNECTED:
                         await websocket1.send_json({"user_read_messages": True})
             return
-        
+
         if "user_start_sending_media" in message:
             if self.chats[chat_id]["user_1"]["user_id"] == user_id:
                 websocket1 = self.chats[chat_id]["user_2"]["websocket"]
@@ -139,7 +139,7 @@ class ConnectionManager:
                     if websocket2.client_state == WebSocketState.CONNECTED:
                         await websocket2.send_json({"user_start_sending_media": True})
             return
-        
+
         if "user_stop_sending_media" in message:
             if self.chats[chat_id]["user_1"]["user_id"] == user_id:
                 websocket1 = self.chats[chat_id]["user_2"]["websocket"]

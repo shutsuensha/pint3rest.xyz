@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Response
+import uuid
+
+from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
+from sqlalchemy import insert, select
+
 from app.api.rest.dependencies import db
+from app.api.rest.utils import create_access_token, create_refresh_token, save_file_bytes
 from app.config import settings
 from app.httpx.app import get_httpx_client
-from sqlalchemy import select, insert, update
-import uuid
-from pathlib import Path
-from app.api.rest.utils import save_file_bytes, create_access_token, create_refresh_token
-
 from app.postgresql.models import UsersOrm
-
 
 router = APIRouter(prefix="/users/google/auth", tags=["users-google-auth"])
 
@@ -43,15 +42,16 @@ async def auth_google(code: str, db: db):
     )
 
     user_data = user_info.json()
-    
-    user_by_google_id = await db.scalar(select(UsersOrm).where(UsersOrm.google_id == user_data["id"]))
+
+    user_by_google_id = await db.scalar(
+        select(UsersOrm).where(UsersOrm.google_id == user_data["id"])
+    )
 
     if not user_by_google_id:
-        username = user_data["email"].split('@')[0]
+        username = user_data["email"].split("@")[0]
         user_by_username = await db.scalar(select(UsersOrm).where(UsersOrm.username == username))
         if user_by_username:
             username = f"{username}_{uuid.uuid4().hex[:6]}"
-        
 
         response = await client.get(user_data["picture"])
 
@@ -60,7 +60,6 @@ async def auth_google(code: str, db: db):
 
         await save_file_bytes(response.content, image_path)
 
-
         user_by_google_id = await db.scalar(
             insert(UsersOrm)
             .values(
@@ -68,7 +67,7 @@ async def auth_google(code: str, db: db):
                 username=username,
                 email=user_data["email"],
                 verified=True,
-                image=image_path
+                image=image_path,
             )
             .returning(UsersOrm)
         )
