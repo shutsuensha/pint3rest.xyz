@@ -40,6 +40,11 @@ const buttonText2 = ref('text-white')
 const buttonBgHover2 = ref('hover:bg-red-600')
 const buttonBgHoverText2 = ref('hover:text-white')
 
+const buttonBg3 = ref('bg-black')
+const buttonText3 = ref('text-white')
+const buttonBgHover3 = ref('hover:bg-black')
+const buttonBgHoverText3 = ref('hover:text-white')
+
 
 const toast = useToast();
 
@@ -392,6 +397,7 @@ async function googleAuth() {
   try {
     const response = await axios.get('/api/users/google/auth/login/')
     const data = response.data
+    showLoadingGoogle.value = false
     window.location.href = data.url;
   } catch (error) {
     console.error(error)
@@ -651,7 +657,7 @@ async function googleAuth() {
       </div>
       <div class="text-center z-30">
         <h1 class="text-4xl  text-black mb-6">{{ textWelcome }}</h1>
-        <div class="space-x-4">
+        <div class="space-x-2 flex flex-row justify-center items-center">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @click="showSignUp = true"
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
@@ -665,10 +671,12 @@ async function googleAuth() {
           </button>
 
           <button @click="googleAuth"
-            class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
-            <span v-if="showLoadingGoogle" class="loader"></span>
-            <img v-else :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
-            <span class="text-sm font-semibold text-white">Continue with Google</span>
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+            <div class="flex flex-row gap-2 items-center justify-center">
+              <span v-if="showLoadingGoogle" class="loader"></span>
+              <img v-else :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+              <span>Google</span>
+            </div>
           </button>
         </div>
       </div>
@@ -681,7 +689,7 @@ async function googleAuth() {
 .loader {
   width: 20px;
   height: 20px;
-  border: 3px solid #FFF;
+  border: 3px solid white;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;
