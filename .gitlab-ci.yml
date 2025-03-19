@@ -54,7 +54,7 @@ deploy:
 clear-images:
   stage: clear-images
   script:
-    - docker system prune -af
+    - docker image prune -f
 
 
 

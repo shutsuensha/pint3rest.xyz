@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, reactive, computed } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
+import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -384,7 +385,18 @@ onMounted(async () => {
   }
 })
 
+const showLoadingGoogle = ref(false)
 
+async function googleAuth() {
+  showLoadingGoogle.value = true
+  try {
+    const response = await axios.get('/api/users/google/auth/login/')
+    const data = response.data
+    window.location.href = data.url;
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
@@ -652,13 +664,38 @@ onMounted(async () => {
             Log In
           </button>
 
-          <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
+          <button @click="googleAuth"
             class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
-            <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+            <span v-if="showLoadingGoogle" class="loader"></span>
+            <img v-else :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
             <span class="text-sm font-semibold text-white">Continue with Google</span>
-          </a>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+
+<style scoped>
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
