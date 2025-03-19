@@ -654,7 +654,7 @@ onMounted(async () => {
 
           <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
             class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
-            <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
+            <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
             <span class="text-sm font-semibold text-white">Continue with Google</span>
           </a>
         </div>

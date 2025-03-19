@@ -100,6 +100,6 @@ def health():
 
 
 
-@app.get("/health2", tags=["health"])
-def health2():
+@app.get("/health3", tags=["health"])
+def health3():
     return {"status": "ok"}
