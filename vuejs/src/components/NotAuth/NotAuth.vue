@@ -390,14 +390,11 @@ onMounted(async () => {
   }
 })
 
-const showLoadingGoogle = ref(false)
 
 async function googleAuth() {
-  showLoadingGoogle.value = true
   try {
     const response = await axios.get('/api/users/google/auth/login/')
     const data = response.data
-    showLoadingGoogle.value = false
     window.location.href = data.url;
   } catch (error) {
     console.error(error)
@@ -673,8 +670,7 @@ async function googleAuth() {
           <button @click="googleAuth"
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
             <div class="flex flex-row gap-2 items-center justify-center">
-              <span v-if="showLoadingGoogle" class="loader"></span>
-              <img v-else :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
               <span>Google</span>
             </div>
           </button>
@@ -683,27 +679,3 @@ async function googleAuth() {
     </div>
   </div>
 </template>
-
-
-<style scoped>
-.loader {
-  width: 20px;
-  height: 20px;
-  border: 3px solid white;
-  border-bottom-color: transparent;
-  border-radius: 50%;
-  display: inline-block;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-</style>
