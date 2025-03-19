@@ -438,11 +438,6 @@ onMounted(async () => {
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
-            <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
-              class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
-              <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
-              <span class="text-sm font-semibold text-white">Continue with Google</span>
-            </a>
             <button type="submit"
               class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
               Up</button>
@@ -491,11 +486,6 @@ onMounted(async () => {
               <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
-            <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
-              class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
-              <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
-              <span class="text-sm font-semibold text-white">Continue with Google</span>
-            </a>
             <button type="submit"
               class=" transition duration-300 w-full text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Log
               In</button>
@@ -661,6 +651,12 @@ onMounted(async () => {
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
             Log In
           </button>
+
+          <a href="https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=879420548374-td1bd2306a602lmnscbalrteadct1tbm.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:8000/users/google/auth/&scope=openid%20profile%20email&=offline"
+            class="flex items-center gap-3 justify-center border border-gray-300 rounded-3xl bg-black px-5 py-3 shadow-sm hover:shadow-md transition">
+            <img :src="google_logo" alt="Google Logo" class="w-5 h-5">
+            <span class="text-sm font-semibold text-white">Continue with Google</span>
+          </a>
         </div>
       </div>
     </div>

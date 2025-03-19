@@ -97,3 +97,9 @@ register_exception_handlers(app)
 @app.get("/health", tags=["health"])
 def health():
     return {"status": "ok"}
+
+
+
+@app.get("/health2", tags=["health"])
+def health2():
+    return {"status": "ok"}
