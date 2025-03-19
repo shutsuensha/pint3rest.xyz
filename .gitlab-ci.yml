@@ -19,6 +19,11 @@ build-vuejs:
   script:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
+deploy:
+  stage: deploy
+  script:
+    - docker-compose up -d
+
 
 # lint:
 #   stage: lint-format
@@ -45,10 +50,6 @@ build-vuejs:
 #   script:
 #     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-deploy:
-  stage: deploy
-  script:
-    - docker-compose up -d
 
 # clear-images:
 #   stage: clear-images
