@@ -52,7 +52,7 @@ deploy:
     - docker-compose up -d
 
 clear-docker:
-  stage: clear-images
+  stage: clear-docker
   script:
     - docker system prune -af
 
