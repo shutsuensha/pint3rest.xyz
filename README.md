@@ -24,11 +24,6 @@
   <h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats</h2>
 </div>
 
-<div align="center">
-  <h2>⭐ Show Your Support 💖</h2>
-  <p>Love it? Smash that <strong>⭐ on GitHub</strong>! 👍🎉</p>
-</div>
-
 ![Logo](.github/assets/logo.png)
 
 ## 📊 Project Architecture
