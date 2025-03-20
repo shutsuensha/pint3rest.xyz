@@ -6,7 +6,7 @@
     <img v-show="!showVideo || !streamLoaded || !streamCanPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-64 object-cover rounded-2xl " />
     <video v-if="urlStream" v-show="urlStream && showVideo && streamLoaded && streamCanPlay" autoplay muted loop
-      @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay" @play="onVideoPlay">
+      @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
       <source :src="`${urlStream}`" type="video/mp4" />
     </video>
 
