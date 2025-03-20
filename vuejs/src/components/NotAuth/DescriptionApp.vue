@@ -85,6 +85,7 @@ import { ref, computed, onMounted } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
 import { initializeKinesis } from "@amineyarman/kinesis";
 
+
 onMounted(async () => {
   initializeKinesis();
 });

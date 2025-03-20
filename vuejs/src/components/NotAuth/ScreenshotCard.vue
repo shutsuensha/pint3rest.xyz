@@ -5,8 +5,8 @@
     <!-- Скриншот -->
     <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-64 object-cover rounded-2xl " />
-    <video v-show="showVideo"  autoplay muted loop>
-      <source :src="`${API_BASE_URL}/sse/video-stream`" type="video/mp4" />
+    <video v-if="urlStream" v-show="showVideo"  autoplay muted loop>
+      <source :src="`${urlStream}`" type="video/mp4" />
     </video>
 
 
@@ -39,11 +39,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const urlStream = ref(null)
 
-onMounted(()=> {
-  console.log(API_BASE_URL)
+onMounted(async ()=> {
+  try {
+    const response = await axios.get('/api/sse/url')
+    urlStream.value = response.data.url
+    console.log(urlStream.value)
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 const props = defineProps({

@@ -22,6 +22,13 @@ async def video_stream():
     return StreamingResponse(video_streamer(), media_type="video/mp4")
 
 
+@router.get("/url")
+async def url():
+    return {
+        "url": f"{settings.API_DOMAIN}/sse/video-stream"
+    }
+
+
 @router.get("/", response_class=HTMLResponse)
 async def ss_template(request: Request):
     return templates.TemplateResponse(
