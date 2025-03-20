@@ -680,8 +680,11 @@ async function googleAuth() {
   </div>
 
 
-  <ClipLoader v-if="loading" :color="color" :size="size"
-    class="flex items-center justify-center h-screen font-extrabold" />
+  <!-- <ClipLoader v-if="loading" :color="color" :size="size"
+    class="flex items-center justify-center h-screen font-extrabold" /> -->
+  <div v-if="loading" class="flex items-center justify-center h-screen">
+    <span class="loader text-4xl"></span>
+  </div>
   <div v-else :style="{ background: `linear-gradient(to top, ${colorBg}, white)` }"
     class="flex items-center justify-center h-screen">
 
@@ -785,8 +788,8 @@ async function googleAuth() {
             </div>
           </button>
         </div>
-        <div v-if="bg === 'bg-gray-800'" class="space-x-2 flex flex-row justify-center items-center"
-          :data-aos="''" data-aos-easing="ease" :data-aos-duration="3000">
+        <div v-if="bg === 'bg-gray-800'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
+          data-aos-easing="ease" :data-aos-duration="3000">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @click="showSignUp = true"
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
@@ -811,3 +814,90 @@ async function googleAuth() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.loader {
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  color: rgb(231, 15, 15);
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1s spin linear infinite;
+}
+
+.loader:after {
+  color: #000000;
+  transform: rotateY(70deg);
+  animation-delay: .3s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotateZ(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotateZ(360deg);
+  }
+}
+
+@keyframes rotateccw {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+@keyframes spin {
+
+  0%,
+  100% {
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+
+  12% {
+    box-shadow: .2em .2em 0 0 currentcolor;
+  }
+
+  25% {
+    box-shadow: 0 .2em 0 0px currentcolor;
+  }
+
+  37% {
+    box-shadow: -.2em .2em 0 0 currentcolor;
+  }
+
+  50% {
+    box-shadow: -.2em 0 0 0 currentcolor;
+  }
+
+  62% {
+    box-shadow: -.2em -.2em 0 0 currentcolor;
+  }
+
+  75% {
+    box-shadow: 0px -.2em 0 0 currentcolor;
+  }
+
+  87% {
+    box-shadow: .2em -.2em 0 0 currentcolor;
+  }
+}
+</style>

@@ -1,14 +1,14 @@
 <template>
-  <div
-  data-kinesisdepth
-  data-ks-sensitivity="20"
-
+  <div data-kinesisdepth data-ks-sensitivity="20"
     class="p-10 relative group overflow-hidden rounded-2xl bg-white/20 border border-white/30 backdrop-blur-lg shadow-xl transition transform hover:scale-105 hover:shadow-2xl cursor-pointer"
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
-    <img data-kinesisdepth-element
-    data-ks-depth="400"
- :src="card.src" :alt="card.title" class="w-full h-64 object-cover rounded-2xl " />
+    <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
+      class="w-full h-64 object-cover rounded-2xl " />
+    <video v-show="showVideo"  autoplay muted loop>
+      <source :src="`${API_BASE_URL}/sse/video-stream`" type="video/mp4" />
+    </video>
+
 
     <!-- Неоновое свечение под курсором -->
     <div
@@ -21,17 +21,13 @@
       }"></div>
 
     <!-- Оверлей с описанием (для ховера) -->
-    <div  
-
-      class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 p-6 rounded-2xl z-20">
+    <div
+      class="absolute inset-0 flex flex-col items-center justify-center opacity-100 group-hover:opacity-0 transition duration-500 p-6 rounded-2xl z-20">
       <!-- Обертка для черного облака -->
       <div class="relative p-4 rounded-3xl text-center">
         <div class="absolute inset-0 bg-white rounded-3xl opacity-80 blur-xl"></div>
-        <div           
-        class="relative z-50 p-4">
-          <h2
-          data-kinesisdepth-element
-        data-ks-depth="800"
+        <div class="relative z-50 p-4">
+          <h2 data-kinesisdepth-element data-ks-depth="800"
             class="text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-black to-red-600 mb-2 drop-shadow-lg">
             {{ card.title }}
           </h2>
@@ -44,9 +40,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+onMounted(()=> {
+  console.log(API_BASE_URL)
+})
+
 const props = defineProps({
   card: Object
 })
+
+const showVideo = ref(false)
 
 const glowX = ref(0)
 const glowY = ref(0)
@@ -58,12 +62,23 @@ const handleMouseMove = (event) => {
   glowY.value = event.clientY - rect.top
 }
 
+let timeoutId = null;
+
 const handleMouseEnter = () => {
   glowVisible.value = true
+  timeoutId  = setTimeout(() => {
+    showVideo.value = true
+  }, 2000);
 }
 
 const handleMouseLeave = () => {
   glowVisible.value = false
+  showVideo.value = false
+  if (timeoutId) {
+    clearTimeout(timeoutId); // Останавливаем таймер
+    timeoutId = null;
+  }
+
 }
 </script>
 

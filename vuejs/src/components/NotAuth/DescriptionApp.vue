@@ -52,10 +52,16 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
         <div class="relative flex items-center justify-center max-w-full w-full">
           <!-- Стрелка слева -->
+          <button @click.stop="closeFullscreen"
+            class="absolute top-4 right-4 px-5 py-2 rounded-full bg-white/20 text-white text-3xl hover:bg-gray-100 hover:text-black transition z-50">
+            ✕
+          </button>
+
           <button @click.stop="prevImage"
-            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition mr-4 z-20 items-center justify-center">
+            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition mr-4 z-20 flex items-center justify-center aspect-square">
             &larr;
           </button>
+
           <!-- Контент модального окна -->
           <div class="relative max-w-6xl w-full p-6 rounded-xl" @click.stop>
             <img :src="currentCard.src" alt="" class="w-full h-auto rounded-lg shadow-2xl mb-4 object-cover"
@@ -79,7 +85,7 @@ import { ref, computed, onMounted } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
 import { initializeKinesis } from "@amineyarman/kinesis";
 
-onMounted(() => {
+onMounted(async () => {
   initializeKinesis();
 });
 
@@ -240,9 +246,9 @@ const resetHeaderGradient = () => {
 
 .mask-gradient {
   -webkit-mask-image: linear-gradient(to bottom, white, transparent),
-                      linear-gradient(to left, white, transparent);
+    linear-gradient(to left, white, transparent);
   mask-image: linear-gradient(to bottom, white, transparent),
-              linear-gradient(to left, white, transparent);
+    linear-gradient(to left, white, transparent);
   -webkit-mask-composite: multiply;
   mask-composite: intersect;
 }
