@@ -5,7 +5,7 @@
     <!-- Скриншот -->
     <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-64 object-cover rounded-2xl " />
-    <video v-if="urlStream" v-show="urlStream && showVideo"  autoplay muted loop
+    <video v-if="urlStream" v-show="urlStream && showVideo && streamReady"  autoplay muted loop
     @canplay="onVideoCanPlay" >
       <source :src="`${urlStream}`" type="video/mp4" />
     </video>
@@ -53,8 +53,9 @@ onMounted(async ()=> {
   }
 })
 
+const streamReady = ref(false)
 const onVideoCanPlay = () => {
-  console.log('Video can start playing')
+  streamReady.value = true
 }
 
 
