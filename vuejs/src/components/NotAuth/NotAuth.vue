@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref, reactive, computed } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
-import SyncLoader from 'vue-spinner/src/SyncLoader.vue';
 import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -10,22 +9,70 @@ import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
 import google_logo from '@/assets/g-logo.png';
-
 const tailwindColors = {
   "bg-red-100": "#fee2e2",
   "bg-red-200": "#fecaca",
   "bg-red-300": "#fca5a5",
+  "bg-red-800": "#991b1b",
+  "bg-red-900": "#7f1d1d",
+
   "bg-green-100": "#dcfce7",
   "bg-green-200": "#bbf7d0",
   "bg-green-300": "#86efac",
+  "bg-green-800": "#166534",
+  "bg-green-900": "#14532d",
+
   "bg-violet-100": "#f5f3ff",
   "bg-violet-200": "#ddd6fe",
   "bg-violet-300": "#c4b5fd",
+  "bg-violet-800": "#5b21b6",
+  "bg-violet-900": "#4c1d95",
+
   "bg-pink-100": "#fce7f3",
   "bg-pink-200": "#fbcfe8",
   "bg-pink-300": "#f9a8d4",
+  "bg-pink-800": "#9d174d",
+  "bg-pink-900": "#831843",
+
+  "bg-blue-100": "#dbeafe",
+  "bg-blue-200": "#bfdbfe",
+  "bg-blue-300": "#93c5fd",
+  "bg-blue-800": "#1e40af",
+  "bg-blue-900": "#1e3a8a",
+
+  "bg-yellow-100": "#fef9c3",
+  "bg-yellow-200": "#fef08a",
+  "bg-yellow-300": "#fde047",
+  "bg-yellow-800": "#a16207",
+  "bg-yellow-900": "#854d0e",
+
+  "bg-gray-100": "#f3f4f6",
+  "bg-gray-200": "#e5e7eb",
+  "bg-gray-300": "#d1d5db",
+  "bg-gray-800": "#1f2937",
+  "bg-gray-900": "#111827",
+
+  "bg-teal-100": "#ccfbf1",
+  "bg-teal-200": "#99f6e4",
+  "bg-teal-300": "#5eead4",
+  "bg-teal-800": "#115e59",
+  "bg-teal-900": "#134e4a",
+
+  "bg-orange-100": "#ffedd5",
+  "bg-orange-200": "#fed7aa",
+  "bg-orange-300": "#fdba74",
+  "bg-orange-800": "#9a3412",
+  "bg-orange-900": "#7c2d12",
+
+  "bg-indigo-100": "#e0e7ff",
+  "bg-indigo-200": "#c7d2fe",
+  "bg-indigo-300": "#a5b4fc",
+  "bg-indigo-800": "#3730a3",
+  "bg-indigo-900": "#312e81",
+
   // Добавь другие цвета, если нужно
 };
+
 
 
 
@@ -353,6 +400,11 @@ function changeBgColor2() {
   textWelcome.value = 'Already have an account ? 🤫'
 }
 
+function changeBgColor3() {
+  bg.value = 'bg-gray-800'
+  textWelcome.value = 'Continue Google 𓆩🖤𓆪'
+}
+
 function changeDefaultColor() {
   bg.value = 'bg-white'
   textWelcome.value = 'Welcome to Our Platform 🩸'
@@ -375,10 +427,10 @@ onMounted(async () => {
   initializeKinesis()
   AOS.init({
     duration: 3000,  // 800 мс (быстрее)
-    once: false     // Позволит анимации повторяться при повторном наведении
+    once: true     // Позволит анимации повторяться при повторном наведении
   });
   try {
-    for (let i = 1; i <= 15; i++) {
+    for (let i = 1; i <= 20; i++) {
       const response = await axios.get(`/api/notauth/images/${i}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(response.data);
       images.value.push(blobUrl)
@@ -642,19 +694,33 @@ async function googleAuth() {
       </div>
       <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
-          :data-aos="index % 2 !== 0 ? 'fade-down' : 'fade-up'">
+          :data-aos="index % 2 !== 0 ? 'flip-left' : 'flip-left'" data-aos-easing="ease" :data-aos-duration="2000">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
+          :data-aos="index % 2 === 0 ? 'flip-right' : 'flip-right'" data-aos-easing="ease" :data-aos-duration="2000">
+          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
+        </div>
+      </div>
+      <div v-if="bg === 'bg-gray-800'" class="grid grid-cols-5 gap-4">
+        <div v-for="(image, index) in images.slice(15, 20)" :key="index" class="p-2"
+          :data-aos="index % 2 === 0 ? 'zoom-in' : 'zoom-out'" data-aos-easing="ease" :data-aos-duration="2000">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div class="text-center z-30">
-        <h1 class="text-4xl  text-black mb-6">{{ textWelcome }}</h1>
-        <div class="space-x-2 flex flex-row justify-center items-center">
+        <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-right'" data-aos-easing="ease"
+          :data-aos-duration="2000">{{ textWelcome }}</h1>
+        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-left'"
+          data-aos-easing="ease" :data-aos-duration="2000">{{ textWelcome }}</h1>
+        <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'fade-up'" data-aos-easing="ease"
+          :data-aos-duration="2000">{{ textWelcome }}</h1>
+        <h1 v-if="bg === 'bg-gray-800'" class="text-4xl  text-white mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
+          :data-aos-duration="2000">{{ textWelcome }}</h1>
+        <div v-if="bg === 'bg-green-300'" class="space-x-2 flex flex-row justify-center items-center"
+          :data-aos="'fade-up'" data-aos-easing="ease" :data-aos-duration="3000">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @click="showSignUp = true"
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
@@ -667,7 +733,73 @@ async function googleAuth() {
             Log In
           </button>
 
-          <button @click="googleAuth"
+          <button @click="googleAuth" @mouseenter="changeBgColor3"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+            <div class="flex flex-row gap-2 items-center justify-center">
+              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+              <span>Google</span>
+            </div>
+          </button>
+        </div>
+        <div v-if="bg === 'bg-violet-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="``"
+          data-aos-easing="ease" :data-aos-duration="2000">
+          <!-- Signup Button -->
+          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+            Sign Up
+          </button>
+
+          <!-- Login Button -->
+          <button @mouseenter="changeBgColor2" @click="showLogin = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+            Log In
+          </button>
+
+          <button @click="googleAuth" @mouseenter="changeBgColor3"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+            <div class="flex flex-row gap-2 items-center justify-center">
+              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+              <span>Google</span>
+            </div>
+          </button>
+        </div>
+        <div v-if="bg === 'bg-red-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
+          data-aos-easing="ease" :data-aos-duration="2000">
+          <!-- Signup Button -->
+          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+            Sign Up
+          </button>
+
+          <!-- Login Button -->
+          <button @mouseenter="changeBgColor2" @click="showLogin = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+            Log In
+          </button>
+
+          <button @click="googleAuth" @mouseenter="changeBgColor3"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+            <div class="flex flex-row gap-2 items-center justify-center">
+              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+              <span>Google</span>
+            </div>
+          </button>
+        </div>
+        <div v-if="bg === 'bg-gray-800'" class="space-x-2 flex flex-row justify-center items-center"
+          :data-aos="''" data-aos-easing="ease" :data-aos-duration="3000">
+          <!-- Signup Button -->
+          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+            Sign Up
+          </button>
+
+          <!-- Login Button -->
+          <button @mouseenter="changeBgColor2" @click="showLogin = true"
+            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+            Log In
+          </button>
+
+          <button @click="googleAuth" @mouseenter="changeBgColor3"
             :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
             <div class="flex flex-row gap-2 items-center justify-center">
               <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
@@ -679,8 +811,3 @@ async function googleAuth() {
     </div>
   </div>
 </template>
-
-
-
-
-
