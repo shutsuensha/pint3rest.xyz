@@ -3,11 +3,11 @@
     class="p-10 relative group overflow-hidden rounded-2xl bg-white/20 border border-white/30 backdrop-blur-lg shadow-xl transition transform hover:scale-105 hover:shadow-2xl cursor-pointer"
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
-    <img v-show="!showVideo || !streamLoaded || !streamCanPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
+    <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-[250px] object-cover rounded-2xl " /> 
     <video v-if="videoSrc"
-     v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200"
-      @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
+     v-show="showVideo" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200"
+      >
       <source :src="videoSrc" type="video/mp4" />
     </video>
 
@@ -80,8 +80,8 @@ let timeoutId = null;
 const handleMouseEnter = () => {
   glowVisible.value = true
   timeoutId = setTimeout(() => {
-    showVideo.value = true
     videoSrc.value = `/api/notauth/video-stream/${props.card.stream}`;
+    showVideo.value = true
   }, 1000);
 }
 
