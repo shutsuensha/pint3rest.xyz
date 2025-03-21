@@ -5,9 +5,9 @@
     <!-- Скриншот -->
     <img v-show="!showVideo || !streamLoaded || !streamCanPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-64 object-cover rounded-2xl " />
-    <video v-if="urlStream" v-show="urlStream && showVideo && streamLoaded && streamCanPlay" autoplay muted loop
+    <video v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop
       @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
-      <source :src="`${urlStream}`" type="video/mp4" />
+      <source :src="`/api/notauth/video-stream/${card.stream}`" type="video/mp4" />
     </video>
 
 
@@ -40,18 +40,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+// import axios from 'axios'
 
-const urlStream = ref(null)
+// const urlStream = ref(null)
 
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/sse/url')
-    urlStream.value = response.data.url
-  } catch (error) {
-    console.error(error)
-  }
-})
+// onMounted(async () => {
+//   try {
+//     const response = await axios.get('/api/sse/url')
+//     urlStream.value = response.data.url
+//   } catch (error) {
+//     console.error(error)
+//   }
+// })
 
 const streamLoaded = ref(false)
 const streamCanPlay = ref(false)

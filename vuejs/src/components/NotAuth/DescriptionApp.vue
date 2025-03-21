@@ -93,31 +93,37 @@ onMounted(async () => {
 const screenshots = ref([
   {
     src: '/screenshots/pint3rest-home.png',
+    stream: 'home.mp4',
     title: '🏠 Home',
     description: 'A stylish feed designed to spark creativity and inspiration. Explore a curated collection of visually stunning content that fuels your imagination.'
   },
   {
     src: '/screenshots/pint3rest-search.png',
+    stream: 'search.mp4',
     title: '🔍 Search',
     description: 'Discover trending ideas and the latest content with our advanced search tools. Quickly find inspiration and innovative concepts.'
   },
   {
     src: '/screenshots/pint3rest-user.png',
+    stream: 'profile.mp4',
     title: '👤 Profile',
     description: 'Your personalized profile where your creativity shines. Showcase your interests, connect with others, and manage your content effortlessly.'
   },
   {
     src: '/screenshots/pint3rest-detail.png',
+    stream: 'detail.mp4',
     title: '📌 Pin',
     description: 'Dive into detailed insights on every pin, including likes, comments, and saves. Gain a deeper understanding of what makes each pin unique.'
   },
   {
     src: '/screenshots/pint3rest-create.png',
+    stream: 'create.mp4',
     title: '✨ New Pin',
     description: 'Easily create and share stunning pins with our intuitive interface. Turn your ideas into captivating visuals in seconds.'
   },
   {
     src: '/screenshots/pint3rest-chats.png',
+    stream: 'chats.mp4',
     title: '💬 Chats',
     description: 'Engage in real-time, limitless conversations with fellow creatives. Share ideas, feedback, and inspiration instantly.'
   },
