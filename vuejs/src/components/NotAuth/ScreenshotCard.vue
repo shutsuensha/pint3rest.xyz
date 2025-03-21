@@ -5,8 +5,8 @@
     <!-- Скриншот -->
     <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-[250px] object-cover rounded-2xl " />
-    <video ref="videoPlayer" v-show="showVideo" muted loop class="w-full h-[250px] object-cover rounded-2xl"
-      data-kinesisdepth-element data-ks-depth="200">
+    <video ref="videoPlayer" v-show="showVideo" muted loop preload="none"
+      class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200">
     </video>
 
 
