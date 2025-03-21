@@ -5,9 +5,10 @@
     <!-- Скриншот -->
     <img v-show="!showVideo || !streamLoaded || !streamCanPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-[250px] object-cover rounded-2xl " /> 
-    <video v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200"
+    <video v-if="videoSrc"
+     v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200"
       @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
-      <source :src="`/api/notauth/video-stream/${card.stream}`" type="video/mp4" />
+      <source :src="videoSrc" type="video/mp4" />
     </video>
 
 
@@ -40,18 +41,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-// import axios from 'axios'
 
-// const urlStream = ref(null)
 
-// onMounted(async () => {
-//   try {
-//     const response = await axios.get('/api/sse/url')
-//     urlStream.value = response.data.url
-//   } catch (error) {
-//     console.error(error)
-//   }
-// })
+const videoSrc = ref(null);
+
 
 const streamLoaded = ref(false)
 const streamCanPlay = ref(false)
@@ -88,6 +81,7 @@ const handleMouseEnter = () => {
   glowVisible.value = true
   timeoutId = setTimeout(() => {
     showVideo.value = true
+    videoSrc.value = `/api/notauth/video-stream/${props.card.stream}`;
   }, 1000);
 }
 
@@ -98,7 +92,9 @@ const handleMouseLeave = () => {
     clearTimeout(timeoutId); // Останавливаем таймер
     timeoutId = null;
   }
-
+  videoSrc.value = null;
+  streamLoaded.value = false;
+  streamCanPlay.value = false;
 }
 </script>
 
