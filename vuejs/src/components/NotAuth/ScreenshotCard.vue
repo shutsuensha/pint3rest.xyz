@@ -7,7 +7,6 @@
       class="w-full h-[250px] object-cover rounded-2xl " />
     <video ref="videoPlayer" v-show="showVideo" muted loop class="w-full h-[250px] object-cover rounded-2xl"
       data-kinesisdepth-element data-ks-depth="200">
-      <source :src="`/api/notauth/video-stream/${card.stream}`" type="video/mp4" />
     </video>
 
 
@@ -64,8 +63,11 @@ let timeoutId = null;
 const handleMouseEnter = () => {
   glowVisible.value = true
   timeoutId = setTimeout(() => {
-    showVideo.value = true
-    videoPlayer.value.play()
+    if (videoPlayer.value) {
+      videoPlayer.value.src = `/api/notauth/video-stream/${props.card.stream}`;
+      videoPlayer.value.play();
+      showVideo.value = true
+    }
   }, 1000);
 }
 
@@ -76,7 +78,10 @@ const handleMouseLeave = () => {
     clearTimeout(timeoutId); // Останавливаем таймер
     timeoutId = null;
   }
-  videoPlayer.value.pause()
+  if (videoPlayer.value) {
+    videoPlayer.value.pause();
+    videoPlayer.value.src = ''; // Очищаем src, чтобы прекратить загрузку
+  }
 }
 </script>
 
