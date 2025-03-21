@@ -4,11 +4,12 @@
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
     <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
-      class="w-full h-[250px] object-cover rounded-2xl" />
-    <video ref="videoElement" v-if="videoSrc" v-show="showVideo" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl"
-      data-kinesisdepth-element data-ks-depth="200" @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
-      <source :src="videoSrc" type="video/mp4" />
+      class="w-full h-[250px] object-cover rounded-2xl " />
+    <video ref="videoPlayer" v-show="showVideo" muted loop class="w-full h-[250px] object-cover rounded-2xl"
+      data-kinesisdepth-element data-ks-depth="200">
+      <source :src="`/api/notauth/video-stream/${card.stream}`" type="video/mp4" />
     </video>
+
 
     <!-- Неоновое свечение под курсором -->
     <div
@@ -23,6 +24,7 @@
     <!-- Оверлей с описанием (для ховера) -->
     <div
       class="absolute inset-0 flex flex-col items-center justify-center opacity-100 group-hover:opacity-0 transition duration-500 p-6 rounded-2xl z-20">
+      <!-- Обертка для черного облака -->
       <div class="relative p-4 rounded-3xl text-center">
         <div class="absolute inset-0 bg-white rounded-3xl opacity-80 blur-xl"></div>
         <div class="relative z-50 p-4">
@@ -37,64 +39,45 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, onMounted } from 'vue'
+
+const videoPlayer = ref(null)
 
 const props = defineProps({
   card: Object
-});
+})
 
-const videoSrc = ref(null);
-const showVideo = ref(false);
-const streamLoaded = ref(false);
-const streamCanPlay = ref(false);
+const showVideo = ref(false)
 
-const glowX = ref(0);
-const glowY = ref(0);
-const glowVisible = ref(false);
-
-const videoElement = ref(null);
-let timeoutId = null;
+const glowX = ref(0)
+const glowY = ref(0)
+const glowVisible = ref(false)
 
 const handleMouseMove = (event) => {
-  const rect = event.currentTarget.getBoundingClientRect();
-  glowX.value = event.clientX - rect.left;
-  glowY.value = event.clientY - rect.top;
-};
+  const rect = event.currentTarget.getBoundingClientRect()
+  glowX.value = event.clientX - rect.left
+  glowY.value = event.clientY - rect.top
+}
 
-const onVideoLoaded = () => {
-  streamLoaded.value = true;
-};
-
-const onVideoCanPlay = () => {
-  streamCanPlay.value = true;
-};
+let timeoutId = null;
 
 const handleMouseEnter = () => {
-  glowVisible.value = true;
+  glowVisible.value = true
   timeoutId = setTimeout(() => {
-    videoSrc.value = `/api/notauth/video-stream/${props.card.stream}`;
-    showVideo.value = true;
+    showVideo.value = true
+    videoPlayer.value.play()
   }, 1000);
-};
+}
 
-const handleMouseLeave = async () => {
-  glowVisible.value = false;
-  showVideo.value = false;
+const handleMouseLeave = () => {
+  glowVisible.value = false
+  showVideo.value = false
   if (timeoutId) {
-    clearTimeout(timeoutId);
+    clearTimeout(timeoutId); // Останавливаем таймер
     timeoutId = null;
   }
-  // Останавливаем воспроизведение видео, если элемент существует
-  await nextTick();
-  if (videoElement.value) {
-    videoElement.value.pause();
-    videoElement.value.removeAttribute('src'); // Это прерывает загрузку видео
-    videoElement.value.load();
-  }
-  videoSrc.value = null;
-  streamLoaded.value = false;
-  streamCanPlay.value = false;
-};
+  videoPlayer.value.pause()
+}
 </script>
 
 <style scoped>
