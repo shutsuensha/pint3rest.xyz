@@ -4,8 +4,8 @@
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
     <img v-show="!showVideo || !streamLoaded || !streamCanPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
-      class="w-full h-64 object-cover rounded-2xl " />
-    <video v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop
+      class="w-full h-[250px] object-cover rounded-2xl " /> 
+    <video v-show="showVideo && streamLoaded && streamCanPlay" autoplay muted loop class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200"
       @loadeddata="onVideoLoaded" @canplay="onVideoCanPlay">
       <source :src="`/api/notauth/video-stream/${card.stream}`" type="video/mp4" />
     </video>
@@ -88,7 +88,7 @@ const handleMouseEnter = () => {
   glowVisible.value = true
   timeoutId = setTimeout(() => {
     showVideo.value = true
-  }, 2000);
+  }, 1000);
 }
 
 const handleMouseLeave = () => {

@@ -697,13 +697,13 @@ async function googleAuth() {
       </div>
       <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
-          :data-aos="index % 2 !== 0 ? 'flip-left' : 'flip-left'" data-aos-easing="ease" :data-aos-duration="2000">
+          :data-aos="index % 2 !== 0 ? 'flip-right' : 'zoom-in'" data-aos-easing="ease" :data-aos-duration="2000">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
       <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'flip-right' : 'flip-right'" data-aos-easing="ease" :data-aos-duration="2000">
+          :data-aos="index % 2 === 0 ? 'zoom-in' : 'flip-right'" data-aos-easing="ease" :data-aos-duration="2000">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
@@ -716,7 +716,7 @@ async function googleAuth() {
       <div class="text-center z-30">
         <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-right'" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-left'"
+        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-right'"
           data-aos-easing="ease" :data-aos-duration="2000">{{ textWelcome }}</h1>
         <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'fade-up'" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>

@@ -24,7 +24,7 @@
       <!-- Текстовый блок -->
       <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
-        <h2 class="text-4xl font-bold mb-4">👤 Users 📌 Pins ❤️ Likes 💬 Comments</h2>
+        <h2 class="text-4xl font-bold ">👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats </h2>
       </div>
 
       <!-- Вторая галерея -->
@@ -36,7 +36,7 @@
       <!-- Текстовый блок -->
       <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
-        <h2 class="text-4xl font-bold mb-4">💡 Fast, cool, and creative! 😎✨</h2>
+        <h2 class="text-4xl font-bold ">💡 Fast, cool, and creative! 😎✨</h2>
       </div>
 
       <!-- Третья галерея -->
