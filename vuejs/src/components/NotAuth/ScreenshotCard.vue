@@ -61,15 +61,16 @@ const handleMouseMove = (event) => {
 let timeoutId = null;
 
 const handleMouseEnter = () => {
-  glowVisible.value = true
+  glowVisible.value = true;
   timeoutId = setTimeout(() => {
     if (videoPlayer.value) {
       videoPlayer.value.src = `/api/notauth/video-stream/${props.card.stream}`;
-      videoPlayer.value.play();
-      showVideo.value = true
+      videoPlayer.value.load();  // Принудительно загружаем поток
+      videoPlayer.value.play();  // Запускаем воспроизведение
+      showVideo.value = true;
     }
   }, 1000);
-}
+};
 
 const handleMouseLeave = () => {
   glowVisible.value = false
