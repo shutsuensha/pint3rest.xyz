@@ -1,7 +1,7 @@
 stages:
   - build
   # - lint-format
-  - migrations
+  # - migrations
   # - test
   - deploy
 
@@ -37,10 +37,10 @@ deploy:
 #   script:
 #     - docker run --rm fastapi-image ruff format --check
 
-migrations-postgresql:
-  stage: migrations
-  script:
-    - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
+# migrations-postgresql:
+#   stage: migrations
+#   script:
+#     - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
 
 # migrations-mysql:
 #   stage: migrations

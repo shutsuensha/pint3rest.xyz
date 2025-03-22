@@ -30,20 +30,20 @@ const progress = ref(0);
 const sendComment = ref(false)
 
 
-onBeforeRouteUpdate(async (to, from, next) => {
-  if (to.name !== 'home') {
-    // Переход сначала на HomeView
-    await router.push({ name: 'home' });
+// onBeforeRouteUpdate(async (to, from, next) => {
+//   if (to.name !== 'home') {
+//     // Переход сначала на HomeView
+//     await router.push({ name: 'home' });
 
-    // Ждем рендеринга HomeView
-    await nextTick();
+//     // Ждем рендеринга HomeView
+//     await nextTick();
 
-    // Переход обратно на целевой маршрут
-    router.push(to.fullPath);
-  } else {
-    next();
-  }
-});
+//     // Переход обратно на целевой маршрут
+//     router.push(to.fullPath);
+//   } else {
+//     next();
+//   }
+// });
 
 
 
