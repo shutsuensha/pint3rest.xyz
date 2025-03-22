@@ -9,6 +9,15 @@ import isToday from 'dayjs/plugin/isToday';
 import isYesterday from 'dayjs/plugin/isYesterday';
 import 'dayjs/locale/ru';
 
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
+import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("ru");
+
 import { useChatStore } from "@/stores/useChatStore";
 
 const chatStore = useChatStore();
@@ -18,7 +27,7 @@ dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 
 const formattedTime = (timestamp) => {
-  const date = dayjs(timestamp);
+  const date = dayjs.utc(timestamp).local(); // Преобразуем в локальное время
   const now = dayjs();
 
   return date.isToday()
@@ -28,7 +37,7 @@ const formattedTime = (timestamp) => {
       : now.diff(date.startOf('day'), 'days') > 7
         ? date.format('MMM D')
         : date.format('ddd'); // Сокращенное название дня недели
-};
+}
 
 
 

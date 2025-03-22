@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
+    TIMESTAMP,
     Boolean,
     Column,
     ForeignKey,
@@ -9,6 +10,8 @@ from sqlalchemy import (
     Table,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.sql import func
+
 
 
 class Base(DeclarativeBase):
@@ -97,7 +100,9 @@ class CommentsOrm(Base):
     )
 
     content: Mapped[str | None] = mapped_column(String(400), default=None)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
@@ -140,7 +145,9 @@ class MessageOrm(Base):
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"), nullable=False)
     user_id_: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     content: Mapped[str | None] = mapped_column(String(400), default=None)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 

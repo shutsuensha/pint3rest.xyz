@@ -6,13 +6,23 @@ import CommentLikesPopover from './CommentLikesPopover.vue';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
+import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
 import "dayjs/locale/ru";
 
-
-
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.locale("ru");
 
+
+const formatTime = (createdAt) => {
+    const now = dayjs();
+    const createdTime = dayjs.utc(createdAt).local();
+    const diffMinutes = now.diff(createdTime, "minute");
+
+    return diffMinutes < 30 ? "только что" : createdTime.fromNow();
+}
 
 
 const props = defineProps({
@@ -344,7 +354,7 @@ function resetFile(comment) {
         <span class="loader"></span>
       </div>
       <div class="flex items-center space-x-2 ml-12 mt-2">
-        <span class="font-medium text-gray-600">{{ dayjs(comment.created_at).fromNow() }}</span>
+        <span class="font-medium text-gray-600">{{ formatTime(comment.created_at) }}</span>
         <span @click="comment.showReply = !comment.showReply"
           class="text-md hover:underline hover:text-rose-400  cursor-pointer">Ответить</span>
         <div class="flex items-center space-x-2">

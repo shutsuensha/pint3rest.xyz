@@ -18,8 +18,8 @@ import { useChatStore } from "@/stores/useChatStore";
 
 const isNewDay = (index) => {
   if (index === messages.value.length - 1) return true;
-  const currentDate = dayjs(messages.value[index].created_at).format('YYYY-MM-DD');
-  const previousDate = dayjs(messages.value[index + 1].created_at).format('YYYY-MM-DD');
+  const currentDate = dayjs.utc(messages.value[index].created_at).local().format('YYYY-MM-DD');
+  const previousDate = dayjs.utc(messages.value[index + 1].created_at).local().format('YYYY-MM-DD');
   return currentDate !== previousDate;
 };
 
@@ -61,11 +61,13 @@ watch(() => chatStore.bgColor, (newColor) => {
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
+import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
 import "dayjs/locale/ru";
 
-
-
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.locale("ru");
 
 
@@ -720,7 +722,7 @@ function showVideo(message) {
     <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50">
 
       <ClipLoader v-show="sendingMessageMedia" color="white" :size="size"
-      class="flex items-center justify-center min-h-screen font-extrabold" />
+        class="flex items-center justify-center min-h-screen font-extrabold" />
 
       <div v-show="!sendingMessageMedia"
         class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
@@ -816,7 +818,7 @@ function showVideo(message) {
           <!-- Если новый день, выводим разделитель с датой -->
           <div v-if="isNewDay(index)" class="text-center my-2 z-10">
             <span class="bg-white px-2 py-1 rounded-full text-xs inline-block">
-              {{ dayjs(message.created_at).format('D MMM') }}
+              {{ dayjs.utc(message.created_at).local().format('DD MMM') }}
             </span>
           </div>
 
@@ -850,8 +852,9 @@ function showVideo(message) {
 
               <!-- Время и статус сообщения -->
               <div class="flex flex-row items-center ml-4 gap-1">
-                <span class="text-sm text-gray-500 flex ml-auto justify-end">{{
-                  dayjs(message.created_at).format('HH:mm') }}</span>
+                <span class="text-sm text-gray-500 flex ml-auto justify-end">
+                  {{ dayjs.utc(message.created_at).local().format('HH:mm') }}
+                </span>
                 <div v-if="message.user_id_ === auth_user_id" class="items-center gap-1 mr-1">
                   <img v-if="message.is_read === false" :src="single_check" alt="Single Check" class="h-4 w-4" />
                   <img v-if="message.is_read === true" :src="double_check" alt="Double Check" class="h-4 w-4" />
