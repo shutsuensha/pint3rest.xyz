@@ -15,6 +15,11 @@ const progress = ref(0);
 const activeTab = ref('created');
 
 
+const sendingMessage = ref(false)
+
+
+const updateInformation = ref(false)
+
 
 onActivated(() => {
   if (user.value) {
@@ -239,6 +244,8 @@ const goBack = () => {
 
 
 async function editProfile() {
+  updateInformation.value = true
+
   let newUsername = null
   let description = null
   let instagram = null
@@ -281,6 +288,7 @@ async function editProfile() {
 
     showEditModal.value = false
 
+    updateInformation.value = false
 
   } catch (error) {
     console.error(error)
@@ -289,8 +297,11 @@ async function editProfile() {
 
 const showEditModalImage = ref(false)
 
+const updateProfileImage = ref(false)
+
 async function editProfileImage() {
   if (imageFile.value) {
+    updateProfileImage.value = true
     try {
       const formData = new FormData();
       formData.append('file', imageFile.value);
@@ -318,6 +329,7 @@ async function editProfileImage() {
       }
 
       showEditModalImage.value = false
+      updateProfileImage.value = false
 
     } catch (error) {
       console.log(error)
@@ -325,8 +337,11 @@ async function editProfileImage() {
   }
 }
 
+const updateProfileBanner = ref(false)
+
 async function editBannerImage() {
   if (bannerImageFile.value) {
+    updateProfileBanner.value = true
     try {
       const formData = new FormData();
       formData.append('file', bannerImageFile.value);
@@ -360,6 +375,7 @@ async function editBannerImage() {
       }
 
       showEditModalBanner.value = false
+      updateProfileBanner.value = false
 
     } catch (error) {
       console.log(error)
@@ -417,6 +433,7 @@ const openSendMessage = ref(false)
 const messageContent = ref('')
 
 async function sendMessage() {
+  sendingMessage.value = true
   try {
     const response = await axios.post('/api/messages/', {
       content: messageContent.value,
@@ -424,6 +441,7 @@ async function sendMessage() {
     }, { withCredentials: true })
     messageContent.value = ''
     openSendMessage.value = false
+    sendingMessage.value = true
   } catch (error) {
     console.error(error)
   }
@@ -455,17 +473,22 @@ async function redirectToChat() {
     <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-40 p-6">
 
       <div class="flex justify-center items-center min-h-screen">
-        <div
+        <div v-if="!sendingMessage"
           class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-2 items-center">
 
-          <h1 class="text-center text-6xl text-black mt-4">Написать сообщение</h1>
+          <h1 class="text-center text-6xl text-black mt-4">Write Message</h1>
           <textarea v-model="messageContent" name="messageContent" id="messageContent" style="height: 200px;"
             class=" cursor-pointer  text-black text-3xl rounded-3xl block w-3/4 py-10 px-10 focus:ring-black  bg-white focus:border-4 focus:border-white"></textarea>
 
           <button @click="sendMessage"
-            class="my-5 w-[400px] py-3 bg-white text-black font-semibold rounded-3xl hover:-translate-y-2">
-            Отправить
+            class="my-5 w-[400px] py-3 bg-white text-black font-semibold rounded-3xl hover:bg-indigo-300 transition duration-200">
+            Send
           </button>
+        </div>
+        <div v-if="sendingMessage"
+          class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-20 items-center">
+
+          <ClipLoader :color="color" :size="size" class="" />
         </div>
       </div>
 
@@ -481,33 +504,26 @@ async function redirectToChat() {
   <transition name="fade" appear>
     <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 
-      <!-- Lottie Animation -->
 
-      <div class="flex flex-col items-center justify-center gap-5">
-        <!-- <DotLottieVue class="ml-4"
-          style="height: 210px; width: 250px; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));"
-          autoplay loop src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" />
+      <ClipLoader v-if="updateInformation" color="white" :size="size"
+        class="flex flex-col items-center justify-center text-center min-h-screen" />
 
-        <p class="text-white text-3xl font-cursive mb-2"
-          style="text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);">
-          Create your first pin!
-        </p> -->
+      <div v-if="!updateInformation" class="flex flex-col items-center justify-center gap-5">
+
         <div class="space-y-7 mt-2">
-          <!-- Title Field -->
           <div>
             <label for="username" class="text-white text-xl">username</label>
             <input v-model="editUsername" type="text" name="username" id="username" autocomplete="off"
               class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[400px] py-4 px-5 focus:ring-white focus:border-white"
               style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
           </div>
-          <!-- Description Field -->
+
           <div>
             <label for="description" class="text-white text-xl">description</label>
             <textarea v-model="editDescription" name="description" id="description"
               style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);"
               class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[400px] py-4 px-5 focus:ring-white focus:border-white"></textarea>
           </div>
-          <!-- Href Field -->
         </div>
 
 
@@ -539,20 +555,18 @@ async function redirectToChat() {
 
 
         <div clas="flex space-x-4">
-          <button @click="editProfile"
-            class="mx-10 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Save
-          </button>
           <button @click="showEditModal = false"
-            class="mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+            class="ml-10 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
             style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
             Cancel
           </button>
+          <button @click="editProfile"
+            class="ml-4 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+            Save
+          </button>
         </div>
       </div>
-
-      <!-- Centered Button with Glow -->
     </div>
   </transition>
 
@@ -561,7 +575,10 @@ async function redirectToChat() {
 
       <!-- Lottie Animation -->
 
-      <div class="flex flex-col items-center justify-center gap-5">
+      <ClipLoader v-if="updateProfileImage" color="white" :size="size"
+        class="flex flex-col items-center justify-center text-center" />
+
+      <div v-if="!updateProfileImage" class="flex flex-col items-center justify-center gap-5">
         <div class="flex flex-col items-center">
           <label for="image" class="block mb-2 text-sm font-medium text-white">Your Profile Image</label>
           <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
@@ -571,17 +588,17 @@ async function redirectToChat() {
             style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
         </div>
         <div clas="flex space-x-4">
-          <button @click="editProfileImage"
-            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Update
-          </button>
           <button @click="showEditModalImage = false"
             class="mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
             style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
             Cancel
           </button>
 
+          <button @click="editProfileImage"
+            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+            Update
+          </button>
         </div>
       </div>
     </div>
@@ -592,7 +609,10 @@ async function redirectToChat() {
 
       <!-- Lottie Animation -->
 
-      <div class="flex flex-col items-center justify-center gap-5">
+      <ClipLoader v-if="updateProfileBanner" color="white" :size="size"
+      class="flex flex-col items-center justify-center text-center min-h-screen" />
+
+      <div v-if="!updateProfileBanner" class="flex flex-col items-center justify-center gap-5">
         <div class="flex flex-col items-center">
           <label for="image" class="block mb-2 text-sm font-medium text-white">Your Banner Image</label>
           <input type="file" id="image" name="image" accept="image/*" @change="handleBannerUpload"
@@ -602,15 +622,15 @@ async function redirectToChat() {
             style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
         </div>
         <div clas="flex space-x-4">
-          <button @click="editBannerImage"
-            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Update
-          </button>
           <button @click="showEditModalBanner = false"
             class="mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
             style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
             Cancel
+          </button>
+          <button @click="editBannerImage"
+            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
+            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+            Update
           </button>
 
         </div>
@@ -669,8 +689,8 @@ async function redirectToChat() {
             banner
           </button>
         </div>
-        <p v-if="user && user.description"
-          class="text-center mt-4 text-lg truncate-wrap mx-auto w-[400px]">{{ user.description }}</p>
+        <p v-if="user && user.description" class="text-center mt-4 text-lg truncate-wrap mx-auto w-[400px]">{{
+          user.description }}</p>
         <div class="flex flex-row gap-2 text-4xl text-red-600">
           <a v-if="user && user.instagram" :href="user.instagram">
             <i class="pi pi-instagram"></i>
@@ -701,12 +721,12 @@ async function redirectToChat() {
             Follow
           </button>
           <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
-          class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
+            class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
             Unfollow
           </button>
           <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
             class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
-            Send Message
+            Message
           </button>
           <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
             class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
@@ -815,6 +835,45 @@ async function redirectToChat() {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+
+
+
+
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+  border-width: 3px 2px 3px 2px;
+  border-style: solid dotted solid dotted;
+  border-color: #c50000 rgba(10, 255, 39, 0.3) #1c589e rgba(255, 101, 101, 0.836);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: 1s rotate linear infinite;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  top: 0;
+  left: 0;
+  position: absolute;
+  border: 10px solid transparent;
+  border-bottom-color: #a309d27a;
+  transform: translate(-10px, 19px) rotate(-35deg);
+}
+
+.loader:after {
+  border-color: #de3500 #670e6d00 #7b090900 #0000;
+  transform: translate(32px, 3px) rotate(-35deg);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg)
   }
 }
 </style>

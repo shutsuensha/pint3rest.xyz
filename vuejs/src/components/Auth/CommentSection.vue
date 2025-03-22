@@ -98,7 +98,7 @@ async function loadComments() {
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
           user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: cntReplies > 0 ? true : false,
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
-          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null
+          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false
         })
       } catch (error) {
         console.error(error)
@@ -165,6 +165,7 @@ onMounted(() => {
 
 async function addComment(comment) {
   if (comment.replyContent.trim() !== '' && !comment.replyMediaFile) {
+    comment.sendComment = true
     try {
       const response = await axios.post(`/api/comments/comment/${comment.id}`, {
         content: comment.replyContent.trim()
@@ -178,10 +179,12 @@ async function addComment(comment) {
     await nextTick()
     comment.showReplies = true
     comment.showReply = false
+    comment.sendComment = false
     return;
   }
 
   if (comment.replyMediaFile) {
+    comment.sendComment = true
     try {
       const formData = new FormData();
       formData.append("file", comment.replyMediaFile); // Файл
@@ -212,6 +215,7 @@ async function addComment(comment) {
     await nextTick()
     comment.showReplies = true
     comment.showReply = false
+    comment.sendComment = false
   }
 }
 
@@ -279,11 +283,11 @@ function resetFile(comment) {
   <div @scroll="handleScroll"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
-        <RouterLink :to="`/user/${comment.user.username}`"
-          class="flex items-center space-x-2 hover:underline cursor-pointer">
-          <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
-          <span class="font-bold">{{ comment.user.username }}</span>
-        </RouterLink>
+      <RouterLink :to="`/user/${comment.user.username}`"
+        class="flex items-center space-x-2 hover:underline cursor-pointer">
+        <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
+        <span class="font-bold">{{ comment.user.username }}</span>
+      </RouterLink>
       <div class="relative">
         <div class="absolute top-[-20px] left-10">
           <transition name="flash2">
@@ -315,7 +319,7 @@ function resetFile(comment) {
           <video :src="comment.replyMediaPreview" class="mt-2 h-32 w-32 object-cover rounded-lg" autoplay loop muted />
         </div>
       </div>
-      <div v-if="comment.showReply" class="flex items-center space-x-2 ml-12 mr-4 mt-2">
+      <div v-if="comment.showReply && !comment.sendComment" class="flex items-center space-x-2 ml-12 mr-4 mt-2">
         <i @click="comment.showReply = false"
           class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
 
@@ -335,6 +339,9 @@ function resetFile(comment) {
         <input type="file" :id="comment.id" :name="comment.id" accept="image/*,video/*"
           @change="(event) => handleMediaUpload(event, comment)"
           class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+      </div>
+      <div v-if="comment.showReply && comment.sendComment" class="flex items-center space-x-2 ml-12 mr-4 mt-2 justify-center">
+        <span class="loader"></span>
       </div>
       <div class="flex items-center space-x-2 ml-12 mt-2">
         <span class="font-medium text-gray-600">{{ dayjs(comment.created_at).fromNow() }}</span>
@@ -376,6 +383,41 @@ function resetFile(comment) {
 </template>
 
 <style scoped>
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+  border-width: 3px 2px 3px 2px;
+  border-style: solid dotted solid dotted;
+  border-color: #c50000 rgba(10, 255, 39, 0.3) #1c589e rgba(255, 101, 101, 0.836);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: 1s rotate linear infinite;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  top: 0;
+  left: 0;
+  position: absolute;
+  border: 10px solid transparent;
+  border-bottom-color: #a309d27a;
+  transform: translate(-10px, 19px) rotate(-35deg);
+}
+
+.loader:after {
+  border-color: #de3500 #670e6d00 #7b090900 #0000;
+  transform: translate(32px, 3px) rotate(-35deg);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
 .flash2-enter-active,
 .flash2-leave-active {
   transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1);

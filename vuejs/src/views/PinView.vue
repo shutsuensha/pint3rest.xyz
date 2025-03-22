@@ -27,6 +27,9 @@ const isLoading = ref(false);
 const progress = ref(0);
 
 
+const sendComment = ref(false)
+
+
 onBeforeRouteUpdate(async (to, from, next) => {
   if (to.name !== 'home') {
     // Переход сначала на HomeView
@@ -390,6 +393,7 @@ const previewFile = (file) => {
 
 async function addComment() {
   if (comment.value.trim() !== '' && !mediaFile.value) {
+    sendComment.value = true
     try {
       const response = await axios.post(`/api/comments/${pin.value.id}`, {
         content: comment.value.trim()
@@ -402,10 +406,12 @@ async function addComment() {
     showCommets.value = false
     await nextTick()
     showCommets.value = true
+    sendComment.value = false
     return;
   }
 
   if (mediaFile.value) {
+    sendComment.value = true
     try {
       const formData = new FormData();
       formData.append("file", mediaFile.value); // Файл
@@ -430,8 +436,8 @@ async function addComment() {
     showCommets.value = false
     await nextTick()
     showCommets.value = true
-
     resetFile()
+    sendComment.value = false
   }
 }
 
@@ -617,7 +623,8 @@ async function showVideoControls() {
         <div>
           <RouterLink v-if="pinUser" :to="`/user/${pinUser.username}`"
             class="inline-flex items-center mt-2 hover:underline cursor-pointer">
-            <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile" class="w-10 h-10 rounded-full object-cover" />
+            <img v-if="pinUserImage" :src="pinUserImage" alt="User Profile"
+              class="w-10 h-10 rounded-full object-cover" />
             <span class="ml-2 text-md font-medium">@{{ pinUser.username }}</span>
           </RouterLink>
         </div>
@@ -647,7 +654,10 @@ async function showVideoControls() {
           </div>
           <video :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" autoplay loop muted />
         </div>
-        <div class="flex items-center space-x-2 mb-4 mr-6 mt-2">
+        <div v-if="sendComment" class="flex items-center space-x-2 mb-4 mr-6 mt-2 justify-center">
+          <span class="loader"></span>
+        </div>
+        <div v-if="!sendComment" class="flex items-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Add Button -->
 
           <!-- Tags Input -->
@@ -676,6 +686,42 @@ async function showVideoControls() {
 
 
 <style scoped>
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+  border-width: 3px 2px 3px 2px;
+  border-style: solid dotted solid dotted;
+  border-color: #c50000 rgba(10, 255, 39, 0.3) #1c589e rgba(255, 101, 101, 0.836);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: 1s rotate linear infinite;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  top: 0;
+  left: 0;
+  position: absolute;
+  border: 10px solid transparent;
+  border-bottom-color: #a309d27a;
+  transform: translate(-10px, 19px) rotate(-35deg);
+}
+
+.loader:after {
+  border-color: #de3500 #670e6d00 #7b090900 #0000;
+  transform: translate(32px, 3px) rotate(-35deg);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+
 /* Анимация вспышки */
 .flash-enter-active,
 .flash-leave-active {

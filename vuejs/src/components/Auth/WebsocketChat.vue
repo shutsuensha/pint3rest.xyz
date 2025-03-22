@@ -148,6 +148,8 @@ watch(isTyping, (newValue) => {
 });
 
 
+const messageInput = ref(null)
+
 
 const offset = ref(0);
 const limit = ref(10);
@@ -244,67 +246,67 @@ const connectWebSocket = async () => {
     };
 
     socket.onmessage = async (event) => {
-    let showToast = false
-    try {
-      const messageObj = JSON.parse(event.data);
-      if ("online" in messageObj) {
-        if (messageObj.online == true) {
-          isOnline.value = true
-          props.chat.last_message.is_read = true
-        } else {
-          isOnline.value = false
-        }
-        for (let i = 0; i < messages.value.length; i++) {
-          if (messages.value[i].user_id_ === props.auth_user_id) {
-            if (messages.value[i].is_read === false) {
-              messages.value[i].is_read = true
-            } else {
-              break
+      let showToast = false
+      try {
+        const messageObj = JSON.parse(event.data);
+        if ("online" in messageObj) {
+          if (messageObj.online == true) {
+            isOnline.value = true
+            props.chat.last_message.is_read = true
+          } else {
+            isOnline.value = false
+          }
+          for (let i = 0; i < messages.value.length; i++) {
+            if (messages.value[i].user_id_ === props.auth_user_id) {
+              if (messages.value[i].is_read === false) {
+                messages.value[i].is_read = true
+              } else {
+                break
+              }
             }
           }
+          return
         }
-        return
-      }
-      if ("user_start_sending_media" in messageObj) {
-        isSendingMedia.value = true
-        return
-      }
-      if ("user_stop_sending_media" in messageObj) {
-        isSendingMedia.value = false
-        return
-      }
-      if ("user_start_typing" in messageObj) {
-        typing.value = true
-        return
-      }
-      if ("user_stop_typing" in messageObj) {
-        typing.value = false
-        return
-      }
-      try {
-        await axios.patch(`/api/messages/read/${messageObj.id}`)
-      } catch (error) {
-        console.log(error)
-      }
-      if (messageObj.image) {
+        if ("user_start_sending_media" in messageObj) {
+          isSendingMedia.value = true
+          return
+        }
+        if ("user_stop_sending_media" in messageObj) {
+          isSendingMedia.value = false
+          return
+        }
+        if ("user_start_typing" in messageObj) {
+          typing.value = true
+          return
+        }
+        if ("user_stop_typing" in messageObj) {
+          typing.value = false
+          return
+        }
         try {
-          const response = await axios.get(`/api/messages/upload/${messageObj.id}`, { responseType: 'blob' });
-          const blobUrl = URL.createObjectURL(response.data);
-          messageObj.media = blobUrl
+          await axios.patch(`/api/messages/read/${messageObj.id}`)
         } catch (error) {
-          console.error(error);
+          console.log(error)
         }
+        if (messageObj.image) {
+          try {
+            const response = await axios.get(`/api/messages/upload/${messageObj.id}`, { responseType: 'blob' });
+            const blobUrl = URL.createObjectURL(response.data);
+            messageObj.media = blobUrl
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        messages.value.unshift(messageObj);
+        if (route.name !== 'messages') {
+          showToast = true
+        }
+      } catch (error) {
+        console.error("Ошибка при разборе JSON:", error);
       }
-      messages.value.unshift(messageObj);
-      if (route.name !== 'messages') {
-        showToast = true
-      }
-    } catch (error) {
-      console.error("Ошибка при разборе JSON:", error);
-    }
-    scrollToBottom();
-    emit('updateLastMessage', showToast, props.chat_id)
-  };
+      scrollToBottom();
+      emit('updateLastMessage', showToast, props.chat_id)
+    };
   });
 };
 
@@ -375,8 +377,12 @@ const connectWebSocket = async () => {
 //   };
 // };
 
+
+const sendingMessage = ref(false)
+
 const sendMessage = async () => {
   if (message.value.trim() && socket.readyState === WebSocket.OPEN) {
+    sendingMessage.value = true
     showPicker.value = false
     const response = await axios.post('/api/messages/', {
       content: message.value,
@@ -396,6 +402,9 @@ const sendMessage = async () => {
     socket.send(JSON.stringify(messageResp));
     message.value = "";
     scrollToBottom();
+    sendingMessage.value = false
+    await nextTick()
+    messageInput.value.focus()
     emit('updateLastMessage', false, props.chat_id, isOnline.value)
   }
 };
@@ -493,7 +502,11 @@ const previewFile = (file) => {
 
 const messageContent = ref('')
 
+const sendingMessageMedia = ref(false)
+
 async function sendMediaMessage() {
+
+  sendingMessageMedia.value = true
 
   socket.send(JSON.stringify({ 'user_start_sending_media': true }));
 
@@ -565,6 +578,7 @@ async function sendMediaMessage() {
     props.chat.last_message.is_read = true
   }
   scrollToBottom();
+  sendingMessageMedia.value = false
   emit('updateLastMessage', false, props.chat_id, isOnline.value)
 }
 
@@ -705,7 +719,10 @@ function showVideo(message) {
   <transition name="fade2" appear>
     <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50">
 
-      <div
+      <ClipLoader v-show="sendingMessageMedia" color="white" :size="size"
+      class="flex items-center justify-center min-h-screen font-extrabold" />
+
+      <div v-show="!sendingMessageMedia"
         class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
         <div v-if="isImage" class=" ">
           <img v-show="showPreview === true" :src="mediaPreview"
@@ -774,12 +791,14 @@ function showVideo(message) {
         :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
         <div class="flex flex-col">
           <span class="text-md"> {{ chat.user.username }}</span>
-          <span v-show="!typing && !isSendingMedia" v-if="isOnline" class="text-md" :class="`text-${chatStore.bgColor}-500`">online</span>
-          <span v-show="!typing && !isSendingMedia" v-if="!isOnline" class="text-gray-500 text-md">last seen recently</span>
+          <span v-show="!typing && !isSendingMedia" v-if="isOnline" class="text-md"
+            :class="`text-${chatStore.bgColor}-500`">online</span>
+          <span v-show="!typing && !isSendingMedia" v-if="!isOnline" class="text-gray-500 text-md">last seen
+            recently</span>
           <span v-show="typing === true && !isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
             class="text-md typing-animation">typing</span>
-          <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
-            class="text-md sending-animation">📤 sending media</span>
+          <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`" class="text-md sending-animation">📤
+            sending media</span>
         </div>
         <i v-show="!chatStore.side" @click="updateSide(true)"
           class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
@@ -908,14 +927,15 @@ function showVideo(message) {
 
 
     <!-- Поле ввода -->
-    <div class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
+    <div v-show="!sendingMessage" class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
       :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
       <label for="media">
         <i class="absolute top-0 left-0 pi pi-paperclip text-2xl cursor-pointer px-2 py-3"></i>
       </label>
       <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload" class="hidden">
-      <input id="messageInput" v-model="message" @keyup.enter="sendMessage" placeholder="Write a message..." autofocus
-        autocomplete="off" class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
+      <input ref="messageInput" id="messageInput" v-model="message" @keyup.enter="sendMessage"
+        placeholder="Write a message..." autofocus="on" autocomplete="off"
+        class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
       <EmojiPicker v-show="showPicker" :native="true" @select="onSelectEmoji" class="absolute bottom-10 right-0" />
       <button @click="showPicker = !showPicker" class="p-5">
         <!-- Смайлик в SVG -->
@@ -928,11 +948,51 @@ function showVideo(message) {
         </svg>
       </button>
     </div>
+    <div v-show="sendingMessage" class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
+      :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
+      <span class="loader"></span>
+    </div>
   </div>
 </template>
 
 
 <style scoped>
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+  border-width: 3px 2px 3px 2px;
+  border-style: solid dotted solid dotted;
+  border-color: #c50000 rgba(10, 255, 39, 0.3) #1c589e rgba(255, 101, 101, 0.836);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: 1s rotate linear infinite;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  top: 0;
+  left: 0;
+  position: absolute;
+  border: 10px solid transparent;
+  border-bottom-color: #a309d27a;
+  transform: translate(-10px, 19px) rotate(-35deg);
+}
+
+.loader:after {
+  border-color: #de3500 #670e6d00 #7b090900 #0000;
+  transform: translate(32px, 3px) rotate(-35deg);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+
 /* Define transition animations */
 .fade-enter-active,
 .fade-leave-active {
@@ -1030,10 +1090,12 @@ function showVideo(message) {
     transform: translateX(0);
     opacity: 0.5;
   }
+
   50% {
     transform: translateX(10px);
     opacity: 1;
   }
+
   100% {
     transform: translateX(0);
     opacity: 0.5;
@@ -1048,8 +1110,8 @@ function showVideo(message) {
 }
 
 .sending-animation::after {
-  content: "📤"; /* Иконка отправки */
+  content: "📤";
+  /* Иконка отправки */
   animation: sending-file 1s infinite ease-in-out;
 }
-
 </style>

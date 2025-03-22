@@ -280,16 +280,18 @@ onMounted(async () => {
   try {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
-    try {
-      const response = await axios.get(`/api/chats/check_connection/${chats.value[0].id}/${auth_user_id.value}`);
+    if (chats.value) {
+      try {
+        const response = await axios.get(`/api/chats/check_connection/${chats.value[0].id}/${auth_user_id.value}`);
 
-      if (response.data.active) {
-        userConnected.value = true
-      } else {
-        userConnected.value = false
+        if (response.data.active) {
+          userConnected.value = true
+        } else {
+          userConnected.value = false
+        }
+      } catch (error) {
+        console.error("Error checking connection:", error);
       }
-    } catch (error) {
-      console.error("Error checking connection:", error);
     }
 
     if (!userConnected.value) {
@@ -344,7 +346,7 @@ onMounted(async () => {
           if ("user_stop_sending_media" in message) {
             chats.value[i].isSendingMedia = false
             return
-          } 
+          }
           if ("user_read_messages" in message) {
             chats.value[i].last_message.is_read = true
             return
