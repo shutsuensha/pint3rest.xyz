@@ -305,7 +305,7 @@ function resetFile(comment) {
         <video v-if="comment.image && comment.isVideo" :src="comment.image" alt="comment image"
           class="h-32 w-32 object-cover rounded-lg" autoplay loop muted />
       </div>
-      <div v-if="comment.showReply">
+      <div v-if="comment.showReply && !comment.sendComment">
         <div v-if="comment.replyIsImage" class="relative ml-12">
           <div class="absolute top-0 left-[-10px]" @click="resetFile(comment)">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>

@@ -642,13 +642,13 @@ async function showVideoControls() {
           <h1 class="text-xl italic text-gray-600">Добавьте комментарий, будьте первыми!</h1>
         </div>
         <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
-        <div v-if="isImage" class="relative">
+        <div v-if="isImage && !sendComment" class="relative">
           <div class="absolute top-0 left-[-10px]" @click="resetFile">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
           </div>
           <img :src="mediaPreview" class="mt-2 h-28 w-28 object-cover rounded-lg" alt="Media Preview" />
         </div>
-        <div v-if="isVideo" class="relative">
+        <div v-if="isVideo && !sendComment" class="relative">
           <div class="absolute top-0 left-[-10px] z-20" @click="resetFile">
             <i class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
           </div>
