@@ -342,6 +342,7 @@ watch(searchValue, async (newValue, oldValue) => {
   if (newValue.trim() !== '') {
     selectedTag.value = ''
     showSearchPins.value = false
+    showPinsBytag.value = false
     window.removeEventListener('scroll', handleScroll);
     await nextTick()
     searchValue.value = newValue
