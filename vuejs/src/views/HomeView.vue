@@ -10,6 +10,9 @@ import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 
+const tagsContainer = ref(null)
+
+
 const route = useRoute();
 const router = useRouter()
 
@@ -82,7 +85,6 @@ const loadPins = async () => {
   } catch (error) {
     console.log(error);
   } finally {
-    progress.value = 100;
   }
 };
 
@@ -135,8 +137,8 @@ onMounted(async () => {
     available_tags.value = response.data;
     limitTagLoading.value = available_tags.value.length;
 
-    // Обновляем прогресс после получения списка тегов
-    progress.value = 20;
+    // Обновляем прогресс посл получения списка тегов
+    progress.value = 35;
 
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
@@ -429,7 +431,7 @@ const isActive = ref(false)
                bg-white bg-opacity-20 backdrop-blur-sm text-black
                text-md rounded-3xl block w-full py-3 pl-12 pr-10
                outline-none border border-black
-                focus:shadow-sm" />
+               focus:shadow-lg focus:shadow-blue-500/50" />
         <div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
           <i class="pi pi-search text-black"></i>
         </div>
@@ -438,10 +440,10 @@ const isActive = ref(false)
   </nav>
 
   <!-- Контейнер с тегами -->
-  <div class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
+  <div ref="tagsContainer" class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
     <!-- Левая стрелка -->
     <button
-      class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:-translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
+      class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
       @click="scrollLeft(containerRef)">
       <i class="pi pi-chevron-left text-xl"></i>
     </button>
@@ -450,10 +452,10 @@ const isActive = ref(false)
     <div class="relative overflow-hidden">
       <!-- Градиенты для эффекта свечения -->
       <div
-        class="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white via-white/70 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        class="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white via-white/50 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
       </div>
       <div
-        class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white via-white/70 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white via-white/50 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
       </div>
 
       <!-- Контейнер с тегами -->
@@ -480,7 +482,7 @@ const isActive = ref(false)
 
     <!-- Правая стрелка -->
     <button
-      class="absolute right-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-4 py-2 hover:translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
+      class="absolute right-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
       @click="scrollRight(containerRef)">
       <i class="pi pi-chevron-right text-xl"></i>
     </button>

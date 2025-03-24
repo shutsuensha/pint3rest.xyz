@@ -18,6 +18,9 @@ const showPause = ref(false)
 const showFollowers = ref(false)
 const showFollowing = ref(false)
 
+const pinUsernameRef = ref(null)
+const isTop = ref(null)
+
 onActivated(() => {
   showPause.value = true
 })
@@ -134,6 +137,16 @@ onMounted(async () => {
 });
 
 async function loadUser() {
+  const element = pinUsernameRef.value;
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const distanceToBottom = window.innerHeight - rect.bottom;
+    if (distanceToBottom < 200) {
+      isTop.value = false
+    } else {
+      isTop.value = true
+    }
+  }
   if (popUser.value) return
   try {
     const response = await axios.get(`/api/users/user_id/${props.pin.user_id}`)
@@ -292,11 +305,13 @@ async function save() {
       <div v-if="user" :to="`/user/${user.username}`" class="flex items-center mt-2 hover:underline relative ">
         <div v-if="!showAllPins" class="bg-gray-300 w-8 h-8 rounded-full"></div>
         <img v-else :src="userImage" alt="user profile" class="w-8 h-8 rounded-full object-cover" />
-        <span @click="if (showPopover) { showPopover = false } else { showPopover = true; loadUser() }"
+        <span ref="pinUsernameRef"
+          @click="if (showPopover) { showPopover = false } else { showPopover = true; loadUser() }"
           v-if="user && showAllPins" class="ml-2 text-sm font-medium cursor-pointer"> {{ user.username }}</span>
         <transition name="flash">
           <div v-if="showPopover"
-            class="absolute top-[30px] left-0 bg-white   bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]">
+            class="absolute left-0 bg-white bg-opacity-20 backdrop-blur-md rounded-3xl font-medium text-white z-20 h-[200px] w-[271px]"
+            :style="{ top: isTop ? '30px' : 'auto', bottom: isTop ? 'auto' : '30px' }">
             <div class="relative flex flex-col top-7 items-center justify-center">
               <RouterLink v-if="popUser" :to="`/user/${popUser.username}`"
                 class="relative transition-transform duration-200transform hover:scale-110">
