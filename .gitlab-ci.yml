@@ -13,8 +13,14 @@ before_script:
 check-disk-space:
   stage: check-disk-space
   script:
-    - FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//') && echo "Available space: ${FREE_SPACE}GB"
-    - if [ "$FREE_SPACE" -lt 3 ]; then docker system prune -af; fi
+    - |
+      FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
+      echo "Available space: ${FREE_SPACE}GB"
+      if [ "$FREE_SPACE" -lt 3 ]; then
+        echo "Low disk space, running docker system prune..."
+        docker system prune -af
+      fi
+
 
 build-fastapi:
   stage: build
