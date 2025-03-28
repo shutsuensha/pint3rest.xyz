@@ -1,4 +1,5 @@
 stages:
+  - check-disk-space
   - build
   # - lint-format
   # - migrations
@@ -8,6 +9,13 @@ stages:
 before_script:
   - cp ${ENV} .env
   - export $(grep -v '^#' .env | xargs)
+
+check-disk-space:
+  stage: check-disk-space
+  script:
+    - FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
+    - echo "Available space: ${FREE_SPACE}GB"
+    - if [ "$FREE_SPACE" -lt 3 ]; then docker system prune -af; fi
   
 build-fastapi:
   stage: build

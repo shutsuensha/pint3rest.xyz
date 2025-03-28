@@ -425,6 +425,8 @@ function handleImageUpload(event) {
 onMounted(async () => {
   document.title = 'Pint3rest Next-Gen'
   initializeKinesis()
+
+
   AOS.init({
     duration: 3000,  // 800 мс (быстрее)
     once: true     // Позволит анимации повторяться при повторном наведении
@@ -714,10 +716,10 @@ async function googleAuth() {
         </div>
       </div>
       <div class="text-center z-30">
-        <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-right'" data-aos-easing="ease"
+        <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" data-aos="zoom-in" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'flip-right'"
-          data-aos-easing="ease" :data-aos-duration="2000">{{ textWelcome }}</h1>
+        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
+          :data-aos-duration="2000">{{ textWelcome }}</h1>
         <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'fade-up'" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>
         <h1 v-if="bg === 'bg-gray-800'" class="text-4xl  text-white mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
@@ -816,6 +818,8 @@ async function googleAuth() {
 </template>
 
 <style scoped>
+
+
 .loader {
   transform: rotateZ(45deg);
   perspective: 1000px;

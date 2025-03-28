@@ -240,7 +240,7 @@ async function save() {
 </script>
 
 <template>
-  <div class="w-1/5 p-2 ">
+  <div class="w-1/5 p-2">
     <transition name="fade" appear>
       <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
         <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />

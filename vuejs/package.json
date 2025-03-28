@@ -21,6 +21,7 @@
     "dayjs": "^1.11.13",
     "emoji-picker-element": "^1.26.1",
     "flowbite": "^2.5.2",
+    "framer-motion": "^12.6.2",
     "is-sorted": "^1.0.5",
     "js-confetti": "^0.12.0",
     "masonry-flow": "^0.2.2",
