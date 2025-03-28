@@ -75,7 +75,7 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 
-# app.mount("/api/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
@@ -110,12 +110,13 @@ register_exception_handlers(app)
 #         swagger_favicon_url="/api/static/favicon.svg"  # Обновленный путь
 #     )
 
+
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     favicon_path = os.path.join(os.path.dirname(__file__), 'static/favicon.svg')
     return FileResponse(favicon_path)
 
 
-@app.get("/health", tags=["health"])
+@app.get("/health", tags=["health"], include_in_schema=False)
 def health():
     return {"status": "ok"}
