@@ -6,3 +6,4 @@ NOTES.md
 .env
 .env-ci
 .vscode
+ci.sh
