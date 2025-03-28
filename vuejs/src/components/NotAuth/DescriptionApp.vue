@@ -53,7 +53,7 @@
         <div class="relative flex items-center justify-center max-w-full w-full">
           <!-- Стрелка слева -->
           <button @click.stop="closeFullscreen"
-            class="absolute top-4 right-4 px-5 py-2 rounded-full bg-white/20 text-white text-3xl hover:bg-gray-100 hover:text-black transition z-50">
+            class="absolute top-4 right-4 px-4 py-2 rounded-full bg-white/20 text-white text-3xl hover:bg-gray-100 hover:text-black transition z-50">
             ✕
           </button>
 
