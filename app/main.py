@@ -32,9 +32,17 @@ from app.redis.redis_revoke_tokens import (
     init_redis_revoke_tokens,
 )
 
+from fastapi.responses import FileResponse
+
 from .api_metadata import description, license_info, tags_metadata, title, version
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
+
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.staticfiles import StaticFiles
+import os
+
+
 
 
 @asynccontextmanager
@@ -67,6 +75,7 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 
+# app.mount("/api/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
@@ -92,6 +101,19 @@ app.include_router(sse_router)
 register_middleware(app)
 register_websocket(app)
 register_exception_handlers(app)
+
+
+# @app.get("/docs", include_in_schema=False)
+# async def custom_swagger_ui_html():
+#     return get_swagger_ui_html(
+#         openapi_url="/api/openapi.json", 
+#         swagger_favicon_url="/api/static/favicon.svg"  # Обновленный путь
+#     )
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    favicon_path = os.path.join(os.path.dirname(__file__), 'static/favicon.svg')
+    return FileResponse(favicon_path)
 
 
 @app.get("/health", tags=["health"])

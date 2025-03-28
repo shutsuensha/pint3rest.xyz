@@ -280,7 +280,7 @@ onMounted(async () => {
   try {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
-    if (chats.value) {
+    if (Array.isArray(chats.value) && chats.value.length > 0) {  
       try {
         const response = await axios.get(`/api/chats/check_connection/${chats.value[0].id}/${auth_user_id.value}`);
 
