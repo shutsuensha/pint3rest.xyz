@@ -10,7 +10,7 @@ before_script:
   - cp ${ENV} .env
   - export $(grep -v '^#' .env | xargs)
 
-check-disk-space:
+check-disk:
   stage: check-disk-space
   script:
     - FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
