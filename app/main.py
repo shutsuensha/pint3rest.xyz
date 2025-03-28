@@ -76,7 +76,8 @@ app = FastAPI(
     version=version,
     license_info=license_info,
     openapi_tags=tags_metadata,
-    docs_url=None
+    docs_url=None,
+    redoc_url=None
 )
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -139,4 +140,13 @@ async def custom_swagger_ui_html():
             "operationsSorter": "method",  # Сортировать эндпоинты по HTTP-методу (GET, POST и т.д.)
             "tryItOutEnabled": True,  # Разрешить редактирование запросов (Try it out)
         }
+    )
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc_html():
+    return get_redoc_html(
+        openapi_url='/api'+ app.openapi_url,
+        title=app.title,
+        redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
+        redoc_favicon_url="/favicon.ico",
     )
