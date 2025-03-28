@@ -113,7 +113,7 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
-@app.get("/health", tags=["health"], include_in_schema=False)
+@app.get("/health", include_in_schema=False)
 def health():
     return {"status": "ok"}
 
@@ -126,5 +126,17 @@ async def custom_swagger_ui_html():
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
-        swagger_favicon_url="/favicon.ico"
+        swagger_favicon_url="/favicon.ico",
+        swagger_ui_parameters = {
+            "displayRequestDuration": True,  # Показывать время выполнения запросов
+            "deepLinking": True,  # Позволяет ссылаться на конкретные секции API
+            "defaultModelsExpandDepth": -1,  # Скрыть секцию моделей внизу
+            "docExpansion": "none",  # Сворачивать все эндпоинты по умолчанию
+            "filter": True,  # Включить поиск по API
+            "showExtensions": True,  # Показывать дополнительные расширения API
+            "showCommonExtensions": True,  # Показывать стандартные расширения API
+            "persistAuthorization": True,  # Сохранять введенные токены авторизации при перезагрузке страницы
+            "operationsSorter": "method",  # Сортировать эндпоинты по HTTP-методу (GET, POST и т.д.)
+            "tryItOutEnabled": True,  # Разрешить редактирование запросов (Try it out)
+        }
     )
