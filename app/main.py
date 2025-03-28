@@ -38,11 +38,14 @@ from .api_metadata import description, license_info, tags_metadata, title, versi
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
-from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
 import os
 
-
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
 
 
 @asynccontextmanager
@@ -73,6 +76,7 @@ app = FastAPI(
     version=version,
     license_info=license_info,
     openapi_tags=tags_metadata,
+    docs_url=None
 )
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -103,14 +107,6 @@ register_websocket(app)
 register_exception_handlers(app)
 
 
-# @app.get("/docs", include_in_schema=False)
-# async def custom_swagger_ui_html():
-#     return get_swagger_ui_html(
-#         openapi_url="/api/openapi.json", 
-#         swagger_favicon_url="/api/static/favicon.svg"  # Обновленный путь
-#     )
-
-
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     favicon_path = os.path.join(os.path.dirname(__file__), 'static/favicon.svg')
@@ -120,3 +116,15 @@ async def favicon():
 @app.get("/health", tags=["health"], include_in_schema=False)
 def health():
     return {"status": "ok"}
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url='/api'+ app.openapi_url,
+        title=app.title,
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+        swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+        swagger_favicon_url="/favicon.ico"
+    )

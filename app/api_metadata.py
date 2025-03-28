@@ -184,13 +184,15 @@ description = """
 #### 🔗 Полезные ссылки:
 - 🚀 **GraphQL API**: [`pint3rest.xyz/api/graphql`](https://pint3rest.xyz/api/graphql)
 - 📜 **Документация (Swagger UI)**: [`pint3rest.xyz/api/docs`](https://pint3rest.xyz/api/docs)
+- 📑 **Документация (ReDoc)**: [`pint3rest.xyz/api/redoc`](https://pint3rest.xyz/api/redoc)
+- 📜 **OpenAPI JSON**: [`pint3rest.xyz/api/openapi.json`](https://pint3rest.xyz/api/openapi.json)
 - 🌐 **Главная страница**: [`pint3rest.xyz`](https://pint3rest.xyz)
 """
 
-title = "Pint3rest API"
+title = "Pint3rest Rest API"
 version = "1.0.0"
 
 license_info = {
-    "name": "MIT",
-    "url": "https://opensource.org/licenses/MIT",
+    "name": "MIT LICENSE",
+    "url": "https://github.com/shutsuensha/pint3rest.xyz/blob/main/LICENSE",
 }
