@@ -7,3 +7,4 @@ NOTES.md
 .env-ci
 .vscode
 ci.sh
+z_secret
