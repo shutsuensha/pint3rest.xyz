@@ -6,6 +6,8 @@ stages:
   # - test
   - deploy
 
+
+
 before_script:
   - cp ${ENV} .env
   - export $(grep -v '^#' .env | xargs)
