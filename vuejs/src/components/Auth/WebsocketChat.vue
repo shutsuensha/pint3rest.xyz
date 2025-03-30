@@ -61,14 +61,14 @@ watch(() => chatStore.bgColor, (newColor) => {
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
-import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
-import "dayjs/locale/ru";
+import utc from "dayjs/plugin/utc"; // Adding UTC support
+import timezone from "dayjs/plugin/timezone"; // Adding timezone support
+import "dayjs/locale/en"; // Use the English locale
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale("ru");
+dayjs.locale("en"); // Set the English locale
 
 
 const emit = defineEmits(['updateLastMessage'])

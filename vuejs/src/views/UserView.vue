@@ -10,7 +10,6 @@ import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
 const isLoading = ref(false);
-const progress = ref(0);
 
 const activeTab = ref('created');
 
@@ -100,15 +99,12 @@ onMounted(async () => {
 
   // Start the loading process
   isLoading.value = true;
-  progress.value = 0;
 
   try {
     const response = await axios.get(`/api/users/user_username/${username}`);
     user.value = response.data;
     canEditProfile.value = auth_user_id.value === user.value.id;
 
-    // Update progress after fetching user data
-    progress.value = 20;
 
     if (canEditProfile.value) {
       document.title = 'pinterest.xyz / me ' + user.value.username;
@@ -121,8 +117,6 @@ onMounted(async () => {
       const blobUrl = URL.createObjectURL(userResponse.data);
       userImage.value = blobUrl;
 
-      // Update progress after fetching user image
-      progress.value = 40;
     } catch (error) {
       console.error(error);
     }
@@ -143,8 +137,6 @@ onMounted(async () => {
         const blobUrl = URL.createObjectURL(userResponse.data);
         userBanner.value = blobUrl;
 
-        // Update progress after fetching banner image
-        progress.value = 60;
       } catch (error) {
         console.error(error);
       }
@@ -157,8 +149,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/subscription/followers/cnt/${user.value.id}`, { withCredentials: true });
     cntUserFollowers.value = response.data;
 
-    // Update progress after fetching followers count
-    progress.value = 70;
   } catch (error) {
     console.error(error);
   }
@@ -166,9 +156,6 @@ onMounted(async () => {
   try {
     const response = await axios.get(`/api/subscription/following/cnt/${user.value.id}`, { withCredentials: true });
     cntUserFollowing.value = response.data;
-
-    // Update progress after fetching following count
-    progress.value = 80;
   } catch (error) {
     console.error(error);
   }
@@ -177,8 +164,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/subscription/check_user_follow/${user.value.id}`, { withCredentials: true });
     checkUserFollow.value = response.data;
 
-    // Update progress after checking user follow status
-    progress.value = 90;
   } catch (error) {
     console.error(error);
   }
@@ -187,16 +172,12 @@ onMounted(async () => {
     const response = await axios.get(`/api/messages/check_chat/${user.value.id}`, { withCredentials: true });
     checkUserChat.value = response.data;
 
-    // Update progress after checking user follow status
-    progress.value = 95;
   } catch (error) {
     console.error(error);
   }
 
-  // Final progress update and stop loading
   loadingUser.value = false;
   isLoading.value = false;
-  progress.value = 100;
   createdPins();
 });
 
@@ -497,10 +478,6 @@ async function redirectToChat() {
         style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
     </div>
   </transition>
-  <div v-if="isLoading"
-    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
-    :style="{ width: `${progress}%` }">
-  </div>
   <transition name="fade" appear>
     <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
 

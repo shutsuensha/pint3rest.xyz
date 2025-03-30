@@ -103,7 +103,7 @@ const loading = ref(true)
 const color = ref('red')
 const size = ref('100px')
 
-const textWelcome = ref('Welcome to Our Platform 🩸')
+const textWelcome = ref('Welcome to Pinterest 🩸')
 
 const images = ref([])
 
@@ -423,7 +423,7 @@ function handleImageUpload(event) {
 }
 
 onMounted(async () => {
-  document.title = 'Pint3rest Next-Gen'
+  document.title = 'Pinterest'
   initializeKinesis()
 
 
@@ -465,7 +465,7 @@ async function googleAuth() {
         <!-- Modal header -->
         <div class="flex items-cent er justify-between p-4 md:p-5 border-b rounded-t">
           <h3 class="text-lg  font-semibold text-gray-900">
-            Sign Up to our platform 😇
+            Sign Up to Pinterest 😇
           </h3>
           <button @click="showSignUp = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -818,8 +818,6 @@ async function googleAuth() {
 </template>
 
 <style scoped>
-
-
 .loader {
   transform: rotateZ(45deg);
   perspective: 1000px;

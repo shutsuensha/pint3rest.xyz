@@ -335,13 +335,13 @@ async function save() {
                 </span>
               </div>
               <div
-                class="absolute top-0 right-2 cursor-pointer transition-transform duration-200 transform hover:scale-110">
+                class="absolute top-[-15px] right-2 cursor-pointer transition-transform duration-200 transform hover:scale-110">
                 <button v-if="!checkUserFollow && !itsMe" @click="follow"
-                  class=" px-4 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
+                  class=" px-3 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
                   Follow
                 </button>
                 <button v-if="checkUserFollow && !itsMe" @click="unfollow"
-                  class=" px-4 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
+                  class=" px-3 py-2 bg-red-600  text-white  rounded-3xl  text-xs">
                   Unfollow
                 </button>
               </div>

@@ -1,7 +1,10 @@
 <div align="center">
   <h1> 
-    Full-Stack Pinterest Clone with Vue 3 & FastAPI | Media Sharing Web App
+    Full-Stack Pinterest Clone with Vue 3 & FastAPI
   </h1>
+    <h1> 
+  Media Sharing Web App
+    </h1>
 </div>
 
 <div align="center">

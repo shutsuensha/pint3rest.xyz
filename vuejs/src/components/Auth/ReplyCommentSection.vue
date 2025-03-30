@@ -5,23 +5,22 @@ import CommentLikesPopover from './CommentLikesPopover.vue';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
-import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
-import "dayjs/locale/ru";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/en"; // Используем английскую локаль
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale("ru");
-
+dayjs.locale("en"); // Устанавливаем английскую локаль
 
 const formatTime = (createdAt) => {
     const now = dayjs();
     const createdTime = dayjs.utc(createdAt).local();
     const diffMinutes = now.diff(createdTime, "minute");
 
-    return diffMinutes < 30 ? "только что" : createdTime.fromNow();
-}
+    return diffMinutes < 30 ? "just now" : createdTime.fromNow();
+};
 
 
 

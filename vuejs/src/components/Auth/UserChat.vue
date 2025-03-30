@@ -7,36 +7,35 @@ import single_check from '@/assets/single_check.png';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import isYesterday from 'dayjs/plugin/isYesterday';
-import 'dayjs/locale/ru';
+import 'dayjs/locale/en'; // Use the English locale
 
 import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
-import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
+import utc from "dayjs/plugin/utc"; // Adding UTC support
+import timezone from "dayjs/plugin/timezone"; // Adding timezone support
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale("ru");
+dayjs.locale("en"); // Set the English locale
 
 import { useChatStore } from "@/stores/useChatStore";
 
 const chatStore = useChatStore();
 
-
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 
 const formattedTime = (timestamp) => {
-  const date = dayjs.utc(timestamp).local(); // Преобразуем в локальное время
+  const date = dayjs.utc(timestamp).local(); // Convert to local time
   const now = dayjs();
 
   return date.isToday()
-    ? date.format('HH:mm')
+    ? date.format('HH:mm') // Display time in 'HH:mm' format
     : date.isYesterday()
-      ? 'Вчера'
+      ? 'Yesterday' // Translation to English
       : now.diff(date.startOf('day'), 'days') > 7
-        ? date.format('MMM D')
-        : date.format('ddd'); // Сокращенное название дня недели
+        ? date.format('MMM D') // Format like 'Apr 15'
+        : date.format('ddd'); // Shortened day of the week
 }
 
 

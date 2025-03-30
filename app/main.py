@@ -110,7 +110,7 @@ register_exception_handlers(app)
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
-    favicon_path = os.path.join(os.path.dirname(__file__), 'static/favicon.svg')
+    favicon_path = os.path.join(os.path.dirname(__file__), 'static/favicon.ico')
     return FileResponse(favicon_path)
 
 

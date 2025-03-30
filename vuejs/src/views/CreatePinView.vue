@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, nextTick, onMounted } from "vue";
+import { ref, reactive, nextTick, onMounted, computed, watch } from "vue";
 import { useToast } from "vue-toastification";
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
@@ -13,7 +13,13 @@ const isVideo = ref(false);
 
 const isDragging = ref(false);
 
+
 const routerBack = useRouter();
+
+const searchValue = ref('')
+
+
+
 
 
 const toast = useToast();
@@ -34,6 +40,16 @@ const tagToAdd = ref('')
 const available_tags = ref(null)
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
 const tags = ref([])
+
+
+const filteredTags = computed(() => {
+  if (!searchValue.value.trim()) {
+    return available_tags.value;
+  }
+  return available_tags.value.filter(tag =>
+    tag.name.toLowerCase().includes(searchValue.value.toLowerCase())
+  );
+});
 
 
 
@@ -76,6 +92,7 @@ const previewFile = (file) => {
     isVideo.value = true;
   }
 };
+
 
 const onDrop = (event) => {
   isDragging.value = false;
@@ -245,10 +262,15 @@ function checkPinAded(name) {
         </label>
         <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
           class="hidden" />
+
+        <button @click="submitPin"
+          class="w-full mt-10 transition duration-100 text-white bg-purple-500 hover:bg-purple-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
+          Create Pin
+        </button>
       </div>
 
       <div>
-        <div class="space-y-7 mt-2">
+        <div class="space-y-7 mt-2 mb-10">
           <!-- Title Field -->
           <div>
             <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
@@ -280,26 +302,24 @@ function checkPinAded(name) {
               <!-- Tags Input -->
               <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
                 class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Create Tag" />
+                placeholder="Add Tag" />
             </div>
             <div class="mt-5">
               <!-- Heading -->
               <h3 class="text-md mb-2 text-gray-600">Choose Tags for your Pin</h3>
 
+              <input v-model="searchValue" type="text" placeholder="Search Tag"
+                class="w-1/2 mb-4 transition-all duration-300 cursor-text bg-gray-100 text-md rounded-3xl py-2 px-6 outline-none border-none focus:ring-1 focus:ring-black" />
+
               <!-- Tags List -->
               <div class="flex flex-wrap gap-2" v-auto-animate>
-                <div v-for="tag in available_tags" :key="tag.id" @click="addTagToPin(tag.name)"
+                <div v-for="tag in filteredTags" :key="tag.id" @click="addTagToPin(tag.name)"
                   :class="[checkPinAded(tag.name) ? 'bg-black text-white shadow-lg scale-110' : `${tag.color}`, 'text-sm', 'font-medium', 'rounded-3xl', 'px-3', 'py-2', 'cursor-pointer', 'transition-transform', 'duration-200', 'transform', 'hover:scale-110']">
                   {{ tag.name }}
                 </div>
               </div>
             </div>
           </div>
-          <!-- Submit Button -->
-          <button @click="submitPin"
-            class="w-full transition duration-100 text-white bg-purple-500 hover:bg-purple-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
-            Create Pin
-          </button>
         </div>
       </div>
     </div>

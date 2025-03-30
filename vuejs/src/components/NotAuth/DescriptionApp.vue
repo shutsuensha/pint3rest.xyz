@@ -1,22 +1,22 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-black to-white text-gray-900 relative">
+  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-400 to-white text-gray-900 relative">
     <img src="/screen.jpg" class="absolute top-0 right-0 h-full opacity-40 mask-gradient" />
     <div class=" max-w-7xl mx-auto px-6 py-12 z-50">
       <!-- Заголовок с динамическим градиентом -->
       <div>
         <h1
           class="z-50 text-6xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text">
-          Pint3rest Next-Gen
+          Full-Stack Pinterest Clone
         </h1>
         <h2
           class="z-50 text-4xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text">
-          your fun space to share art & ideas!
+          Vue 3 & FastAPI
         </h2>
       </div>
 
 
       <!-- Первая галерея -->
-      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(0, 2)" :key="index" :card="card"
           @click="openFullscreen(index)" />
       </div>
@@ -24,11 +24,11 @@
       <!-- Текстовый блок -->
       <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
-        <h2 class="text-4xl font-bold ">👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats </h2>
+        <h2 class="text-4xl font-bold ">👤 Users 📌 Pins ❤️ Likes 💬 Comments 💭 Chats </h2>
       </div>
 
       <!-- Вторая галерея -->
-      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(2, 4)" :key="index" :card="card"
           @click="openFullscreen(index + 2)" />
       </div>
@@ -36,11 +36,11 @@
       <!-- Текстовый блок -->
       <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
-        <h2 class="text-4xl font-bold ">💡 Fast, cool, and creative! 😎✨</h2>
+        <h2 class="text-4xl font-bold">Easy registration with no hassle! 🚀 Give it a try now! 😊</h2>
       </div>
 
       <!-- Третья галерея -->
-      <div class="grid grid-cols-2" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(4, 6)" :key="index" :card="card"
           @click="openFullscreen(index + 4)" />
       </div>

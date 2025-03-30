@@ -1,54 +1,48 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Новые идеи на Pinterest!</title>
+  <title>New Ideas on Pinterest!</title>
   <style>
-    /* Фон страницы */
+    /* Background of the page */
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #f6f9fc, #e9eff5);
     }
-    /* Основной контейнер */
+    /* Main container */
     .container {
       max-width: 600px;
       margin: 20px auto;
       background: rgba(255, 255, 255, 0.85);
-      /* Блюр (для клиентов, где поддерживается) */
+      /* Blur (for clients that support it) */
       backdrop-filter: blur(8px);
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
-    /* Ракета-иконка с анимацией */
-    .rocket {
+    /* Pinterest logo */
+    .pinterest-logo {
       font-size: 48px;
       margin-bottom: 10px;
-      animation: rocketAnimation 2s ease-in-out infinite;
     }
-    @keyframes rocketAnimation {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    /* Логотип */
-    /* Заголовок */
+    /* Heading */
     .header {
       font-size: 26px;
       color: #ff6f61;
       margin-bottom: 10px;
       font-weight: bold;
     }
-    /* Подзаголовок */
+    /* Subheading */
     .subheader {
       font-size: 18px;
       color: #555;
       margin-bottom: 20px;
     }
-    /* Галерея изображений */
+    /* Image gallery */
     .image-container {
       display: flex;
       justify-content: center;
@@ -62,7 +56,7 @@
       border-radius: 12px;
       object-fit: cover;
     }
-    /* Кнопка */
+    /* Button */
     .btn {
       display: inline-block;
       background: #ff6f61;
@@ -78,7 +72,7 @@
     .btn:hover {
       background: #ff8a7d;
     }
-    /* Подвал */
+    /* Footer */
     .footer {
       margin-top: 20px;
       font-size: 12px;
@@ -93,21 +87,23 @@
 </head>
 <body>
   <div class="container">
-    <div class="rocket">🚀</div>
-    <div class="header">Откройте для себя новые идеи!</div>
-    <div class="subheader">Вдохновляйтесь свежими идеями и находите что-то новое каждый день!</div>
+    <div class="pinterest-logo">
+      <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo" width="50" height="50">
+    </div>
+    <div class="header">Discover New Ideas!</div>
+    <div class="subheader">Get inspired by fresh ideas and find something new every day!</div>
     
     <div class="image-container">
-      <img src="https://i.pinimg.com/originals/6f/31/30/6f3130b8faf86f96e99098732fd9373a.gif" alt="Идея 1">
-      <img src="https://i.pinimg.com/736x/d1/a9/25/d1a925c2cf980c9411d2e3526688c608.jpg" alt="Идея 2">
-      <img src="https://i.pinimg.com/736x/17/a0/c1/17a0c10676a133e75cd175236a0ad60d.jpg" alt="Идея 3">
+      <img src="https://i.pinimg.com/originals/6f/31/30/6f3130b8faf86f96e99098732fd9373a.gif" alt="Idea 1">
+      <img src="https://i.pinimg.com/736x/d1/a9/25/d1a925c2cf980c9411d2e3526688c608.jpg" alt="Idea 2">
+      <img src="https://i.pinimg.com/736x/17/a0/c1/17a0c10676a133e75cd175236a0ad60d.jpg" alt="Idea 3">
     </div>
     
-    <a href="{{home_link}}" class="btn">Открыть Pinterest</a>
+    <a href="{{home_link}}" class="btn">Open Pinterest</a>
     
     <div class="footer">
-      Вы получили это письмо, потому что подписаны на Pinterest.<br>
-      Если вы не хотите получать рассылки, вы можете <a href="#">отписаться</a>.
+      You received this email because you are subscribed to Pinterest.<br>
+      If you no longer wish to receive emails, you can <a href="#">unsubscribe</a>.
     </div>
   </div>
 </body>

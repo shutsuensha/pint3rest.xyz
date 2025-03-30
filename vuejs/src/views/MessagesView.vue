@@ -280,7 +280,7 @@ onMounted(async () => {
   try {
     const response = await axios.get('/api/messages/user_chats', { withCredentials: true })
     chats.value = response.data
-    if (Array.isArray(chats.value) && chats.value.length > 0) {  
+    if (Array.isArray(chats.value) && chats.value.length > 0) {
       try {
         const response = await axios.get(`/api/chats/check_connection/${chats.value[0].id}/${auth_user_id.value}`);
 
@@ -621,16 +621,16 @@ function setScrollbarColor(color) {
 <template>
   <div v-if="userConnected"
     class="left-20 fixed inset-0 flex items-center justify-center bg-indigo-500 z-50 bg-opacity-50">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center max-w-lg mx-4 animate-fadeInUp">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Ой!</h1>
+    <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-lg mx-4 animate-fadeInUp">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Oops!</h1>
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-        Кажется, у вас уже есть активное подключение!
+        It looks like you already have an active connection!
       </h1>
       <p class="text-lg md:text-xl text-gray-600 mb-8">
-        Проверьте открытые вкладки
+        Check your open tabs
       </p>
       <p class="text-sm text-gray-500">
-        Если вы уверены, что это ошибка, попробуйте обновить страницу.
+        If you're sure this is a mistake, try refreshing the page.
       </p>
     </div>
   </div>
@@ -650,7 +650,7 @@ function setScrollbarColor(color) {
     </div>
   </div>
   <div v-if="chats && chats.length === 0" class="flex flex-col items-center justify-center mt-20">
-    <span class="text-3xl">У вас пока нет чатов. Начните новый диалог!</span>
+    <span class="text-3xl mb-10">You don't have any chats yet. Start a new conversation!</span>
     <img v-show="showimg === true" src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
       class="w-auto h-auto rounded-2xl" @load="showimg = true" />
   </div>

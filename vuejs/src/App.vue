@@ -4,8 +4,6 @@ import JSConfetti from 'js-confetti'
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from 'vue-router';
 
-
-
 const confetti = new JSConfetti()
 
 const toast = useToast();

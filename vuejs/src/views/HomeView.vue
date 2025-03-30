@@ -19,7 +19,7 @@ const router = useRouter()
 const emit = defineEmits(['createPinModelClose'])
 
 const isLoading = ref(false);
-const progress = ref(0);
+
 
 
 const lottieLoaded = ref(false)
@@ -70,8 +70,6 @@ const loadPins = async () => {
     pins.value.push(pinsObj);
 
     // Увеличиваем прогресс в зависимости от количества загруженных пинов
-    const loadedPinsProgress = Math.round((response.data.length / limit.value) * 30); // 30% выделено на загрузку пинов
-    progress.value = Math.min(progress.value + loadedPinsProgress, 100); // Ограничиваем прогресс значением 100
 
     // Increment the offset
     offset.value += limit.value;
@@ -119,7 +117,6 @@ watch(available_tags, (newTags) => {
 
 onMounted(async () => {
   isLoading.value = true;
-  progress.value = 0;
   document.title = 'pinterest.xyz';
   loadPins();
   window.addEventListener('scroll', handleScroll);
@@ -138,7 +135,6 @@ onMounted(async () => {
     limitTagLoading.value = available_tags.value.length;
 
     // Обновляем прогресс посл получения списка тегов
-    progress.value = 35;
 
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
@@ -154,7 +150,6 @@ onMounted(async () => {
       const pin_id = response.data[0].id;
 
       // Обновляем прогресс после получения первого пина
-      progress.value = 40;
 
       try {
         const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
@@ -170,7 +165,6 @@ onMounted(async () => {
         }
 
         // Обновляем прогресс после загрузки первого файла
-        progress.value = 50;
       } catch (error) {
         console.error(error);
       }
@@ -219,11 +213,9 @@ onMounted(async () => {
 
     // Увеличиваем количество завершенных тегов и обновляем прогресс
     completedTags++;
-    progress.value = 50 + Math.round((completedTags / totalTags) * 50);
   }
 
   // Завершаем прогресс после полной загрузки
-  progress.value = 100;
   isLoading.value = false;
 });
 
@@ -298,8 +290,6 @@ function customScroll(container, amount, duration = 300) {
 
   function scrollStep(currentTime) {
     const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1); // Ensure progress doesn't exceed 1
-    const ease = 0.5 - 0.5 * Math.cos(Math.PI * progress); // Ease-in-out effect
 
     container.scrollLeft = start + amount * ease;
 
@@ -388,11 +378,6 @@ const isActive = ref(false)
 </script>
 
 <template>
-  <div v-if="isLoading"
-    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
-    :style="{ width: `${progress}%` }">
-  </div>
-
   <DotLottieVue v-if="register === true"
     src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" @load="lottieLoaded = true"
     class="hidden" />

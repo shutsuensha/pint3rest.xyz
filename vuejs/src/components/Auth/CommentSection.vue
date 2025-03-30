@@ -6,23 +6,22 @@ import CommentLikesPopover from './CommentLikesPopover.vue';
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc"; // Подключаем поддержку UTC
-import timezone from "dayjs/plugin/timezone"; // Подключаем поддержку часовых поясов
-import "dayjs/locale/ru";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/en"; // Используем английскую локаль
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale("ru");
-
+dayjs.locale("en"); // Устанавливаем английскую локаль
 
 const formatTime = (createdAt) => {
     const now = dayjs();
     const createdTime = dayjs.utc(createdAt).local();
     const diffMinutes = now.diff(createdTime, "minute");
 
-    return diffMinutes < 30 ? "только что" : createdTime.fromNow();
-}
+    return diffMinutes < 30 ? "just now" : createdTime.fromNow();
+};
 
 
 const props = defineProps({
@@ -336,7 +335,7 @@ function resetFile(comment) {
         <!-- Tags Input -->
         <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
           class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
-          placeholder="Добавить комментарий" />
+          placeholder="Add Reply" />
 
         <button type="button" @click="addComment(comment)"
           class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
@@ -356,7 +355,7 @@ function resetFile(comment) {
       <div class="flex items-center space-x-2 ml-12 mt-2">
         <span class="font-medium text-gray-600">{{ formatTime(comment.created_at) }}</span>
         <span @click="comment.showReply = !comment.showReply"
-          class="text-md hover:underline hover:text-rose-400  cursor-pointer">Ответить</span>
+          class="text-md hover:underline hover:text-rose-400  cursor-pointer">Reply</span>
         <div class="flex items-center space-x-2">
           <!-- Icon -->
 
@@ -379,8 +378,8 @@ function resetFile(comment) {
       </div>
       <div class="ml-12 text-gray-700 text-sm mt-4 italic cursor-pointer mb-2 flex items-center justify-between"
         v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">
-        <h1 v-if="!comment.showReplies">⎯⎯ Просмотреть {{ comment.cntReplies }} ответа </h1>
-        <h1 v-if="comment.showReplies">⎯⎯ Скрыть ответы </h1>
+        <h1 v-if="!comment.showReplies">⎯⎯ View {{ comment.cntReplies }} replies </h1>
+        <h1 v-if="comment.showReplies">⎯⎯ Hide replies </h1>
         <span class="transition-transform duration-300 mr-5" :class="{ 'rotate-180': comment.showReplies }">
           <i class="pi pi-angle-down text-sm"></i>
         </span>

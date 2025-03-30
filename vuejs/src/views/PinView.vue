@@ -24,7 +24,6 @@ const showDislikeAnimation = ref(null)
 
 
 const isLoading = ref(false);
-const progress = ref(0);
 
 
 const sendComment = ref(false)
@@ -196,15 +195,11 @@ const timeoutWorking = ref(false)
 
 onMounted(async () => {
   // Start the loading process
-  isLoading.value = true;
-  progress.value = 0;
 
   try {
     const response = await axios.get(`/api/pins/${pinId}`);
     pin.value = response.data;
 
-    // Update progress after fetching pin data
-    progress.value = 20;
 
     if (pin.value.title) {
       document.title = 'pinterest.xyz / pin ' + pin.value.title;
@@ -222,18 +217,16 @@ onMounted(async () => {
         pinVideo.value = blobUrl;
       }
 
-      // Update progress after fetching pin media
-      progress.value = 40;
     } catch (error) {
       console.error(error);
     }
+
+    isLoading.value = true;
 
     try {
       const response = await axios.get(`/api/users/user_id/${pin.value.user_id}`);
       pinUser.value = response.data;
 
-      // Update progress after fetching user data
-      progress.value = 50;
 
       try {
         const response = await axios.get(`/api/users/upload/${pinUser.value.id}`, { responseType: 'blob' });
@@ -249,8 +242,6 @@ onMounted(async () => {
     router.push('/not-found');
   }
 
-  // Update progress after all the main data is loaded
-  progress.value = 60;
 
   showControls.value = true;
   timeoutWorking.value = true;
@@ -263,8 +254,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/likes/pin/likes/cnt/${pin.value.id}`);
     cntLikes.value = response.data;
 
-    // Update progress after fetching likes count
-    progress.value = 70;
   } catch (error) {
     console.error(error);
   }
@@ -273,8 +262,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/likes/pin/user_like/${pin.value.id}`);
     checkUserLike.value = response.data;
 
-    // Update progress after checking user like status
-    progress.value = 80;
   } catch (error) {
     console.error(error);
   }
@@ -287,8 +274,6 @@ onMounted(async () => {
       tag.color = randomBgColor();
     }
 
-    // Update progress after fetching tags
-    progress.value = 90;
   } catch (error) {
     console.log(error);
   }
@@ -297,8 +282,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/comments/cnt/comments/${pin.value.id}`);
     cntComments.value = response.data;
 
-    // Update progress after fetching comments count
-    progress.value = 100;
   } catch (error) {
     console.error(error);
   }
@@ -465,10 +448,6 @@ async function showVideoControls() {
 
 
 <template>
-  <div v-if="isLoading"
-    class="fixed top-0 left-0 h-1 bg-purple-500 transition-all ease-in-out duration-300 z-50 rounded-r-full"
-    :style="{ width: `${progress}%` }">
-  </div>
   <div class="mt-4 ml-20">
     <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -573,7 +552,11 @@ async function showVideoControls() {
 
       <!-- Right Column: User Information -->
       <div class="flex flex-col">
-        <div class="flex items-center justify-between w-full p-2">
+        <div v-if="pinImageLoaded || pinVideoLoaded" v-show="isLoading" class="flex items-center justify-center w-full h-full p-2">
+          <span class="text-center loader2"></span>
+        </div>
+
+        <div v-show="!isLoading" class="flex items-center justify-between w-full p-2">
           <!-- Icon and Likes -->
           <div class="flex items-center space-x-4 relative">
             <!-- Icon -->
@@ -638,8 +621,8 @@ async function showVideoControls() {
             <i class="pi pi-angle-down text-xl"></i>
           </span>
         </div>
-        <div v-else class="mt-5 mb-2">
-          <h1 class="text-xl italic text-gray-600">Добавьте комментарий, будьте первыми!</h1>
+        <div v-else class="mt-5 mb-1">
+          <h1 class="text-xl  text-gray-600">Your opinion?</h1>
         </div>
         <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
         <div v-if="isImage && !sendComment" class="relative">
@@ -663,7 +646,7 @@ async function showVideoControls() {
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
             class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
-            placeholder="Добавить комментарий" />
+            placeholder="Add Comment" />
 
           <button type="button" @click="addComment" :style="{
             backgroundColor: pin.rgb
@@ -766,4 +749,41 @@ async function showVideoControls() {
   opacity: 1;
   transform: scale(1);
 }
+
+
+
+
+.loader2 {
+  width: 48px;
+  height: 48px;
+  background: #FFF;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader2::after {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  color: #FF3D00;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 25px 2px, 10px 22px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+
 </style>

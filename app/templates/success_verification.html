@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Проверка успешна - 🚀 Pint3rest Next-Gen</title>
+  <title>Verification Successful - Pinterest</title>
   <style>
-    /* Общие стили страницы */
+    /* General page styles */
     body {
       margin: 0;
       padding: 0;
@@ -17,7 +17,7 @@
       justify-content: center;
     }
     
-    /* Контейнер с эффектом прозрачности и блюра */
+    /* Container with transparency and blur effect */
     .container {
       background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(10px);
@@ -29,14 +29,14 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
     }
     
-    /* Заголовок */
+    /* Heading */
     h1 {
       margin-bottom: 20px;
       font-size: 2.5em;
       color: #1d1f21;
     }
     
-    /* Описание */
+    /* Description */
     p {
       font-size: 1.2em;
       color: #3d3f41;
@@ -44,7 +44,7 @@
       line-height: 1.5;
     }
     
-    /* Кнопка перехода */
+    /* Button */
     .button {
       text-decoration: none;
       background: #ff6f61;
@@ -60,14 +60,15 @@
       background: #ff8a7d;
     }
     
-    /* Анимация ракеты */
-    .rocket {
-      font-size: 3em;
+    /* Logo animation */
+    .logo {
+      width: 60px;
+      height: 60px;
       margin-bottom: 20px;
-      animation: rocketAnimation 2s ease-in-out infinite;
+      animation: logoAnimation 2s ease-in-out infinite;
     }
     
-    @keyframes rocketAnimation {
+    @keyframes logoAnimation {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
@@ -75,10 +76,12 @@
 </head>
 <body>
   <div class="container">
-    <div class="rocket">🚀</div>
-    <h1>Проверка успешна!</h1>
-    <p>Вы успешно прошли верификацию на <strong>🚀 Pint3rest Next-Gen</strong>.<br>Добро пожаловать в будущее!</p>
-    <a href="{{home_link}}" class="button">Перейти на главную</a>
+    <div class="logo">
+      <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo">
+    </div>
+    <h1>Verification Successful!</h1>
+    <p>You have successfully completed the verification on <strong> Pinterest </strong>.<br>Welcome to the future!</p>
+    <a href="{{home_link}}" class="button">Go to Home</a>
   </div>
 </body>
 </html>

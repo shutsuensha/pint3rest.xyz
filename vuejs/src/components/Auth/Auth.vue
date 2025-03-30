@@ -92,11 +92,14 @@ const cachedViews = computed(() =>
 <template>
 
 
-  <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" />
+  <!-- <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" /> -->
+  <div v-if="loadingProfile" class="flex items-center justify-center h-screen">
+    <img src="/logo.png" alt="Logo" class="logo w-24 h-24" />
+  </div>
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
 
 
-  <RouterView v-slot="{ Component }">
+  <RouterView v-if="!loadingProfile" v-slot="{ Component }">
     <div v-show="$route.name === 'messages'">
       <component :is="MessagesView" :key="'messages'" />
     </div>
@@ -113,3 +116,22 @@ const cachedViews = computed(() =>
 
 
 </template>
+
+<style scoped>
+@keyframes pulse-scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.logo {
+  animation: pulse-scale 1.5s infinite ease-in-out;
+}
+
+</style>
