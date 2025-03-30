@@ -551,12 +551,15 @@ async function showVideoControls() {
       </div>
 
       <!-- Right Column: User Information -->
-      <div class="flex flex-col">
-        <div v-if="pinImageLoaded || pinVideoLoaded" v-show="isLoading" class="flex items-center justify-center w-full h-full p-2">
+
+      <div v-if="pinImageLoaded || pinVideoLoaded" v-show="isLoading" class="flex flex-col">
+        <div class="flex items-center justify-center w-full h-full p-2">
           <span class="text-center loader2"></span>
         </div>
+      </div>
 
-        <div v-show="!isLoading" class="flex items-center justify-between w-full p-2">
+      <div v-show="!isLoading" class="flex flex-col">
+        <div class="flex items-center justify-between w-full p-2">
           <!-- Icon and Likes -->
           <div class="flex items-center space-x-4 relative">
             <!-- Icon -->
