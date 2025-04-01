@@ -6,6 +6,8 @@ import axios from 'axios'
 import router from '@/router';
 import { useRoute, useRouter } from 'vue-router';
 
+import SearchBar from '@/components/Auth/SearchBar.vue';
+
 const mediaFile = ref(null);
 const mediaPreview = ref(null);
 const isImage = ref(false);
@@ -19,7 +21,10 @@ const routerBack = useRouter();
 const searchValue = ref('')
 
 
-
+const onSearchInput = () => {
+  // Перенаправление на /home при вводе текста
+  router.push('/?search')
+}
 
 
 const toast = useToast();
@@ -54,7 +59,7 @@ const filteredTags = computed(() => {
 
 
 onMounted(async () => {
-  document.title = 'pinterest.xyz / create pin'
+  document.title = 'Pinterest'
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data
@@ -222,10 +227,13 @@ function checkPinAded(name) {
   return tags.value.includes(name);
 }
 
+
+
 </script>
 
 <template>
-  <div class="ml-20">
+  <SearchBar />
+  <div class="ml-20 mt-20">
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
       class="flex items-center justify-center h-96 font-extrabold" />
     <div v-else class="grid grid-cols-2 mt-10 mr-72 gap-10">

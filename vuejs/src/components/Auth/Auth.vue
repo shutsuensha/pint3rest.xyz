@@ -6,6 +6,7 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import MessagesView from '@/views/MessagesView.vue';
+import HomeView from '@/views/HomeView.vue';
 
 
 const route = useRoute();

@@ -32,6 +32,13 @@ users_pins = Table(
     Column("pin_id", ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
 )
 
+board_pins = Table(
+    "board_pins",
+    Base.metadata,
+    Column("board_id", Integer, ForeignKey("boards.id"), primary_key=True),
+    Column("pin_id", Integer, ForeignKey("pins.id"), primary_key=True)
+)
+
 
 class UsersOrm(Base):
     __tablename__ = "users"
@@ -76,6 +83,17 @@ class PinsOrm(Base):
     rgb: Mapped[str | None] = mapped_column(String(100), default=None)
 
     height: Mapped[str | None] = mapped_column(String(100), default=None)
+
+
+class BoardsOrm(Base):
+    __tablename__ = "boards"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class TagsOrm(Base):

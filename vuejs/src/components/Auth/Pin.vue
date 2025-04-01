@@ -243,19 +243,23 @@ async function save() {
   <div class="w-1/5 p-2">
     <transition name="fade" appear>
       <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-        <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
-        <i @click="showFollowers = false"
-          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        <div class="flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
+          <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
+          <i @click="showFollowers = false"
+            class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+            style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        </div>
       </div>
     </transition>
 
     <transition name="fade" appear>
       <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-        <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
-        <i @click="showFollowing = false"
-          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
+          <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
+          <i @click="showFollowing = false"
+            class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+            style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+        </div>
       </div>
     </transition>
 

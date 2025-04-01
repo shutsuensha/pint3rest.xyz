@@ -73,7 +73,7 @@ watch(
   () => route.name,
   async (newName, oldName) => {
     if (newName === "messages") {
-      document.title = 'pinterest.xyz / chats'
+      document.title = 'Pinterest'
       const chat_id_redirect = route.query.chat_id || null;
       const new_chat = route.query.new_chat || null;
       if (new_chat !== null && !userConnected.value) {
@@ -257,10 +257,10 @@ let eventSource = null;
 
 
 onMounted(async () => {
+  showLoading.value = true
   chatStore.fetchChatColor();
   chatStore.fetchChatSize();
   chatStore.fetchSide()
-  showLoading.value = true
   const accessToken = getCookie('access_token');
   // Decode the JWT (assuming the access_token is a JWT)
   const base64Url = accessToken.split('.')[1]; // Get the payload part
@@ -650,7 +650,7 @@ function setScrollbarColor(color) {
     </div>
   </div>
   <div v-if="chats && chats.length === 0" class="flex flex-col items-center justify-center mt-20">
-    <span class="text-3xl mb-10">You don't have any chats yet. Start a new conversation!</span>
+    <span class="text-3xl">You don't have any chats yet. Start a new conversation!</span>
     <img v-show="showimg === true" src="https://i.pinimg.com/736x/6c/a8/05/6ca805efcc51ff2366298781aecde4ae.jpg"
       class="w-auto h-auto rounded-2xl" @load="showimg = true" />
   </div>

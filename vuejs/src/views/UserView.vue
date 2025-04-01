@@ -6,8 +6,11 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue';
 import CreatedPins from '@/components/Auth/CreatedPins.vue';
 import SavedPins from '@/components/Auth/SavedPins.vue';
 import LikedPins from '@/components/Auth/LikedPins.vue';
+import Boards from '@/components/Auth/Boards.vue';
 import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
+
+import SearchBar from '@/components/Auth/SearchBar.vue';
 
 const isLoading = ref(false);
 
@@ -21,13 +24,7 @@ const updateInformation = ref(false)
 
 
 onActivated(() => {
-  if (user.value) {
-    if (canEditProfile.value) {
-      document.title = 'pinterest.xyz / me ' + user.value.username
-    } else {
-      document.title = 'pinterest.xyz / user ' + user.value.username
-    }
-  }
+  document.title = 'Pinterest'  
 });
 
 
@@ -107,9 +104,9 @@ onMounted(async () => {
 
 
     if (canEditProfile.value) {
-      document.title = 'pinterest.xyz / me ' + user.value.username;
+      document.title = 'Pinterest'
     } else {
-      document.title = 'pinterest.xyz / user ' + user.value.username;
+      document.title = 'Pinterest'
     }
 
     try {
@@ -181,13 +178,11 @@ onMounted(async () => {
   createdPins();
 });
 
-const bgCreated = ref('border-black');
-const bgSaved = ref('border-black');
-const bgLiked = ref('border-black');
 
 const showCreated = ref(false);
 const showSaved = ref(false);
 const showLiked = ref(false)
+const showBoards = ref(false)
 
 const showEditModalBanner = ref(false)
 
@@ -195,27 +190,30 @@ async function createdPins() {
   showSaved.value = false;
   showLiked.value = false;
   showCreated.value = true;
-  bgSaved.value = 'border-black';
-  bgLiked.value = 'border-black';
-  bgCreated.value = 'border-red-600';
+  showBoards.value = false
 }
 
 async function savedPins() {
   showSaved.value = true;
   showCreated.value = false;
   showLiked.value = false;
-  bgCreated.value = 'border-black';
-  bgLiked.value = 'border-black';
-  bgSaved.value = 'border-red-600';
+  showBoards.value = false
 }
 
 async function likedPins() {
   showLiked.value = true;
   showCreated.value = false;
   showSaved.value = false;
-  bgCreated.value = 'border-black';
-  bgSaved.value = 'border-black';
-  bgLiked.value = 'border-red-600';
+  showBoards.value = false
+
+}
+
+async function boards() {
+  showLiked.value = false;
+  showCreated.value = false;
+  showSaved.value = false;
+  showBoards.value = true
+
 }
 
 // Function to go back to the previous page in history
@@ -451,13 +449,13 @@ async function redirectToChat() {
 
 <template>
   <transition name="fade" appear>
-    <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-40 p-6">
+    <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6" >
 
-      <div class="flex justify-center items-center min-h-screen">
+      <div class="flex justify-center items-center min-h-screen" @click.self="openSendMessage = false">
         <div v-if="!sendingMessage"
           class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-2 items-center">
 
-          <h1 class="text-center text-6xl text-black mt-4">Write Message</h1>
+          <h1 class="text-center text-6xl text-black mt-4 mb-4 ">Message to {{ user.username }}</h1>
           <textarea v-model="messageContent" name="messageContent" id="messageContent" style="height: 200px;"
             class=" cursor-pointer  text-black text-3xl rounded-3xl block w-3/4 py-10 px-10 focus:ring-black  bg-white focus:border-4 focus:border-white"></textarea>
 
@@ -587,7 +585,7 @@ async function redirectToChat() {
       <!-- Lottie Animation -->
 
       <ClipLoader v-if="updateProfileBanner" color="white" :size="size"
-      class="flex flex-col items-center justify-center text-center min-h-screen" />
+        class="flex flex-col items-center justify-center text-center min-h-screen" />
 
       <div v-if="!updateProfileBanner" class="flex flex-col items-center justify-center gap-5">
         <div class="flex flex-col items-center">
@@ -616,24 +614,30 @@ async function redirectToChat() {
   </transition>
 
   <transition name="fade" appear>
-    <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
-      <i @click="showFollowers = false"
-        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+    <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+      <div class="flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
+        <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
+        <i @click="showFollowers = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+      </div>
     </div>
   </transition>
 
   <transition name="fade" appear>
-    <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-      <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
-      <i @click="showFollowing = false"
-        class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
-        style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+    <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+      <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
+        <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
+        <i @click="showFollowing = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+      </div>
     </div>
   </transition>
 
-  <div class="flex items-center justify-center mt-5">
+  <SearchBar />
+
+  <div class="flex items-center justify-center mt-20">
     <ClipLoader v-if="loadingUser" :color="color" :size="size" class="" />
     <div v-else>
       <div class="flex flex-col items-center">
@@ -729,6 +733,12 @@ async function redirectToChat() {
           :class="{ 'active scale-105': activeTab === 'liked' }">
           Liked
         </button>
+
+        <button @click="boards(); activeTab = 'boards'"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          :class="{ 'active scale-105': activeTab === 'boards' }">
+          Boards
+        </button>
       </div>
     </div>
     <div v-if="userBanner" class="flex items-center mt-6 ml-5">
@@ -739,6 +749,7 @@ async function redirectToChat() {
   <CreatedPins v-if="showCreated" :user_id="user.id" :auth_user_id="auth_user_id" />
   <SavedPins v-if="showSaved" :user_id="user.id" :auth_user_id="auth_user_id" />
   <LikedPins v-if="showLiked" :user_id="user.id" />
+  <Boards v-if="showBoards" :user_id="user.id" :auth_user_id="auth_user_id"/>
 </template>
 
 

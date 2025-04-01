@@ -56,7 +56,6 @@ onMounted(() => {
 
 
 <template>
-  <div class="flex justify-center items-center min-h-screen">
     <div
       class="flex flex-col gap-2 bg-black shadow-2xl h-auto max-h-[600px] text-2xl rounded-3xl text-white z-50 w-[600px] overflow-y-auto py-2"
       style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
@@ -69,5 +68,4 @@ onMounted(() => {
         </RouterLink>
       </div>
     </div>
-  </div>
 </template>

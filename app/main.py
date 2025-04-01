@@ -22,6 +22,7 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.api.rest.boards.routes import router as boards_router
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
@@ -84,6 +85,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
+app.include_router(boards_router)
 app.include_router(chats_router)
 app.include_router(messages_router)
 app.include_router(subscription_router)

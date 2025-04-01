@@ -2,7 +2,6 @@
 import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 import Pin from '@/components/Auth/Pin.vue';
 
@@ -15,6 +14,8 @@ const tagsContainer = ref(null)
 
 const route = useRoute();
 const router = useRouter()
+
+const redirecting = ref(false)
 
 const emit = defineEmits(['createPinModelClose'])
 
@@ -103,31 +104,11 @@ const randomBgColor = () => {
   return bgColors.value[randomIndex];
 };
 
-watch(available_tags, (newTags) => {
-  if (newTags) {
-    tagFromUrl.value = route.query.tag || '';
-    if (tagFromUrl.value) {
-      if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
-        loadPinsByTag(tagFromUrl.value);
-        clearQuery()
-      }
-    }
-  }
-});
-
 onMounted(async () => {
   isLoading.value = true;
-  document.title = 'pinterest.xyz';
+  document.title = 'Pinterest';
   loadPins();
   window.addEventListener('scroll', handleScroll);
-
-  if (props.register === true) {
-    setTimeout(() => {
-
-      showCreatePin.value = true;
-      document.body.style.overflowY = 'clip';
-    }, 2000);
-  }
 
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true });
@@ -234,7 +215,7 @@ const clearQuery = () => {
 };
 
 onActivated(() => {
-  document.title = 'pinterest.xyz'
+  document.title = 'Pinterest'
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
   }
@@ -245,6 +226,18 @@ onActivated(() => {
         loadPinsByTag(tagFromUrl.value);
         clearQuery()
       }
+    }
+    let searchFromUrl = route.query.search || '';
+    if (searchFromUrl) {
+      searchValue.value = searchFromUrl
+      clearQuery()
+    }
+  }
+  if (!tagsLoaded.value) {
+    tagFromUrl.value = route.query.tag || '';
+    let searchFromUrl = route.query.search || '';
+    if (tagFromUrl.value || searchFromUrl) {
+      redirecting.value = true
     }
   }
 });
@@ -288,10 +281,17 @@ function customScroll(container, amount, duration = 300) {
   const start = container.scrollLeft;
   const startTime = performance.now();
 
+  // Функция плавного перехода (easeInOutQuad)
+  function ease(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
   function scrollStep(currentTime) {
     const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeValue = ease(progress);
 
-    container.scrollLeft = start + amount * ease;
+    container.scrollLeft = start + amount * easeValue;
 
     if (elapsed < duration) {
       requestAnimationFrame(scrollStep);
@@ -326,6 +326,24 @@ function onTagLoad() {
     tagsLoaded.value = true
   }
 }
+
+watch(tagsLoaded, (newTags) => {
+  if (newTags) {
+    redirecting.value = false
+    tagFromUrl.value = route.query.tag || '';
+    if (tagFromUrl.value) {
+      if (available_tags.value.some(tagObj => tagObj.name === tagFromUrl.value)) {
+        loadPinsByTag(tagFromUrl.value);
+        clearQuery()
+      }
+    }
+    let searchFromUrl = route.query.search || '';
+    if (searchFromUrl) {
+      searchValue.value = searchFromUrl
+      clearQuery()
+    }
+  }
+});
 
 const showSearchPins = ref(false)
 const searchValue = ref('')
@@ -378,38 +396,7 @@ const isActive = ref(false)
 </script>
 
 <template>
-  <DotLottieVue v-if="register === true"
-    src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" @load="lottieLoaded = true"
-    class="hidden" />
-
-  <transition name="fade" appear>
-    <div v-if="showCreatePin" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
-
-      <!-- Lottie Animation -->
-
-      <div class="flex flex-col items-start justify-start">
-        <DotLottieVue class="ml-4"
-          style="height: 210px; width: 250px; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));"
-          autoplay loop src="https://lottie.host/283cf83b-92ee-4d44-93d9-d62849b90da3/LCwNUy8wJT.lottie" />
-
-        <!-- Centered Text with Glow (Positioned top-left) -->
-        <p class="text-white text-3xl font-cursive mb-2"
-          style="text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);">
-          Create your first pin!
-        </p>
-      </div>
-
-      <button @click="closeCreatePin"
-        class="absolute top-72 left-36 px-6 py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-        style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-        Done
-      </button>
-
-      <!-- Centered Button with Glow -->
-    </div>
-  </transition>
-
-  <nav :class="['fixed top-0 left-20 w-full bg-white z-30', 'bg-opacity-20 backdrop-blur-sm']">
+  <nav :class="['fixed top-0 left-20 w-full  z-30', 'backdrop-blur-sm']">
     <div class="flex items-center justify-between px-6 py-2">
       <div class="relative flex-1 mr-20">
         <input v-model="searchValue" type="text" placeholder="Search" class="transition-all duration-300 cursor-text
@@ -424,8 +411,12 @@ const isActive = ref(false)
     </div>
   </nav>
 
+  <div v-if="redirecting" class="fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center flex flex-col gap-20">
+    <img src="/logo.png" alt="Logo" class="w-24 h-24 logo bg-white rounded-full" />
+  </div>
+
   <!-- Контейнер с тегами -->
-  <div ref="tagsContainer" class="mt-16 ml-20 group bg-white fixed top-0 right-0 left-0 z-30 bg-opacity-20 backdrop-blur-sm">
+  <div ref="tagsContainer" class="mt-16 ml-20 group fixed top-0 right-0 left-0 z-30 backdrop-blur-sm">
     <!-- Левая стрелка -->
     <button
       class="absolute left-5 top-1/2 transform -translate-y-1/2 z-20 bg-white rounded-full px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 active:scale-75"
@@ -476,8 +467,8 @@ const isActive = ref(false)
 
 
 
-  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.00001s"
-    item-selector=".item" stagger="0.00001s">
+  <div v-show="!showPinsBytag && !showSearchPins" class="ml-20 mt-28" v-masonry transition-duration="0.000000001s"
+    item-selector=".item" stagger="0.000000001s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item " v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { pinGroup.cntLoading++; if (pinGroup.cntLoading === pinGroup.limitCntLoading) { pinGroup.showAllPins = true; } }"
@@ -550,5 +541,25 @@ input:focus {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+
+
+@keyframes pulse-scale {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.logo {
+  animation: pulse-scale 1.5s infinite ease-in-out;
 }
 </style>

@@ -5,6 +5,9 @@ import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
 import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
 import CommentSection from '@/components/Auth/CommentSection.vue';
+import PinLikesSection from '@/components/Auth/PinLikesSection.vue';
+
+import SearchBar from '@/components/Auth/SearchBar.vue';
 
 
 const route = useRoute();
@@ -107,9 +110,9 @@ const onVideoEnd = () => {
 
 onActivated(() => {
   if (pin.value.title) {
-    document.title = 'pinterest.xyz / pin ' + pin.value.title
+    document.title = pin.value.title
   } else {
-    document.title = 'pinterest.xyz / pin ' + pin.value.id
+    document.title = 'Pin page'
   }
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
@@ -202,9 +205,9 @@ onMounted(async () => {
 
 
     if (pin.value.title) {
-      document.title = 'pinterest.xyz / pin ' + pin.value.title;
+      document.title = pin.value.title;
     } else {
-      document.title = 'pinterest.xyz / pin ' + pin.value.id;
+      document.title = 'Pin page'
     }
 
     try {
@@ -444,25 +447,96 @@ async function showVideoControls() {
   showControls.value = true;
 }
 
+const pinImageRef = ref(null)
+
+const showFollowing = ref(false)
+
+const showViewLarge = ref(false)
+
+const fullscreen = ref(false)
+
+const zoom = ref(1)
+
+
+
+function openImageFullScreen() {
+  fullscreen.value = true
+}
+
+function closeFullscreen() {
+  fullscreen.value = false
+}
+
+function increaseZoom() {
+  zoom.value += 0.1
+}
+
+function decreaseZoom() {
+  if (zoom.value > 0.2) { // Минимальное значение зума
+    zoom.value -= 0.1
+  }
+}
+
 </script>
 
 
 <template>
-  <div class="mt-4 ml-20">
+  <transition name="fade" appear>
+    <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+      <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
+        <PinLikesSection :pin_id="pin.id" :cnt_likes="cntLikes" />
+        <i @click="showFollowing = false"
+          class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
+          style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 255, 255, 0.7);"></i>
+      </div>
+    </div>
+  </transition>
+  <div v-if="fullscreen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+    @click.self="closeFullscreen">
+    <!-- Кнопка закрытия в левом верхнем углу -->
+    <button @click="closeFullscreen"
+      class="absolute top-4 left-4 bg-white bg-opacity-80 rounded-full p-2 focus:outline-none justify-center text-center items-center flex">
+      <i class="pi pi-times text-3xl font-bold"></i>
+    </button>
+
+    <button @click="save" :style="{
+      backgroundColor: pin.rgb,
+    }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105 absolute top-4 right-4 bg-white bg-opacity-80 p-2 focus:outline-none justify-center text-center items-center flex`">
+      {{ saveText }}
+    </button>
+
+    <!-- Изображение с динамическим масштабом -->
+    <img :src="pinImage" alt="Full screen image"
+      class="max-h-full max-w-full rounded-3xl transition-transform duration-300"
+      :style="{ transform: 'scale(' + zoom + ')' }" />
+
+
+    <button @click="increaseZoom"
+      class="absolute bottom-16 right-4 bg-white bg-opacity-80 rounded-full p-2 focus:outline-none justify-center text-center items-center flex">
+      <i class="pi pi-plus text-2xl font-bold"></i>
+    </button>
+
+    <!-- Кнопка уменьшения (минус) -->
+    <button @click="decreaseZoom"
+      class="absolute bottom-4 right-4 bg-white bg-opacity-80 rounded-full p-2 focus:outline-none justify-center text-center items-center flex">
+      <i class="pi pi-minus text-2xl font-bold "></i>
+    </button>
+  </div>
+  <SearchBar />
+  <div class="ml-20 mt-20">
     <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
-    <div v-show="pinImageLoaded || pinVideoLoaded"
-      class="grid grid-cols-2 gap-10 mx-60 bg-gray-100 rounded-3xl shadow-lg">
+    <div v-show="pinImageLoaded || pinVideoLoaded" class="grid grid-cols-2 gap-10 mx-60 bg-gray-100 rounded-3xl" :style="{
+      boxShadow: `0 0 30px 15px ${pin.rgb}`
+    }">
       <!-- Left Column: Image or Video -->
       <div>
         <div class="relative w-full max-w-2xl mx-auto">
-          <img v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
-            @load="pinImageLoaded = true" :style="{
-              boxShadow: `0 0 30px 15px ${pin.rgb}`
-            }" />
+          <img ref="pinImageRef" v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
+            @load="pinImageLoaded = true" />
           <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="relative flex items-center justify-center w-12 h-12">
               <transition name="flash2">
@@ -475,15 +549,26 @@ async function showVideoControls() {
               </transition>
             </div>
           </div>
+          <div v-if="pinImageLoaded" class="absolute right-2 bottom-2 cursor-pointer" @mouseover="showViewLarge = true"
+            @click="openImageFullScreen" @mouseleave="showViewLarge = false">
+            <div :class="[
+              'bg-white rounded-2xl bg-opacity-80 hover:bg-opacity-100 p-4 flex items-center justify-center transition-all duration-200 ease-in origin-right h-12',
+              showViewLarge ? 'w-40' : 'w-12'
+            ]" class="min-w-[3rem]">
+              <span v-if="showViewLarge"
+                class="mr-2 transition-opacity duration-300 ease-in-out text-md text-nowrap truncate">
+                View larger
+              </span>
+              <i class="pi pi-arrow-up-right-and-arrow-down-left-from-center rotate-90"></i>
+            </div>
+          </div>
         </div>
         <div class="relative w-full max-w-2xl mx-auto" @mouseover="showVideoControls"
           @mouseleave="showControls = false">
           <!-- Video Element -->
           <video @click="togglePlayPause" v-if="pinVideo" :src="pinVideo" ref="videoPlayer"
             class="w-full rounded-3xl block" loop @loadeddata="onVideoLoad" @timeupdate="updateProgress"
-            @ended="onVideoEnd" :style="{
-              boxShadow: `0 0 30px 15px ${pin.rgb}`
-            }">
+            @ended="onVideoEnd">
           </video>
 
           <!-- Gradient Overlay (cloud-like fade effect) -->
@@ -569,7 +654,8 @@ async function showVideoControls() {
               class="pi pi-heart text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
             <!-- Number of Likes -->
 
-            <div v-if="cntLikes != 0" class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
+            <div @click="showFollowing = !showFollowing" v-if="cntLikes != 0"
+              class="font-bold text-2xl relative cursor-pointer" @mouseover="showPopover = true"
               @mouseleave="if (!insidePopover) showPopover = false;">
               <div>
                 <span :style="{ color: pin.rgb }">{{ cntLikes }}</span>
@@ -648,6 +734,7 @@ async function showVideoControls() {
 
           <!-- Tags Input -->
           <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
+            @keydown.enter="addComment"
             class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
             placeholder="Add Comment" />
 
@@ -766,8 +853,9 @@ async function showVideoControls() {
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
 }
+
 .loader2::after {
-  content: '';  
+  content: '';
   box-sizing: border-box;
   position: absolute;
   left: 6px;
@@ -784,9 +872,45 @@ async function showVideoControls() {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
-} 
+}
 
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+.fade-in-animation {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 </style>
