@@ -4,6 +4,7 @@ import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
 import CommentLikesPopover from './CommentLikesPopover.vue';
 
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
@@ -16,12 +17,16 @@ dayjs.extend(timezone);
 dayjs.locale("en"); // Устанавливаем английскую локаль
 
 const formatTime = (createdAt) => {
-    const now = dayjs();
-    const createdTime = dayjs.utc(createdAt).local();
-    const diffMinutes = now.diff(createdTime, "minute");
+  const now = dayjs();
+  const createdTime = dayjs.utc(createdAt).local();
+  const diffMinutes = now.diff(createdTime, "minute");
 
-    return diffMinutes < 30 ? "just now" : createdTime.fromNow();
+  return diffMinutes < 30 ? "just now" : createdTime.fromNow();
 };
+
+import { authUserStore } from "@/stores/authUserStore";
+
+const userStore = authUserStore();
 
 
 const props = defineProps({
@@ -285,6 +290,16 @@ function resetFile(comment) {
   comment.replyMediaPreview = null
   comment.replyMediaFile = null
 }
+
+
+async function deleteComment(id) {
+  try {
+    const response = await axios.delete(`/api/admin/comment/${id}`, {withCredentials: true})
+    comments.value = comments.value.filter(comment => comment.id !== id)
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 
@@ -349,7 +364,8 @@ function resetFile(comment) {
           @change="(event) => handleMediaUpload(event, comment)"
           class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
       </div>
-      <div v-if="comment.showReply && comment.sendComment" class="flex items-center space-x-2 ml-12 mr-4 mt-2 justify-center">
+      <div v-if="comment.showReply && comment.sendComment"
+        class="flex items-center space-x-2 ml-12 mr-4 mt-2 justify-center">
         <span class="loader"></span>
       </div>
       <div class="flex items-center space-x-2 ml-12 mt-2">
@@ -375,6 +391,8 @@ function resetFile(comment) {
             </div>
           </div>
         </div>
+        <span v-if="userStore.authUsername == 'danya'" @click="deleteComment(comment.id)"
+          class="text-md hover:underline hover:text-rose-400  cursor-pointer">Delete</span>
       </div>
       <div class="ml-12 text-gray-700 text-sm mt-4 italic cursor-pointer mb-2 flex items-center justify-between"
         v-if="comment.cntReplies != 0" @click="comment.showReplies = !comment.showReplies">

@@ -9,7 +9,6 @@ import PinLikesSection from '@/components/Auth/PinLikesSection.vue';
 
 import SearchBar from '@/components/Auth/SearchBar.vue';
 
-
 const route = useRoute();
 const router = useRouter();
 
@@ -196,9 +195,9 @@ const tags = ref([])
 const timeoutId = ref(null)
 const timeoutWorking = ref(false)
 
-onMounted(async () => {
-  // Start the loading process
+const auth_user_id = ref(null)
 
+onMounted(async () => {
   try {
     const response = await axios.get(`/api/pins/${pinId}`);
     pin.value = response.data;
@@ -501,7 +500,8 @@ function decreaseZoom() {
 
     <button @click="save" :style="{
       backgroundColor: pin.rgb,
-    }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105 absolute top-4 right-4 bg-white bg-opacity-80 p-2 focus:outline-none justify-center text-center items-center flex`">
+    }"
+      :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105 absolute top-4 right-4 bg-white bg-opacity-80 p-2 focus:outline-none justify-center text-center items-center flex`">
       {{ saveText }}
     </button>
 

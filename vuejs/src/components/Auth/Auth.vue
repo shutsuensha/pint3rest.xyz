@@ -10,9 +10,11 @@ import HomeView from '@/views/HomeView.vue';
 
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 import { useSelectedBoard } from "@/stores/userSelectedBoard";
+import { authUserStore } from "@/stores/authUserStore";
 
 const unreadMessagesStore = useUnreadMessagesStore();
 const userSelectedBoardStroe = useSelectedBoard();
+const userStore = authUserStore();
 
 
 const route = useRoute();
@@ -54,6 +56,8 @@ onMounted(async () => {
 
       const response = await axios.get(`/api/users/user_id/${user_id}`)
       me.value = response.data
+
+      userStore.setUsername(me.value.username)
 
       try {
         const response = await axios.get(`/api/users/upload/${user_id}`, { responseType: 'blob' })
