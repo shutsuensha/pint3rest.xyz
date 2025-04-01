@@ -70,6 +70,16 @@ class UsersOrm(Base):
         ForeignKey("boards.id", ondelete="SET NULL"), default=None
     )
 
+class SearchOrm(Base):
+    __tablename__ = "search"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    query: Mapped[str] = mapped_column(String(200), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
 
 class PinsOrm(Base):
     __tablename__ = "pins"

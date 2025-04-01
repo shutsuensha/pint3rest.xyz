@@ -9,7 +9,7 @@
              bg-white bg-opacity-20 backdrop-blur-lg text-black
              text-md rounded-3xl block w-full py-3 pl-12 pr-12
              outline-none border border-black
-             focus:shadow-2xl focus:shadow-blue-500/50" @click="onClick" @keydown.enter="onEnter"/>
+             focus:shadow-2xl focus:shadow-blue-500/50" @click="onClick" @keydown.enter="onEnter" />
 				<!-- Иконка поиска слева -->
 				<div class="absolute left-1 top-4 pl-3 flex items-center pointer-events-none">
 					<i class="pi pi-search text-black"></i>
@@ -25,12 +25,21 @@
 
 	<transition name="slide-down" appear>
 		<!-- Оверлей на весь экран -->
-		<section v-if="showSearchSection" class="fixed inset-0 z-30 bg-black flex items-start justify-center transition-opacity duration-700 ease-in-out"
-		:class="{'bg-opacity-50': showSearchSection, 'bg-opacity-0': !showSearchSection}"
+		<section v-if="showSearchSection"
+			class="fixed inset-0 z-30 bg-black flex items-start justify-center transition-opacity duration-700 ease-in-out"
+			:class="{ 'bg-opacity-50': showSearchSection, 'bg-opacity-0': !showSearchSection }"
 			@click.self="showSearchSection = false">
 			<!-- Белый блок с контентом (не занимает всю область) -->
 			<div class="mt-14 ml-20 mr-20 bg-white px-8 py-2 w-full rounded-b-2xl shadow">
-				<h1 class="text-xl mb-4  mt-2">Popular on Pinterest</h1>
+				<h1 v-if="latestSearch && latestSearch.length > 0" class="text-xl mb-4  mt-2">Recently Search</h1>
+				<div v-if="latestSearch" class="grid grid-cols-8 gap-4">
+					<div v-for="(query, index) in latestSearch" :key="index" @click="searchValue = query;onEnter()"
+						class="flex items-center bg-gray-200 px-4 rounded-full py-2 cursor-pointer">
+						<button @click.stop="deleteSearch(query)" class="mr-2 text-white bg-black rounded-full px-2">&times;</button>
+						<span class="text-nowrap truncate">{{ query }}</span>
+					</div>
+				</div>
+				<h1 class="text-xl mb-4  mt-4">Popular on Pinterest</h1>
 				<div class="grid grid-cols-4 gap-4 mb-4">
 					<div v-for="tag in available_tags" :key="tag.id" @click="showTagsPin(tag)"
 						:class="[tag.color, 'hover:' + tag.color.replace('200', '400'), 'cursor-pointer rounded-3xl flex flex-row items-center']">
@@ -75,8 +84,27 @@ const randomBgColor = () => {
 	return bgColors.value[randomIndex];
 };
 
+async function deleteSearch(query) {
+	try {
+		await axios.delete("/api/search/", {
+			data: { query: query.trim() },  // Передаём данные в `data`
+			withCredentials: true
+		})
+		latestSearch.value = latestSearch.value.filter(item => item !== query.trim());
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+const latestSearch = ref(null)
 
 onMounted(async () => {
+	try {
+		const response = await axios.get('/api/search/latest', { withCredentials: true })
+		latestSearch.value = response.data
+	} catch (error) {
+		console.error(error)
+	}
 	try {
 		const response = await axios.get('/api/tags/', { withCredentials: true });
 		// Берем только первые 10 элементов
@@ -99,7 +127,6 @@ onMounted(async () => {
 
 			if (response.data.length === 1) {
 				const pin_id = response.data[0].id;
-
 				try {
 					const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
 					const blobUrl = URL.createObjectURL(pinResponse.data);
@@ -129,10 +156,18 @@ onMounted(async () => {
 
 function showTagsPin(tag) {
 	showSearchSection.value = false
-  router.push(`/?tag=${tag.name}`);
+	router.push(`/?tag=${tag.name}`);
 }
 
-function onEnter() {
+async function onEnter() {
+	try {
+		await axios.post("/api/search/", {
+			query: searchValue.value
+		}, { withCredentials: true })
+		latestSearch.value.unshift(searchValue.value);
+	} catch (error) {
+		console.error(error)
+	}
 	let tempSearch = searchValue.value
 	searchValue.value = ''
 	showSearchSection.value = false
@@ -159,7 +194,4 @@ function onEnter() {
 	transform: translateY(0);
 	opacity: 1;
 }
-
-
-
 </style>

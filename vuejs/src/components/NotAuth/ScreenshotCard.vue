@@ -3,10 +3,10 @@
     class="p-10 relative group overflow-hidden rounded-2xl bg-white/20 border border-white/30 backdrop-blur-lg shadow-xl transition transform hover:scale-105 hover:shadow-2xl cursor-pointer"
     @mousemove="handleMouseMove" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click="$emit('click')">
     <!-- Скриншот -->
-    <img v-show="!showVideo" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
+    <img v-show="!showVideo || !canPlay" data-kinesisdepth-element data-ks-depth="400" :src="card.src" :alt="card.title"
       class="w-full h-[250px] object-cover rounded-2xl " />
-    <video ref="videoPlayer" v-show="showVideo" muted loop preload="none"
-      class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200">
+    <video ref="videoPlayer" v-show="showVideo && canPlay" muted loop preload="none"
+      class="w-full h-[250px] object-cover rounded-2xl" data-kinesisdepth-element data-ks-depth="200" v-on:canplay="canPlay = true">
     </video>
 
 
@@ -41,6 +41,8 @@
 import { ref, onMounted } from 'vue'
 
 const videoPlayer = ref(null)
+
+const canPlay = ref(false)
 
 const props = defineProps({
   card: Object

@@ -401,7 +401,7 @@ function changeBgColor2() {
 }
 
 function changeBgColor3() {
-  bg.value = 'bg-gray-800'
+  bg.value = 'bg-teal-300'
   textWelcome.value = 'Continue Google 𓆩🖤𓆪'
 }
 
@@ -709,7 +709,7 @@ async function googleAuth() {
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
         </div>
       </div>
-      <div v-if="bg === 'bg-gray-800'" class="grid grid-cols-5 gap-4">
+      <div v-if="bg === 'bg-teal-300'" class="grid grid-cols-5 gap-4">
         <div v-for="(image, index) in images.slice(15, 20)" :key="index" class="p-2"
           :data-aos="index % 2 === 0 ? 'zoom-in' : 'zoom-out'" data-aos-easing="ease" :data-aos-duration="2000">
           <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
@@ -722,7 +722,7 @@ async function googleAuth() {
           :data-aos-duration="2000">{{ textWelcome }}</h1>
         <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'fade-up'" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-gray-800'" class="text-4xl  text-white mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
+        <h1 v-if="bg === 'bg-teal-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
           :data-aos-duration="2000">{{ textWelcome }}</h1>
         <div v-if="bg === 'bg-green-300'" class="space-x-2 flex flex-row justify-center items-center"
           :data-aos="'fade-up'" data-aos-easing="ease" :data-aos-duration="3000">
@@ -790,7 +790,7 @@ async function googleAuth() {
             </div>
           </button>
         </div>
-        <div v-if="bg === 'bg-gray-800'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
+        <div v-if="bg === 'bg-teal-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
           data-aos-easing="ease" :data-aos-duration="3000">
           <!-- Signup Button -->
           <button @mouseenter="changeBgColor1" @click="showSignUp = true"
