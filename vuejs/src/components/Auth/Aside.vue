@@ -6,7 +6,6 @@ import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
 const unreadMessagesStore = useUnreadMessagesStore();
 
-
 const isActiveLink = (routePath) => {
   const route = useRoute();
   return route.path === routePath;
@@ -29,12 +28,10 @@ async function logout() {
   }
 }
 
-
 const cntUnreadMessages = ref(null)
 
 
 onMounted(async () => {
-  unreadMessagesStore.fetchUnreadMessages(); 
 })
 </script>
 

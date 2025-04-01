@@ -35,8 +35,8 @@ users_pins = Table(
 board_pins = Table(
     "board_pins",
     Base.metadata,
-    Column("board_id", Integer, ForeignKey("boards.id"), primary_key=True),
-    Column("pin_id", Integer, ForeignKey("pins.id"), primary_key=True)
+    Column("board_id", Integer, ForeignKey("boards.id", ondelete="CASCADE"), primary_key=True),
+    Column("pin_id", Integer, ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True)
 )
 
 
@@ -65,6 +65,10 @@ class UsersOrm(Base):
     chat_color: Mapped[str | None] = mapped_column(String(100), default="blue")
     chat_size: Mapped[int | None] = mapped_column(Integer, default=384)
     side_open: Mapped[bool | None] = mapped_column(Boolean, default=True)
+
+    selected_board: Mapped[int | None] = mapped_column(
+        ForeignKey("boards.id", ondelete="SET NULL"), default=None
+    )
 
 
 class PinsOrm(Base):

@@ -8,6 +8,12 @@ import { useRoute, RouterLink, useRouter } from 'vue-router';
 import MessagesView from '@/views/MessagesView.vue';
 import HomeView from '@/views/HomeView.vue';
 
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+import { useSelectedBoard } from "@/stores/userSelectedBoard";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+const userSelectedBoardStroe = useSelectedBoard();
+
 
 const route = useRoute();
 
@@ -26,7 +32,10 @@ const props = defineProps({
   register: Boolean,
 })
 
+
 onMounted(async () => {
+  unreadMessagesStore.fetchUnreadMessages();
+  userSelectedBoardStroe.fetchSelectedBoard()
   try {
     if (props.access_token) {
       // Decode the JWT token

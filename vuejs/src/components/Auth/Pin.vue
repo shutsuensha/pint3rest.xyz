@@ -5,6 +5,9 @@ import axios from 'axios';
 import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
+import { useSelectedBoard } from "@/stores/userSelectedBoard";
+
+const userSelectedBoardStore = useSelectedBoard();
 
 const popUser = ref(null)
 const popImage = ref(null)
@@ -222,19 +225,63 @@ async function unfollow() {
 }
 
 async function save() {
-  bgSave.value = 'bg-black'
-  saveText.value = 'Saving...'
-  try {
-    const response = await axios.post(`/api/pins/user_saved_pins/${props.pin.id}`, {
-      withCredentials: true
-    })
-    saveText.value = 'Saved'
+  if (userSelectedBoardStore.selectedBoard == null) {
+    bgSave.value = 'bg-black'
+    saveText.value = 'Saving...'
+    try {
+      const response = await axios.post(`/api/pins/user_saved_pins/${props.pin.id}`, {
+        withCredentials: true
+      })
+      saveText.value = 'Saved'
 
-  } catch (error) {
-    if (error.response.status === 409) {
-      saveText.value = 'U already saved!'
+    } catch (error) {
+      if (error.response.status === 409) {
+        saveText.value = 'U already saved!'
+      }
+    }
+  } else {
+    bgSave.value = 'bg-black'
+    saveText.value = 'Saving...'
+    try {
+      const response = await axios.post(`/api/boards/${userSelectedBoardStore.selectedBoard.id}/pins/${props.pin.id}`, {
+        withCredentials: true
+      })
+      saveText.value = 'Saved'
+
+    } catch (error) {
+      if (error.response.status === 409) {
+        saveText.value = 'U already saved!'
+      }
     }
   }
+}
+
+const isModalOpen = ref(false);
+
+const boards = ref([])
+
+const showBoards = async () => {
+  try {
+    const response = await axios.get(`/api/boards/me`, { withCredentials: true });
+    boards.value = response.data;
+  } catch (error) {
+    console.error(error)
+  }
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const selectBoard = (board) => {
+  userSelectedBoardStore.setBoard(board)
+  closeModal();
+};
+
+function chooseProfile() {
+  userSelectedBoardStore.setBoard(null)
+  closeModal();
 }
 
 </script>
@@ -252,6 +299,8 @@ async function save() {
       </div>
     </transition>
 
+
+
     <transition name="fade" appear>
       <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
         <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
@@ -263,12 +312,38 @@ async function save() {
       </div>
     </transition>
 
+    <div v-if="isModalOpen"
+      class="z-50 fixed top-0 left-0 w-full inset-0 bg-black/50 flex items-center justify-center px-4"
+      @click.self="closeModal">
+      <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg">
+        <button @click="closeModal"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-white">
+          ✕
+        </button>
+        <button @click="chooseProfile" class="text-gray-500 hover:text-gray-800">
+          Profile
+        </button>
+        <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Boards</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div v-for="board in boards" :key="board.id"
+            class="p-4 border rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+            @click="selectBoard(board)">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-white">{{ board.title }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="relative block transition-transform duration-100 transform hover:scale-105"
       @mouseover="showSaveButton = true;" @mouseleave="showSaveButton = false;">
       <button v-if="showSaveButton" @click.stop="save"
         :class="`absolute z-10 top-2 right-2 px-6 py-3 text-sm ${bgSave} hover:bg-red-800 text-white rounded-3xl transition`">
         {{ saveText }}
       </button>
+      <span v-if="showSaveButton" @click.stop="showBoards"
+        :class="`absolute z-10 top-14 right-2 px-6 py-3 text-sm bg-black text-white rounded-3xl transition cursor-pointer`">
+        {{ userSelectedBoardStore.selectedBoard ? `board ${userSelectedBoardStore.selectedBoard.title}` : "to Profile" }}
+    </span>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">

@@ -3,6 +3,10 @@ import { onMounted, ref, onBeforeUnmount, onActivated, onDeactivated, nextTick }
 import axios from 'axios';
 import PinsByBoard from '@/components/Auth/PinsByBoard.vue';
 
+import { useSelectedBoard } from "@/stores/userSelectedBoard";
+
+const userSelectedBoardStore = useSelectedBoard();
+
 
 const props = defineProps({
   user_id: Number,
@@ -63,6 +67,9 @@ const deleteBoard = async (boardId) => {
     boards.value = boards.value.filter(board => board.id !== boardId);
   } catch (error) {
     console.error('Error deleting board:', error);
+  }
+  if (userSelectedBoardStore.selectedBoard.id === boardId) {
+    userSelectedBoardStore.setBoard(null)
   }
   if (selectedBoardId.value === boardId) {
     selectedBoardId.value = null

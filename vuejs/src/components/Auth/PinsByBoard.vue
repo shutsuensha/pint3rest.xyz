@@ -2,8 +2,8 @@
 import { onMounted, ref, onBeforeUnmount, onActivated, onDeactivated } from 'vue';
 import axios from 'axios';
 
-import CreatedPin from './CreatedPin.vue';
-import CreatedDeletedPin from './CreatedDeletedPin.vue';
+import CreatedPinBoard from './CreatedPinBoard.vue';
+import CreatedDeletedPinBoard from './CreatedDeletedPinBoard.vue';
 
 
 const pins = ref([]);
@@ -33,7 +33,7 @@ const loadPins = async () => {
 
   isPinsLoading.value = true;
   try {
-    const response = await axios.get(`/api/pins/user_created_pins/${props.user_id}`, {
+    const response = await axios.get(`/api/boards/${props.boardId}`, {
       params: { offset: offset.value, limit: limit.value },
       withCredentials: true,
     });
@@ -111,12 +111,13 @@ const openModal = () => {
   </div>
   <div class="mt-10" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
-      <CreatedPin v-if="!canEdit" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
+      <CreatedPinBoard v-if="!canEdit" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
         :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
-      <CreatedDeletedPin v-if="canEdit" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
+      <CreatedDeletedPinBoard v-if="canEdit" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"
         :pin="pinem"
+        :board_id="boardId"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
         :showAllPins="pinGroup.showAllPins" />
     </div>
