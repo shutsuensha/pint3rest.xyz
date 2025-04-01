@@ -22,6 +22,8 @@ const canEdit = ref(false)
 const selectedBoardId = ref(null)
 const selectedBoardname = ref(null)
 
+const pinsSectionWrapper = ref(null)
+
 onMounted(async () => {
   canEdit.value = props.user_id === props.auth_user_id
   try {
@@ -29,6 +31,34 @@ onMounted(async () => {
     boards.value = response.data;
   } catch (error) {
     console.error(error)
+  }
+
+  for (let i = 0; i < boards.value.length; i++) {
+    try {
+      const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
+        params: { offset: 0, limit: 10 },
+        withCredentials: true,
+      });
+      boards.value[i].pins = response.data
+      for (let j = 0; j < boards.value[i].pins.length; j++) {
+        try {
+          const pinResponse = await axios.get(`/api/pins/upload/${boards.value[i].pins[j].id}`, { responseType: 'blob' });
+          const blobUrl = URL.createObjectURL(pinResponse.data);
+          const contentType = pinResponse.headers['content-type'];
+          if (contentType.startsWith('image/')) {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = true;
+          } else {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = false;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   loading.value = false
@@ -79,11 +109,21 @@ const deleteBoard = async (boardId) => {
 };
 
 async function laodPinsByBoard(boardId, boardName) {
+  // Сбрасываем значение выбранного борда
   selectedBoardId.value = null
   selectedBoardname.value = null
   await nextTick()
+
+  // Обновляем выбранный борд
   selectedBoardId.value = boardId
   selectedBoardname.value = boardName
+  await nextTick()
+
+  if (pinsSectionWrapper.value) {
+    pinsSectionWrapper.value.scrollIntoView({ behavior: 'smooth' })
+  }
+
+
 }
 
 
@@ -101,15 +141,42 @@ async function laodPinsByBoard(boardId, boardName) {
           Add Board
         </button>
       </div>
-      <div class="grid grid-cols-4 gap-4">
+      <div class="grid grid-cols-5 gap-2 mx-2">
         <div v-for="board in boards" :key="board.id" @click="laodPinsByBoard(board.id, board.title)"
-          class=" shadow-md rounded-xl p-4 hover:shadow-lg transition cursor-pointer min-h-[120px] flex flex-col justify-between hover:bg-gray-200"
+          class="shadow-md rounded-2xl p-4 hover:shadow-lg transition cursor-pointer hover:bg-gray-200"
           :class="[board.id === selectedBoardId ? 'bg-gray-200' : 'bg-white']">
+          <!-- Коллаж превью борда -->
+          <div class="w-full h-44 grid grid-cols-2 gap-1">
+            <!-- Левая часть (большая картинка) -->
+            <div class="relative col-span-1 row-span-2">
+              <img v-if="board.pins && board.pins.length && board.pins[0].isImage" :src="board.pins[0].file"
+                alt="Board preview" class="object-cover w-full h-full rounded-md" />
+              <video v-if="board.pins && board.pins.length && !board.pins[0].isImage" :src="board.pins[0].file"
+                alt="Board preview" class="object-cover w-full h-full rounded-md" autoplay loop muted></video>
+            </div>
 
-          <!-- Заголовок доски -->
-          <h3 class="text-lg font-semibold text-gray-800 break-words">{{ board.title }}</h3>
+            <!-- Правая часть (4 ячейки в сетке 2x2) -->
+            <div class="col-span-1 grid grid-cols-2 grid-rows-2 gap-1">
+              <div v-if="board.pins" v-for="(pin, index) in board.pins.slice(1, 5)" :key="index" class="relative">
+                <img v-if="pin.isImage" :src="pin.file" alt="Pin" class="object-cover w-full h-full rounded-md" />
+                <video autoplay loop muted v-if="!pin.isImage" :src="pin.file" alt="Pin"
+                  class="object-cover w-full h-full rounded-md"></video>
 
-          <!-- Кнопка Delete (показывается, если canEdit == true) -->
+                <!-- Если это последняя ячейка (index === 3) и есть больше 5 пинов, показываем оверлей "+N" -->
+                <div v-if="board.pins && index === 3 && board.pins.length > 5"
+                  class="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg font-semibold">
+                  +{{ board.pins.length - 5 }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Заголовок борда и какая-то информация -->
+          <h3 class="text-xl text-center  text-bkack font-bold dark:text-white mt-12">
+            {{ board.title }}
+          </h3>
+
+          <!-- Кнопка Delete (если canEdit == true) -->
           <div v-if="canEdit" class="mt-2 flex justify-end">
             <button @click.stop="deleteBoard(board.id)"
               class="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
@@ -126,7 +193,11 @@ async function laodPinsByBoard(boardId, boardName) {
         </section>
       </div>
 
-      <PinsByBoard v-if="selectedBoardId" :user_id="user_id" v-bind:auth_user_id="auth_user_id" :boardId="selectedBoardId" :canEdit="canEdit" :boardName="selectedBoardname"/>
+      <div ref="pinsSectionWrapper" class="mt-10 min-h-[500px]">
+        <PinsByBoard v-if="selectedBoardId" :user_id="user_id" :auth_user_id="auth_user_id" :boardId="selectedBoardId"
+          :canEdit="canEdit" :boardName="selectedBoardname" />
+      </div>
+
 
     </div>
     <div v-if="showAddBoard"

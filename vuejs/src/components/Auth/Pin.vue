@@ -260,14 +260,45 @@ const isModalOpen = ref(false);
 
 const boards = ref([])
 
+const loadingBoards = ref(false)
+
 const showBoards = async () => {
+  loadingBoards.value = true
+  isModalOpen.value = true;
   try {
     const response = await axios.get(`/api/boards/me`, { withCredentials: true });
     boards.value = response.data;
   } catch (error) {
     console.error(error)
   }
-  isModalOpen.value = true;
+  for (let i = 0; i < boards.value.length; i++) {
+    try {
+      const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
+        params: { offset: 0, limit: 10 },
+        withCredentials: true,
+      });
+      boards.value[i].pins = response.data
+      for (let j = 0; j < boards.value[i].pins.length; j++) {
+        try {
+          const pinResponse = await axios.get(`/api/pins/upload/${boards.value[i].pins[j].id}`, { responseType: 'blob' });
+          const blobUrl = URL.createObjectURL(pinResponse.data);
+          const contentType = pinResponse.headers['content-type'];
+          if (contentType.startsWith('image/')) {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = true;
+          } else {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = false;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  loadingBoards.value = false
 };
 
 const closeModal = () => {
@@ -311,24 +342,44 @@ function chooseProfile() {
         </div>
       </div>
     </transition>
-
-    <div v-if="isModalOpen"
-      class="z-50 fixed top-0 left-0 w-full inset-0 bg-black/50 flex items-center justify-center px-4"
+    <div v-if="isModalOpen" class="z-50 fixed inset-0 bg-black/50 flex items-center justify-center px-4"
       @click.self="closeModal">
-      <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg">
-        <button @click="closeModal"
-          class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-white">
-          ✕
+      <div v-if="loadingBoards"
+        class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto min-h-screen flex items-center justify-center">
+        <span class="text-center loader2"></span>
+      </div>
+      <div v-else
+        class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto max-h-screen">
+
+        <!-- Кнопка Profile -->
+        <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Choose where to save</h2>
+        <button @click="chooseProfile"
+          class="p-4 border rounded-lg cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-800 transition w-full mb-4 text-lg bg-gray-200">
+          Save to Profile
         </button>
-        <button @click="chooseProfile" class="text-gray-500 hover:text-gray-800">
-          Profile
-        </button>
+
+        <!-- Заголовок для бордов -->
         <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Boards</h2>
+
+        <!-- Сетка бордов -->
         <div class="grid grid-cols-2 gap-4">
           <div v-for="board in boards" :key="board.id"
-            class="p-4 border rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+            class="p-4 border rounded-2xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition h-64 w-full overflow-auto"
             @click="selectBoard(board)">
-            <h3 class="text-lg font-medium text-gray-800 dark:text-white">{{ board.title }}</h3>
+
+            <h3 class="text-3xl text-center font-medium text-gray-800 dark:text-white mt-2 mb-2">{{ board.title }}</h3>
+
+            <!-- Витрина пинов в стиле masonry -->
+            <div class="columns-2 gap-2">
+              <div v-for="(pin, index) in board.pins" :key="index" class="mb-2 break-inside-avoid">
+                <img v-if="pin.isImage" :src="pin.file" :alt="pin.title || 'Pin'"
+                  class="w-full object-cover rounded-md">
+                <video v-else :src="pin.file" :alt="pin.title || 'Pin'" class="w-full object-cover rounded-md" autoplay
+                  loop muted></video>
+              </div>
+            </div>
+
+            <!-- Заголовок борда -->
           </div>
         </div>
       </div>
@@ -341,9 +392,9 @@ function chooseProfile() {
         {{ saveText }}
       </button>
       <span v-if="showSaveButton" @click.stop="showBoards"
-        :class="`absolute z-10 top-14 right-2 px-6 py-3 text-sm bg-black text-white rounded-3xl transition cursor-pointer`">
-        {{ userSelectedBoardStore.selectedBoard ? `board ${userSelectedBoardStore.selectedBoard.title}` : "to Profile" }}
-    </span>
+        :class="`absolute z-10 top-14 right-2 px-6 py-3 text-sm bg-gray-800 hover:bg-black text-white rounded-3xl transition cursor-pointer`">
+        {{ userSelectedBoardStore.selectedBoard ? `${userSelectedBoardStore.selectedBoard.title}` : "Profile" }}
+      </span>
       <RouterLink :to="`/pin/${pin.id}`">
         <div v-show="!showAllPins" :class="['w-full', 'rounded-3xl']"
           :style="{ backgroundColor: pin.rgb, height: pin.height + 'px' }">
@@ -496,5 +547,41 @@ function chooseProfile() {
 
 .glowing-icon {
   text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 0, 0, 0.5);
+}
+
+
+.loader2 {
+  width: 48px;
+  height: 48px;
+  background: #FFF;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loader2::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  color: #FF3D00;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 25px 2px, 10px 22px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
