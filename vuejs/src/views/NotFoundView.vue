@@ -4,7 +4,17 @@ import axios from 'axios'
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import { useRoute, useRouter } from 'vue-router';
 
+
 import SearchBar from '@/components/Auth/SearchBar.vue';
+
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
+
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
 
 const loading = ref(true)
 const color = ref('red')
@@ -17,7 +27,15 @@ const goBack = () => {
 };
 
 onMounted(() => {
-  document.title = 'not found'
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
 })
 
 </script>

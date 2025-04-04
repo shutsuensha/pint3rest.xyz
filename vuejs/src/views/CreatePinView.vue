@@ -8,6 +8,15 @@ import { useRoute, useRouter } from 'vue-router';
 
 import SearchBar from '@/components/Auth/SearchBar.vue';
 
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
+
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
 const mediaFile = ref(null);
 const mediaPreview = ref(null);
 const isImage = ref(false);
@@ -59,7 +68,15 @@ const filteredTags = computed(() => {
 
 
 onMounted(async () => {
-  document.title = 'Pinterest'
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
   try {
     const response = await axios.get('/api/tags/', { withCredentials: true })
     available_tags.value = response.data

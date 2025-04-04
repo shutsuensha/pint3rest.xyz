@@ -943,16 +943,9 @@ function showVideo(message) {
       <input ref="messageInput" id="messageInput" v-model="message" @keyup.enter="sendMessage"
         placeholder="Write a message..." autofocus="on" autocomplete="off"
         class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
-      <EmojiPicker v-show="showPicker" :native="true" @select="onSelectEmoji" class="absolute bottom-10 right-0" />
+      <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji" class="absolute bottom-10 right-0" />
       <button @click="showPicker = !showPicker" class="p-5">
-        <!-- Смайлик в SVG -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-          <circle cx="12" cy="12" r="10" fill="#FFEB3B" />
-          <circle cx="9" cy="9" r="1.5" fill="black" />
-          <circle cx="15" cy="9" r="1.5" fill="black" />
-          <path d="M8 15c1.5 1 4.5 1 6 0" stroke="black" />
-        </svg>
+        <i class="pi pi-face-smile text-2xl"></i>
       </button>
     </div>
     <div v-show="sendingMessage" class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"

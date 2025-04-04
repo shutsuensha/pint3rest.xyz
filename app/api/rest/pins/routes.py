@@ -9,7 +9,7 @@ from app.api.rest.dependencies import db, filter, filter_with_value, user_id
 from app.api.rest.tags.routes import get_all_tags
 from app.api.rest.utils import extract_first_frame, get_primary_color, save_file
 from app.config import settings
-from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins
+from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins, users_view_pins
 
 from .schemas import PinIn, PinOut
 
@@ -176,6 +176,13 @@ async def get_pin_by_id(user_id: user_id, id: int, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+    existing_link = await db.execute(select(users_view_pins).where((users_view_pins.c.user_id == user_id) & (users_view_pins.c.pin_id == id)))
+    if not existing_link.scalar():
+        stmt = insert(users_view_pins).values(user_id=user_id, pin_id=id)
+        await db.execute(stmt)
+        await db.commit()
+        
     return pin
 
 

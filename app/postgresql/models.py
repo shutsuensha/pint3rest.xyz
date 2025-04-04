@@ -39,6 +39,28 @@ board_pins = Table(
     Column("pin_id", Integer, ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True)
 )
 
+users_view_pins = Table(
+    "users_view_pins",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("pin_id", ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
+)
+
+class UsersRecommendationsPinsOrm(Base):
+    __tablename__ = "users_recommendations_pins"
+
+    # id - primary key с автоинкрементом
+    id: Mapped[int] = mapped_column(primary_key=True)
+    
+    # Связь с таблицей users
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    
+    # Связь с таблицей pins
+    pin_id: Mapped[int] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), nullable=False)
+    
+    # Связь с таблицей updates
+    update_id: Mapped[int] = mapped_column(ForeignKey("updates.id"), nullable=False)
+
 
 class UsersOrm(Base):
     __tablename__ = "users"
@@ -69,6 +91,27 @@ class UsersOrm(Base):
     selected_board: Mapped[int | None] = mapped_column(
         ForeignKey("boards.id", ondelete="SET NULL"), default=None
     )
+
+    recommendation_created_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True), default=None
+    )
+
+class UpdatesOrm(Base):
+    __tablename__ = "updates"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+
+    content: Mapped[str | None] = mapped_column(String(100), default=None)
+
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
+    is_read: Mapped[bool | None] = mapped_column(Boolean, default=False)
+
+
 
 class SearchOrm(Base):
     __tablename__ = "search"

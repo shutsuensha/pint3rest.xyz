@@ -9,6 +9,16 @@ import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
 
 
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
+
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
+
 const tagsContainer = ref(null)
 
 
@@ -106,7 +116,15 @@ const randomBgColor = () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  document.title = 'Pinterest';
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
   loadPins();
   window.addEventListener('scroll', handleScroll);
 
@@ -215,7 +233,15 @@ const clearQuery = () => {
 };
 
 onActivated(() => {
-  document.title = 'Pinterest'
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
   }
@@ -411,7 +437,8 @@ const isActive = ref(false)
     </div>
   </nav>
 
-  <div v-if="redirecting" class="fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center flex flex-col gap-20">
+  <div v-if="redirecting"
+    class="fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center flex flex-col gap-20">
     <img src="/logo.png" alt="Logo" class="w-24 h-24 logo bg-white rounded-full" />
   </div>
 

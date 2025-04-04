@@ -6,6 +6,7 @@ import PinView from '@/views/PinView.vue';
 import UserView from '@/views/UserView.vue';  
 import NotFoundView from '@/views/NotFoundView.vue';
 import MessagesView from '@/views/MessagesView.vue';
+import RecommendationsView from '@/views/RecommendationsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,7 @@ const router = createRouter({
     { path: '/pin/:id', name: 'pin', component: PinView },
     { path: '/user/:username', name: 'user', component: UserView },
     { path: '/messages', name: 'messages', component: MessagesView },
+    { path: '/recommendations/:id', name: 'recommendations', component: RecommendationsView },
     { path: '/:catchAll(.*)', name: 'not-found', component: NotFoundView },
   ],
 });

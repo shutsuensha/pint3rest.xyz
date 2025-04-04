@@ -1,9 +1,9 @@
 <div align="center">
   <h1> 
-    Full-Stack Pinterest Clone with Vue 3 & FastAPI
+    Full-Stack Pinterest Clone
   </h1>
     <h1> 
-  Media Sharing Web App
+    Vue 3 & FastAPI
     </h1>
 </div>
 
@@ -67,11 +67,6 @@ Have suggestions or improvements for the project? Feel free to discuss them in t
 
 ## 📜 License 📝
 MIT License – free to use & share! 🔓
-
-## 📬 Contact 📞
-- 📧 [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- 💬 <a href="https://t.me/evalshine" target="_blank" rel="noopener noreferrer">Telegram @evalshine</a>
-- 🐙 <a href="https://github.com/shutsuensha" target="_blank" rel="noopener noreferrer">GitHub shutsuensha</a>
 
 ## 📊 Project Architecture
 ![Architecture](.github/assets/architecture-pint3rest.jpg)

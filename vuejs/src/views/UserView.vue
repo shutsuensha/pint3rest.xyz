@@ -10,6 +10,14 @@ import Boards from '@/components/Auth/Boards.vue';
 import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
 import SearchBar from '@/components/Auth/SearchBar.vue';
 
 const isLoading = ref(false);
@@ -24,7 +32,15 @@ const updateInformation = ref(false)
 
 
 onActivated(() => {
-  document.title = 'Pinterest'  
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
 });
 
 
@@ -103,11 +119,17 @@ onMounted(async () => {
     canEditProfile.value = auth_user_id.value === user.value.id;
 
 
-    if (canEditProfile.value) {
-      document.title = 'Pinterest'
+    let unreadMessagesCount = unreadMessagesStore.count;
+    let unreadUpdatesCount = unreadUpdatesStore.count;
+    let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+    if (totalUnread > 0) {
+      document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
     } else {
-      document.title = 'Pinterest'
+      document.title = 'Pinterest'; // Если уведомлений нет
     }
+
+
 
     try {
       const userResponse = await axios.get(`/api/users/upload/${user.value.id}`, { responseType: 'blob' });
@@ -449,7 +471,7 @@ async function redirectToChat() {
 
 <template>
   <transition name="fade" appear>
-    <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6" >
+    <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6">
 
       <div class="flex justify-center items-center min-h-screen" @click.self="openSendMessage = false">
         <div v-if="!sendingMessage"
@@ -749,7 +771,7 @@ async function redirectToChat() {
   <CreatedPins v-if="showCreated" :user_id="user.id" :auth_user_id="auth_user_id" />
   <SavedPins v-if="showSaved" :user_id="user.id" :auth_user_id="auth_user_id" />
   <LikedPins v-if="showLiked" :user_id="user.id" />
-  <Boards v-if="showBoards" :user_id="user.id" :auth_user_id="auth_user_id"/>
+  <Boards v-if="showBoards" :user_id="user.id" :auth_user_id="auth_user_id" />
 </template>
 
 

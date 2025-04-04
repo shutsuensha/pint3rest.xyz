@@ -16,6 +16,10 @@ const unreadMessagesStore = useUnreadMessagesStore();
 const userSelectedBoardStroe = useSelectedBoard();
 const userStore = authUserStore();
 
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
 
 const route = useRoute();
 
@@ -38,6 +42,7 @@ const props = defineProps({
 onMounted(async () => {
   unreadMessagesStore.fetchUnreadMessages();
   userSelectedBoardStroe.fetchSelectedBoard()
+  unreadUpdatesStore.fetchUnreadUpdates()
   try {
     if (props.access_token) {
       // Decode the JWT token
@@ -114,16 +119,16 @@ const cachedViews = computed(() =>
 
 
   <RouterView v-if="!loadingProfile" v-slot="{ Component }">
-    <div v-show="$route.name === 'messages'">
+    <!-- <div v-show="$route.name === 'messages'">
       <component :is="MessagesView" :key="'messages'" />
-    </div>
+    </div> -->
 
     <KeepAlive :include="['HomeView']">
       <component v-if="$route.name === 'home'" :is="Component" :key="$route.name" v-bind="homeProps"
         v-on="homeEvents" />
     </KeepAlive>
 
-    <KeepAlive :max="10" :include="['PinView', 'UserView']">
+    <KeepAlive :max="10" :include="['PinView', 'UserView', 'RecommendationsView']">
       <component v-if="$route.name !== 'home' && $route.name !== 'messages'" :is="Component" :key="$route.fullPath" />
     </KeepAlive>
   </RouterView>

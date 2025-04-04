@@ -7,12 +7,30 @@ import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
 import CommentSection from '@/components/Auth/CommentSection.vue';
 import PinLikesSection from '@/components/Auth/PinLikesSection.vue';
 
+import EmojiPicker from 'vue3-emoji-picker'
+
 import SearchBar from '@/components/Auth/SearchBar.vue';
+
+import { useUnreadMessagesStore } from "@/stores/unreadMessages";
+
+const unreadMessagesStore = useUnreadMessagesStore();
+
+
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
+import { useSelectedBoard } from "@/stores/userSelectedBoard";
+
+const userSelectedBoardStore = useSelectedBoard();
 
 const route = useRoute();
 const router = useRouter();
 
 const pinId = route.params.id
+
+
+const showPicker = ref(false)
 
 const videoPlayer = ref(null);
 const isPlaying = ref(true);
@@ -108,11 +126,21 @@ const onVideoEnd = () => {
 };
 
 onActivated(() => {
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+  let name = null
   if (pin.value.title) {
-    document.title = pin.value.title
+    name = pin.value.title
   } else {
-    document.title = 'Pin page'
+    name = 'Pin page'
   }
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) ${name}`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = name; // Если уведомлений нет
+  }
+
   if (videoPlayer.value) {
     videoPlayer.value.volume = volume.value;
     var playPromise = videoPlayer.value.play()
@@ -203,10 +231,19 @@ onMounted(async () => {
     pin.value = response.data;
 
 
+    let unreadMessagesCount = unreadMessagesStore.count;
+    let unreadUpdatesCount = unreadUpdatesStore.count;
+    let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+    let name = null
     if (pin.value.title) {
-      document.title = pin.value.title;
+      name = pin.value.title
     } else {
-      document.title = 'Pin page'
+      name = 'Pin page'
+    }
+    if (totalUnread > 0) {
+      document.title = `(${totalUnread}) ${name}`; // Если есть непрочитанные уведомления
+    } else {
+      document.title = name; // Если уведомлений нет
     }
 
     try {
@@ -335,20 +372,98 @@ async function likePin() {
 }
 
 async function save() {
-  bgSave.value = 'bg-black'
-  saveText.value = 'Saving...'
-  try {
-    const response = await axios.post(`/api/pins/user_saved_pins/${pin.value.id}`, {
-      withCredentials: true
-    })
-    saveText.value = 'Saved'
+  if (userSelectedBoardStore.selectedBoard == null) {
+    bgSave.value = 'bg-black'
+    saveText.value = 'Saving...'
+    try {
+      const response = await axios.post(`/api/pins/user_saved_pins/${pin.value.id}`, {
+        withCredentials: true
+      })
+      saveText.value = 'Saved'
 
-  } catch (error) {
-    if (error.response.status === 409) {
-      saveText.value = 'U already saved!'
+    } catch (error) {
+      if (error.response.status === 409) {
+        saveText.value = 'U already saved!'
+      }
+    }
+  } else {
+    bgSave.value = 'bg-black'
+    saveText.value = 'Saving...'
+    try {
+      const response = await axios.post(`/api/boards/${userSelectedBoardStore.selectedBoard.id}/pins/${pin.value.id}`, {
+        withCredentials: true
+      })
+      saveText.value = 'Saved'
+
+    } catch (error) {
+      if (error.response.status === 409) {
+        saveText.value = 'U already saved!'
+      }
     }
   }
 }
+
+
+const isModalOpen = ref(false);
+
+const boards = ref([])
+
+const loadingBoards = ref(false)
+
+const showBoards = async () => {
+  loadingBoards.value = true
+  isModalOpen.value = true;
+  try {
+    const response = await axios.get(`/api/boards/me`, { withCredentials: true });
+    boards.value = response.data;
+  } catch (error) {
+    console.error(error)
+  }
+  for (let i = 0; i < boards.value.length; i++) {
+    try {
+      const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
+        params: { offset: 0, limit: 10 },
+        withCredentials: true,
+      });
+      boards.value[i].pins = response.data
+      for (let j = 0; j < boards.value[i].pins.length; j++) {
+        try {
+          const pinResponse = await axios.get(`/api/pins/upload/${boards.value[i].pins[j].id}`, { responseType: 'blob' });
+          const blobUrl = URL.createObjectURL(pinResponse.data);
+          const contentType = pinResponse.headers['content-type'];
+          if (contentType.startsWith('image/')) {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = true;
+          } else {
+            boards.value[i].pins[j].file = blobUrl;
+            boards.value[i].pins[j].isImage = false;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  loadingBoards.value = false
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const selectBoard = (board) => {
+  userSelectedBoardStore.setBoard(board)
+  closeModal();
+};
+
+function chooseProfile() {
+  userSelectedBoardStore.setBoard(null)
+  closeModal();
+}
+
+
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
@@ -379,6 +494,7 @@ const previewFile = (file) => {
 async function addComment() {
   if (comment.value.trim() !== '' && !mediaFile.value) {
     sendComment.value = true
+    showPicker.value = false
     try {
       const response = await axios.post(`/api/comments/${pin.value.id}`, {
         content: comment.value.trim()
@@ -397,6 +513,7 @@ async function addComment() {
 
   if (mediaFile.value) {
     sendComment.value = true
+    showPicker.value = false
     try {
       const formData = new FormData();
       formData.append("file", mediaFile.value); // Файл
@@ -437,6 +554,10 @@ function resetFile() {
   mediaFile.value = null
   isImage.value = false
   isVideo.value = false
+}
+
+function onSelectEmoji(emoji) {
+  comment.value += emoji.i
 }
 
 async function showVideoControls() {
@@ -480,6 +601,49 @@ function decreaseZoom() {
 
 
 <template>
+
+  <div v-if="isModalOpen" class="z-[60] fixed inset-0 bg-black/50 flex items-center justify-center px-4"
+    @click.self="closeModal">
+    <div v-if="loadingBoards"
+      class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto min-h-screen flex items-center justify-center">
+      <span class="text-center loader2"></span>
+    </div>
+    <div v-else
+      class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto max-h-screen">
+
+      <!-- Кнопка Profile -->
+      <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Choose where to save</h2>
+      <button @click="chooseProfile"
+        class="p-4 border rounded-lg cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-800 transition w-full mb-4 text-lg bg-gray-200">
+        Save to Profile
+      </button>
+
+      <!-- Заголовок для бордов -->
+      <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Boards</h2>
+
+      <!-- Сетка бордов -->
+      <div class="grid grid-cols-2 gap-4">
+        <div v-for="board in boards" :key="board.id"
+          class="p-4 border rounded-2xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition h-64 w-full overflow-auto"
+          @click="selectBoard(board)">
+
+          <h3 class="text-3xl text-center font-medium text-gray-800 dark:text-white mt-2 mb-2">{{ board.title }}</h3>
+
+          <!-- Витрина пинов в стиле masonry -->
+          <div class="columns-2 gap-2">
+            <div v-for="(pin, index) in board.pins" :key="index" class="mb-2 break-inside-avoid">
+              <img v-if="pin.isImage" :src="pin.file" :alt="pin.title || 'Pin'" class="w-full object-cover rounded-md">
+              <video v-else :src="pin.file" :alt="pin.title || 'Pin'" class="w-full object-cover rounded-md" autoplay
+                loop muted></video>
+            </div>
+          </div>
+
+          <!-- Заголовок борда -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <transition name="fade" appear>
     <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
       <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
@@ -498,12 +662,20 @@ function decreaseZoom() {
       <i class="pi pi-times text-3xl font-bold"></i>
     </button>
 
-    <button @click="save" :style="{
-      backgroundColor: pin.rgb,
-    }"
-      :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105 absolute top-4 right-4 bg-white bg-opacity-80 p-2 focus:outline-none justify-center text-center items-center flex`">
-      {{ saveText }}
-    </button>
+
+    <div class="absolute top-4 right-4 flex flex-row gap-1">
+      <span @click.stop="showBoards"
+        :class="`px-6 py-3 text-sm bg-gray-800 hover:bg-black text-white rounded-3xl transition cursor-pointer`">
+        {{ userSelectedBoardStore.selectedBoard ? `${userSelectedBoardStore.selectedBoard.title}` : "Profile" }}
+      </span>
+
+      <!-- Save Button -->
+      <button @click="save" :style="{
+        backgroundColor: pin.rgb,
+      }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105`">
+        {{ saveText }}
+      </button>
+    </div>
 
     <!-- Изображение с динамическим масштабом -->
     <img :src="pinImage" alt="Full screen image"
@@ -667,12 +839,19 @@ function decreaseZoom() {
             </div>
           </div>
 
-          <!-- Save Button -->
-          <button @click="save" :style="{
-            backgroundColor: pin.rgb,
-          }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105`">
-            {{ saveText }}
-          </button>
+          <div class="flex flex-row gap-1">
+            <span @click.stop="showBoards"
+              :class="`px-6 py-3 text-sm bg-gray-800 hover:bg-black text-white rounded-3xl transition cursor-pointer`">
+              {{ userSelectedBoardStore.selectedBoard ? `${userSelectedBoardStore.selectedBoard.title}` : "Profile" }}
+            </span>
+
+            <!-- Save Button -->
+            <button @click="save" :style="{
+              backgroundColor: pin.rgb,
+            }" :class="`px-6 py-3 text-sm text-white rounded-3xl transition transform hover:scale-105`">
+              {{ saveText }}
+            </button>
+          </div>
 
         </div>
         <div v-if="pin.title">
@@ -729,27 +908,34 @@ function decreaseZoom() {
         <div v-if="sendComment" class="flex items-center space-x-2 mb-4 mr-6 mt-2 justify-center">
           <span class="loader"></span>
         </div>
-        <div v-if="!sendComment" class="flex items-center space-x-2 mb-4 mr-6 mt-2">
-          <!-- Add Button -->
+        <div v-if="!sendComment" class="flex items-center justify-center space-x-2 mb-4 mr-6 mt-2">
+          <!-- Input for Comment -->
+          <div class="relative w-full">
+            <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
+              @keydown.enter="addComment"
+              class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
+              placeholder="Add Comment" />
 
-          <!-- Tags Input -->
-          <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
-            @keydown.enter="addComment"
-            class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-black focus:border-black"
-            placeholder="Add Comment" />
+            <!-- Emoji Picker Button -->
+            <button @click="showPicker = !showPicker"
+              class="absolute bottom-0.5 right-12 p-1 transition transform hover:scale-105">
+              <i class="pi pi-face-smile text-2xl" :style="{ color: pin.rgb }"></i>
+            </button>
 
-          <button type="button" @click="addComment" :style="{
-            backgroundColor: pin.rgb
-          }" class="transition transform hover:scale-105 text-white font-medium rounded-3xl text-sm px-4 py-2">
-            Add
-          </button>
+            <!-- Media Upload Icon -->
+            <label for="media" class="absolute bottom-0.5 right-4 p-1">
+              <i :style="{ color: pin.rgb }"
+                class="pi pi-images text-2xl cursor-pointer transition transform hover:scale-105"></i>
+            </label>
 
-          <label for="media">
-            <i :style="{ color: pin.rgb }"
-              class="pi pi-images text-4xl cursor-pointer transition transform hover:scale-105"></i>
-          </label>
-          <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-            class="hidden hover:bg-red-100 transition duration-300 w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+            <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
+              class="hidden" />
+
+            <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji"
+              class="absolute bottom-12 right-0 z-40" />
+          </div>
+
+          <!-- Emoji Picker -->
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from asgiref.sync import async_to_sync
 from PIL import Image
-from sqlalchemy import select, update
+from sqlalchemy import select, update, insert, delete
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.celery.celery_app import celery_instance
@@ -10,7 +10,19 @@ from app.config import settings
 from app.logger import logger
 from app.mail.mail import create_message, mail
 from app.postgresql.database import get_sync_db
-from app.postgresql.models import UsersOrm
+from app.postgresql.models import UsersOrm, users_view_pins, pins_tags, PinsOrm, UsersRecommendationsPinsOrm, UpdatesOrm
+
+from app.api.rest.updates.schemas import UpdateResponse
+
+from datetime import datetime, timezone
+
+import json
+import random
+
+
+import redis
+
+redis_client = redis.Redis.from_url(settings.REDIS_URL_CELERY_BROKER, decode_responses=True)
 
 
 @celery_instance.task
@@ -108,3 +120,79 @@ def save_file_celery_and_crop_300x300(file_content: bytes, path: str, user_id: i
             raise e
 
     return {"image saved path": path, "image saved 300x300 path": str(new_path)}
+
+
+
+@celery_instance.task
+def make_user_recommendations(user_id: int):
+    try:
+        db = next(get_sync_db())
+    except SQLAlchemyError as e:
+        raise e
+    
+    result = db.execute(select(users_view_pins).where(users_view_pins.c.user_id == user_id))
+    pins_viewed = result.fetchall()
+
+    if not pins_viewed:
+        return
+    
+    result_pins = []
+    for el in pins_viewed:
+        result =  db.execute(select(pins_tags).where(pins_tags.c.pin_id == el[1]))
+        rows = result.all()
+
+        pins = {}
+
+        for row in rows:
+            tag_id = row[1]
+
+            new_result = db.execute(select(pins_tags).where(pins_tags.c.tag_id == tag_id))
+            new_rows = new_result.all()
+
+            for new_row in new_rows:
+                pin_id = new_row[0]
+                pin_db = db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
+                if pin_db.id not in pins and el[1] != pin_db.id:
+                    pins[pin_db.id] = pin_db
+
+        result_pins.extend([pin.id for pin in pins.values()])
+
+    unique_pins = list(set(result_pins))
+
+    if not unique_pins:
+        return
+    
+    messages = [
+        "Excellent taste!",
+        "These ideas are in your style!",
+        "You'll like these pins.",
+        "This matches your vibe.",
+        "Based on your preferences."
+    ]
+    
+    new_update = UpdatesOrm(user_id=user_id, content=random.choice(messages))
+    db.add(new_update)
+    db.commit()
+    db.refresh(new_update)
+
+    for id in unique_pins:
+        stmt = insert(UsersRecommendationsPinsOrm).values(user_id=user_id, pin_id=id, update_id=new_update.id)
+        db.execute(stmt)
+    db.commit()
+
+    stmt = delete(users_view_pins).where(users_view_pins.c.user_id == user_id)
+    db.execute(stmt)
+    db.commit()
+
+    user = db.get(UsersOrm, user_id)
+    user.recommendation_created_at = datetime.now(timezone.utc)
+    db.commit()
+
+    update_data = UpdateResponse(
+        id=new_update.id,
+        content=new_update.content,
+        created_at=new_update.created_at,
+        is_read=new_update.is_read
+    )
+
+    redis_client.publish(f"notifications:{user_id}", update_data.json())

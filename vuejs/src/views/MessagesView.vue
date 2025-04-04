@@ -13,6 +13,10 @@ import NewMessageToast from '@/components/Auth/NewMessageToast.vue';
 
 import { useToast } from "vue-toastification";
 
+import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
+
+const unreadUpdatesStore = useUnreadUpdatesStore();
+
 
 const toast = useToast();
 
@@ -73,7 +77,15 @@ watch(
   () => route.name,
   async (newName, oldName) => {
     if (newName === "messages") {
-      document.title = 'Pinterest'
+      let unreadMessagesCount = unreadMessagesStore.count;
+      let unreadUpdatesCount = unreadUpdatesStore.count;
+      let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+      if (totalUnread > 0) {
+        document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+      } else {
+        document.title = 'Pinterest'; // Если уведомлений нет
+      }
       const chat_id_redirect = route.query.chat_id || null;
       const new_chat = route.query.new_chat || null;
       if (new_chat !== null && !userConnected.value) {
