@@ -13,6 +13,8 @@ from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tag
 
 from .schemas import PinIn, PinOut
 
+from app.celery.tasks import user_view_pin, make_update_save_pin, make_update_pin_created_for_followers
+
 router = APIRouter(prefix="/pins", tags=["pins"])
 
 
@@ -117,6 +119,8 @@ async def create_pin_entity(
     )
     await db.commit()
 
+    make_update_pin_created_for_followers.delay(user_id, pin.id)
+
     return pin
 
 
@@ -177,11 +181,7 @@ async def get_pin_by_id(user_id: user_id, id: int, db: db):
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
     
-    existing_link = await db.execute(select(users_view_pins).where((users_view_pins.c.user_id == user_id) & (users_view_pins.c.pin_id == id)))
-    if not existing_link.scalar():
-        stmt = insert(users_view_pins).values(user_id=user_id, pin_id=id)
-        await db.execute(stmt)
-        await db.commit()
+    user_view_pin.delay(user_id, id)
         
     return pin
 
@@ -215,6 +215,10 @@ async def user_save_pin(pin_id: int, user_id: user_id, db: db):
 
     await db.execute(insert(users_pins).values(user_id=user_id, pin_id=pin_id))
     await db.commit()
+
+    if pin.user_id != user_id:
+        make_update_save_pin.delay(pin.user_id, user_id, pin_id, "Profile")
+
     return {"status", "ok"}
 
 

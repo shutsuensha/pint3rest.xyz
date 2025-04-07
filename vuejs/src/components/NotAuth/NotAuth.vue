@@ -9,6 +9,9 @@ import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
 import google_logo from '@/assets/g-logo.png';
+import pinterest_logo from '@/assets/logo.png';
+
+
 const tailwindColors = {
   "bg-red-100": "#fee2e2",
   "bg-red-200": "#fecaca",
@@ -458,14 +461,17 @@ async function googleAuth() {
 
 <template>
   <DescriptionApp />
-  <div v-if="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    @click.self="showSignUp = false">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
       <div class="relative bg-white rounded-3xl">
         <!-- Modal header -->
-        <div class="flex items-cent er justify-between p-4 md:p-5 border-b rounded-t">
-          <h3 class="text-lg  font-semibold text-gray-900">
-            Sign Up to Pinterest 😇
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <!-- Logo -->
+          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
+          <h3 class="text-lg font-semibold text-gray-900">
+            Sign Up to Pinterest
           </h3>
           <button @click="showSignUp = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -476,29 +482,34 @@ async function googleAuth() {
             <span class="sr-only">Close modal</span>
           </button>
         </div>
+
         <ClipLoader v-if="showSignUpLoader" :color="color" :size="size"
           class="flex items-center justify-center h-96 font-extrabold" />
+
         <!-- Modal body -->
         <div v-else class="p-5">
           <form class="space-y-4" @submit.prevent="submitSignUp">
             <div>
-              <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
+              <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
               <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
-              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
-                password</label>
-              <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••"
+              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
+              <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••" autocomplete="new-password"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
-            <div>
-              <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image</label>
-              <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
-                class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-              <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-28 w-28 object-cover rounded-lg"
-                alt="Image Preview" />
+            <div class="flex items-center space-x-4">
+              <div class="w-80">
+                <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image</label>
+                <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
+                  class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+              </div>
+              <div class="w-1/2">
+                <img v-if="imagePreview" :src="imagePreview" class="w-28 mt-2 h-28 object-cover rounded-full"
+                  alt="Image Preview" />
+              </div>
             </div>
             <div>
               <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email
@@ -508,7 +519,7 @@ async function googleAuth() {
                 placeholder="akinak1337@gmail.com" />
             </div>
             <button type="submit"
-              class="w-full transition duration-300  text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
+              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
               Up</button>
             <div class="text-sm font-medium text-gray-500 ">
               Already have an account? <a @click="showSignUp = false; showLogin = true"
@@ -520,14 +531,17 @@ async function googleAuth() {
     </div>
   </div>
 
-  <div v-if="showLogin" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div v-show="showLogin" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    @click.self="showLogin = false">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
       <div class="relative bg-white rounded-3xl">
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-          <h3 class="text-lg  font-semibold text-gray-900">
-            Already have an account ? 🤫
+          <!-- Logo -->
+          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
+          <h3 class="text-lg font-semibold text-gray-900">
+            Log In to Pinterest
           </h3>
           <button @click="showLogin = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -545,14 +559,14 @@ async function googleAuth() {
           <form class="space-y-4" @submit.prevent="submitLogin">
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off"
+              <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off" 
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
-              <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
+              <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••" autocomplete="current-password"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
@@ -572,23 +586,26 @@ async function googleAuth() {
     </div>
   </div>
 
-  <div v-if="showPasswordReset" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div v-show="showPasswordReset" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    @click.self="showPasswordReset = false">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <!-- Modal content -->
       <div class="relative bg-white rounded-3xl">
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-          <h3 class="text-lg  font-semibold text-gray-900">
-            Password Reset >< </h3>
-              <button @click="showPasswordReset = false" type="button"
-                class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 14 14">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                </svg>
-                <span class="sr-only">Close modal</span>
-              </button>
+          <!-- Logo -->
+          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
+          <h3 class="text-lg font-semibold text-gray-900">
+            Password Reset
+          </h3>
+          <button @click="showPasswordReset = false" type="button"
+            class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
         </div>
         <ClipLoader v-if="showPasswordResetLoader" :color="color" :size="size"
           class="flex items-center justify-center h-96 font-extrabold" />
@@ -610,12 +627,12 @@ async function googleAuth() {
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 New Password</label>
-              <input v-model="formPasswordReset.password" type="password" name="password" id="password"
+              <input v-model="formPasswordReset.password" type="password" name="password" id="password" autocomplete="new-password"
                 placeholder="••••••••"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
-              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">Reset
+              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-medium rounded-3xl text-sm px-5 py-3 text-center">Reset
               Password</button>
           </form>
         </div>

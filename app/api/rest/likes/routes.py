@@ -6,6 +6,8 @@ from app.postgresql.models import CommentsOrm, LikesOrm, PinsOrm
 
 from .schemas import LikeOut
 
+from app.celery.tasks import make_update_like_pin, make_update_like_comment, make_update_like_reply
+
 router = APIRouter(prefix="/likes", tags=["likes"])
 
 
@@ -19,6 +21,10 @@ async def create_like_on_pin(pin_id: int, user_id: user_id, db: db):
         insert(LikesOrm).values(user_id=user_id, pin_id=pin_id).returning(LikesOrm)
     )
     await db.commit()
+
+    if pin.user_id != user_id:
+        make_update_like_pin.delay(pin.user_id, user_id, pin.id)
+
     return like
 
 
@@ -87,6 +93,12 @@ async def create_like_on_comment(comment_id: int, user_id: user_id, db: db):
         insert(LikesOrm).values(user_id=user_id, comment_id=comment_id).returning(LikesOrm)
     )
     await db.commit()
+
+    if comment.user_id != user_id:
+        if comment.pin_id:
+            make_update_like_comment.delay(comment.user_id, user_id, comment.id, comment.pin_id)
+        else:
+            make_update_like_reply.delay(comment.user_id, user_id, comment.id, comment.comment_id)
     return like
 
 

@@ -1032,7 +1032,7 @@ function decreaseZoom() {
 .loader2 {
   width: 48px;
   height: 48px;
-  background: #FFF;
+  background: #f3f4f6;
   border-radius: 50%;
   display: inline-block;
   position: relative;

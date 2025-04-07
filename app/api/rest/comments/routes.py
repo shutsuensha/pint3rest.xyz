@@ -11,6 +11,8 @@ from app.api.rest.utils import save_file
 from app.config import settings
 from app.postgresql.models import CommentsOrm, PinsOrm
 
+from app.celery.tasks import make_update_comment_pin, make_update_reply_comment
+
 from .schemas import CommentIn, CommentOut
 
 router = APIRouter(prefix="/comments", tags=["comments"])
@@ -28,6 +30,10 @@ async def create_comment_on_pin(pin_id: int, db: db, user_id: user_id, comment_m
         .returning(CommentsOrm)
     )
     await db.commit()
+
+    if pin.user_id != user_id:
+        make_update_comment_pin.delay(pin.user_id, user_id, pin.id, comment.id)
+    
     return comment
 
 
@@ -45,6 +51,15 @@ async def get_comments_on_pin(pin_id: int, db: db, user_id: user_id, filter: fil
         .limit(filter.limit)
     )
     return comments
+
+
+@router.get("/get-by-id/{comment_id}", response_model=CommentOut)
+async def get_comment_by_id(comment_id: int, db: db, user_id: user_id):
+    comment = await db.scalar(
+        select(CommentsOrm)
+        .where(CommentsOrm.id == comment_id)
+    )
+    return comment
 
 
 @router.get("/cnt/comments/{pin_id}")
@@ -111,13 +126,16 @@ async def create_comment_on_comment(
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
 
-    comment = await db.scalar(
+    reply_comment = await db.scalar(
         insert(CommentsOrm)
         .values(content=comment_model.content, comment_id=comment_id, user_id=user_id)
         .returning(CommentsOrm)
     )
     await db.commit()
-    return comment
+
+    if comment.user_id != user_id:
+        make_update_reply_comment.delay(comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id)
+    return reply_comment
 
 
 @router.get("/comment/{comment_id}", response_model=list[CommentOut])
@@ -176,6 +194,10 @@ async def create_comment_on_pin_entity(
     )
 
     await db.commit()
+
+    if pin.user_id != user_id:
+        make_update_comment_pin.delay(pin.user_id, user_id, pin.id, comment.id)
+
     return comment
 
 
@@ -201,7 +223,7 @@ async def create_comment_on_comment_entity(
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=f"Validation error: {e.errors()}")
 
-    comment = await db.scalar(
+    reply_comment = await db.scalar(
         insert(CommentsOrm)
         .values(content=comment_model.content, comment_id=comment_id, user_id=user_id)
         .returning(CommentsOrm)
@@ -211,12 +233,15 @@ async def create_comment_on_comment_entity(
     image_path = f"{settings.MEDIA_PATH}comments/{unique_filename}"
     await save_file(file.file, image_path)
 
-    comment = await db.scalar(
+    reply_comment = await db.scalar(
         update(CommentsOrm)
-        .where(CommentsOrm.id == comment.id)
+        .where(CommentsOrm.id == reply_comment.id)
         .values(image=image_path)
         .returning(CommentsOrm)
     )
 
     await db.commit()
-    return comment
+
+    if comment.user_id != user_id:
+        make_update_reply_comment.delay(comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id)
+    return reply_comment

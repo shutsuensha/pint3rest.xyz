@@ -6,6 +6,8 @@ from sqlalchemy import select, update, insert, delete
 from typing import Optional
 from app.api.rest.pins.schemas import PinOut
 
+from app.celery.tasks import make_update_save_pin
+
 router = APIRouter(prefix="/boards", tags=["boards"])
 
 
@@ -61,11 +63,7 @@ async def get_me_user_boards(db: db, user_id: user_id):
 @router.post("/{board_id}/pins/{pin_id}")
 async def add_pin_to_board(board_id: int, pin_id: int, db: db, user_id: user_id):
     """Добавляет пин в доску."""
-    # Проверяем, существует ли доска и пин
-    board_exists = await db.execute(select(BoardsOrm).where(BoardsOrm.id == board_id))
-    pin_exists = await db.execute(select(PinsOrm).where(PinsOrm.id == pin_id))
-    if not board_exists.scalar() or not pin_exists.scalar():
-        raise HTTPException(status_code=404, detail="Board or Pin not found")
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     
     # Проверяем, существует ли уже такая связка
     existing_link = await db.execute(select(board_pins).where((board_pins.c.board_id == board_id) & (board_pins.c.pin_id == pin_id)))
@@ -76,6 +74,10 @@ async def add_pin_to_board(board_id: int, pin_id: int, db: db, user_id: user_id)
     stmt = insert(board_pins).values(board_id=board_id, pin_id=pin_id)
     await db.execute(stmt)
     await db.commit()
+
+    if pin.user_id != user_id:
+        make_update_save_pin.delay(pin.user_id, user_id, pin_id, "Board")
+
     return {"message": "Pin added to board"}
 
 

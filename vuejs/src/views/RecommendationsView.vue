@@ -75,6 +75,8 @@ const handleScroll = () => {
   }
 };
 
+const loading = ref(true)
+
 onMounted(async () => {
   let unreadMessagesCount = unreadMessagesStore.count;
   let unreadUpdatesCount = unreadUpdatesStore.count;
@@ -91,6 +93,7 @@ onMounted(async () => {
   } catch (error) {
     console.error(error)
   }
+  loading.value = false
   loadPins();  // Initial load
   window.addEventListener('scroll', handleScroll);
 });
@@ -128,10 +131,13 @@ const goBack = () => {
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
   </button>
-  <div class="ml-20 mt-24">
+  <div v-if="loading" class="flex item-center justify-center mt-24">
+    <span class="loader2"></span>
+  </div>
+  <div v-if="!loading" class="ml-20 mt-24">
     <h1 v-if="update" class="text-center font-bold text-4xl"> {{ update.content }}</h1>
   </div>
-  <div class="ml-20 mt-10" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
+  <div v-if="!loading" class="ml-20 mt-10" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <Pin v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id" :pin="pinem"
         @pinLoaded="() => { cntLoading++; if (cntLoading === limitCntLoading) { pinGroup.showAllPins = true; isPinsLoading = false; cntLoading = 0 } }"
@@ -139,3 +145,41 @@ const goBack = () => {
     </div>
   </div>
 </template>
+
+
+<style scoped>
+.loader2 {
+  width: 48px;
+  height: 48px;
+  background: #FFF;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loader2::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  color: #FF3D00;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 25px 2px, 10px 22px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

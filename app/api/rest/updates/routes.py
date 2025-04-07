@@ -36,13 +36,14 @@ async def get_redis():
     return await aioredis.from_url(settings.REDIS_URL_CELERY_BROKER, decode_responses=True)
 
 
-async def event_stream(user_id: int):
+async def event_stream(user_id: int, make_recommendation: bool):
     redis = await get_redis()
     pubsub = redis.pubsub()
     await pubsub.subscribe(f"notifications:{user_id}")  # 🔥 Асинхронная подписка
 
     try:
-        make_user_recommendations.delay(user_id)
+        if make_recommendation:
+            make_user_recommendations.delay(user_id)
         async for message in pubsub.listen():  # 🔥 Асинхронное получение сообщений
             if message["type"] == "message":
                 yield f"data: {json.dumps({'message': message['data']})}\n\n"
@@ -55,14 +56,17 @@ async def event_stream(user_id: int):
 
 @router.get("/stream/{user_id}")
 async def stream(user_id: int, db: db):
-    return StreamingResponse(event_stream(user_id), media_type="text/event-stream")
+    result = await db.execute(select(UsersOrm).filter_by(id=user_id))
+    user = result.scalars().first()
+    make_recommendation = user.recommendation_created_at is None or user.recommendation_created_at.date() != datetime.now(timezone.utc).date()
+    return StreamingResponse(event_stream(user_id, True), media_type="text/event-stream")
 
 
 @router.get("/count")
 async def get_updates_count(user_id: user_id, db: db):
     result = await db.execute(
         select(UpdatesOrm)
-        .where(UpdatesOrm.user_id == user_id, UpdatesOrm.is_read == False)
+        .where(UpdatesOrm.user_update_to_id == user_id, UpdatesOrm.is_read == False)
     )
     return len(result.fetchall())
 
@@ -71,7 +75,7 @@ async def get_updates_count(user_id: user_id, db: db):
 async def get_updates(user_id: user_id, db: db, filter: filter):
     result = await db.execute(
         select(UpdatesOrm)
-        .where(UpdatesOrm.user_id == user_id)
+        .where(UpdatesOrm.user_update_to_id == user_id)
         .order_by(UpdatesOrm.created_at.desc())
         .offset(filter.offset)
         .limit(filter.limit)

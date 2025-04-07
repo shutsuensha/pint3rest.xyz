@@ -8,6 +8,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    ARRAY
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -49,16 +50,9 @@ users_view_pins = Table(
 class UsersRecommendationsPinsOrm(Base):
     __tablename__ = "users_recommendations_pins"
 
-    # id - primary key с автоинкрементом
     id: Mapped[int] = mapped_column(primary_key=True)
-    
-    # Связь с таблицей users
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    
-    # Связь с таблицей pins
     pin_id: Mapped[int] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), nullable=False)
-    
-    # Связь с таблицей updates
     update_id: Mapped[int] = mapped_column(ForeignKey("updates.id"), nullable=False)
 
 
@@ -96,20 +90,43 @@ class UsersOrm(Base):
         TIMESTAMP(timezone=True), default=None
     )
 
+
 class UpdatesOrm(Base):
     __tablename__ = "updates"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_update_to_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
     content: Mapped[str | None] = mapped_column(String(100), default=None)
+
+    update_type: Mapped[str] = mapped_column(String(100), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
     is_read: Mapped[bool | None] = mapped_column(Boolean, default=False)
+
+    
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id"), default=None
+    )
+
+    pin_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pins.id", ondelete="CASCADE"), default=None
+    )
+
+    comment_id: Mapped[int | None] = mapped_column(
+        ForeignKey("comments.id", ondelete="CASCADE"), default=None
+    )
+
+    reply_id: Mapped[int | None] = mapped_column(
+        ForeignKey("comments.id", ondelete="CASCADE"), default=None
+    )
+    
+
+
 
 
 

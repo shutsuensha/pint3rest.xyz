@@ -34,7 +34,7 @@
 				<h1 v-if="latestSearch && latestSearch.length > 0" class="text-xl mb-4  mt-2">Recently Search</h1>
 				<div v-if="latestSearch" class="grid grid-cols-8 gap-4">
 					<div v-for="(query, index) in latestSearch" :key="index" @click="searchValue = query;onEnter()"
-						class="flex items-center bg-gray-200 px-4 rounded-full py-2 cursor-pointer">
+						class="flex items-center bg-gray-100 hover:bg-gray-200 px-4 rounded-full py-2 cursor-pointer">
 						<button @click.stop="deleteSearch(query)" class="mr-2 text-white bg-black rounded-full px-2">&times;</button>
 						<span class="text-nowrap truncate">{{ query }}</span>
 					</div>

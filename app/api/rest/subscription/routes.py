@@ -5,6 +5,8 @@ from app.api.rest.dependencies import db, filter, user_id
 from app.api.rest.users.schemas import UserOut
 from app.postgresql.models import SubsrciptionsOrm, UsersOrm
 
+from app.celery.tasks import make_update_follow
+
 router = APIRouter(prefix="/subscription", tags=["subscriptions"])
 
 
@@ -20,6 +22,8 @@ async def user_subscibe_user(db: db, user_id: user_id, user_id_to_follow: int):
         insert(SubsrciptionsOrm).values(follower_id=user_id, following_id=user_id_to_follow)
     )
     await db.commit()
+
+    make_update_follow.delay(user_id_to_follow, user_id)
 
     return {"status": "ok"}
 
