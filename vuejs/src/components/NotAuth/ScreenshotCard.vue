@@ -66,7 +66,7 @@ const handleMouseEnter = () => {
   glowVisible.value = true;
   timeoutId = setTimeout(() => {
     if (videoPlayer.value) {
-      videoPlayer.value.src = `/api/notauth/video-stream/${props.card.stream}`;
+      videoPlayer.value.src = `/api/sse/notauth/video-stream/${props.card.stream}`;
       videoPlayer.value.load();  // Принудительно загружаем поток
       videoPlayer.value.play();  // Запускаем воспроизведение
       showVideo.value = true;

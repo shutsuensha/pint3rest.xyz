@@ -961,7 +961,7 @@ async function addNewUpdate(update) {
 }
 
 onMounted(async () => {
-  eventSource = new EventSource(`/api/updates/stream/${props.me.id}`);
+  eventSource = new EventSource(`/api/sse/updates/stream/${props.me.id}`);
 
   eventSource.onmessage = (event) => {
     const rawData = JSON.parse(event.data);  // Парсим первый раз

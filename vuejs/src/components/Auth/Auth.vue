@@ -119,9 +119,9 @@ const cachedViews = computed(() =>
 
 
   <RouterView v-if="!loadingProfile" v-slot="{ Component }">
-    <!-- <div v-show="$route.name === 'messages'">
+    <div v-show="$route.name === 'messages'">
       <component :is="MessagesView" :key="'messages'" />
-    </div> -->
+    </div>
 
     <KeepAlive :include="['HomeView']">
       <component v-if="$route.name === 'home'" :is="Component" :key="$route.name" v-bind="homeProps"

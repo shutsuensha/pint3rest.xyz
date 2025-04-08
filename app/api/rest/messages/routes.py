@@ -15,28 +15,10 @@ from app.postgresql.models import ChatOrm, MessageOrm
 
 from .schemas import ChatOut, MessageIn, MessageOut
 
+from app.api.rest.sse.routes import active_connections
+
 router = APIRouter(prefix="/messages", tags=["messages"])
 
-active_connections: Dict[int, asyncio.Queue] = {}
-
-
-async def event_stream(user_id: int):
-    queue = asyncio.Queue()
-    active_connections[user_id] = queue
-
-    try:
-        while True:
-            message = await queue.get()  # Ждем нового сообщения для пользователя
-            yield f"data: {json.dumps({'message': message})}\n\n"
-    except asyncio.CancelledError:
-        pass
-    finally:
-        del active_connections[user_id]  # Удаляем соединение при закрытии
-
-
-@router.get("/stream/{user_id}")
-async def stream(user_id: int):
-    return StreamingResponse(event_stream(user_id), media_type="text/event-stream")
 
 
 @router.post("/", response_model=MessageOut, status_code=status.HTTP_201_CREATED)

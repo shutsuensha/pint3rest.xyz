@@ -27,8 +27,6 @@ async def check_user_recommendations(user_id: user_id, db: db):
     result = await db.execute(select(UsersOrm).filter_by(id=user_id))
     user = result.scalars().first()
 
-    return JSONResponse(content={"make_recommendations": True})
-
     if user.recommendation_created_at and user.recommendation_created_at.date() == datetime.now(timezone.utc).date():
         return JSONResponse(content={"make_recommendations": False})
     else:

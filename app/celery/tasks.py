@@ -149,9 +149,6 @@ def user_view_pin(user_id: int, pin_id: int):
 
 @celery_instance.task
 def make_user_recommendations(user_id: int):
-
-    time.sleep(10)
-
     try:
         db = next(get_sync_db())
     except SQLAlchemyError as e:

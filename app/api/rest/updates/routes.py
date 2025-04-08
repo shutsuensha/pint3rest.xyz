@@ -32,35 +32,6 @@ from redis import asyncio as aioredis
 router = APIRouter(prefix="/updates", tags=["updates"])
 
 
-async def get_redis():
-    return await aioredis.from_url(settings.REDIS_URL_CELERY_BROKER, decode_responses=True)
-
-
-async def event_stream(user_id: int, make_recommendation: bool):
-    redis = await get_redis()
-    pubsub = redis.pubsub()
-    await pubsub.subscribe(f"notifications:{user_id}")  # 🔥 Асинхронная подписка
-
-    try:
-        if make_recommendation:
-            make_user_recommendations.delay(user_id)
-        async for message in pubsub.listen():  # 🔥 Асинхронное получение сообщений
-            if message["type"] == "message":
-                yield f"data: {json.dumps({'message': message['data']})}\n\n"
-    except asyncio.CancelledError:
-        pass
-    finally:
-        await pubsub.unsubscribe(f"notifications:{user_id}")  # Отключаемся от канала
-        await pubsub.close()  # Закрываем соединение
-
-
-@router.get("/stream/{user_id}")
-async def stream(user_id: int, db: db):
-    result = await db.execute(select(UsersOrm).filter_by(id=user_id))
-    user = result.scalars().first()
-    make_recommendation = user.recommendation_created_at is None or user.recommendation_created_at.date() != datetime.now(timezone.utc).date()
-    return StreamingResponse(event_stream(user_id, True), media_type="text/event-stream")
-
 
 @router.get("/count")
 async def get_updates_count(user_id: user_id, db: db):

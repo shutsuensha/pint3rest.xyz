@@ -307,7 +307,7 @@ onMounted(async () => {
     }
 
     if (!userConnected.value) {
-      eventSource = new EventSource(`/api/messages/stream/${auth_user_id.value}`);
+      eventSource = new EventSource(`/api/sse/messages/stream/${auth_user_id.value}`);
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
