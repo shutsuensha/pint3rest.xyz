@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount  } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
 import { initializeKinesis } from "@amineyarman/kinesis";
 

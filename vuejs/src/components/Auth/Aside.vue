@@ -536,7 +536,26 @@ const handleScroll = (event) => {
   }
 };
 
+
 let eventSource = null;
+
+function connectSSE() {
+  eventSource = new EventSource(`/api/sse/updates/stream/${props.me.id}`);
+
+  eventSource.onmessage = (event) => {
+    const rawData = JSON.parse(event.data);  // Парсим первый раз
+    const new_update = JSON.parse(rawData.message); // Парсим вложенный JSON
+    addNewUpdate(new_update)
+  };
+
+  eventSource.onerror = () => {
+    console.warn("🔌 Updates SSE отключен. Попытка переподключения...");
+    eventSource.close();
+    setTimeout(() => {
+      connectSSE(); // повторное подключение
+    }, 5000); // через 5 сек
+  };
+}
 
 async function addNewUpdate(update) {
   if (showModal.value === false) {
@@ -961,18 +980,7 @@ async function addNewUpdate(update) {
 }
 
 onMounted(async () => {
-  eventSource = new EventSource(`/api/sse/updates/stream/${props.me.id}`);
-
-  eventSource.onmessage = (event) => {
-    const rawData = JSON.parse(event.data);  // Парсим первый раз
-    const new_update = JSON.parse(rawData.message); // Парсим вложенный JSON
-    addNewUpdate(new_update)
-  };
-
-  eventSource.onerror = () => {
-    console.error("Ошибка SSE!");
-    eventSource.close();
-  };
+  connectSSE()
 })
 
 onBeforeUnmount(() => {

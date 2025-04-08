@@ -267,6 +267,26 @@ const userConnected = ref(null)
 
 let eventSource = null;
 
+function connectSSE() {
+  eventSource = new EventSource(`/api/sse/messages/stream/${auth_user_id.value}`);
+
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    addChat(data.message.chat_id);
+    unreadMessagesStore.increment();
+    chat_selected.value += 1;
+  };
+
+  eventSource.onerror = () => {
+    console.warn("🔌 Messages SSE отключен. Попытка переподключения...");
+    eventSource.close();
+    setTimeout(() => {
+      connectSSE(); // повторное подключение
+    }, 5000); // через 5 сек
+  };
+}
+
+
 
 onMounted(async () => {
   showLoading.value = true
@@ -307,19 +327,7 @@ onMounted(async () => {
     }
 
     if (!userConnected.value) {
-      eventSource = new EventSource(`/api/sse/messages/stream/${auth_user_id.value}`);
-
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        addChat(data.message.chat_id)
-        unreadMessagesStore.increment()
-        chat_selected.value += 1
-      };
-
-      eventSource.onerror = () => {
-        console.error("Ошибка SSE!");
-        eventSource.close();
-      };
+      connectSSE();
     }
 
 
