@@ -158,18 +158,19 @@ function scrollToTop() {
   });
 }
 
+const fileError = ref(false)
 
 async function submitSignUp() {
-  const username = formSignUp.username
-  const password = formSignUp.password
-  const email = formSignUp.email
+  const username = formSignUp.username.trim()
+  const password = formSignUp.password.trim()
+  const email = formSignUp.email.trim()
 
-  if (!username.trim()) {
+  if (!username) {
     toast.warning('Please, enter Username', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
 
-  if (!password.trim()) {
+  if (!password) {
     toast.warning('Please, enter Password', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
@@ -181,7 +182,7 @@ async function submitSignUp() {
 
   showSignUpLoader.value = true
 
-  if (!email.trim()) {
+  if (!email) {
     try {
       const formData = new FormData();
       formData.append("file", imageFile.value); // Файл
@@ -225,6 +226,9 @@ async function submitSignUp() {
         showErrorModalSignup.value = true
         showSignUp.value = false
         errorMessageSignup.value = 'User already exists'
+      }
+      if (error.response.status === 415) {
+        fileError.value = true
       }
     }
   } else {
@@ -271,15 +275,15 @@ async function submitSignUp() {
 }
 
 async function submitLogin() {
-  const username = formLogin.username
-  const password = formLogin.password
+  const username = formLogin.username.trim()
+  const password = formLogin.password.trim()
 
-  if (!username.trim()) {
+  if (!username) {
     toast.warning('Please, enter Username', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
 
-  if (!password.trim()) {
+  if (!password) {
     toast.warning('Please, enter Password', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
@@ -318,21 +322,21 @@ async function submitLogin() {
 
 
 async function submitPasswordReset() {
-  const username = formPasswordReset.username
-  const password = formPasswordReset.password
-  const email = formPasswordReset.email
+  const username = formPasswordReset.username.trim()
+  const password = formPasswordReset.password.trim()
+  const email = formPasswordReset.email.trim()
 
-  if (!username.trim()) {
+  if (!username) {
     toast.warning('Please, enter Username', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
 
-  if (!email.trim()) {
+  if (!email) {
     toast.warning('Please, enter Email', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
 
-  if (!password.trim()) {
+  if (!password) {
     toast.warning('Please, enter new Password', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
     return
   }
@@ -415,7 +419,17 @@ function changeDefaultColor() {
 
 function handleImageUpload(event) {
   const file = event.target.files[0];
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp'];
+
+
   if (file) {
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid image file (.jpg, .jpeg, .gif, .webp, .png, .bmp).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+
     imageFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -461,75 +475,68 @@ async function googleAuth() {
 
 <template>
   <DescriptionApp />
-  <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-    @click.self="showSignUp = false">
-    <div class="relative p-4 w-full max-w-md max-h-full">
-      <!-- Modal content -->
-      <div class="relative bg-white rounded-3xl">
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-          <!-- Logo -->
-          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
-          <h3 class="text-lg font-semibold text-gray-900">
-            Sign Up to Pinterest
-          </h3>
-          <button @click="showSignUp = false" type="button"
-            class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-            </svg>
-            <span class="sr-only">Close modal</span>
-          </button>
-        </div>
+  <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="showSignUp = false">
+  <div class="relative p-4 w-full max-w-md max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-3xl">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+        <!-- Logo -->
+        <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
+        <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest</h3>
+        <button @click="showSignUp = false" type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
 
-        <ClipLoader v-if="showSignUpLoader" :color="color" :size="size"
-          class="flex items-center justify-center h-96 font-extrabold" />
+      <ClipLoader v-if="showSignUpLoader" :color="color" :size="size" class="flex items-center justify-center h-96 font-extrabold" />
 
-        <!-- Modal body -->
-        <div v-else class="p-5">
-          <form class="space-y-4" @submit.prevent="submitSignUp">
-            <div>
-              <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
-              <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
-                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
-                placeholder="akinak1337" />
+      <!-- Modal body -->
+      <div v-else class="p-5">
+        <form class="space-y-4" @submit.prevent="submitSignUp">
+          <div>
+            <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
+            <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
+              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+              placeholder="akinak1337" />
+          </div>
+          <div>
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
+            <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••"
+              autocomplete="new-password"
+              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-full">
+              <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image (.jpg .jpeg .gif .webp .png .bmp)</label>
+              <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp" @change="handleImageUpload"
+                class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
             </div>
-            <div>
-              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
-              <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••" autocomplete="new-password"
-                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
+          </div>
+          <div class="w-full flex justify-center">
+            <div class="w-28 h-28 object-cover rounded-full" v-if="imagePreview">
+              <img :src="imagePreview" class="w-full h-full object-cover rounded-full" alt="Image Preview" />
             </div>
-            <div class="flex items-center space-x-4">
-              <div class="w-80">
-                <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image</label>
-                <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
-                  class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-              </div>
-              <div class="w-1/2">
-                <img v-if="imagePreview" :src="imagePreview" class="w-28 mt-2 h-28 object-cover rounded-full"
-                  alt="Image Preview" />
-              </div>
-            </div>
-            <div>
-              <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email
-                (Optional)</label>
-              <input v-model="formSignUp.email" type="text" name="email" id="email" autocomplete="off"
-                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
-                placeholder="akinak1337@gmail.com" />
-            </div>
-            <button type="submit"
-              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
-              Up</button>
-            <div class="text-sm font-medium text-gray-500 ">
-              Already have an account? <a @click="showSignUp = false; showLogin = true"
-                class="text-red-500 hover:underline cursor-pointer">Login</a>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div>
+            <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email (Optional)</label>
+            <input v-model="formSignUp.email" type="text" name="email" id="email" autocomplete="off"
+              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+              placeholder="akinak1337@gmail.com" />
+          </div>
+          <button type="submit"
+            class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign Up</button>
+          <div class="text-sm font-medium text-gray-500">
+            Already have an account? <a @click="showSignUp = false; showLogin = true" class="text-red-500 hover:underline cursor-pointer">Login</a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+</div>
 
   <div v-show="showLogin" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     @click.self="showLogin = false">
@@ -559,14 +566,15 @@ async function googleAuth() {
           <form class="space-y-4" @submit.prevent="submitLogin">
             <div>
               <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off" 
+              <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
-              <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••" autocomplete="current-password"
+              <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
+                autocomplete="current-password"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
@@ -627,8 +635,8 @@ async function googleAuth() {
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
                 New Password</label>
-              <input v-model="formPasswordReset.password" type="password" name="password" id="password" autocomplete="new-password"
-                placeholder="••••••••"
+              <input v-model="formPasswordReset.password" type="password" name="password" id="password"
+                autocomplete="new-password" placeholder="••••••••"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
@@ -651,6 +659,26 @@ async function googleAuth() {
           </svg>
           <h3 class="mb-5 text-lg font-normal text-black"> {{ errorMessageSignup }} </h3>
           <button @click="showErrorModalSignup = false; showSignUp = true" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="fileError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp </h3>
+          <button @click="fileError = false" type="button"
             class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
             Ok, understand
           </button>

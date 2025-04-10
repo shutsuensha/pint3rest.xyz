@@ -387,7 +387,7 @@ const sendMessage = async () => {
     sendingMessage.value = true
     showPicker.value = false
     const response = await axios.post('/api/messages/', {
-      content: message.value,
+      content: message.value.trim(),
       chat_id: props.chat_id
     }, { withCredentials: true })
     const messageResp = response.data
@@ -477,7 +477,13 @@ const isVideo = ref(false)
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
+
   if (file) {
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
     previewFile(file);
   }
 }
@@ -506,6 +512,8 @@ const messageContent = ref('')
 
 const sendingMessageMedia = ref(false)
 
+const fileError = ref(false)
+
 async function sendMediaMessage() {
 
   sendingMessageMedia.value = true
@@ -516,18 +524,28 @@ async function sendMediaMessage() {
   formData.append("file", mediaFile.value); // Файл
 
   const jsonData = JSON.stringify({
-    content: messageContent.value,
+    content: messageContent.value.trim(),
     chat_id: props.chat_id
   });
 
   formData.append("message", jsonData); // Передаем строку, а не Blob
 
-  const response = await axios.post("/api/messages/create-message-entity", formData, {
-    withCredentials: true,
-    headers: {
-      "Content-Type": "multipart/form-data"
+  let response = null;
+  try {
+    response = await axios.post("/api/messages/create-message-entity", formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+  } catch (error) {
+    if (error.response.status === 415) {
+      fileError.value = true
+      sendingMessageMedia.value = false
+      socket.send(JSON.stringify({ 'user_stop_sending_media': true }));
+      return;
     }
-  });
+  }
 
   const messageResp = response.data
 
@@ -700,6 +718,26 @@ function showVideo(message) {
 
 <template>
 
+  <div v-if="fileError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp, .mp4, .webm </h3>
+          <button @click="fileError = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
       <div class="flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
@@ -803,14 +841,16 @@ function showVideo(message) {
             recently</span>
           <span v-show="typing === true && !isSendingMedia" :class="`text-${chatStore.bgColor}-500`"
             class="text-md typing-animation">typing</span>
-          <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`" class="text-md sending-animation">📤
-            sending media</span>
+          <span v-show="isSendingMedia" :class="`text-${chatStore.bgColor}-500`" class="text-md w-[200px] flex items-center justify-left"><i class="pi pi-image text-black text-xl"></i><span class="loader3"></span>
+            </span>
         </div>
         <i v-show="!chatStore.side" @click="updateSide(true)"
           class="pi pi-angle-left w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
         <i v-show="chatStore.side" @click="updateSide(false)"
           class="pi pi-angle-right w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer text-2xl"></i>
       </div>
+
+      <!-- isSendingMedia -->
 
       <div ref="chatBox" @scroll="handleScroll" id="chatBox"
         class="w-[800px] h-[630px]  overflow-y-auto p-1 flex flex-col-reverse mt-[50px] relative"
@@ -939,11 +979,13 @@ function showVideo(message) {
       <label for="media">
         <i class="absolute top-0 left-0 pi pi-paperclip text-2xl cursor-pointer px-2 py-3"></i>
       </label>
-      <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload" class="hidden">
+      <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+        @change="handleMediaUpload" class="hidden">
       <input ref="messageInput" id="messageInput" v-model="message" @keyup.enter="sendMessage"
         placeholder="Write a message..." autofocus="on" autocomplete="off"
         class="ml-10 flex-1 py-2 focus:outline-none focus:ring-none focus:ring-none" />
-      <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji" class="absolute bottom-10 right-0" />
+      <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji"
+        class="absolute bottom-10 right-0" />
       <button @click="showPicker = !showPicker" class="p-5">
         <i class="pi pi-face-smile text-2xl"></i>
       </button>
@@ -1114,4 +1156,68 @@ function showVideo(message) {
   /* Иконка отправки */
   animation: sending-file 1s infinite ease-in-out;
 }
+
+
+
+.loader3 {
+  width: 0;
+  height: 4.8px;
+  display: inline-block;
+  position: relative;
+  background: #000000;
+  box-shadow: 0 0 10px rgba(248, 21, 21, 0.5);
+  box-sizing: border-box;
+  animation: animFw 2s linear infinite;
+}
+  .loader3::after,
+  .loader3::before {
+    content: '';
+    width: 10px;
+    height: 1px;
+    background: #ff0000;
+    position: absolute;
+    top: 9px;
+    right: -2px;
+    opacity: 0;
+    transform: rotate(-45deg) translateX(0px);
+    box-sizing: border-box;
+    animation: coli1 0.3s linear infinite;
+  }
+  .loader3::before {
+    top: -4px;
+    transform: rotate(45deg);
+    animation: coli2 0.3s linear infinite;
+  }
+
+@keyframes animFw {
+    0% {
+  width: 0;
+}
+    100% {
+  width: 100%;
+}
+  }
+
+@keyframes coli1 {
+    0% {
+  transform: rotate(-45deg) translateX(0px);
+  opacity: 0.7;
+}
+    100% {
+  transform: rotate(-45deg) translateX(-45px);
+  opacity: 0;
+}
+  }
+
+@keyframes coli2 {
+    0% {
+  transform: rotate(45deg) translateX(0px);
+  opacity: 1;
+}
+    100% {
+  transform: rotate(45deg) translateX(-45px);
+  opacity: 0.7;
+}
+  }
+    
 </style>

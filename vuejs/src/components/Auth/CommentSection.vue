@@ -112,7 +112,7 @@ async function loadComments() {
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
           user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: cntReplies > 0 ? true : false,
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
-          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false
+          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false, sendCommentError: false
         })
       } catch (error) {
         console.error(error)
@@ -177,6 +177,7 @@ onMounted(() => {
 //   }
 // }
 
+
 async function addComment(comment) {
   if (comment.replyContent.trim() !== '' && !comment.replyMediaFile) {
     comment.sendComment = true
@@ -185,16 +186,17 @@ async function addComment(comment) {
         content: comment.replyContent.trim()
       })
       comment.replyContent = ''
+
+      comment.cntReplies += 1
+      comment.showReplies = false
+      await nextTick()
+      comment.showReplies = true
+      comment.showReply = false
+      comment.sendComment = false
+      return;
     } catch (error) {
       console.error(error)
     }
-    comment.cntReplies += 1
-    comment.showReplies = false
-    await nextTick()
-    comment.showReplies = true
-    comment.showReply = false
-    comment.sendComment = false
-    return;
   }
 
   if (comment.replyMediaFile) {
@@ -215,28 +217,39 @@ async function addComment(comment) {
           "Content-Type": "multipart/form-data"
         }
       });
-    } catch (error) {
-      console.error(error)
-    }
-    comment.replyContent = ''
-    comment.replyMediaPreview = null
-    comment.replyMediaFile = null
-    comment.replyIsImage = false
-    comment.replyIsVideo = false
 
-    comment.cntReplies += 1
-    comment.showReplies = false
-    await nextTick()
-    comment.showReplies = true
-    comment.showReply = false
-    comment.sendComment = false
+      comment.replyContent = ''
+      comment.replyMediaPreview = null
+      comment.replyMediaFile = null
+      comment.replyIsImage = false
+      comment.replyIsVideo = false
+
+      comment.cntReplies += 1
+      comment.showReplies = false
+      await nextTick()
+      comment.showReplies = true
+      comment.showReply = false
+      comment.sendComment = false
+
+    } catch (error) {
+      if (error.response.status === 415) {
+        comment.sendComment = false
+        comment.sendCommentError = true
+      }
+    }
   }
 }
 
 
 function handleMediaUpload(event, comment) {
   const file = event.target.files[0];
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
   if (file) {
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
     previewFile(file, comment);
   }
 }
@@ -294,7 +307,7 @@ function resetFile(comment) {
 
 async function deleteComment(id) {
   try {
-    const response = await axios.delete(`/api/admin/comment/${id}`, {withCredentials: true})
+    const response = await axios.delete(`/api/admin/comment/${id}`, { withCredentials: true })
     comments.value = comments.value.filter(comment => comment.id !== id)
   } catch (error) {
     console.error(error)
@@ -304,9 +317,33 @@ async function deleteComment(id) {
 
 
 <template>
+
+
+
   <div @scroll="handleScroll"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
+      <div v-if="comment.sendCommentError"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+          <div class="relative bg-white rounded-3xl shadow">
+            <div class="p-5 text-center">
+              <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif,
+                .webp,
+                .png, .bmp, .mp4, .webm </h3>
+              <button @click="comment.sendCommentError = false" type="button"
+                class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+                Ok, understand
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <RouterLink :to="`/user/${comment.user.username}`"
         class="flex items-center space-x-2 hover:underline cursor-pointer">
         <img :src="comment.userImage" alt="User Image" class="w-10 h-10 rounded-full object-cover" />
@@ -360,7 +397,7 @@ async function deleteComment(id) {
         <label :for="comment.id">
           <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
         </label>
-        <input type="file" :id="comment.id" :name="comment.id" accept="image/*,video/*"
+        <input type="file" :id="comment.id" :name="comment.id" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
           @change="(event) => handleMediaUpload(event, comment)"
           class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
       </div>

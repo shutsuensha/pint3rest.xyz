@@ -13,7 +13,13 @@ from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tag
 
 from .schemas import PinIn, PinOut
 
+import mimetypes
+
+mimetypes.add_type('image/webp', '.webp')
+
 from app.celery.tasks import user_view_pin, make_update_save_pin, make_update_pin_created_for_followers
+
+
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
@@ -94,6 +100,11 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
 async def create_pin_entity(
     user_id: user_id, db: db, pin_model: str = Form(...), file: UploadFile = File(...)
 ):
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
+
     pin_data = json.loads(pin_model)
     pin = await db.scalar(insert(PinsOrm).values(**pin_data, user_id=user_id).returning(PinsOrm))
 
@@ -101,15 +112,28 @@ async def create_pin_entity(
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
     await save_file(file.file, image_path)
 
-    if file.content_type in ["image/jpeg", "image/png", "image/gif"]:
-        rgb = get_primary_color(image_path)
+    if file.content_type in ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp']:
+        try:
+            rgb = await get_primary_color(image_path)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
-    if file.content_type in ["video/mp4", "video/webm", "video/avi"]:
+    if file.content_type in ["video/mp4", "video/webm"]:
+        # Генерируем уникальное имя для файла
         new_unique_filename = f"{uuid.uuid4()}.jpg"
         new_image_path = f"{settings.MEDIA_PATH}pins/{new_unique_filename}"
 
-        extract_first_frame(image_path, new_image_path)
-        rgb = get_primary_color(new_image_path)
+        # Извлекаем первый кадр видео
+        await extract_first_frame(image_path, new_image_path)
+
+        # Получаем доминирующий цвет из извлеченного кадра
+
+        try:
+            rgb = await get_primary_color(new_image_path)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+
 
     pin = await db.scalar(
         update(PinsOrm)
@@ -171,8 +195,19 @@ async def get_image(user_id: user_id, id: int, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+    # Определяем MIME тип
+    mime_type, _ = mimetypes.guess_type(pin.image)
+    
+    # Если MIME тип не определен, принудительно задаем для WebP
 
-    return FileResponse(pin.image)
+    if mime_type is None:
+        if pin.image.endswith('.webp'):
+            mime_type = 'image/webp'
+        else:
+            mime_type = 'application/octet-stream'
+
+    return FileResponse(pin.image, media_type=mime_type)
 
 
 @router.get("/{id}", response_model=PinOut)
@@ -193,7 +228,7 @@ async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filte
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     pins = await db.scalars(
-        select(PinsOrm).where(PinsOrm.user_id == id).offset(filter.offset).limit(filter.limit)
+        select(PinsOrm).where(PinsOrm.user_id == id).offset(filter.offset).limit(filter.limit).order_by(desc(PinsOrm.id))
     )
     return pins
 

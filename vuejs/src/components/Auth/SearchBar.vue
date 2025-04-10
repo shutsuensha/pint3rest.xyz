@@ -160,15 +160,18 @@ function showTagsPin(tag) {
 }
 
 async function onEnter() {
+	if (!searchValue.value.trim()) {
+		return
+	}
 	try {
 		await axios.post("/api/search/", {
-			query: searchValue.value
+			query: searchValue.value.trim()
 		}, { withCredentials: true })
-		latestSearch.value.unshift(searchValue.value);
+		latestSearch.value.unshift(searchValue.value.trim());
 	} catch (error) {
 		console.error(error)
 	}
-	let tempSearch = searchValue.value
+	let tempSearch = searchValue.value.trim()
 	searchValue.value = ''
 	showSearchSection.value = false
 	router.push(`/?search=${tempSearch}`);

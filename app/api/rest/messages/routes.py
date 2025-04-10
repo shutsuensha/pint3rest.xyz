@@ -17,6 +17,10 @@ from .schemas import ChatOut, MessageIn, MessageOut
 
 from app.api.rest.sse.routes import active_connections
 
+import mimetypes
+
+mimetypes.add_type('image/webp', '.webp')
+
 router = APIRouter(prefix="/messages", tags=["messages"])
 
 
@@ -62,6 +66,11 @@ async def user_send_message_in_chat(db: db, user_id: user_id, message: MessageIn
 async def create_message_entity(
     db: db, user_id: user_id, message: str = Form(...), file: UploadFile = File(...)
 ):
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
+    
     try:
         message = json.loads(message)
         message = MessageIn(**message)
@@ -191,7 +200,18 @@ async def get_image(user_id: user_id, id: int, db: db):
     if message is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="message not found")
 
-    return FileResponse(message.image)
+        # Определяем MIME тип
+    mime_type, _ = mimetypes.guess_type(message.image)
+    
+    # Если MIME тип не определен, принудительно задаем для WebP
+
+    if mime_type is None:
+        if message.image.endswith('.webp'):
+            mime_type = 'image/webp'
+        else:
+            mime_type = 'application/octet-stream'
+
+    return FileResponse(message.image, media_type=mime_type)
 
 
 @router.get("/unread/cnt/{chat_id}")

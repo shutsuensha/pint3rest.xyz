@@ -34,7 +34,7 @@ const filteredChats = computed(() => {
     return sortedChats.value; // Если строка пустая, показываем все чаты
   }
   return sortedChats.value.filter(chat =>
-    chat.user.username.toLowerCase().includes(searchValue.value.toLowerCase())
+    chat.user.username.toLowerCase().includes(searchValue.value.trim().toLowerCase())
   );
 });
 

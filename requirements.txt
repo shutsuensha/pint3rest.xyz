@@ -26,6 +26,8 @@ blinker==1.9.0
 boto3==1.36.23
 botocore==1.36.23
 cachetools==5.5.2
+cairocffi==1.7.1
+CairoSVG==2.7.1
 celery==5.4.0
 celery-redbeat==2.2.0
 certifi==2024.8.30
@@ -38,6 +40,8 @@ click-repl==0.3.0
 colorlog==6.9.0
 coverage==7.6.12
 cryptography==44.0.1
+cssselect2==0.8.0
+defusedxml==0.7.1
 dnspython==2.7.0
 ecdsa==0.19.0
 email_validator==2.2.0
@@ -129,6 +133,7 @@ strawberry-graphql==0.260.2
 tenacity==9.0.0
 threadpoolctl==3.5.0
 time-machine==2.16.0
+tinycss2==1.4.0
 tomli==2.1.0
 tornado==6.4.2
 typer==0.15.1
@@ -141,6 +146,7 @@ uvloop==0.21.0
 vine==5.1.0
 watchfiles==0.24.0
 wcwidth==0.2.13
+webencodings==0.5.1
 websockets==13.1
 wrapt==1.17.2
 yapf==0.43.0

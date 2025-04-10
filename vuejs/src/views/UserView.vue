@@ -10,6 +10,9 @@ import Boards from '@/components/Auth/Boards.vue';
 import FollowersSection from '@/components/Auth/FollowersSection.vue';
 import FollowingSection from '@/components/Auth/FollowingSection.vue';
 
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
 const unreadMessagesStore = useUnreadMessagesStore();
@@ -91,6 +94,8 @@ const checkUserChat = ref(null)
 
 const showFollowers = ref(false)
 const showFollowing = ref(false)
+
+const userAlreadyExistsError = ref(false)
 
 
 onMounted(async () => {
@@ -245,7 +250,6 @@ const goBack = () => {
 
 
 async function editProfile() {
-  updateInformation.value = true
 
   let newUsername = null
   let description = null
@@ -253,52 +257,70 @@ async function editProfile() {
   let tiktok = null
   let telegram = null
   let pinterest = null
+
+  let atLeastOneField = false
+
   if (editUsername.value.trim()) {
     newUsername = editUsername.value.trim()
+    atLeastOneField = true
   }
   if (editDescription.value.trim()) {
     description = editDescription.value.trim()
+    atLeastOneField = true
   }
   if (editInstagram.value.trim()) {
     instagram = editInstagram.value.trim()
+    atLeastOneField = true
   }
   if (editTiktok.value.trim()) {
     tiktok = editTiktok.value.trim()
+    atLeastOneField = true
   }
   if (editTelegram.value.trim()) {
     telegram = editTelegram.value.trim()
+    atLeastOneField = true
   }
   if (editPinterest.value.trim()) {
     pinterest = editPinterest.value.trim()
+    atLeastOneField = true
   }
-  try {
-    const response = await axios.patch('/api/users/information',
-      {
-        username: newUsername,
-        description: description,
-        instagram: instagram,
-        tiktok: tiktok,
-        telegram: telegram,
-        pinterest: pinterest
-      },  // Data to be sent in the request body
-      {
-        withCredentials: true  // Include credentials like cookies or authorization headers
+
+  if (atLeastOneField == true) {
+    updateInformation.value = true
+    try {
+      const response = await axios.patch('/api/users/information',
+        {
+          username: newUsername,
+          description: description,
+          instagram: instagram,
+          tiktok: tiktok,
+          telegram: telegram,
+          pinterest: pinterest
+        },  // Data to be sent in the request body
+        {
+          withCredentials: true  // Include credentials like cookies or authorization headers
+        }
+      );
+      user.value = response.data
+
+      showEditModal.value = false
+
+      updateInformation.value = false
+
+    } catch (error) {
+      if (error.response.status === 409) {
+        updateInformation.value = false
+        userAlreadyExistsError.value = true
       }
-    );
-    user.value = response.data
-
-    showEditModal.value = false
-
-    updateInformation.value = false
-
-  } catch (error) {
-    console.error(error)
+    }
   }
 }
 
 const showEditModalImage = ref(false)
 
 const updateProfileImage = ref(false)
+
+const errorUpdateProfileImage = ref(false)
 
 async function editProfileImage() {
   if (imageFile.value) {
@@ -333,12 +355,19 @@ async function editProfileImage() {
       updateProfileImage.value = false
 
     } catch (error) {
-      console.log(error)
+      if (error.response.status === 415) {
+        imageFile.value = null
+        imagePreview.value = null
+        updateProfileImage.value = false
+        errorUpdateProfileImage.value = true
+      }
     }
   }
 }
 
 const updateProfileBanner = ref(false)
+
+const errorUpdateBannerImage = ref(false)
 
 async function editBannerImage() {
   if (bannerImageFile.value) {
@@ -379,14 +408,28 @@ async function editBannerImage() {
       updateProfileBanner.value = false
 
     } catch (error) {
-      console.log(error)
+      if (error.response.status === 415) {
+        bannerImageFile.value = null
+        bannerImagePreview.value = null
+        updateProfileBanner.value = false
+        errorUpdateBannerImage.value = true
+      }
     }
   }
 }
 
 function handleImageUpload(event) {
   const file = event.target.files[0];
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp'];
+
   if (file) {
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid image file (.jpg, .jpeg, .gif, .webp, .png, .bmp).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+
     imageFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -398,13 +441,40 @@ function handleImageUpload(event) {
 
 function handleBannerUpload(event) {
   const file = event.target.files[0];
+
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp'];
+
+
   if (file) {
-    bannerImageFile.value = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      bannerImagePreview.value = e.target.result; // Update the preview data
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid image file (.jpg, .jpeg, .gif, .webp, .png, .bmp).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+
+    const minWidth = 200;
+    const minHeight = 300;
+
+    const img = new Image();
+    img.onload = () => {
+      if (img.width < minWidth || img.height < minHeight) {
+        toast.warning(`Image must be at least ${minWidth}x${minHeight}.`, {
+          position: "top-center",
+          bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+        });
+        return;
+      }
+
+      bannerImageFile.value = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        bannerImagePreview.value = e.target.result; // Update the preview data
+      };
+      reader.readAsDataURL(file);
+
     };
-    reader.readAsDataURL(file);
+    img.src = URL.createObjectURL(file);
   }
 }
 
@@ -434,20 +504,22 @@ const openSendMessage = ref(false)
 const messageContent = ref('')
 
 async function sendMessage() {
-  sendingMessage.value = true
-  try {
-    const response = await axios.post('/api/messages/', {
-      content: messageContent.value,
-      to_user_id: user.value.id
-    }, { withCredentials: true })
-    messageContent.value = ''
-    openSendMessage.value = false
+  if (messageContent.value.trim()) {
     sendingMessage.value = true
-  } catch (error) {
-    console.error(error)
+    try {
+      const response = await axios.post('/api/messages/', {
+        content: messageContent.value.trim(),
+        to_user_id: user.value.id
+      }, { withCredentials: true })
+      messageContent.value = ''
+      openSendMessage.value = false
+      sendingMessage.value = true
+    } catch (error) {
+      console.error(error)
+    }
+    checkUserChat.value = true
+    redirectToNewChat()
   }
-  checkUserChat.value = true
-  redirectToNewChat()
 }
 
 async function redirectToNewChat() {
@@ -499,7 +571,7 @@ async function redirectToChat() {
     </div>
   </transition>
   <transition name="fade" appear>
-    <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+    <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
 
 
       <ClipLoader v-if="updateInformation" color="white" :size="size"
@@ -568,7 +640,7 @@ async function redirectToChat() {
   </transition>
 
   <transition name="fade" appear>
-    <div v-if="showEditModalImage" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+    <div v-if="showEditModalImage" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
 
       <!-- Lottie Animation -->
 
@@ -577,8 +649,11 @@ async function redirectToChat() {
 
       <div v-if="!updateProfileImage" class="flex flex-col items-center justify-center gap-5">
         <div class="flex flex-col items-center">
-          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Profile Image</label>
-          <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload"
+          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Profile Image (.jpg, .jpeg, .gif,
+            .webp,
+            .png, .bmp)</label>
+          <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+            @change="handleImageUpload"
             class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
           <img v-if="imagePreview" :src="imagePreview"
             class="mt-2 rounded-full w-32 h-32 object-cover border-4 border-black" alt="Image Preview"
@@ -602,7 +677,7 @@ async function redirectToChat() {
   </transition>
 
   <transition name="fade" appear>
-    <div v-if="showEditModalBanner" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
+    <div v-if="showEditModalBanner" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
 
       <!-- Lottie Animation -->
 
@@ -611,8 +686,11 @@ async function redirectToChat() {
 
       <div v-if="!updateProfileBanner" class="flex flex-col items-center justify-center gap-5">
         <div class="flex flex-col items-center">
-          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Banner Image</label>
-          <input type="file" id="image" name="image" accept="image/*" @change="handleBannerUpload"
+          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Banner Image (.jpg, .jpeg, .gif,
+            .webp,
+            .png, .bmp) </label>
+          <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+            @change="handleBannerUpload"
             class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
           <img v-if="bannerImagePreview" :src="bannerImagePreview"
             class="mt-2 rounded-2xl h-[400px] w-[600px] object-cover" alt="Image Preview"
@@ -634,6 +712,70 @@ async function redirectToChat() {
       </div>
     </div>
   </transition>
+
+  <div v-if="userAlreadyExistsError"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> User with that username already exists </h3>
+          <button @click="userAlreadyExistsError = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div v-if="errorUpdateProfileImage"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp </h3>
+          <button @click="errorUpdateProfileImage = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div v-if="errorUpdateBannerImage"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp </h3>
+          <button @click="errorUpdateBannerImage = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">

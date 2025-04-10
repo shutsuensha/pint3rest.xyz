@@ -581,6 +581,11 @@ async def upload_image(id: int, db: db, file: UploadFile):
     - 404: Пользователь не найден.
     """
 
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp']
+    
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp")
+
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
@@ -655,6 +660,13 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
     **Ответы:**
     - 200: Изображение баннера успешно обновлено.
     """
+
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp']
+    
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp")
+    
+
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
@@ -745,6 +757,12 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
 
 @router.post("/create-user-entity", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def create_user_entity(db: db, user_model: str = Form(...), file: UploadFile = File(...)):
+
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp']
+
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp")
+
     try:
         user_in = json.loads(user_model)
         user_in = UserIn(**user_in)

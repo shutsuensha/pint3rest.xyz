@@ -120,12 +120,12 @@ const showChat = ref(false)
       <div v-show="chat.typing && chat.typing === true && !chat.isSendingMedia" class="flex items-center min-w-0">
         <span class="text-gray-700 text-sm typing-animation">typing</span>
       </div>
-      <div v-show="chat.isSendingMedia" class="flex items-center min-w-0">
-        <span class="text-gray-700 text-sm sending-animation">📤 sending media</span>
+      <div v-show="chat.isSendingMedia" class="min-w-0 max-w-[200px]">
+        <span class="text-gray-700 text-sm items-center justify-left flex"><i class="pi pi-image text-black text-xl"></i><span class="loader3"></span>
+      </span>
       </div>
     </div>
   </div>
-
 
 </template>
 
@@ -180,4 +180,66 @@ const showChat = ref(false)
   content: "📤"; /* Иконка отправки */
   animation: sending-file 1s infinite ease-in-out;
 }
+
+
+.loader3 {
+  width: 0;
+  height: 4.8px;
+  display: inline-block;
+  position: relative;
+  background: #000000;
+  box-shadow: 0 0 10px rgba(248, 21, 21, 0.5);
+  box-sizing: border-box;
+  animation: animFw 2s linear infinite;
+}
+  .loader3::after,
+  .loader3::before {
+    content: '';
+    width: 10px;
+    height: 1px;
+    background: #ff0000;
+    position: absolute;
+    top: 9px;
+    right: -2px;
+    opacity: 0;
+    transform: rotate(-45deg) translateX(0px);
+    box-sizing: border-box;
+    animation: coli1 0.3s linear infinite;
+  }
+  .loader3::before {
+    top: -4px;
+    transform: rotate(45deg);
+    animation: coli2 0.3s linear infinite;
+  }
+
+@keyframes animFw {
+    0% {
+  width: 0;
+}
+    100% {
+  width: 100%;
+}
+  }
+
+@keyframes coli1 {
+    0% {
+  transform: rotate(-45deg) translateX(0px);
+  opacity: 0.7;
+}
+    100% {
+  transform: rotate(-45deg) translateX(-45px);
+  opacity: 0;
+}
+  }
+
+@keyframes coli2 {
+    0% {
+  transform: rotate(45deg) translateX(0px);
+  opacity: 1;
+}
+    100% {
+  transform: rotate(45deg) translateX(-45px);
+  opacity: 0.7;
+}
+  }
 </style>

@@ -91,8 +91,33 @@ onMounted(async () => {
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
+
   if (file) {
-    previewFile(file);
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+
+    // Check for image minimum dimensions
+    const minWidth = 200;
+    const minHeight = 300;
+
+    if (file.type.startsWith("image/")) {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < minWidth || img.height < minHeight) {
+          toast.warning(`Image must be at least ${minWidth}x${minHeight}.`, { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+          return;
+        }
+        previewFile(file);
+      };
+      img.src = URL.createObjectURL(file);
+    } else {
+      previewFile(file);
+    }
   }
 }
 
@@ -119,9 +144,33 @@ const previewFile = (file) => {
 const onDrop = (event) => {
   isDragging.value = false;
   const file = event.dataTransfer.files[0];
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
+
   if (file) {
-    previewFile(file);
-    isDragging.value = false
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+    const minWidth = 200;
+    const minHeight = 300;
+
+    if (file.type.startsWith("image/")) {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < minWidth || img.height < minHeight) {
+          toast.warning(`Image must be at least ${minWidth}x${minHeight}.`, {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
+          return;
+        }
+        previewFile(file);
+      };
+      img.src = URL.createObjectURL(file);
+    } else {
+      previewFile(file);
+    }
   }
 };
 
@@ -140,10 +189,13 @@ const goBack = () => {
 };
 
 
+
+const fileError = ref(false)
+
 async function submitPin() {
-  const title = formPin.title
-  const description = formPin.description
-  const href = formPin.href
+  const title = formPin.title.trim()
+  const description = formPin.description.trim()
+  const href = formPin.href.trim()
 
   if (!mediaFile.value) {
     toast.warning('Please, upload file', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
@@ -213,7 +265,9 @@ async function submitPin() {
       router.push(`/pin/${pin_id}`);
     }
   } catch (error) {
-    console.log(error)
+    if (error.response.status === 415) {
+      fileError.value = true
+    }
   }
 }
 
@@ -249,6 +303,25 @@ function checkPinAded(name) {
 </script>
 
 <template>
+  <div v-if="fileError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp, .mp4, .webm </h3>
+          <button @click="fileError = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <SearchBar />
   <div class="ml-20 mt-20">
     <ClipLoader v-if="sendingPin" :color="color" :size="size"
@@ -280,13 +353,16 @@ function checkPinAded(name) {
               class="relative  h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
               <div class="absolute flex flex-col items-center space-y-4">
                 <i class="pi pi-arrow-up text-4xl text-gray-400"></i>
-                <p class="mt-2 text-sm text-black">Drag & Drop or Click to Upload</p>
+                <p class="mt-2 text-md text-black">Drag & Drop or Click to Upload</p>
+                <p class="mt-2 text-xs text-gray-700">.jpg .jpeg .gif .webp .png .bmp .mp4 .webm</p>
+                <p class="mt-2 text-xs text-gray-700">images must be at least 200x300 pixels</p>
+                <p class="mt-2 text-xs text-gray-700">Up to 100 mb</p>
               </div>
             </div>
           </div>
         </label>
-        <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-          class="hidden" />
+        <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+          @change="handleMediaUpload" class="hidden" />
 
         <button @click="submitPin"
           class="w-full mt-10 transition duration-100 text-white bg-purple-500 hover:bg-purple-600 font-medium rounded-3xl text-sm px-5 py-2.5 text-center">
@@ -316,25 +392,20 @@ function checkPinAded(name) {
           </div>
           <!-- Tags Field -->
           <div>
-
-            <div class="flex items-center space-x-2">
-              <!-- Add Button -->
-              <button type="button" @click="addTag"
-                class="bg-purple-500 hover:bg-purple-600 transition duration-100 text-white font-medium rounded-3xl text-sm px-4 py-2">
-                Create
-              </button>
-
-              <!-- Tags Input -->
-              <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off"
-                class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Add Tag" />
-            </div>
             <div class="mt-5">
               <!-- Heading -->
-              <h3 class="text-md mb-2 text-gray-600">Choose Tags for your Pin</h3>
+              <h3 class="text-md mb-2 text-gray-600">Add Tags to Pin</h3>
+
+              <div class="flex items-center space-x-2 mb-2">
+
+                <!-- Tags Input -->
+                <input v-model="tagToAdd" @keydown.enter="addTag" type="text" name="tags" id="tags" autocomplete="off"
+                  class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Create Tag" />
+              </div>
 
               <input v-model="searchValue" type="text" placeholder="Search Tag"
-                class="w-1/2 mb-4 transition-all duration-300 cursor-text bg-gray-100 text-md rounded-3xl py-2 px-6 outline-none border-none focus:ring-1 focus:ring-black" />
+                class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl w-full py-3 px-5 focus:ring-purple-500 focus:border-purple-500 mb-4" />
 
               <!-- Tags List -->
               <div class="flex flex-wrap gap-2" v-auto-animate>

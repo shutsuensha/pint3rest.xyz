@@ -15,6 +15,10 @@ from app.celery.tasks import make_update_comment_pin, make_update_reply_comment
 
 from .schemas import CommentIn, CommentOut
 
+import mimetypes
+
+mimetypes.add_type('image/webp', '.webp')
+
 router = APIRouter(prefix="/comments", tags=["comments"])
 
 
@@ -113,7 +117,17 @@ async def get_image(user_id: user_id, id: int, db: db):
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
 
-    return FileResponse(comment.image)
+    mime_type, _ = mimetypes.guess_type(comment.image)
+    
+    # Если MIME тип не определен, принудительно задаем для WebP
+
+    if mime_type is None:
+        if comment.image.endswith('.webp'):
+            mime_type = 'image/webp'
+        else:
+            mime_type = 'application/octet-stream'
+
+    return FileResponse(comment.image, media_type=mime_type)
 
 
 @router.post(
@@ -166,6 +180,11 @@ async def create_comment_on_pin_entity(
     comment_model: str = Form(...),
     file: UploadFile = File(...),
 ):
+    
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
+    
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
@@ -213,6 +232,11 @@ async def create_comment_on_comment_entity(
     comment_model: str = Form(...),
     file: UploadFile = File(...),
 ):
+    
+    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    if file.content_type not in ALLOWED_FILE_TYPES:
+        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
+    
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")

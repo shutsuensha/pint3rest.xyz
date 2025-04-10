@@ -37,7 +37,7 @@ const lottieLoaded = ref(false)
 
 const pins = ref([]);
 const offset = ref(0);
-const limit = ref(10);
+const limit = ref(15);
 
 const stagged = ref('0.03s')
 const duration = ref('0.4s')
@@ -88,7 +88,7 @@ const loadPins = async () => {
     if (pinsObj.limitCntLoading == limit.value) {
       isPinsLoading.value = false
     }
-    if (limit.value === 10) {
+    if (limit.value === 15) {
       limit.value = 5;
     }
   } catch (error) {

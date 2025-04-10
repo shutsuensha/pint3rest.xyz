@@ -467,7 +467,14 @@ function chooseProfile() {
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
   if (file) {
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
     previewFile(file);
   }
 }
@@ -491,6 +498,8 @@ const previewFile = (file) => {
   }
 };
 
+const sendCommentError = ref(false)
+
 async function addComment() {
   if (comment.value.trim() !== '' && !mediaFile.value) {
     sendComment.value = true
@@ -500,18 +509,28 @@ async function addComment() {
         content: comment.value.trim()
       })
       comment.value = ''
+
+      cntComments.value += 1
+      showCommets.value = false
+      await nextTick()
+      showCommets.value = true
+      sendComment.value = false
+      return;
+
     } catch (error) {
       console.error(error)
     }
-    cntComments.value += 1
-    showCommets.value = false
-    await nextTick()
-    showCommets.value = true
-    sendComment.value = false
-    return;
   }
 
   if (mediaFile.value) {
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
+
+    if (!allowedTypes.includes(mediaFile.value.type)) {
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      return;
+    }
+
     sendComment.value = true
     showPicker.value = false
     try {
@@ -530,16 +549,21 @@ async function addComment() {
           "Content-Type": "multipart/form-data"
         }
       });
+
+      comment.value = ''
+      cntComments.value += 1
+      showCommets.value = false
+      await nextTick()
+      showCommets.value = true
+      resetFile()
+      sendComment.value = false
+
     } catch (error) {
-      console.error(error)
+      if (error.response.status === 415) {
+        sendComment.value = false
+        sendCommentError.value = true
+      }
     }
-    comment.value = ''
-    cntComments.value += 1
-    showCommets.value = false
-    await nextTick()
-    showCommets.value = true
-    resetFile()
-    sendComment.value = false
   }
 }
 
@@ -601,6 +625,26 @@ function decreaseZoom() {
 
 
 <template>
+
+  <div v-if="sendCommentError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp,
+            .png, .bmp, .mp4, .webm </h3>
+          <button @click="sendCommentError = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div v-if="isModalOpen" class="z-[60] fixed inset-0 bg-black/50 flex items-center justify-center px-4"
     @click.self="closeModal">
@@ -928,8 +972,8 @@ function decreaseZoom() {
                 class="pi pi-images text-2xl cursor-pointer transition transform hover:scale-105"></i>
             </label>
 
-            <input type="file" id="media" name="media" accept="image/*,video/*" @change="handleMediaUpload"
-              class="hidden" />
+            <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+              @change="handleMediaUpload" class="hidden" />
 
             <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji"
               class="absolute bottom-12 right-0 z-40" />
