@@ -38,15 +38,24 @@ const isPinsLoading = ref(false);
 
 const heightSection = ref(null)
 
+const canLoad = ref(true)
+
 async function loadComments() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
 
   try {
     const response = await axios.get(`/api/comments/comment/${props.comment_id}`, { params: { offset: offset.value, limit: limit.value } })
+    if (response.data.length < limit.value) {
+      canLoad.value = false
+    }
     for (let i = 0; i < response.data.length; i++) {
       const commentData = response.data[i]
       let commentImage = null
@@ -124,20 +133,20 @@ onMounted(() => {
 
 async function likeComment(comment) {
   if (comment.checkUserLike) {
-    comment.showDislikeAnimation = true
-    comment.showLikeAnimation = false
     try {
       await axios.delete(`/api/likes/comment/${comment.id}`)
+      comment.showDislikeAnimation = true
+      comment.showLikeAnimation = false
       comment.checkUserLike = false
       comment.cntLikes -= 1
     } catch (error) {
       console.log(error)
     }
   } else {
-    comment.showDislikeAnimation = false
-    comment.showLikeAnimation = true
     try {
       await axios.post(`/api/likes/comment/${comment.id}`)
+      comment.showDislikeAnimation = false
+      comment.showLikeAnimation = true
       comment.checkUserLike = true
       comment.cntLikes += 1
     } catch (error) {

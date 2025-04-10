@@ -1,110 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Ideas on Pinterest!</title>
-  <style>
-    /* Background of the page */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f6f9fc, #e9eff5);
-    }
-    /* Main container */
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      background: rgba(255, 255, 255, 0.85);
-      /* Blur (for clients that support it) */
-      backdrop-filter: blur(8px);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    /* Pinterest logo */
-    .pinterest-logo {
-      font-size: 48px;
-      margin-bottom: 10px;
-    }
-    /* Heading */
-    .header {
-      font-size: 26px;
-      color: #ff6f61;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    /* Subheading */
-    .subheader {
-      font-size: 18px;
-      color: #555;
-      margin-bottom: 20px;
-    }
-    /* Image gallery */
-    .image-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .image-container img {
-      width: 180px;
-      height: 120px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-    /* Button */
-    .btn {
-      display: inline-block;
-      background: #ff6f61;
-      color: #fff;
-      text-decoration: none;
-      padding: 12px 20px;
-      border-radius: 30px;
-      font-size: 16px;
-      margin-top: 20px;
-      box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
-      transition: background 0.3s;
-    }
-    .btn:hover {
-      background: #ff8a7d;
-    }
-    /* Footer */
-    .footer {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #888;
-      line-height: 1.5;
-    }
-    .footer a {
-      color: #ff6f61;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="pinterest-logo">
-      <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo" width="50" height="50">
-    </div>
-    <div class="header">Discover New Ideas!</div>
-    <div class="subheader">Get inspired by fresh ideas and find something new every day!</div>
-    
-    <div class="image-container">
-      <img src="https://i.pinimg.com/originals/6f/31/30/6f3130b8faf86f96e99098732fd9373a.gif" alt="Idea 1">
-      <img src="https://i.pinimg.com/736x/d1/a9/25/d1a925c2cf980c9411d2e3526688c608.jpg" alt="Idea 2">
-      <img src="https://i.pinimg.com/736x/17/a0/c1/17a0c10676a133e75cd175236a0ad60d.jpg" alt="Idea 3">
-    </div>
-    
-    <a href="{{home_link}}" class="btn">Open Pinterest</a>
-    
-    <div class="footer">
-      You received this email because you are subscribed to Pinterest.<br>
-      If you no longer wish to receive emails, you can <a href="#">unsubscribe</a>.
-    </div>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discover New Ideas - Pinterest</title>
+  </head>
+  <body style="margin: 0; padding: 0; background: linear-gradient(135deg, #f6f9fc, #e9eff5); font-family: 'Arial', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center;">
+    <!-- Main Table for Layout -->
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background: linear-gradient(135deg, #f6f9fc, #e9eff5); padding: 40px 0;">
+      <tr>
+        <td align="center">
+          <!-- Container with content -->
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px; background: rgba(255, 255, 255, 0.85); border-radius: 20px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); text-align: center; border: 1px solid rgba(255, 255, 255, 0.18);">
+            <tr>
+              <td>
+                <!-- Pinterest Logo -->
+                <div style="margin-bottom: 20px;">
+                  <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo" width="60" height="60" style="display:block; margin: 0 auto;" />
+                </div>
+                <!-- Header Text -->
+                <div style="font-size: 28px; color: #ff6f61; margin-bottom: 15px;">
+                  Discover New Ideas!
+                </div>
+                <!-- Sub-header Text -->
+                <div style="font-size: 18px; color: #555; margin-bottom: 30px; line-height: 1.4;">
+                  Get inspired by fresh ideas and find something new every day!
+                </div>
+                <!-- Image Gallery -->
+                <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px;">
+                  <img src="https://i.pinimg.com/originals/6f/31/30/6f3130b8faf86f96e99098732fd9373a.gif" alt="Idea 1" width="180" height="120" style="border-radius: 12px; object-fit: cover;">
+                  <img src="https://i.pinimg.com/736x/d1/a9/25/d1a925c2cf980c9411d2e3526688c608.jpg" alt="Idea 2" width="180" height="120" style="border-radius: 12px; object-fit: cover;">
+                  <img src="https://i.pinimg.com/736x/17/a0/c1/17a0c10676a133e75cd175236a0ad60d.jpg" alt="Idea 3" width="180" height="120" style="border-radius: 12px; object-fit: cover;">
+                </div>
+                <!-- Button -->
+                <a href="{{home_link}}" style="text-decoration: none; background: #ff6f61; color: #fff; padding: 15px 30px; border-radius: 50px; font-size: 18px; transition: background 0.3s ease; box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);">
+                  Explore Pinterest
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

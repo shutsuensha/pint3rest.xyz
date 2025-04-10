@@ -3,7 +3,7 @@ import { onMounted, ref, nextTick, onActivated, onDeactivated } from 'vue';
 import axios from 'axios'
 import ReplyCommentSection from './ReplyCommentSection.vue';
 import CommentLikesPopover from './CommentLikesPopover.vue';
-
+import EmojiPicker from 'vue3-emoji-picker'
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -28,6 +28,8 @@ import { authUserStore } from "@/stores/authUserStore";
 
 const userStore = authUserStore();
 
+const commentSection = ref(null)
+
 
 const props = defineProps({
   pin_id: Number
@@ -46,15 +48,24 @@ const limit = ref(5);
 
 const isPinsLoading = ref(false);
 
+const canLoad = ref(true)
+
 async function loadComments() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
 
   try {
     const response = await axios.get(`/api/comments/${props.pin_id}`, { params: { offset: offset.value, limit: limit.value } })
+    if (response.data.length < limit.value) {
+      canLoad.value = false
+    }
     for (let i = 0; i < response.data.length; i++) {
       const commentData = response.data[i]
       let commentImage = null
@@ -112,7 +123,8 @@ async function loadComments() {
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
           user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: cntReplies > 0 ? true : false,
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
-          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false, sendCommentError: false
+          replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false, sendCommentError: false,
+          inputAddComment: null, showPicker: false, isTop: false
         })
       } catch (error) {
         console.error(error)
@@ -177,10 +189,34 @@ onMounted(() => {
 //   }
 // }
 
+function loadPicker(comment) {
+  if (comment.showPicker === false) {
+    const element = comment.inputAddComment;
+    const commentsContainer = commentSection.value
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const distanceToBottom = commentsContainer.clientHeight  - rect.bottom;
+      console.log(commentsContainer.clientHeight )
+      console.log(rect.bottom)
+      console.log(distanceToBottom)
+      if (distanceToBottom < -100) {
+        comment.isTop = false
+      } else {
+        comment.isTop = true
+      }
+    }
+  }
+}
+
+function onSelectEmoji(emoji, comment) {
+  comment.replyContent += emoji.i
+}
+
 
 async function addComment(comment) {
   if (comment.replyContent.trim() !== '' && !comment.replyMediaFile) {
     comment.sendComment = true
+    comment.showPicker = false
     try {
       const response = await axios.post(`/api/comments/comment/${comment.id}`, {
         content: comment.replyContent.trim()
@@ -201,6 +237,7 @@ async function addComment(comment) {
 
   if (comment.replyMediaFile) {
     comment.sendComment = true
+    comment.showPicker = false
     try {
       const formData = new FormData();
       formData.append("file", comment.replyMediaFile); // Файл
@@ -275,20 +312,20 @@ const previewFile = (file, comment) => {
 
 async function likeComment(comment) {
   if (comment.checkUserLike) {
-    comment.showDislikeAnimation = true
-    comment.showLikeAnimation = false
     try {
       await axios.delete(`/api/likes/comment/${comment.id}`)
+      comment.showDislikeAnimation = true
+      comment.showLikeAnimation = false
       comment.checkUserLike = false
       comment.cntLikes -= 1
     } catch (error) {
       console.log(error)
     }
   } else {
-    comment.showDislikeAnimation = false
-    comment.showLikeAnimation = true
     try {
       await axios.post(`/api/likes/comment/${comment.id}`)
+      comment.showDislikeAnimation = false
+      comment.showLikeAnimation = true
       comment.checkUserLike = true
       comment.cntLikes += 1
     } catch (error) {
@@ -320,7 +357,7 @@ async function deleteComment(id) {
 
 
 
-  <div @scroll="handleScroll"
+  <div ref="commentSection" @scroll="handleScroll"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
       <div v-if="comment.sendCommentError"
@@ -385,21 +422,46 @@ async function deleteComment(id) {
           class="pi pi-times text-xs cursor-pointer p-2 text-white bg-black rounded-full"></i>
 
         <!-- Tags Input -->
-        <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
+        <!-- <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
           class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
-          placeholder="Add Reply" />
+          placeholder="Add Reply" /> -->
 
-        <button type="button" @click="addComment(comment)"
+          <div :ref="(el) => comment.inputAddComment = el" class="relative w-full">
+          <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
+            @keydown.enter="addComment(comment)"
+            class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
+            placeholder="Add Reply" />
+
+          <!-- Emoji Picker Button -->
+          <button @click="loadPicker(comment); comment.showPicker = !comment.showPicker"
+            class="absolute bottom-0.5 right-12 p-1 transition transform hover:scale-105">
+            <i class="pi pi-face-smile text-2xl"></i>
+          </button>
+
+          <!-- Media Upload Icon -->
+          <label :for="comment.id" class="absolute bottom-0.5 right-4 p-1">
+            <i class="pi pi-images text-2xl cursor-pointer transition transform hover:scale-105"></i>
+          </label>
+
+          <input type="file" :id="comment.id" :name="comment.id" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+            @change="(event) => handleMediaUpload(event, comment)" class="hidden" />
+
+          <EmojiPicker v-show="comment.showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="(event) => onSelectEmoji(event, comment)"
+            class="absolute right-0 z-40" :style="{ top: comment.isTop ? '50px' : 'auto', bottom: comment.isTop ? 'auto' : '50px' }" />
+        </div>
+
+        <!-- <button type="button" @click="addComment(comment)"
           class="bg-red-500 hover:bg-red-600 transition duration-300 text-white font-medium rounded-3xl text-sm px-4 py-2">
           Add
-        </button>
+        </button> -->
 
-        <label :for="comment.id">
+        <!-- <label :for="comment.id">
           <i class="pi pi-images text-4xl cursor-pointer text-red-500 hover:text-red-700 transition duration-300"></i>
-        </label>
-        <input type="file" :id="comment.id" :name="comment.id" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+        </label> -->
+
+        <!-- <input type="file" :id="comment.id" :name="comment.id" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
           @change="(event) => handleMediaUpload(event, comment)"
-          class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+          class="hidden hover:bg-red-100 transition duration-300  w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"> -->
       </div>
       <div v-if="comment.showReply && comment.sendComment"
         class="flex items-center space-x-2 ml-12 mr-4 mt-2 justify-center">

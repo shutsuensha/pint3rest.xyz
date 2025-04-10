@@ -13,15 +13,24 @@ const limit = ref(5);
 
 const isPinsLoading = ref(false);
 
+const canLoad = ref(true)
+
 async function loadUsers() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
   try {
     const response = await axios.get(`/api/likes/comment/likes/${props.comment_id}`, { params: { offset: offset.value, limit: limit.value } })
     const data = response.data
+    if (data.length < limit.value) {
+      canLoad.value = false
+    }
     for (let i = 0; i < data.length; i++) {
       try {
         const response = await axios.get(`/api/users/user_id/${data[i].user_id}`)

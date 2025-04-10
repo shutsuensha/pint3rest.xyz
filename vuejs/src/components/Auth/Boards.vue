@@ -36,7 +36,7 @@ onMounted(async () => {
   for (let i = 0; i < boards.value.length; i++) {
     try {
       const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
-        params: { offset: 0, limit: 10 },
+        params: { offset: 0, limit: 4 },
         withCredentials: true,
       });
       boards.value[i].pins = response.data
@@ -137,47 +137,89 @@ async function laodPinsByBoard(boardId, boardName) {
     <div v-else class="">
       <div v-if="canEdit" class="flex justify-center items-center w-full mb-6">
         <button @click="showAddBoard = true"
-          class="bg-white bg-opacity-80 rounded-full p-3 shadow-md focus:outline-none flex justify-center items-center hover:bg-gray-100 transition">
+          class="bg-gray-200 font-bold rounded-full p-3 flex justify-center items-center transition-transform duration-300 hover:scale-105">
           Add Board
         </button>
       </div>
       <div class="grid grid-cols-5 gap-2 mx-2">
         <div v-for="board in boards" :key="board.id" @click="laodPinsByBoard(board.id, board.title)"
-          class="shadow-md rounded-2xl p-4 hover:shadow-lg transition cursor-pointer hover:bg-gray-200"
-          :class="[board.id === selectedBoardId ? 'bg-gray-200' : 'bg-white']">
-          <!-- Коллаж превью борда -->
-          <div class="w-full h-44 grid grid-cols-2 gap-1">
-            <!-- Левая часть (большая картинка) -->
-            <div class="relative col-span-1 row-span-2">
-              <img v-if="board.pins && board.pins.length && board.pins[0].isImage" :src="board.pins[0].file"
-                alt="Board preview" class="object-cover w-full h-full rounded-md" />
-              <video v-if="board.pins && board.pins.length && !board.pins[0].isImage" :src="board.pins[0].file"
-                alt="Board preview" class="object-cover w-full h-full rounded-md" autoplay loop muted></video>
-            </div>
+          class="rounded-2xl transition transform cursor-pointer hover:scale-105 overflow-hidden w-full h-48 relative"
+          :class="[board.id === selectedBoardId ? 'border-4 border-red-600' : '']">
+          <!-- Если медиа (pins) есть, определяем раскладку в зависимости от их количества -->
+          <template v-if="board.pins && board.pins.length">
 
-            <!-- Правая часть (4 ячейки в сетке 2x2) -->
-            <div class="col-span-1 grid grid-cols-2 grid-rows-2 gap-1">
-              <div v-if="board.pins" v-for="(pin, index) in board.pins.slice(1, 5)" :key="index" class="relative">
-                <img v-if="pin.isImage" :src="pin.file" alt="Pin" class="object-cover w-full h-full rounded-md" />
-                <video autoplay loop muted v-if="!pin.isImage" :src="pin.file" alt="Pin"
-                  class="object-cover w-full h-full rounded-md"></video>
+            <!-- Если всего 1 пин – заполняем весь контейнер -->
+            <template v-if="board.pins.length === 1">
+              <div class="w-full h-full">
+                <img v-if="board.pins[0].isImage" :src="board.pins[0].file" alt="Pin"
+                  class="object-cover w-full h-full" />
+                <video v-else :src="board.pins[0].file" alt="Pin" class="object-cover w-full h-full" autoplay loop
+                  muted></video>
+              </div>
+            </template>
 
-                <!-- Если это последняя ячейка (index === 3) и есть больше 5 пинов, показываем оверлей "+N" -->
-                <div v-if="board.pins && index === 3 && board.pins.length > 5"
-                  class="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-lg font-semibold">
-                  +{{ board.pins.length - 5 }}
+            <!-- Если 2 пина – сетка 1x2 -->
+            <template v-else-if="board.pins.length === 2">
+              <div class="w-full h-full grid grid-cols-2 gap-1">
+                <div v-for="(pin, index) in board.pins" :key="index">
+                  <img v-if="pin.isImage" :src="pin.file" alt="Pin" class="object-cover w-full h-full" />
+                  <video v-else :src="pin.file" alt="Pin" class="object-cover w-full h-full" autoplay loop
+                    muted></video>
                 </div>
               </div>
-            </div>
-          </div>
+            </template>
 
-          <!-- Заголовок борда и какая-то информация -->
-          <h3 class="text-xl text-center  text-bkack font-bold dark:text-white mt-12">
-            {{ board.title }}
-          </h3>
+            <!-- Если 3 пина – первый пин занимает верхний ряд, а 2 оставшихся – нижний ряд, разделённый на 2 колонки -->
+            <template v-else-if="board.pins.length === 3">
+              <div class="w-full h-full grid grid-rows-2 gap-1">
+                <!-- Верхняя строка: 1 пин на всю ширину -->
+                <div class="w-full h-full">
+                  <img v-if="board.pins[0].isImage" :src="board.pins[0].file" alt="Pin"
+                    class="object-cover w-full h-full" />
+                  <video v-else :src="board.pins[0].file" alt="Pin" class="object-cover w-full h-full" autoplay loop
+                    muted></video>
+                </div>
+                <!-- Нижняя строка: 2 пина, 2 колонки -->
+                <div class="w-full h-full grid grid-cols-2 gap-1">
+                  <div v-for="(pin, index) in board.pins.slice(1, 3)" :key="index">
+                    <img v-if="pin.isImage" :src="pin.file" alt="Pin" class="object-cover w-full h-full" />
+                    <video v-else :src="pin.file" alt="Pin" class="object-cover w-full h-full" autoplay loop
+                      muted></video>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- Если 4 и более пинов – стандартная сетка 2x2 -->
+            <template v-else>
+              <div class="w-full h-full grid grid-cols-2 grid-rows-2 gap-1">
+                <div v-for="(pin, index) in board.pins.slice(0, 4)" :key="index" class="relative">
+                  <img v-if="pin.isImage" :src="pin.file" alt="Pin" class="object-cover w-full h-full" />
+                  <video v-else :src="pin.file" alt="Pin" class="object-cover w-full h-full" autoplay loop
+                    muted></video>
+                </div>
+              </div>
+            </template>
+
+            <!-- Центрированный оверлей с названием board -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <h3 class="bg-black bg-opacity-70 text-white text-lg font-bold px-4 py-2 rounded">
+                {{ board.title }}
+              </h3>
+            </div>
+          </template>
+
+          <!-- Если медиа отсутствуют, выводим только центрированное название -->
+          <template v-else>
+            <div class="flex items-center justify-center w-full h-full bg-black">
+              <h3 class="bg-black bg-opacity-70 text-white text-lg font-bold px-4 py-2 rounded">
+                {{ board.title }}
+              </h3>
+            </div>
+          </template>
 
           <!-- Кнопка Delete (если canEdit == true) -->
-          <div v-if="canEdit" class="mt-2 flex justify-end">
+          <div v-if="canEdit" class="absolute top-2 right-2">
             <button @click.stop="deleteBoard(board.id)"
               class="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
               Delete
@@ -185,6 +227,8 @@ async function laodPinsByBoard(boardId, boardName) {
           </div>
         </div>
       </div>
+
+
       <div v-if="boards.length === 0">
         <section class="text-center flex flex-col justify-center items-center relative">
           <h1 class="text-2xl font-bold mb-4">no boards</h1>
@@ -197,9 +241,8 @@ async function laodPinsByBoard(boardId, boardName) {
         <PinsByBoard v-if="selectedBoardId" :user_id="user_id" :auth_user_id="auth_user_id" :boardId="selectedBoardId"
           :canEdit="canEdit" :boardName="selectedBoardname" />
       </div>
-
-
     </div>
+
     <div v-if="showAddBoard"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 backdrop-blur-sm"
       @click.self="closeModal">

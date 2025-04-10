@@ -1,86 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Verification Successful - Pinterest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* General page styles */
+    :root {
+      --pinterest-red: #e60023;
+      --background-light: #fdfdfd;
+      --gray-text: #555;
+      --container-radius: 24px;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f6f9fc, #e9eff5);
-      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background-light);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
     }
-    
-    /* Container with transparency and blur effect */
+
     .container {
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      padding: 40px;
+      background: #fff;
+      border-radius: var(--container-radius);
+      box-shadow: var(--shadow);
+      padding: 50px 40px;
       max-width: 500px;
+      width: 90%;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.6s ease-out;
     }
-    
-    /* Heading */
-    h1 {
-      margin-bottom: 20px;
-      font-size: 2.5em;
-      color: #1d1f21;
-    }
-    
-    /* Description */
-    p {
-      font-size: 1.2em;
-      color: #3d3f41;
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-    
-    /* Button */
-    .button {
-      text-decoration: none;
-      background: #ff6f61;
-      color: #fff;
-      padding: 15px 30px;
-      border-radius: 50px;
-      font-size: 1.1em;
-      transition: background 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
-    }
-    
-    .button:hover {
-      background: #ff8a7d;
-    }
-    
-    /* Logo animation */
-    .logo {
+
+    .logo img {
       width: 60px;
       height: 60px;
       margin-bottom: 20px;
-      animation: logoAnimation 2s ease-in-out infinite;
+      animation: bounce 2s infinite ease-in-out;
     }
-    
-    @keyframes logoAnimation {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+
+    h1 {
+      font-size: 2.4em;
+      color: #1e1e1e;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--gray-text);
+      font-size: 1.15em;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: var(--pinterest-red);
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 32px;
+      font-size: 1.1em;
+      border-radius: 999px;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(230, 0, 35, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button:hover {
+      background-color: #bf001b;
+      transform: translateY(-2px);
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .button {
+        padding: 12px 24px;
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="logo">
-      <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" alt="Pinterest Logo" />
     </div>
-    <h1>Verification Successful!</h1>
-    <p>You have successfully completed the verification on <strong> Pinterest </strong>.<br>Welcome to the future!</p>
+    <h1>Verification Successful</h1>
+    <p>You've successfully verified your account on <strong>Pinterest</strong>.<br>Start discovering ideas you'll love!</p>
     <a href="{{home_link}}" class="button">Go to Home</a>
   </div>
 </body>

@@ -77,10 +77,16 @@ const limit = ref(7);
 
 const isPinsLoading = ref(false);
 
+const canLoad = ref(true)
+
 
 async function loadUpdates() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
@@ -520,6 +526,11 @@ async function loadUpdates() {
   offset.value += limit.value;
 
   updates.value.push(...tempUpdates.value)
+
+  if (tempUpdates.value.length < limit.value) {
+    canLoad.value = false
+  }
+
   tempUpdates.value = []
 
   isPinsLoading.value = false;
@@ -1033,7 +1044,7 @@ onBeforeUnmount(() => {
   </nav>
 
   <Transition name="fade">
-    <div v-if="showModal" class="fixed top-4 left-24 bottom-4 w-1/4 bg-white shadow-2xl z-50 rounded-3xl">
+    <div v-if="showModal" class="fixed top-4 left-24 bottom-4 w-1/4 bg-white shadow-2xl z-[60] rounded-3xl">
       <!-- Заголовок и кнопка закрытия -->
       <div class="flex justify-between items-center p-4">
         <h2 class="text-xl font-bold text-black">Updates</h2>

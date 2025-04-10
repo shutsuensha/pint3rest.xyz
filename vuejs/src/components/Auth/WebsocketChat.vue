@@ -161,9 +161,15 @@ const isPinsLoading = ref(false);
 
 const messagesTemp = ref(null)
 
+const canLoad = ref(true)
+
 async function loadMessages() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
@@ -171,6 +177,9 @@ async function loadMessages() {
   try {
     const response = await axios.get(`/api/messages/history/${props.chat_id}`, { params: { offset: offset.value, limit: limit.value } })
     messagesTemp.value = response.data
+    if (messagesTemp.value.length < limit.value) {
+      canLoad.value = false
+    }
     for (let i = 0; i < messagesTemp.value.length; i++) {
       if (messagesTemp.value[i].user_id_ !== props.auth_user_id && messagesTemp.value[i].is_read === false) {
         try {

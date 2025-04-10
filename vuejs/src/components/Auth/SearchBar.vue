@@ -72,33 +72,15 @@ const showSearchSection = ref(false)
 
 const router = useRouter();
 
-const onClick = () => {
+const beforeShowSearchSection = ref(null)
+
+const onClick = async () => {
+	beforeShowSearchSection.value = showSearchSection.value
 	showSearchSection.value = true
-}
 
-const available_tags = ref(null)
-const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200', 'bg-cyan-200', 'bg-slate-200', 'bg-stone-200'])
-
-const randomBgColor = () => {
-	const randomIndex = Math.floor(Math.random() * bgColors.value.length);
-	return bgColors.value[randomIndex];
-};
-
-async function deleteSearch(query) {
-	try {
-		await axios.delete("/api/search/", {
-			data: { query: query.trim() },  // Передаём данные в `data`
-			withCredentials: true
-		})
-		latestSearch.value = latestSearch.value.filter(item => item !== query.trim());
-	} catch (error) {
-		console.error(error)
+	if (beforeShowSearchSection.value == showSearchSection.value) {
+		return;
 	}
-}
-
-const latestSearch = ref(null)
-
-onMounted(async () => {
 	try {
 		const response = await axios.get('/api/search/latest', { withCredentials: true })
 		latestSearch.value = response.data
@@ -150,8 +132,29 @@ onMounted(async () => {
 			console.error(error);
 		}
 	}
-});
+}
 
+const available_tags = ref(null)
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200', 'bg-cyan-200', 'bg-slate-200', 'bg-stone-200'])
+
+const randomBgColor = () => {
+	const randomIndex = Math.floor(Math.random() * bgColors.value.length);
+	return bgColors.value[randomIndex];
+};
+
+async function deleteSearch(query) {
+	try {
+		await axios.delete("/api/search/", {
+			data: { query: query.trim() },  // Передаём данные в `data`
+			withCredentials: true
+		})
+		latestSearch.value = latestSearch.value.filter(item => item !== query.trim());
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+const latestSearch = ref(null)
 
 
 function showTagsPin(tag) {

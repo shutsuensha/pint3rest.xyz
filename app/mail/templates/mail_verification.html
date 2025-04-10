@@ -1,93 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Email Verification - Pinterest </title>
-  <style>
-    /* Общие стили для письма */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #f6f9fc, #e9eff5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-    /* Контейнер с прозрачным фоном, блюром и закруглёнными краями */
-    .container {
-      background: rgba(255, 255, 255, 0.85);
-      /* Хотя Gmail не поддерживает backdrop-filter, оставляем его для тех клиентов, где это возможно */
-      backdrop-filter: blur(8px);
-      border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      margin: auto;
-    }
-    /* Логотип Pinterest */
-    .pinterest-logo {
-      font-size: 48px;
-      margin-bottom: 15px;
-    }
-    /* Приветствие */
-    .greeting {
-      font-size: 20px;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    /* Заголовок */
-    .title {
-      font-size: 26px;
-      color: #1d1f21;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    /* Описание */
-    .description {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-    /* Кнопка верификации */
-    .verification-link {
-      display: inline-block;
-      padding: 12px 24px;
-      font-size: 16px;
-      color: #fff;
-      background: #ff6f61;
-      text-decoration: none;
-      border-radius: 50px;
-      box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
-      transition: background 0.3s ease;
-      margin-bottom: 20px;
-    }
-    .verification-link:hover {
-      background: #ff8a7d;
-    }
-    /* Примечание */
-    .note {
-      font-size: 14px;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="pinterest-logo">
-      <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo" width="50" height="50">
-    </div>
-    <div class="greeting">Hi, {{username}}</div>
-    <div class="title">Verify Your Email</div>
-    <div class="description">
-      Please click the button below to verify your email address and activate your account on <strong>🚀 Pint3rest Next-Gen</strong>.
-    </div>
-    <a href="{{link}}" class="verification-link">Verify Email</a>
-    <div class="note">If you did not request this, please ignore this message.</div>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Email Verification - Pinterest</title>
+  </head>
+  <body style="margin: 0; padding: 0; background: #f6f9fc; font-family: Arial, sans-serif;">
+    <!-- Внешний контейнер для центрирования письма -->
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background: linear-gradient(135deg, #f6f9fc, #e9eff5); padding: 40px 0;">
+      <tr>
+        <td align="center">
+          <!-- Основной блок письма -->
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 400px; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+            <tr>
+              <td style="padding: 30px 40px; text-align: center;">
+                <!-- Логотип Pinterest -->
+                <div style="margin-bottom: 15px;">
+                  <img src="https://images.seeklogo.com/logo-png/27/2/pinterest-logo-png_seeklogo-273800.png" alt="Pinterest Logo" width="50" height="50" style="display: block; margin: 0 auto;" />
+                </div>
+                <!-- Приветствие -->
+                <div style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                  Hi, {{username}}
+                </div>
+                <!-- Заголовок письма -->
+                <div style="font-size: 26px; color: #1d1f21; font-weight: bold; margin-bottom: 20px;">
+                  Verify Your Email
+                </div>
+                <!-- Описание -->
+                <div style="font-size: 16px; color: #555; line-height: 1.5; margin-bottom: 30px;">
+                  Please click the button below to verify your email address and activate your account on <strong style="color: #1d1f21;">Pinterest</strong>.
+                </div>
+                <!-- Кнопка верификации -->
+                <a href="{{link}}" target="_blank" style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; background-color: #e60023; text-decoration: none; border-radius: 50px; transition: background 0.3s ease; margin-bottom: 20px;">
+                  Verify
+                </a>
+                <!-- Примечание -->
+                <div style="font-size: 14px; color: #777;">
+                  If you did not request this, please ignore this message.
+                </div>
+              </td>
+            </tr>
+          </table>
+          <!-- Конец основного блока письма -->
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

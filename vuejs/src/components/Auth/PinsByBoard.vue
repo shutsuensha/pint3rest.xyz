@@ -106,9 +106,6 @@ const openModal = () => {
 </script>
 
 <template>
-  <div v-if="canEdit" class="flex flex-col justify-center items-center w-full mb-6">
-    <h1>Board {{ boardName }}</h1>
-  </div>
   <div class="mt-10" v-masonry transition-duration="0.4s" item-selector=".item" stagger="0.03s">
     <div v-for="pinGroup in pins" :key="pinGroup.id">
       <CreatedPinBoard v-if="!canEdit" v-masonry-tile class="item" v-for="pinem in pinGroup.pins" :key="pinem.id"

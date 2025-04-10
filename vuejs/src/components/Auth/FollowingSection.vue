@@ -14,15 +14,25 @@ const limit = ref(7);
 
 const isPinsLoading = ref(false);
 
+const canLoad = ref(true)
+
 async function loadUsers() {
   if (isPinsLoading.value) {
     return;
+  }
+
+  if (!canLoad.value) {
+    return
   }
 
   isPinsLoading.value = true;
   try {
     const response = await axios.get(`/api/subscription/following/${props.user_id}`, { params: { offset: offset.value, limit: limit.value } })
     const data = response.data
+
+    if (data.length < limit.value) {
+      canLoad.value = false
+    }
 
     for (let i = 0; i < data.length; i++) {
       let userImage = null

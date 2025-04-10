@@ -45,7 +45,7 @@ async def get_latest_searches(user_id: user_id, db: db):
         select(SearchOrm.query)
         .where(SearchOrm.user_id == user_id)
         .order_by(SearchOrm.created_at.desc())  # Сортируем по дате (от новых к старым)
-        .limit(5)  # Ограничиваем до 5 записей
+        .limit(8)  # Ограничиваем до 5 записей
     )
     result = await db.execute(query)
     return result.scalars().all()

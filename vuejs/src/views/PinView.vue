@@ -30,6 +30,16 @@ const router = useRouter();
 const pinId = route.params.id
 
 
+function simulateHover() {
+  showViewLarge.value = true;
+  setTimeout(() => {
+    showViewLarge.value = false;
+  }, 2000);
+}
+
+
+
+
 const showPicker = ref(false)
 
 const videoPlayer = ref(null);
@@ -102,6 +112,8 @@ const muteUnmute = () => {
     volume.value = 0;
   }
 };
+
+const inputAddComment = ref(null)
 
 const updateProgress = () => {
   if (videoPlayer.value) {
@@ -189,6 +201,11 @@ const pin = ref({
 
 const pinImage = ref(null)
 const pinImageLoaded = ref(false)
+watch(pinImageLoaded, (newValue) => {
+  if (newValue) {
+    simulateHover();
+  }
+});
 const pinVideoLoaded = ref(false)
 const pinVideo = ref(null)
 const pinUser = ref(null)
@@ -333,6 +350,23 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
+const isTop = ref(false)
+
+function loadPicker() {
+  if (showPicker.value === false) {
+    const element = inputAddComment.value;
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const distanceToBottom = window.innerHeight - rect.bottom;
+      if (distanceToBottom < 320) {
+        isTop.value = false
+      } else {
+        isTop.value = true
+      }
+    }
+  }
+}
+
 
 const goBack = () => {
   router.back();
@@ -349,20 +383,20 @@ const randomBgColor = () => {
 
 async function likePin() {
   if (checkUserLike.value) {
-    showDislikeAnimation.value = true
-    showLikeAnimation.value = false
     try {
       await axios.delete(`/api/likes/pin/${pin.value.id}`)
+      showDislikeAnimation.value = true
+      showLikeAnimation.value = false
       checkUserLike.value = false
       cntLikes.value -= 1
     } catch (error) {
       console.log(error)
     }
   } else {
-    showLikeAnimation.value = true
-    showDislikeAnimation.value = false
     try {
       await axios.post(`/api/likes/pin/${pin.value.id}`)
+      showLikeAnimation.value = true
+      showDislikeAnimation.value = false
       checkUserLike.value = true
       cntLikes.value += 1
     } catch (error) {
@@ -649,40 +683,45 @@ function decreaseZoom() {
   <div v-if="isModalOpen" class="z-[60] fixed inset-0 bg-black/50 flex items-center justify-center px-4"
     @click.self="closeModal">
     <div v-if="loadingBoards"
-      class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto min-h-screen flex items-center justify-center">
-      <span class="text-center loader2"></span>
+      class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto max-h-screen min-h-[300px] flex items-center justify-center">
+      <span class="text-center loader3"></span>
     </div>
     <div v-else
       class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg max-w-2xl w-full relative backdrop-blur-lg overflow-auto max-h-screen">
 
       <!-- Кнопка Profile -->
-      <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Choose where to save</h2>
-      <button @click="chooseProfile"
-        class="p-4 border rounded-lg cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-800 transition w-full mb-4 text-lg bg-gray-200">
-        Save to Profile
-      </button>
+      <h2 class="text-xl font-semibold mb-4 text-center text-black">Choose where to save</h2>
+      <div class="flex justify-center">
+        <button @click="chooseProfile"
+          class="w-1/2 px-6 py-3 text-md bg-gray-800 hover:bg-black text-white rounded-3xl transition cursor-pointer">
+          Profile
+        </button>
+      </div>
 
       <!-- Заголовок для бордов -->
-      <h2 class="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Boards</h2>
+      <h2 class="text-xl font-semibold mb-4 mt-4 text-center text-black">Boards</h2>
 
       <!-- Сетка бордов -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="columns-2 gap-4">
         <div v-for="board in boards" :key="board.id"
-          class="p-4 border rounded-2xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition h-64 w-full overflow-auto"
+          class="mb-4 break-inside-avoid relative rounded-md cursor-pointer min-h-24 overflow-hidden transform transition-transform hover:scale-105"
           @click="selectBoard(board)">
 
-          <h3 class="text-3xl text-center font-medium text-gray-800 dark:text-white mt-2 mb-2">{{ board.title }}</h3>
+          <!-- Центрированный заголовок с тёмным фоном только вокруг текста -->
+          <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <h3 class="text-3xl font-semibold text-white text-center px-4 py-2 bg-black/70 rounded-lg shadow-lg">
+              {{ board.title }}
+            </h3>
+          </div>
 
-          <!-- Витрина пинов в стиле masonry -->
-          <div class="columns-2 gap-2">
+          <!-- Витрина пинов -->
+          <div class="columns-2 gap-1 relative z-0">
             <div v-for="(pin, index) in board.pins" :key="index" class="mb-2 break-inside-avoid">
               <img v-if="pin.isImage" :src="pin.file" :alt="pin.title || 'Pin'" class="w-full object-cover rounded-md">
               <video v-else :src="pin.file" :alt="pin.title || 'Pin'" class="w-full object-cover rounded-md" autoplay
                 loop muted></video>
             </div>
           </div>
-
-          <!-- Заголовок борда -->
         </div>
       </div>
     </div>
@@ -954,14 +993,14 @@ function decreaseZoom() {
         </div>
         <div v-if="!sendComment" class="flex items-center justify-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Input for Comment -->
-          <div class="relative w-full">
+          <div ref="inputAddComment" class="relative w-full">
             <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
               @keydown.enter="addComment"
               class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
               placeholder="Add Comment" />
 
             <!-- Emoji Picker Button -->
-            <button @click="showPicker = !showPicker"
+            <button @click="loadPicker(); showPicker = !showPicker"
               class="absolute bottom-0.5 right-12 p-1 transition transform hover:scale-105">
               <i class="pi pi-face-smile text-2xl" :style="{ color: pin.rgb }"></i>
             </button>
@@ -976,7 +1015,8 @@ function decreaseZoom() {
               @change="handleMediaUpload" class="hidden" />
 
             <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji"
-              class="absolute bottom-12 right-0 z-40" />
+              class="absolute right-0 z-40"
+              :style="{ top: isTop ? '50px' : 'auto', bottom: isTop ? 'auto' : '50px' }" />
           </div>
 
           <!-- Emoji Picker -->
@@ -1085,6 +1125,41 @@ function decreaseZoom() {
 }
 
 .loader2::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  color: #FF3D00;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 25px 2px, 10px 22px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader3 {
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loader3::after {
   content: '';
   box-sizing: border-box;
   position: absolute;
