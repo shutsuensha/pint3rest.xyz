@@ -93,7 +93,7 @@ onDeactivated(() => {
     </div>
   </div>
 
-  <div v-show="showNoPins" class="mt-10">
+  <div v-show="showNoPins" class="mt-10 ml-20">
     <section class="text-center flex flex-col justify-center items-center relative">
       <h1 class="text-2xl font-bold mb-4">no pins</h1>
       <img class="h-72 rounded-xl" src="https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg" alt="not found image">

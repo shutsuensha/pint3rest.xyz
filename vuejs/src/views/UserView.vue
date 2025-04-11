@@ -23,7 +23,7 @@ const unreadUpdatesStore = useUnreadUpdatesStore();
 
 import SearchBar from '@/components/Auth/SearchBar.vue';
 
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 const activeTab = ref('created');
 
@@ -115,25 +115,20 @@ onMounted(async () => {
   // Log user_id to the console
   auth_user_id.value = payload.user_id;
 
-  // Start the loading process
-  isLoading.value = true;
+  let unreadMessagesCount = unreadMessagesStore.count;
+  let unreadUpdatesCount = unreadUpdatesStore.count;
+  let totalUnread = unreadMessagesCount + unreadUpdatesCount;
+
+  if (totalUnread > 0) {
+    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+  } else {
+    document.title = 'Pinterest'; // Если уведомлений нет
+  }
 
   try {
     const response = await axios.get(`/api/users/user_username/${username}`);
     user.value = response.data;
     canEditProfile.value = auth_user_id.value === user.value.id;
-
-
-    let unreadMessagesCount = unreadMessagesStore.count;
-    let unreadUpdatesCount = unreadUpdatesStore.count;
-    let totalUnread = unreadMessagesCount + unreadUpdatesCount;
-
-    if (totalUnread > 0) {
-      document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
-    } else {
-      document.title = 'Pinterest'; // Если уведомлений нет
-    }
-
 
 
     try {
@@ -204,6 +199,11 @@ onMounted(async () => {
   isLoading.value = false;
   createdPins();
 });
+
+
+const formatLink = (url) => {
+  return url.replace(/^https?:\/\//, '');
+};
 
 
 const showCreated = ref(false);
@@ -315,6 +315,9 @@ async function editProfile() {
     }
   }
 }
+
+const showModal = ref(false)
+
 
 const showEditModalImage = ref(false)
 
@@ -545,7 +548,7 @@ async function redirectToChat() {
   <transition name="fade" appear>
     <div v-if="openSendMessage" class="fixed inset-0 bg-black bg-opacity-20 z-50 p-6">
 
-      <div class="flex justify-center items-center min-h-screen" @click.self="openSendMessage = false">
+      <div class="ml-20 flex justify-center items-center min-h-screen" @click.self="openSendMessage = false">
         <div v-if="!sendingMessage"
           class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-2 items-center">
 
@@ -559,7 +562,7 @@ async function redirectToChat() {
           </button>
         </div>
         <div v-if="sendingMessage"
-          class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-20 items-center">
+          class="ml-20 flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-20 items-center">
 
           <ClipLoader :color="color" :size="size" class="" />
         </div>
@@ -571,151 +574,167 @@ async function redirectToChat() {
     </div>
   </transition>
   <transition name="fade" appear>
-    <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+    <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+      @click.self="showEditModal = false">
+      <!-- Модальное окно -->
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-4 relative ml-20">
+
+        <!-- Если идет обновление информации -->
+        <ClipLoader v-if="updateInformation" color="#E60023" :size="size"
+          class="flex flex-col items-center justify-center text-center min-h-[200px]" />
+
+        <!-- Форма редактирования -->
+        <div v-if="!updateInformation" class="flex flex-col items-stretch justify-center gap-4">
+          <!-- Заголовок окна -->
+          <h2 class="text-xl font-semibold text-gray-800 text-center">
+            Edit Profile
+          </h2>
+
+          <div class="space-y-4">
+            <div>
+              <label for="username" class="block text-gray-700 text-base mb-1">
+                Username
+              </label>
+              <input v-model="editUsername" type="text" name="username" id="username" autocomplete="off"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
+            </div>
+
+            <div>
+              <label for="description" class="block text-gray-700 text-base mb-1">
+                Description
+              </label>
+              <textarea v-model="editDescription" name="description" id="description" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300 resize-none"></textarea>
+            </div>
+          </div>
+
+          <!-- Социальные ссылки -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-instagram text-2xl text-gray-700"></i>
+              <input v-model="editInstagram" type="url" name="href-instagram" id="instagram" autocomplete="off"
+                placeholder="Instagram URL"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
+            </div>
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-tiktok text-2xl text-gray-700"></i>
+              <input v-model="editTiktok" type="url" name="href-tiktok" id="tiktok" autocomplete="off"
+                placeholder="Tiktok URL"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
+            </div>
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-telegram text-2xl text-gray-700"></i>
+              <input v-model="editTelegram" type="url" name="href-telegram" id="telegram" autocomplete="off"
+                placeholder="Telegram URL"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
+            </div>
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-pinterest text-2xl text-gray-700"></i>
+              <input v-model="editPinterest" type="url" name="href-pinterest" id="pinterest" autocomplete="off"
+                placeholder="Pinterest URL"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
+            </div>
+          </div>
+
+          <!-- Кнопки управления -->
+          <div class="flex justify-center items-center gap-2 mt-4">
+            <button @click="showEditModal = false"
+              class="w-24 py-1 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-100 transition duration-300">
+              Cancel
+            </button>
+            <button @click="editProfile"
+              class="w-24 py-1 rounded-full bg-red-600 text-white font-medium hover:bg-red-700 transition duration-300">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
 
 
-      <ClipLoader v-if="updateInformation" color="white" :size="size"
-        class="flex flex-col items-center justify-center text-center min-h-screen" />
+  <transition name="fade" appear>
+    <div v-if="showEditModalImage"
+      class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-6"
+      @click.self="showEditModalImage = false">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-8 relative ml-20">
+        <!-- Лоадер при обновлении -->
+        <ClipLoader v-if="updateProfileImage" color="#E60023" :size="size"
+          class="flex flex-col items-center justify-center text-center min-h-[150px]" />
 
-      <div v-if="!updateInformation" class="flex flex-col items-center justify-center gap-5">
-
-        <div class="space-y-7 mt-2">
-          <div>
-            <label for="username" class="text-white text-xl">username</label>
-            <input v-model="editUsername" type="text" name="username" id="username" autocomplete="off"
-              class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[400px] py-4 px-5 focus:ring-white focus:border-white"
+        <!-- Форма редактирования изображения -->
+        <div v-else class="flex flex-col items-center justify-center gap-5">
+          <div class="flex flex-col items-center w-full">
+            <label for="image" class="block mb-2 text-sm font-medium text-gray-700">
+              Your Profile Image (.jpg, .jpeg, .gif, .webp, .png, .bmp)
+            </label>
+            <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+              @change="handleImageUpload"
+              class="block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition duration-300" />
+            <img v-if="imagePreview" :src="imagePreview" alt="Image Preview"
+              class="mt-4 rounded-full w-32 h-32 object-cover border-4 border-gray-300"
               style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
           </div>
-
-          <div>
-            <label for="description" class="text-white text-xl">description</label>
-            <textarea v-model="editDescription" name="description" id="description"
-              style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);"
-              class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[400px] py-4 px-5 focus:ring-white focus:border-white"></textarea>
+          <div class="flex space-x-4 mt-4">
+            <button @click="showEditModalImage = false"
+              class="w-28 py-2 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-100 transition duration-300">
+              Cancel
+            </button>
+            <button @click="editProfileImage"
+              class="w-28 py-2 rounded-full bg-red-600 text-white font-medium hover:bg-red-700 transition duration-300">
+              Update
+            </button>
           </div>
         </div>
-
-
-        <div class="flex flex-row items-center justify-center space-x-2">
-          <i class="pi pi-instagram text-4xl text-white"></i>
-          <input v-model="editInstagram" type="url" name="href-instagram" id="instagram" autocomplete="off"
-            class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[300px] py-4 px-5 focus:ring-white focus:border-white"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
-        </div>
-        <div class="flex flex-row items-center justify-center space-x-2">
-          <i class="pi pi-tiktok text-4xl text-white"></i>
-          <input v-model="editTiktok" type="url" name="href-tiktok" id="tiktok" autocomplete="off"
-            class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[300px] py-4 px-5 focus:ring-white focus:border-white"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
-        </div>
-        <div class="flex flex-row items-center justify-center space-x-2">
-          <i class="pi pi-telegram text-4xl text-white"></i>
-          <input v-model="editTelegram" type="url" name="href-telegram" id="telegram" autocomplete="off"
-            class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[300px] py-4 px-5 focus:ring-white focus:border-white"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
-        </div>
-        <div class="flex flex-row items-center justify-center space-x-2">
-          <i class="pi pi-pinterest text-4xl text-white"></i>
-          <input v-model="editPinterest" type="url" name="href-pinterest" id="pinterest" autocomplete="off"
-            class="hover:bg-black hover:text-white transition duration-300  cursor-pointer  border border-white bg-transparent  text-white text-sm rounded-xl block w-[300px] py-4 px-5 focus:ring-white focus:border-white"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
-        </div>
-
-
-
-        <div clas="flex space-x-4">
-          <button @click="showEditModal = false"
-            class="ml-10 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Cancel
-          </button>
-          <button @click="editProfile"
-            class="ml-4 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Save
-          </button>
-        </div>
       </div>
     </div>
   </transition>
 
   <transition name="fade" appear>
-    <div v-if="showEditModalImage" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
+    <div v-if="showEditModalBanner"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showEditModalBanner = false">
 
-      <!-- Lottie Animation -->
+      <!-- Lottie Animation (при обновлении) -->
+      <ClipLoader v-if="updateProfileBanner" color="#E60023" :size="size"
+        class="ml-20 flex flex-col items-center justify-center text-center min-h-screen" />
 
-      <ClipLoader v-if="updateProfileImage" color="white" :size="size"
-        class="flex flex-col items-center justify-center text-center" />
+      <!-- Контейнер модального окна -->
+      <div v-if="!updateProfileBanner" class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full ml-20">
+        <!-- Заголовок -->
+        <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">Update Banner</h2>
 
-      <div v-if="!updateProfileImage" class="flex flex-col items-center justify-center gap-5">
-        <div class="flex flex-col items-center">
-          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Profile Image (.jpg, .jpeg, .gif,
-            .webp,
-            .png, .bmp)</label>
-          <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
-            @change="handleImageUpload"
-            class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-          <img v-if="imagePreview" :src="imagePreview"
-            class="mt-2 rounded-full w-32 h-32 object-cover border-4 border-black" alt="Image Preview"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
-        </div>
-        <div clas="flex space-x-4">
-          <button @click="showEditModalImage = false"
-            class="mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Cancel
-          </button>
-
-          <button @click="editProfileImage"
-            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
-            Update
-          </button>
-        </div>
-      </div>
-    </div>
-  </transition>
-
-  <transition name="fade" appear>
-    <div v-if="showEditModalBanner" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
-
-      <!-- Lottie Animation -->
-
-      <ClipLoader v-if="updateProfileBanner" color="white" :size="size"
-        class="flex flex-col items-center justify-center text-center min-h-screen" />
-
-      <div v-if="!updateProfileBanner" class="flex flex-col items-center justify-center gap-5">
-        <div class="flex flex-col items-center">
-          <label for="image" class="block mb-2 text-sm font-medium text-white">Your Banner Image (.jpg, .jpeg, .gif,
-            .webp,
-            .png, .bmp) </label>
+        <!-- Блок загрузки изображения -->
+        <div class="mb-6">
+          <label for="image" class="block mb-2 text-sm font-semibold text-gray-700">
+            Select Banner Image (.jpg, .jpeg, .gif, .webp, .png, .bmp)
+          </label>
           <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
             @change="handleBannerUpload"
-            class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
-          <img v-if="bannerImagePreview" :src="bannerImagePreview"
-            class="mt-2 rounded-2xl h-[400px] w-[600px] object-cover" alt="Image Preview"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);" />
+            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none focus:ring focus:ring-red-500" />
+          <img v-if="bannerImagePreview" :src="bannerImagePreview" class="mt-4 rounded-xl w-full object-cover"
+            style="max-height: 300px;" alt="Image Preview" />
         </div>
-        <div clas="flex space-x-4">
+
+        <!-- Кнопки управления -->
+        <div class="flex justify-end space-x-4">
           <button @click="showEditModalBanner = false"
-            class="mx-2 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+            class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors">
             Cancel
           </button>
           <button @click="editBannerImage"
-            class="mx-5 w-[100px] py-3 bg-white text-black font-semibold rounded-3xl shadow-3xl hover:bg-black hover:text-white transition duration-300 ease-in-out"
-            style="box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);">
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
             Update
           </button>
-
         </div>
       </div>
     </div>
   </transition>
 
+
   <div v-if="userAlreadyExistsError"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-    <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full ml-20">
       <div class="relative bg-white rounded-3xl shadow">
         <div class="p-5 text-center">
           <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -736,7 +755,7 @@ async function redirectToChat() {
 
   <div v-if="errorUpdateProfileImage"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-    <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full ml-20">
       <div class="relative bg-white rounded-3xl shadow">
         <div class="p-5 text-center">
           <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -758,7 +777,7 @@ async function redirectToChat() {
 
   <div v-if="errorUpdateBannerImage"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-    <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full ml-20">
       <div class="relative bg-white rounded-3xl shadow">
         <div class="p-5 text-center">
           <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -779,7 +798,7 @@ async function redirectToChat() {
 
   <transition name="fade" appear>
     <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
-      <div class="flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
+      <div class="ml-20 flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
         <FollowersSection :user_id="user.id" :cntUserFollowers="cntUserFollowers" />
         <i @click="showFollowers = false"
           class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
@@ -790,7 +809,7 @@ async function redirectToChat() {
 
   <transition name="fade" appear>
     <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-50 p-6">
-      <div class="flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
+      <div class="ml-20 flex justify-center items-center min-h-screen" @click.self="showFollowing = false">
         <FollowingSection :user_id="user.id" :cntUserFollowing="cntUserFollowing" />
         <i @click="showFollowing = false"
           class="absolute right-20 top-20 pi pi-times text-white text-4xl cursor-pointer transition-transform duration-200 transform hover:scale-150"
@@ -801,113 +820,379 @@ async function redirectToChat() {
 
   <SearchBar />
 
-  <div class="flex items-center justify-center mt-20">
-    <ClipLoader v-if="loadingUser" :color="color" :size="size" class="" />
+  <div class="flex items-center justify-center mt-20 ml-20">
+    <ClipLoader v-if="isLoading" :color="color" :size="size" class="" />
     <div v-else>
-      <div class="flex flex-col items-center">
-        <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+      <button @click="goBack" class="absolute top-4 left-20 text-gray-500 ml-20 mt-20 hover:-translate-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div v-if="!userBanner" class="flex flex-col items-center">
         <div class="relative">
-          <i v-if="user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl"></i>
+          <i v-if="user && user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl"></i>
           <img v-if="userImage" :src="userImage" alt="Profile Picture"
             class="rounded-full w-32 h-32 object-cover border-4 border-white" />
         </div>
-        <p v-if="user" class="mt-4 text-lg font-semibold">{{ user.username }}</p>
-        <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons"
-          class="px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">Edit
-          profile</button>
-        <div v-if="showEditButtons" class="mt-4 space-x-2">
-          <button v-if="canEditProfile" @click="showEditModal = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            information
-          </button>
-          <button v-if="canEditProfile" @click="showEditModalImage = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            profile image
-          </button>
-          <button v-if="canEditProfile" @click="showEditModalBanner = true"
-            class="hover:-translate-y-2 px-6 py-3 bg-gray-300 text-black font-semibold rounded-3xl transition hover:bg-black hover:text-white">
-            banner
-          </button>
+        <p v-if="user" class="mt-4 text-3xl font-extrabold">{{ user.username }}</p>
+        <div>
+          <p v-if="user && user.description"
+            class="description-box destext-center text-center mt-4 text-md mx-auto w-[500px]">
+            {{ user.description }}
+          </p>
+          <span v-if="user && user.description && user.description.length > 200"
+            class="text-black cursor-pointer justify-center flex font-extrabold" @click="showModal = true">
+            More
+          </span>
+
+          <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40 "
+            @click.self="showModal = false">
+            <div class="bg-white p-6 rounded-2xl w-[550px] relative h-[700px] ml-20">
+
+              <button @click="showModal = false"
+                class="absolute top-10 right-10 text-gray-500 hover:text-black">✕</button>
+
+              <h2 class="text-4xl font-bold mb-4 mt-10 px-4 py-7">About user {{ user.username }}</h2>
+
+              <div class="overflow-y-auto max-h-[400px]">
+
+                <div class="space-y-6 text-md ml-4 mb-6">
+                  <a v-if="user && user.instagram" :href="user.instagram" class="block w-full" target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="pi pi-instagram mr-5"></i> {{ formatLink(user.instagram) }}
+                  </a>
+                  <a v-if="user && user.telegram" :href="user.telegram" class="block w-full" target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="pi pi-telegram mr-5"></i> {{ formatLink(user.telegram) }}
+                  </a>
+                  <a v-if="user && user.tiktok" :href="user.tiktok" class="block w-full" target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="pi pi-tiktok mr-5"></i> {{ formatLink(user.tiktok) }}
+                  </a>
+                  <a v-if="user && user.pinterest" :href="user.pinterest" class="block w-full" target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="pi pi-pinterest mr-5"></i> {{ formatLink(user.pinterest) }}
+                  </a>
+                </div>
+
+                <div class="space-y-6">
+                  <a v-show="cntUserFollowers > 0" @click="showFollowers = true"
+                    class=" text-black block w-full cursor-pointer hover:underline font-extrabold px-4">
+                    <i class="pi pi-user-plus mr-5"></i> {{ cntUserFollowers }} follower
+                  </a>
+
+                  <a v-show="cntUserFollowing > 0" @click="showFollowing = true"
+                    class=" text-black block w-full cursor-pointer hover:underline font-extrabold px-4">
+                    <i class="pi pi-users mr-5"></i> {{ cntUserFollowing }} following
+                  </a>
+                </div>
+
+
+
+                <p class="text-gray-800 whitespace-pre-line px-4 py-7 ">{{ user.description }}</p>
+
+              </div>
+
+              <!-- Follow Button -->
+              <div class="absolute bottom-6 right-6">
+                <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+                  class="px-6 py-3 bg-red-500 text-white  rounded-2xl transition hover:bg-red-700 ">
+                  Follow
+                </button>
+                <button v-if="!canEditProfile && checkUserFollow" @click="unfollow" :class="[
+                  'px-6 py-3 rounded-2xl transition',
+                  checkUserFollow ? 'bg-black text-white hover:bg-gray-900' : 'bg-red-500 text-white hover:bg-red-700'
+                ]">
+                  Unfollow
+                </button>
+              </div>
+
+              <div class="absolute bottom-6 left-6">
+                <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
+                  class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black  rounded-2xl transition  ">
+                  Send Message
+                </button>
+                <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
+                  class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black  rounded-2xl transition   ">
+                  Go to Chat
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <p v-if="user && user.description" class="text-center mt-4 text-lg truncate-wrap mx-auto w-[400px]">{{
-          user.description }}</p>
-        <div class="flex flex-row gap-2 text-4xl text-red-600">
-          <a v-if="user && user.instagram" :href="user.instagram">
-            <i class="pi pi-instagram"></i>
+        <div class="flex flex-row gap-2 text-md text-black max-w-[500px] mt-2">
+          <a v-if="user && user.instagram" :href="user.instagram" class="truncate inline-block max-w-[100px]"
+            target="_blank" rel="noopener noreferrer">
+            <i class="pi pi-instagram"></i> {{ formatLink(user.instagram) }}
           </a>
-          <a v-if="user && user.tiktok" :href="user.tiktok">
-            <i class="pi pi-tiktok"></i>
+          <a v-if="user && user.telegram" :href="user.telegram" class="truncate inline-block max-w-[100px]"
+            target="_blank" rel="noopener noreferrer">
+            <i class="pi pi-telegram"></i> {{ formatLink(user.telegram) }}
           </a>
-          <a v-if="user && user.telegram" :href="user.telegram">
-            <i class="pi pi-telegram"></i>
+          <a v-if="user && user.tiktok" :href="user.tiktok" class="truncate inline-block max-w-[100px]" target="_blank"
+            rel="noopener noreferrer">
+            <i class="pi pi-tiktok"></i> {{ formatLink(user.tiktok) }}
           </a>
-          <a v-if="user && user.pinterest" :href="user.pinterest">
-            <i class="pi pi-pinterest"></i>
+          <a v-if="user && user.pinterest" :href="user.pinterest" class="truncate inline-block max-w-[100px]"
+            target="_blank" rel="noopener noreferrer">
+            <i class="pi pi-pinterest"></i> {{ formatLink(user.pinterest) }}
           </a>
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-4 mt-4">
           <a v-show="cntUserFollowers > 0" @click="showFollowers = true"
-            class=" text-black cursor-pointer hover:underline ">
+            class=" text-black cursor-pointer hover:underline font-extrabold">
             {{ cntUserFollowers }} follower
           </a>
           <a v-show="cntUserFollowing > 0" @click="showFollowing = true"
-            class=" text-black cursor-pointer hover:underline">
+            class=" text-black cursor-pointer hover:underline font-extrabold">
             {{ cntUserFollowing }} following
           </a>
         </div>
-        <div class="flex flex-row gap-4">
-          <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
-            class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
-            Follow
-          </button>
-          <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
-            class="px-6 py-3 bg-red-300 text-black  rounded-3xl transition hover:bg-red-500 hover:text-white">
-            Unfollow
-          </button>
+        <div v-if="!canEditProfile" class="flex flex-row gap-4 mt-4">
           <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
-            class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
-            Message
+            class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black  rounded-2xl transition  ">
+            Send Message
           </button>
           <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
-            class="px-6 py-3 bg-gray-300 text-black  rounded-3xl transition hover:bg-black hover:text-white">
+            class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black  rounded-2xl transition   ">
             Go to Chat
           </button>
+          <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+            class="px-6 py-3 bg-red-500 text-white  rounded-2xl transition hover:bg-red-700 ">
+            Follow
+          </button>
+          <button v-if="!canEditProfile && checkUserFollow" @click="unfollow" :class="[
+            'px-6 py-3 rounded-2xl transition',
+            checkUserFollow ? 'bg-black text-white hover:bg-gray-900' : 'bg-red-500 text-white hover:bg-red-700'
+          ]">
+            Unfollow
+          </button>
+        </div>
+        <div class="flex flex-col items-center">
+          <!-- Основная кнопка для редактирования профиля -->
+          <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons"
+            class="px-5 py-2 bg-red-600 text-white font-medium rounded-full transition duration-300 hover:bg-red-700 focus:outline-none">
+            Edit Profile
+          </button>
+
+          <!-- Дополнительные кнопки для разных возможностей редактирования -->
+          <div v-if="showEditButtons" class="mt-4 flex space-x-3">
+            <button v-if="canEditProfile" @click="showEditModal = true"
+              class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+              Information
+            </button>
+            <button v-if="canEditProfile" @click="showEditModalImage = true"
+              class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+              Profile Image
+            </button>
+            <button v-if="canEditProfile" @click="showEditModalBanner = true"
+              class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+              Banner
+            </button>
+          </div>
+        </div>
+      </div>
+      <div v-if="userBanner" class="">
+        <!-- Обёртка-сетка: в мобильном виде 1 колонка, на md и выше – 2 колонки -->
+        <div class="grid grid-cols-2 gap-6 px-4 py-6">
+
+          <!-- Левая колонка: профиль пользователя -->
+          <div class="ml-10 mt-4">
+            <!-- Аватарка с меткой проверки -->
+            <div class="relative flex items-center">
+              <i v-if="user && user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl text-blue-500"></i>
+              <img v-if="userImage" :src="userImage" alt="Profile Picture"
+                class="rounded-full w-32 h-32 object-cover" />
+              <p v-if="user" class="ml-4 text-3xl font-extrabold text-gray-800">{{ user.username }}</p>
+            </div>
+
+            <div class="flex gap-4 mt-4 justify-left">
+              <a v-show="cntUserFollowers > 0" @click="showFollowers = true"
+                class="cursor-pointer hover:underline font-extrabold text-black">
+                {{ cntUserFollowers }} follower
+              </a>
+              <a v-show="cntUserFollowing > 0" @click="showFollowing = true"
+                class="cursor-pointer hover:underline font-extrabold text-black">
+                {{ cntUserFollowing }} following
+              </a>
+            </div>
+
+            <!-- Имя пользователя -->
+
+            <!-- Описание + кнопка для открытия модального окна "подробнее" -->
+            <div class="mt-4">
+              <p v-if="user && user.description" class="description-box destext-center mt-4 text-md w-[500px]">
+                {{ user.description }}
+              </p>
+              <span v-if="user && user.description && user.description.length > 200"
+                class="text-black cursor-pointer flex justify-left font-extrabold mt-2" @click="showModal = true">
+                More
+              </span>
+            </div>
+
+            <!-- Модальное окно для детального описания -->
+            <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40"
+              @click.self="showModal = false">
+              <div class="bg-white p-6 rounded-2xl w-[550px] relative h-[700px]">
+                <button @click="showModal = false" class="absolute top-4 right-4 text-gray-500 hover:text-black">
+                  ✕
+                </button>
+                <h2 class="text-4xl font-bold mb-4 mt-10 text-center">
+                  About user {{ user.username }}
+                </h2>
+                <div class="overflow-y-auto max-h-[400px] px-4">
+                  <div class="space-y-6 text-md mb-6">
+                    <a v-if="user && user.instagram" :href="user.instagram" class="block" target="_blank"
+                      rel="noopener noreferrer">
+                      <i class="pi pi-instagram mr-3"></i> {{ formatLink(user.instagram) }}
+                    </a>
+                    <a v-if="user && user.telegram" :href="user.telegram" class="block" target="_blank"
+                      rel="noopener noreferrer">
+                      <i class="pi pi-telegram mr-3"></i> {{ formatLink(user.telegram) }}
+                    </a>
+                    <a v-if="user && user.tiktok" :href="user.tiktok" class="block" target="_blank"
+                      rel="noopener noreferrer">
+                      <i class="pi pi-tiktok mr-3"></i> {{ formatLink(user.tiktok) }}
+                    </a>
+                    <a v-if="user && user.pinterest" :href="user.pinterest" class="block" target="_blank"
+                      rel="noopener noreferrer">
+                      <i class="pi pi-pinterest mr-3"></i> {{ formatLink(user.pinterest) }}
+                    </a>
+                  </div>
+                  <div class="space-y-6">
+                    <a v-show="cntUserFollowers > 0" @click="showFollowers = true"
+                      class="block cursor-pointer hover:underline font-extrabold">
+                      <i class="pi pi-user-plus mr-3"></i> {{ cntUserFollowers }} follower
+                    </a>
+                    <a v-show="cntUserFollowing > 0" @click="showFollowing = true"
+                      class="block cursor-pointer hover:underline font-extrabold">
+                      <i class="pi pi-users mr-3"></i> {{ cntUserFollowing }} following
+                    </a>
+                  </div>
+                  <p class="text-gray-800 whitespace-pre-line py-7">
+                    {{ user.description }}
+                  </p>
+                </div>
+                <!-- Кнопки взаимодействия (Follow / Unfollow и Send Message / Go to Chat) -->
+                <div class="absolute bottom-6 right-6 flex flex-col space-y-3">
+                  <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+                    class="px-6 py-3 bg-red-500 text-white rounded-2xl transition hover:bg-red-700">
+                    Follow
+                  </button>
+                  <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
+                    :class="['px-6 py-3 rounded-2xl transition', checkUserFollow ? 'bg-black text-white hover:bg-gray-900' : 'bg-red-500 text-white hover:bg-red-700']">
+                    Unfollow
+                  </button>
+                </div>
+                <div class="absolute bottom-6 left-6 flex flex-col space-y-3">
+                  <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
+                    class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black rounded-2xl transition">
+                    Send Message
+                  </button>
+                  <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
+                    class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black rounded-2xl transition">
+                    Go to Chat
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Социальные ссылки (под миниатюрной версией) -->
+            <div class="flex flex-row gap-2 text-md text-black max-w-[500px] mt-2 justify-left">
+              <a v-if="user && user.instagram" :href="user.instagram" class="truncate inline-block max-w-[100px]"
+                target="_blank" rel="noopener noreferrer">
+                <i class="pi pi-instagram"></i> {{ formatLink(user.instagram) }}
+              </a>
+              <a v-if="user && user.telegram" :href="user.telegram" class="truncate inline-block max-w-[100px]"
+                target="_blank" rel="noopener noreferrer">
+                <i class="pi pi-telegram"></i> {{ formatLink(user.telegram) }}
+              </a>
+              <a v-if="user && user.tiktok" :href="user.tiktok" class="truncate inline-block max-w-[100px]"
+                target="_blank" rel="noopener noreferrer">
+                <i class="pi pi-tiktok"></i> {{ formatLink(user.tiktok) }}
+              </a>
+              <a v-if="user && user.pinterest" :href="user.pinterest" class="truncate inline-block max-w-[100px]"
+                target="_blank" rel="noopener noreferrer">
+                <i class="pi pi-pinterest"></i> {{ formatLink(user.pinterest) }}
+              </a>
+            </div>
+
+
+            <!-- Дополнительные кнопки действий (повтор для маленьких экранов) -->
+            <div class="flex flex-row gap-4 mt-4 justify-left">
+              <button v-if="!canEditProfile && !checkUserFollow" @click="follow"
+                class="px-6 py-3 bg-red-500 text-white rounded-2xl transition hover:bg-red-700">
+                Follow
+              </button>
+              <button v-if="!canEditProfile && checkUserFollow" @click="unfollow"
+                :class="['px-6 py-3 rounded-2xl transition', checkUserFollow ? 'bg-black text-white hover:bg-gray-900' : 'bg-red-500 text-white hover:bg-red-700']">
+                Unfollow
+              </button>
+              <button v-if="!canEditProfile && !checkUserChat" @click="openSendMessage = true"
+                class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black rounded-2xl transition">
+                Send Message
+              </button>
+              <button v-if="!canEditProfile && checkUserChat" @click="redirectToChat"
+                class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black rounded-2xl transition">
+                Go to Chat
+              </button>
+            </div>
+
+            <!-- Контролы редактирования профиля (видны только администратору/владельцу профиля) -->
+            <div class="flex flex-col items-start justify-start mt-6">
+              <button v-if="canEditProfile" @click="showEditButtons = !showEditButtons"
+                class="px-5 py-2 bg-red-600 text-white font-medium rounded-full transition duration-300 hover:bg-red-700 focus:outline-none">
+                Edit Profile
+              </button>
+              <div v-if="showEditButtons" class="mt-4 flex space-x-3">
+                <button v-if="canEditProfile" @click="showEditModal = true"
+                  class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+                  Information
+                </button>
+                <button v-if="canEditProfile" @click="showEditModalImage = true"
+                  class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+                  Profile Image
+                </button>
+                <button v-if="canEditProfile" @click="showEditModalBanner = true"
+                  class="px-5 py-2 bg-gray-100 text-gray-800 font-medium rounded-full transition duration-300 hover:bg-gray-200 focus:outline-none">
+                  Banner
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Правая колонка: баннер -->
+          <div class="flex items-center justify-center">
+            <img v-if="userBanner" :src="userBanner" alt="Banner"
+              class="rounded-2xl h-[400px] w-[600px] object-cover" />
+          </div>
         </div>
       </div>
       <div class="flex items-center mt-6 justify-center space-x-4">
         <button @click="createdPins(); activeTab = 'created'"
-          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border hover:bg-gray-100 rounded-t-2xl"
           :class="{ 'active scale-105': activeTab === 'created' }">
           Created
         </button>
 
         <button @click="savedPins(); activeTab = 'saved'"
-          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border hover:bg-gray-100 rounded-t-2xl"
           :class="{ 'active scale-105': activeTab === 'saved' }">
           Saved
         </button>
 
         <button @click="likedPins(); activeTab = 'liked'"
-          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border hover:bg-gray-100 rounded-t-2xl"
           :class="{ 'active scale-105': activeTab === 'liked' }">
           Liked
         </button>
 
         <button @click="boards(); activeTab = 'boards'"
-          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border"
+          class="relative px-6 py-2 text-black transition hover:border-red-600 animated-border hover:bg-gray-100 rounded-t-2xl"
           :class="{ 'active scale-105': activeTab === 'boards' }">
           Boards
         </button>
       </div>
-    </div>
-    <div v-if="userBanner" class="flex items-center mt-6 ml-5">
-      <img v-if="userBanner" :src="userBanner" alt="Profile Picture"
-        class="rounded-2xl h-[400px] w-[600px] object-cover" />
     </div>
   </div>
   <CreatedPins v-if="showCreated" :user_id="user.id" :auth_user_id="auth_user_id" />
@@ -1027,5 +1312,13 @@ async function redirectToChat() {
   100% {
     transform: rotate(360deg)
   }
+}
+
+.description-box {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 </style>

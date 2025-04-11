@@ -118,12 +118,6 @@ async function laodPinsByBoard(boardId, boardName) {
   selectedBoardId.value = boardId
   selectedBoardname.value = boardName
   await nextTick()
-
-  if (pinsSectionWrapper.value) {
-    pinsSectionWrapper.value.scrollIntoView({ behavior: 'smooth' })
-  }
-
-
 }
 
 
@@ -203,7 +197,8 @@ async function laodPinsByBoard(boardId, boardName) {
 
             <!-- Центрированный оверлей с названием board -->
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <h3 class="bg-black bg-opacity-70 text-white text-lg font-bold px-4 py-2 rounded">
+              <h3 class="bg-black bg-opacity-70 text-white text-lg font-bold px-4 py-2 rounded"
+              :class="[board.id === selectedBoardId ? 'border-4 border-red-600' : '']">
                 {{ board.title }}
               </h3>
             </div>
@@ -246,7 +241,7 @@ async function laodPinsByBoard(boardId, boardName) {
     <div v-if="showAddBoard"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 backdrop-blur-sm"
       @click.self="closeModal">
-      <div class="bg-white p-6 rounded-2xl shadow-lg w-96 max-w-full z-50">
+      <div class="bg-white p-6 rounded-2xl shadow-lg w-96 max-w-full z-50 ml-20">
         <h2 class="text-xl font-bold mb-4 text-gray-800">Create Board</h2>
 
         <!-- Поле ввода -->
