@@ -770,37 +770,38 @@ function showVideo(message) {
   </transition>
 
   <transition name="fade2" appear>
-    <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div v-if="openSendMedia" class="fixed inset-0 bg-black bg-opacity-50 z-50  flex items-center justify-center">
 
       <ClipLoader v-show="sendingMessageMedia" color="white" :size="size"
         class="flex items-center justify-center min-h-screen font-extrabold" />
 
       <div v-show="!sendingMessageMedia"
-        class="flex items-center justify-center flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen overflow-y-auto">
+        class="flex-col bg-white mx-[540px] rounded-xl mt-2 max-h-screen min-h-[300px] flex items-center justify-center overflow-y-auto">
         <div v-if="isImage" class=" ">
           <img v-show="showPreview === true" :src="mediaPreview"
-            class="h-full w-[400px] max-h-[570px] object-contain rounded-t-xl mt-4" @load="showPreview = true"
+            class="h-full w-[400px] max-h-[570px] object-contain rounded-t-xl" @load="showPreview = true"
             alt="Media Preview" />
-          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white">
+          <div v-show="showPreview === false" class="h-[200px] w-[400px] rounded-t-xl mt-4 bg-white">
           </div>
         </div>
         <div v-if="isVideo" class=" ">
           <video v-show="showPreview === true" :src="mediaPreview"
-            class="h-full w-[400px] max-h-[570px] object-contain  rounded-t-xl mt-4" @loadeddata="showPreview = true"
+            class="h-full w-[400px] max-h-[570px] object-contain  rounded-t-xl" @loadeddata="showPreview = true"
             autoplay loop muted />
-          <div v-show="showPreview === false" class="h-[500px] w-[400px] max-h-[570px] rounded-t-xl mt-4 bg-white">
+          <div v-show="showPreview === false" class="h-[200px] w-[400px]  rounded-t-xl mt-4 bg-white">
           </div>
         </div>
+
         <input id="messageInput" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off"
           :class="`border-${chatStore.bgColor}-600`"
-          class="mt-4 py-2 focus:outline-none focus:ring-none focus:ring-none w-[400px] border-b-2" />
+          class="mt-4 py-2 focus:outline-none focus:ring-none focus:ring-none w-[350px] border-b-2" />
         <div class="w-[400px]">
           <div class="flex flex-row items-center justify-end w-full mt-4 gap-4 mb-2">
             <button @click="openSendMedia = false; mediaPreview = null; showPreview = false"
               :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`"
               class="bg-white   rounded-xl py-2 px-3">Cancel</button>
             <button @click="sendMediaMessage" :class="`text-${chatStore.bgColor}-600 hover:bg-${chatStore.bgColor}-200`"
-              class="bg-white   rounded-xl py-2 px-3">Send</button>
+              class="bg-white   rounded-xl py-2 px-3 mr-4">Send</button>
           </div>
         </div>
       </div>
