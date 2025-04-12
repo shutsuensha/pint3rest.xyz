@@ -13,6 +13,7 @@ import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
 const unreadMessagesStore = useUnreadMessagesStore();
 
+const preLoadTags = ref(false)
 
 import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
 
@@ -118,91 +119,54 @@ onMounted(async () => {
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
   if (totalUnread > 0) {
-    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+    document.title = `(${totalUnread}) Pinterest`;
   } else {
-    document.title = 'Pinterest'; // Если уведомлений нет
+    document.title = 'Pinterest';
   }
 
   loadPins();
   window.addEventListener('scroll', handleScroll);
 
   try {
-    const response = await axios.get('/api/tags/', { withCredentials: true });
+    const response = await axios.get('/api/tags/tags-with-first-pin', { withCredentials: true });
     available_tags.value = response.data;
     limitTagLoading.value = available_tags.value.length;
-
-    // Обновляем прогресс посл получения списка тегов
-
-    for (let i = 0; i < response.data.length; i++) {
-      const tag = response.data[i];
-      tag.color = randomBgColor();
-    } 
-    available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: null, isImage: null });
-
-    try {
-      const response = await axios.get(`/api/pins/`, {
-        params: { offset: 0, limit: 1 },
-        withCredentials: true,
-      });
-      const pin_id = response.data[0].id;
-
-      // Обновляем прогресс после получения первого пина
-
-      try {
-        const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
-        const blobUrl = URL.createObjectURL(pinResponse.data);
-        const contentType = pinResponse.headers['content-type'];
-        if (contentType.startsWith('image/')) {
-          available_tags.value[0].file = blobUrl;
-          available_tags.value[0].isImage = true;
-        } else {
-          available_tags.value[0].file = blobUrl;
-          available_tags.value[0].isImage = false;
-          available_tags.value[0].videoPlayer = null;
-        }
-
-        // Обновляем прогресс после загрузки первого файла
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
   } catch (error) {
     console.log(error);
   }
 
-  for (let i = 1; i < available_tags.value.length; i++) {
-    try {
-      const response = await axios.get(`/api/pins/tag/${available_tags.value[i].name}`, {
-        params: { offset: 0, limit: 1 },
-        withCredentials: true,
-      });
+  for (let i = 0; i < available_tags.value.length; i++) {
+    available_tags.value[i].color = randomBgColor();
+  }
 
-      if (response.data.length === 1) {
-        const pin_id = response.data[0].id;
+  preLoadTags.value = true
 
-        try {
-          const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
-          const blobUrl = URL.createObjectURL(pinResponse.data);
-          const contentType = pinResponse.headers['content-type'];
-          if (contentType.startsWith('image/')) {
-            available_tags.value[i].file = blobUrl;
-            available_tags.value[i].isImage = true;
-          } else {
-            available_tags.value[i].file = blobUrl;
-            available_tags.value[i].isImage = false;
-            available_tags.value[i].videoPlayer = null;
-          }
-        } catch (error) {
-          console.error(error);
+  for (let i = 0; i < available_tags.value.length; i++) {
+
+
+    available_tags.value[i].file = null
+    available_tags.value[i].isImage = null
+    available_tags.value[i].videoPlayer = null
+
+    if (!available_tags.value[i].pinId) {
+      available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
+      available_tags.value[i].isImage = true
+    } else {
+      try {
+        const pinResponse = await axios.get(`/api/pins/upload/${available_tags.value[i].pinId}`, { responseType: 'blob' });
+        const blobUrl = URL.createObjectURL(pinResponse.data);
+        const contentType = pinResponse.headers['content-type'];
+        if (contentType.startsWith('image/')) {
+          available_tags.value[i].file = blobUrl;
+          available_tags.value[i].isImage = true;
+        } else {
+          available_tags.value[i].file = blobUrl;
+          available_tags.value[i].isImage = false;
+          available_tags.value[i].videoPlayer = null;
         }
-      } else {
-        available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
-        available_tags.value[i].isImage = true;
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
   }
 });
@@ -300,7 +264,7 @@ const containerRef = ref(null);
 
 function updateScrollState() {
   if (!containerRef.value) return;
-  
+
   const { scrollLeft, scrollWidth, clientWidth } = containerRef.value;
   canScrollLeft.value = scrollLeft > 0;
   // Если разница между полным размером содержимого и видимой областью больше 1 пикселя, считаем, что можно прокручивать вправо
@@ -457,7 +421,7 @@ const isActive = ref(false)
     </button>
 
     <!-- Контейнер с градиентами -->
-    <div class="relative overflow-hidden">
+    <div v-if="preLoadTags" class="relative overflow-hidden">
       <!-- Градиенты для эффекта свечения -->
       <div
         class="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white via-white/50 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

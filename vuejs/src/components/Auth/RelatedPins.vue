@@ -13,6 +13,9 @@ const limitCntLoading = ref(null)
 
 const isPinsLoading = ref(false);
 
+const emit = defineEmits(['hasRelated'])
+
+
 const props = defineProps({
   pin_id: Number
 })
@@ -34,7 +37,9 @@ const loadPins = async () => {
 
     limitCntLoading.value = response.data.length
 
-    limitCntLoading.value
+    if (limitCntLoading.value !== 0) {
+      emit('hasRelated')
+    }
 
     // Increment the offset
     offset.value += limit.value;

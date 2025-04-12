@@ -33,14 +33,15 @@
 			<div class="mt-14 ml-20 mr-20 bg-white px-8 py-2 w-full rounded-b-2xl shadow">
 				<h1 v-if="latestSearch && latestSearch.length > 0" class="text-xl mb-4  mt-2">Recently Search</h1>
 				<div v-if="latestSearch" class="grid grid-cols-8 gap-4">
-					<div v-for="(query, index) in latestSearch" :key="index" @click="searchValue = query;onEnter()"
+					<div v-for="(query, index) in latestSearch" :key="index" @click="searchValue = query; onEnter()"
 						class="flex items-center bg-gray-100 hover:bg-gray-200 px-4 rounded-full py-2 cursor-pointer">
-						<button @click.stop="deleteSearch(query)" class="mr-2 text-white bg-black rounded-full px-2">&times;</button>
+						<button @click.stop="deleteSearch(query)"
+							class="mr-2 text-white bg-black rounded-full px-2">&times;</button>
 						<span class="text-nowrap truncate">{{ query }}</span>
 					</div>
 				</div>
 				<h1 class="text-xl mb-4  mt-4">Popular on Pinterest</h1>
-				<div class="grid grid-cols-4 gap-4 mb-4">
+				<div v-if="preLoadTags" class="grid grid-cols-4 gap-4 mb-4">
 					<div v-for="tag in available_tags" :key="tag.id" @click="showTagsPin(tag)"
 						:class="[tag.color, 'hover:' + tag.color.replace('200', '400'), 'cursor-pointer rounded-3xl flex flex-row items-center']">
 						<div v-if="tag.isImage">
@@ -74,6 +75,8 @@ const router = useRouter();
 
 const beforeShowSearchSection = ref(null)
 
+const preLoadTags = ref(false)
+
 const onClick = async () => {
 	beforeShowSearchSection.value = showSearchSection.value
 	showSearchSection.value = true
@@ -87,55 +90,51 @@ const onClick = async () => {
 	} catch (error) {
 		console.error(error)
 	}
-	try {
-		const response = await axios.get('/api/tags/', { withCredentials: true });
-		// Берем только первые 10 элементов
-		available_tags.value = response.data.slice(12, 24);
 
-		// Обновляем прогресс после получения списка тегов
-		available_tags.value.forEach(tag => {
-			tag.color = randomBgColor();
-		});
+	try {
+		const response = await axios.get('/api/tags/search/tags-with-first-pin', { withCredentials: true });
+		available_tags.value = response.data;
 	} catch (error) {
 		console.log(error);
 	}
 
 	for (let i = 0; i < available_tags.value.length; i++) {
-		try {
-			const response = await axios.get(`/api/pins/tag/${available_tags.value[i].name}`, {
-				params: { offset: 0, limit: 1 },
-				withCredentials: true,
-			});
+		available_tags.value[i].color = randomBgColor();
+	}
 
-			if (response.data.length === 1) {
-				const pin_id = response.data[0].id;
-				try {
-					const pinResponse = await axios.get(`/api/pins/upload/${pin_id}`, { responseType: 'blob' });
-					const blobUrl = URL.createObjectURL(pinResponse.data);
-					const contentType = pinResponse.headers['content-type'];
-					if (contentType.startsWith('image/')) {
-						available_tags.value[i].file = blobUrl;
-						available_tags.value[i].isImage = true;
-					} else {
-						available_tags.value[i].file = blobUrl;
-						available_tags.value[i].isImage = false;
-						available_tags.value[i].videoPlayer = null;
-					}
-				} catch (error) {
-					console.error(error);
+	preLoadTags.value = true
+
+	for (let i = 0; i < available_tags.value.length; i++) {
+
+		available_tags.value[i].file = null
+		available_tags.value[i].isImage = null
+		available_tags.value[i].videoPlayer = null
+
+		if (!available_tags.value[i].pinId) {
+			available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
+			available_tags.value[i].isImage = true
+		} else {
+			try {
+				const pinResponse = await axios.get(`/api/pins/upload/${available_tags.value[i].pinId}`, { responseType: 'blob' });
+				const blobUrl = URL.createObjectURL(pinResponse.data);
+				const contentType = pinResponse.headers['content-type'];
+				if (contentType.startsWith('image/')) {
+					available_tags.value[i].file = blobUrl;
+					available_tags.value[i].isImage = true;
+				} else {
+					available_tags.value[i].file = blobUrl;
+					available_tags.value[i].isImage = false;
+					available_tags.value[i].videoPlayer = null;
 				}
-			} else {
-				available_tags.value[i].file = 'https://i.pinimg.com/736x/40/f1/b0/40f1b01bf3df9bc24bdbad4589125023.jpg';
-				available_tags.value[i].isImage = true;
+			} catch (error) {
+				console.error(error);
 			}
-		} catch (error) {
-			console.error(error);
 		}
 	}
 }
 
 const available_tags = ref(null)
-const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200', 'bg-cyan-200', 'bg-slate-200', 'bg-stone-200'])
+const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200', 'bg-cyan-200'])
 
 const randomBgColor = () => {
 	const randomIndex = Math.floor(Math.random() * bgColors.value.length);

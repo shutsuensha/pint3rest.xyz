@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick } from 'vue';
+import { onMounted, ref, watch, onActivated, onDeactivated, computed, nextTick, onBeforeUnmount } from 'vue';
 import { useRoute, RouterLink, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import axios from 'axios'
 import RelatedPins from '@/components/Auth/RelatedPins.vue';
@@ -14,6 +14,12 @@ import SearchBar from '@/components/Auth/SearchBar.vue';
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 
 const unreadMessagesStore = useUnreadMessagesStore();
+
+const relatedObserverTarget = ref(null)
+const showMoreExplore = ref(true)
+
+const showExplore = ref(false)
+
 
 
 import { useUnreadUpdatesStore } from "@/stores/unreadUpdates";
@@ -53,7 +59,7 @@ const showLikeAnimation = ref(null)
 const showDislikeAnimation = ref(null)
 
 
-const isLoading = ref(false);
+const isLoading = ref(null);
 
 
 const sendComment = ref(false)
@@ -138,6 +144,7 @@ const onVideoEnd = () => {
 };
 
 onActivated(() => {
+  createObserver()
   let unreadMessagesCount = unreadMessagesStore.count;
   let unreadUpdatesCount = unreadUpdatesStore.count;
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
@@ -177,6 +184,7 @@ onActivated(() => {
 });
 
 onDeactivated(() => {
+  destroyObserver()
   if (videoPlayer.value) {
     videoPlayer.value.pause();
     isPlaying.value = false;
@@ -242,7 +250,36 @@ const timeoutWorking = ref(false)
 
 const auth_user_id = ref(null)
 
+
+
+let observer
+
+const createObserver = () => {
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      showMoreExplore.value = entry.intersectionRatio < 0.2
+    },
+    { threshold: [0, 0.2, 1] }
+  )
+
+  if (relatedObserverTarget.value) {
+    observer.observe(relatedObserverTarget.value)
+  }
+}
+
+const destroyObserver = () => {
+  if (observer && relatedObserverTarget.value) {
+    observer.unobserve(relatedObserverTarget.value)
+    observer.disconnect()
+    observer = null
+  }
+}
+
 onMounted(async () => {
+
+  createObserver()
+
+
   try {
     const response = await axios.get(`/api/pins/${pinId}`);
     pin.value = response.data;
@@ -350,6 +387,11 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
+onBeforeUnmount(() => {
+  destroyObserver()
+})
+
+
 const isTop = ref(false)
 
 function loadPicker() {
@@ -456,7 +498,7 @@ const showBoards = async () => {
   for (let i = 0; i < boards.value.length; i++) {
     try {
       const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
-        params: { offset: 0, limit: 10 },
+        params: { offset: 0, limit: 4 },
         withCredentials: true,
       });
       boards.value[i].pins = response.data
@@ -655,10 +697,26 @@ function decreaseZoom() {
   }
 }
 
+const scrollToRelated = () => {
+  relatedObserverTarget.value?.scrollIntoView({ behavior: 'smooth' })
+}
+
+const hoverImage = ref(false)
 </script>
 
 
 <template>
+
+  <div v-if="showExplore === true && showMoreExplore" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+    <button @click="scrollToRelated"
+      class="flex items-center gap-2 px-3 py-3 bg-white/60 backdrop-blur text-black rounded-full hover:bg-white transition-all duration-300 text-sm font-medium">
+      More to explore
+      <svg class="w-4 h-4 text-black transition-transform group-hover:translate-y-1" fill="none" stroke="currentColor"
+        stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
 
   <div v-if="sendCommentError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
     <div class="relative p-4 w-full max-w-md max-h-full">
@@ -789,7 +847,8 @@ function decreaseZoom() {
     }">
       <!-- Left Column: Image or Video -->
       <div>
-        <div class="relative w-full max-w-2xl mx-auto">
+        <div class="relative w-full max-w-2xl mx-auto" @mouseover="hoverImage = true"
+        @mouseleave="hoverImage = false">
           <img ref="pinImageRef" v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
             @load="pinImageLoaded = true" />
           <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -817,6 +876,20 @@ function decreaseZoom() {
               <i class="pi pi-arrow-up-right-and-arrow-down-left-from-center rotate-90"></i>
             </div>
           </div>
+
+          <div v-if="!isLoading && pin.href && hoverImage" class="absolute left-2 bottom-2 cursor-pointer font-bold">
+            <a :href="pin.href" target="_blank" class="w-full inline-block">
+              <div
+                :class="[
+                  'bg-white rounded-full bg-opacity-80 hover:bg-opacity-100 p-4 flex items-center justify-center transition-all duration-200 ease-in origin-right h-12']">
+                <i class="pi pi-arrow-up-right mr-2"></i>
+                <span class="mr-2 transition-opacity duration-300 ease-in-out text-md text-nowrap truncate">
+                  Visit site
+                </span>
+              </div>
+            </a>
+          </div>
+
         </div>
         <div class="relative w-full max-w-2xl mx-auto" @mouseover="showVideoControls"
           @mouseleave="showControls = false">
@@ -945,8 +1018,11 @@ function decreaseZoom() {
             {{ pin.description }}
           </span>
         </div>
-        <div class="mt-4" v-if="pin.href">
-          <a target="_blank" :href="pin.href" class="underline hover:text-rose-600 text-orange-400">{{ pin.href }}</a>
+        <div class="mt-4 mr-5" v-if="pin.href">
+          <a target="_blank" :href="pin.href"
+            class="w-full inline-block text-center  py-3 bg-neutral-200  text-black font-medium rounded-full hover:bg-neutral-300 transition duration-300">
+            Visit site
+          </a>
         </div>
         <div class="flex flex-wrap gap-2 my-2" v-auto-animate>
           <div v-for="tag in tags" :key="tag.id" @click="showTagsPin(tag)"
@@ -973,7 +1049,7 @@ function decreaseZoom() {
           </span>
         </div>
         <div v-else class="mt-5 mb-1">
-          <h1 class="text-xl  text-gray-600">Your opinion?</h1>
+          <h1 class="text-md  text-black ml-1">Your opinion?</h1>
         </div>
         <CommentSection v-if="showCommets" :pin_id="pin.id" class="mb-5" />
         <div v-if="isImage && !sendComment" class="relative">
@@ -1024,7 +1100,9 @@ function decreaseZoom() {
       </div>
     </div>
   </div>
-  <RelatedPins v-if="pinImageLoaded || pinVideoLoaded" :pin_id="pin.id" />
+  <div ref="relatedObserverTarget">
+    <RelatedPins v-if="pinImageLoaded || pinVideoLoaded" :pin_id="pin.id" @hasRelated="showExplore = true" />
+  </div>
 </template>
 
 

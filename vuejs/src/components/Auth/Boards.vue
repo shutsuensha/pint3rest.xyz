@@ -129,10 +129,10 @@ async function laodPinsByBoard(boardId, boardName) {
       <span class="text-center loader2"></span>
     </div>
     <div v-else class="">
-      <div v-if="canEdit" class="flex justify-center items-center w-full mb-6">
+      <div v-if="canEdit" class="fixed bottom-6 transform items-center justify-center left-1/2 z-20 ml-7 text-4xl">
         <button @click="showAddBoard = true"
-          class="bg-gray-200 font-bold rounded-full p-3 flex justify-center items-center transition-transform duration-300 hover:scale-105">
-          Add Board
+          class="bg-white/80 font-medium rounded-full px-4 py-2 flex justify-center items-center transition-transform duration-300 hover:bg-gray-200 hover:opacity-100 hover:scale-105">
+          +
         </button>
       </div>
       <div class="grid grid-cols-5 gap-2 mx-2">
@@ -198,7 +198,7 @@ async function laodPinsByBoard(boardId, boardName) {
             <!-- Центрированный оверлей с названием board -->
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
               <h3 class="bg-black bg-opacity-70 text-white text-lg font-bold px-4 py-2 rounded"
-              :class="[board.id === selectedBoardId ? 'border-4 border-red-600' : '']">
+                :class="[board.id === selectedBoardId ? 'border-4 border-red-600' : '']">
                 {{ board.title }}
               </h3>
             </div>

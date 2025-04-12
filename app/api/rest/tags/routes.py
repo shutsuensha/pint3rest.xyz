@@ -4,6 +4,8 @@ from sqlalchemy import insert, select
 from app.api.rest.dependencies import db, filter, user_id
 from app.postgresql.models import PinsOrm, TagsOrm, pins_tags
 
+from app.api.rest.pins.schemas import PinOut
+
 from .schemas import TagOut, TagsIn
 
 router = APIRouter(prefix="/tags", tags=["tags"])
@@ -30,6 +32,78 @@ async def create_tags_on_pin(db: db, user_id: user_id, tags_model: TagsIn):
 async def get_all_tags(db: db, user_id: user_id):
     tags = await db.scalars(select(TagsOrm))
     return tags
+
+
+from sqlalchemy import desc
+
+@router.get("/tags-with-first-pin", response_model=list[dict])
+async def get_tags_with_first_pin(user_id: user_id, db: db):
+    result = []
+
+    # Получаем самый последний пин по id (desc)
+    last_pin_stmt = select(PinsOrm).order_by(desc(PinsOrm.id)).limit(1)
+    last_pin_result = await db.execute(last_pin_stmt)
+    last_pin = last_pin_result.scalar_one_or_none()
+
+    # Добавляем "Everything" первым
+    result.append({
+        "id": 0,
+        "name": "Everything",
+        "pinId": last_pin.id if last_pin else None
+    })
+
+    # Основные теги
+    tags_stmt = select(TagsOrm)
+    tags_result = await db.execute(tags_stmt)
+    tags = tags_result.scalars().all()
+
+    for tag in tags:
+        stmt = (
+            select(PinsOrm)
+            .join(pins_tags, PinsOrm.id == pins_tags.c.pin_id)
+            .where(pins_tags.c.tag_id == tag.id)
+            .limit(1)
+        )
+        pin_result = await db.execute(stmt)
+        pin = pin_result.scalar_one_or_none()
+
+        if pin:
+            result.append({
+                "id": tag.id,
+                "name": tag.name,
+                "pinId": pin.id
+            })
+
+    return result
+
+
+@router.get("/search/tags-with-first-pin", response_model=list[dict])
+async def get_tags_with_first_pin(user_id: user_id, db: db):
+    result = []
+
+    # Основные теги, но ограничиваем только первыми 8
+    tags_stmt = select(TagsOrm).limit(8)
+    tags_result = await db.execute(tags_stmt)
+    tags = tags_result.scalars().all()
+
+    for tag in tags:
+        stmt = (
+            select(PinsOrm)
+            .join(pins_tags, PinsOrm.id == pins_tags.c.pin_id)
+            .where(pins_tags.c.tag_id == tag.id)
+            .limit(1)
+        )
+        pin_result = await db.execute(stmt)
+        pin = pin_result.scalar_one_or_none()
+
+        if pin:
+            result.append({
+                "id": tag.id,
+                "name": tag.name,
+                "pinId": pin.id
+            })
+
+    return result
 
 
 @router.get("/{pin_id}")

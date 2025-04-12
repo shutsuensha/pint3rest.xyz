@@ -11,6 +11,9 @@ class PinOut(BaseModel):
     rgb: str | None = None
     height: str | None = None
 
+    class Config:
+        from_attributes = True
+
 
 class PinIn(BaseModel):
     title: str | None = None

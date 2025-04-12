@@ -1009,7 +1009,7 @@ onBeforeUnmount(() => {
     <div class="flex flex-col items-center text-xl space-y-6">
       <RouterLink to="/"
         :class="[isActiveLink('/') ? 'bg-gray-200' : 'transition-transform duration-100 transform hover:scale-150 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">
-        <i :class="['pi', 'pi-home']"></i>
+        <i :class="['pi', 'pi-home', ]"></i>
       </RouterLink>
       <RouterLink :to="`/user/${me.username}`"
         :class="[isActiveLink(`/user/${me.username}`) ? '' : 'transition-transform duration-100 transform hover:scale-125 cursor-pointer', 'rounded-lg', 'px-4', 'py-3', 'flex', 'items-center']">

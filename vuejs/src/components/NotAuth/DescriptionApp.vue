@@ -3,13 +3,13 @@
     <img src="/screen.jpg" class="absolute top-0 right-0 h-full opacity-40 mask-gradient" />
     <div class=" max-w-7xl mx-auto px-6 py-12 z-50">
       <!-- Заголовок с динамическим градиентом -->
-      <div>
+      <div v-if="fontLoaded">
         <h1
-          class="z-50 text-6xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text">
+          class="z-50 text-6xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text font-poppins">
           Full-Stack Pinterest Clone
         </h1>
         <h2
-          class="z-50 text-4xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text">
+          class="z-50 text-4xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text font-poppins">
           Vue 3 & FastAPI
         </h2>
       </div>
@@ -81,12 +81,21 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount  } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
 import { initializeKinesis } from "@amineyarman/kinesis";
 
+const fontLoaded = ref(false)
+
 
 onMounted(async () => {
+  try {
+    // Ждём загрузки шрифта
+    await document.fonts.load('1rem "Poppins"')
+    fontLoaded.value = true
+  } catch (err) {
+    console.error('Poppins failed to load:', err)
+  }
   initializeKinesis();
 });
 
@@ -258,5 +267,14 @@ const resetHeaderGradient = () => {
     linear-gradient(to left, white, transparent);
   -webkit-mask-composite: multiply;
   mask-composite: intersect;
+}
+</style>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
 }
 </style>

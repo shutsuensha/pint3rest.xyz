@@ -122,6 +122,7 @@ onMounted(async () => {
       const pinResponse = await axios.get(`/api/pins/upload/${props.pin.id}`, { responseType: 'blob' });
       const blobUrl = URL.createObjectURL(pinResponse.data);
       const contentType = pinResponse.headers['content-type'];
+
       if (contentType === 'image/gif') {
         imageGif.value = true
       }
@@ -274,7 +275,7 @@ const showBoards = async () => {
   for (let i = 0; i < boards.value.length; i++) {
     try {
       const response = await axios.get(`/api/boards/${boards.value[i].id}`, {
-        params: { offset: 0, limit: 5 },
+        params: { offset: 0, limit: 4 },
         withCredentials: true,
       });
       boards.value[i].pins = response.data
@@ -319,6 +320,7 @@ function chooseProfile() {
 
 <template>
   <div class="w-1/5 p-2">
+
     <transition name="fade" appear>
       <div v-if="showFollowers" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
         <div class="flex justify-center items-center min-h-screen" @click.self="showFollowers = false">
@@ -329,8 +331,6 @@ function chooseProfile() {
         </div>
       </div>
     </transition>
-
-
 
     <transition name="fade" appear>
       <div v-if="showFollowing" class="fixed inset-0 bg-black bg-opacity-75 z-40 p-6">
