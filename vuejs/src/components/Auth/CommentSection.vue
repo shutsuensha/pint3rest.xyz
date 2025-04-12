@@ -39,6 +39,7 @@ onActivated(() => {
 
 })
 
+const likesIsTop = ref(null)
 
 
 const comments = ref([])
@@ -124,7 +125,7 @@ async function loadComments() {
           user: commentUser, userImage: commentUserImage, showReply: false, replyContent: '', showReplies: cntReplies > 0 ? true : false,
           checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false, cntReplies: cntReplies, isImage: isImage, isVideo: isVideo,
           replyIsImage: false, replyIsVideo: false, replyMediaPreview: null, replyMediaFile: null, showLikeAnimation: null, showDislikeAnimation: null, sendComment: false, sendCommentError: false,
-          inputAddComment: null, showPicker: false, isTop: false
+          inputAddComment: null, showPicker: false, isTop: false, likesPopoverEl: null, likesIsTop: null
         })
       } catch (error) {
         console.error(error)
@@ -195,15 +196,26 @@ function loadPicker(comment) {
     const commentsContainer = commentSection.value
     if (element) {
       const rect = element.getBoundingClientRect();
-      const distanceToBottom = commentsContainer.clientHeight  - rect.bottom;
-      console.log(commentsContainer.clientHeight )
-      console.log(rect.bottom)
-      console.log(distanceToBottom)
+      const distanceToBottom = commentsContainer.clientHeight - rect.bottom;
       if (distanceToBottom < -100) {
         comment.isTop = false
       } else {
         comment.isTop = true
       }
+    }
+  }
+}
+
+function loadLikesPopover(comment) {
+  const element = comment.likesPopoverEl;
+  const commentsContainer = commentSection.value
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const distanceToBottom = commentsContainer.clientHeight - rect.bottom;
+    if (distanceToBottom < -100) {
+      comment.likesIsTop = false
+    } else {
+      comment.likesIsTop = true
     }
   }
 }
@@ -354,9 +366,6 @@ async function deleteComment(id) {
 
 
 <template>
-
-
-
   <div ref="commentSection" @scroll="handleScroll"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium text-black h-auto max-h-96 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col">
@@ -426,7 +435,7 @@ async function deleteComment(id) {
           class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-red-500 focus:border-red-500"
           placeholder="Add Reply" /> -->
 
-          <div :ref="(el) => comment.inputAddComment = el" class="relative w-full">
+        <div :ref="(el) => comment.inputAddComment = el" class="relative w-full">
           <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
             @keydown.enter="addComment(comment)"
             class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
@@ -446,8 +455,9 @@ async function deleteComment(id) {
           <input type="file" :id="comment.id" :name="comment.id" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
             @change="(event) => handleMediaUpload(event, comment)" class="hidden" />
 
-          <EmojiPicker v-show="comment.showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="(event) => onSelectEmoji(event, comment)"
-            class="absolute right-0 z-40" :style="{ top: comment.isTop ? '50px' : 'auto', bottom: comment.isTop ? 'auto' : '50px' }" />
+          <EmojiPicker v-show="comment.showPicker" :theme="'dark'" :hide-search="true" :native="true"
+            @select="(event) => onSelectEmoji(event, comment)" class="absolute right-0 z-40"
+            :style="{ top: comment.isTop ? '50px' : 'auto', bottom: comment.isTop ? 'auto' : '50px' }" />
         </div>
 
         <!-- <button type="button" @click="addComment(comment)"
@@ -480,12 +490,12 @@ async function deleteComment(id) {
             class="text-red-600 pi pi-heart text-md cursor-pointer transition-transform duration-200 transform hover:scale-150"></i>
           <!-- Number of Likes -->
           <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
-            @mouseover="comment.showPopover = true"
+            @mouseover="loadLikesPopover(comment);comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
-            <span>{{ comment.cntLikes }}</span>
+            <span :ref="(el) => comment.likesPopoverEl = el" >{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
-              @mouseleave="comment.insidePopover = false; comment.showPopover = false"
-              class="absolute top-[20px] left-[-100px]">
+              @mouseleave="comment.insidePopover = false; comment.showPopover = false" class="absolute  left-[-100px]"
+              :style="{ top: comment.likesIsTop ? '20px' : 'auto', bottom: comment.likesIsTop ? 'auto' : '20px' }">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>

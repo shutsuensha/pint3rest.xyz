@@ -1000,7 +1000,7 @@ async function redirectToChat() {
           <div class="ml-10 mt-4">
             <!-- Аватарка с меткой проверки -->
             <div class="relative flex items-center">
-              <i v-if="user && user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl text-blue-500"></i>
+              <i v-if="user && user.verified" class="absolute top-0 left-28 pi pi-verified text-2xl text-black"></i>
               <img v-if="userImage" :src="userImage" alt="Profile Picture"
                 class="rounded-full w-32 h-32 object-cover" />
               <p v-if="user" class="ml-4 text-3xl font-extrabold text-gray-800">{{ user.username }}</p>

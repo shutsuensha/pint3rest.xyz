@@ -23,6 +23,8 @@ const formatTime = (createdAt) => {
 };
 
 
+const replySection = ref(null)
+
 
 const props = defineProps({
   comment_id: Number
@@ -105,7 +107,7 @@ async function loadComments() {
         comments.value.push({
           id: commentData.id, content: commentData.content, created_at: commentData.created_at, image: commentImage,
           user: commentUser, userImage: commentUserImage, checkUserLike: checkUserLike, cntLikes: cntLikes, showPopover: false, insidePopover: false,
-          isImage: isImage, isVideo: isVideo, showDislikeAnimation: null, showLikeAnimation: null
+          isImage: isImage, isVideo: isVideo, showDislikeAnimation: null, showLikeAnimation: null, likesPopoverEl: null, likesIsTop: null
         })
       } catch (error) {
         console.error(error)
@@ -154,11 +156,25 @@ async function likeComment(comment) {
     }
   }
 }
+
+function loadLikesPopover(comment) {
+  const element = comment.likesPopoverEl;
+  const commentsContainer = replySection.value
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const distanceToBottom = commentsContainer.clientHeight - rect.bottom;
+    if (distanceToBottom < -100) {
+      comment.likesIsTop = false
+    } else {
+      comment.likesIsTop = true
+    }
+  }
+}
 </script>
 
 
 <template>
-  <div @scroll="handleScroll"
+  <div @scroll="handleScroll" ref="replySection"
     :class="`flex flex-col gap-1 bg-gray-100 text-sm font-medium  z-30 h-auto max-h-60 w-full overflow-y-auto border-2 border-gray-300 rounded-3xl`">
     <div v-for="comment in comments" :key="comment.id" class="flex flex-col mb-2">
       <RouterLink :to="`/user/${comment.user.username}`"
@@ -196,12 +212,13 @@ async function likeComment(comment) {
 
           <!-- Number of Likes -->
           <div v-if="comment.cntLikes != 0" class="font-medium text-md relative cursor-pointer"
-            @mouseover="comment.showPopover = true"
+            @mouseover="loadLikesPopover(comment);comment.showPopover = true"
             @mouseleave="if (!comment.insidePopover) comment.showPopover = false;">
-            <span>{{ comment.cntLikes }}</span>
+            <span :ref="(el) => comment.likesPopoverEl = el">{{ comment.cntLikes }}</span>
             <div v-if="comment.showPopover" @mouseover="comment.insidePopover = true"
               @mouseleave="comment.insidePopover = false; comment.showPopover = false"
-              class="absolute top-[20px] left-[-100px]">
+              class="absolute left-[-100px]"
+              :style="{ top: comment.likesIsTop ? '20px' : 'auto', bottom: comment.likesIsTop ? 'auto' : '20px' }">
               <CommentLikesPopover :comment_id="comment.id" />
             </div>
           </div>

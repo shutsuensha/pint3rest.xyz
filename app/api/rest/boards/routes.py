@@ -28,7 +28,7 @@ async def update_user_board_selected(db: db, user_id: user_id, board_id: int):
     await db.commit()
 
 @router.patch("/selected/disable", status_code=status.HTTP_204_NO_CONTENT)
-async def update_user_board_selected(db: db, user_id: user_id):
+async def update_user_board_disable(db: db, user_id: user_id):
     user = await db.scalar(
         update(UsersOrm).where(UsersOrm.id == user_id).values(selected_board=None).returning(UsersOrm)
     )

@@ -29,9 +29,6 @@ const redirecting = ref(false)
 
 const emit = defineEmits(['createPinModelClose'])
 
-const isLoading = ref(false);
-
-
 
 const lottieLoaded = ref(false)
 
@@ -115,7 +112,7 @@ const randomBgColor = () => {
 };
 
 onMounted(async () => {
-  isLoading.value = true;
+
   let unreadMessagesCount = unreadMessagesStore.count;
   let unreadUpdatesCount = unreadUpdatesStore.count;
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
@@ -125,6 +122,7 @@ onMounted(async () => {
   } else {
     document.title = 'Pinterest'; // Если уведомлений нет
   }
+
   loadPins();
   window.addEventListener('scroll', handleScroll);
 
@@ -138,7 +136,7 @@ onMounted(async () => {
     for (let i = 0; i < response.data.length; i++) {
       const tag = response.data[i];
       tag.color = randomBgColor();
-    }
+    } 
     available_tags.value.unshift({ id: available_tags.value.length, name: 'Everything', color: randomBgColor(), file: null, isImage: null });
 
     try {
@@ -174,9 +172,6 @@ onMounted(async () => {
     console.log(error);
   }
 
-  const totalTags = available_tags.value.length;
-  let completedTags = 0;
-
   for (let i = 1; i < available_tags.value.length; i++) {
     try {
       const response = await axios.get(`/api/pins/tag/${available_tags.value[i].name}`, {
@@ -209,13 +204,7 @@ onMounted(async () => {
     } catch (error) {
       console.error(error);
     }
-
-    // Увеличиваем количество завершенных тегов и обновляем прогресс
-    completedTags++;
   }
-
-  // Завершаем прогресс после полной загрузки
-  isLoading.value = false;
 });
 
 onBeforeUnmount(() => {
@@ -298,10 +287,26 @@ async function loadPinsByTag(name) {
   }
 }
 
+
+const canScrollLeft = ref(false);
+const canScrollRight = ref(false);
+
+
 const scrollAmount = 400;
 
 // Ссылка на контейнер с тегами
 const containerRef = ref(null);
+
+
+function updateScrollState() {
+  if (!containerRef.value) return;
+  
+  const { scrollLeft, scrollWidth, clientWidth } = containerRef.value;
+  canScrollLeft.value = scrollLeft > 0;
+  // Если разница между полным размером содержимого и видимой областью больше 1 пикселя, считаем, что можно прокручивать вправо
+  canScrollRight.value = scrollLeft < (scrollWidth - clientWidth - 1);
+}
+
 
 function customScroll(container, amount, duration = 300) {
   const start = container.scrollLeft;
