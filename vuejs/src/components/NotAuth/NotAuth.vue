@@ -9,7 +9,6 @@ import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
 import google_logo from '@/assets/g-logo.png';
-import pinterest_logo from '@/assets/logo.png';
 
 
 const tailwindColors = {
@@ -482,8 +481,7 @@ async function googleAuth() {
       <!-- Modal header -->
       <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
         <!-- Logo -->
-        <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
-        <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest</h3>
+        <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest 😇</h3>
         <button @click="showSignUp = false" type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
           <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
@@ -546,9 +544,8 @@ async function googleAuth() {
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <!-- Logo -->
-          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
           <h3 class="text-lg font-semibold text-gray-900">
-            Log In to Pinterest
+            Log In to Pinterest 🤫 
           </h3>
           <button @click="showLogin = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -602,7 +599,6 @@ async function googleAuth() {
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <!-- Logo -->
-          <img :src="pinterest_logo" alt="Pinterest Logo" class="w-8 h-8 mr-2" />
           <h3 class="text-lg font-semibold text-gray-900">
             Password Reset
           </h3>

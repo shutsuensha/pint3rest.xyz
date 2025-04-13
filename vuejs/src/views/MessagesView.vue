@@ -640,7 +640,7 @@ function setScrollbarColor(color) {
 
 <template>
   <div v-if="userConnected"
-    class="left-20 fixed inset-0 flex items-center justify-center bg-indigo-500 z-50 bg-opacity-50">
+    class="left-20 fixed inset-0 flex items-center justify-center bg-indigo-200 z-50 bg-opacity-50">
     <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-lg mx-4 animate-fadeInUp">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Oops!</h1>
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">

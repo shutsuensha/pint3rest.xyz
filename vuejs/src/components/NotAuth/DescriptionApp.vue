@@ -5,11 +5,11 @@
       <!-- Заголовок с динамическим градиентом -->
       <div v-if="fontLoaded">
         <h1
-          class="z-50 text-6xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text font-poppins">
-          Full-Stack Pinterest Clone
+          class="z-50 text-6xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-indigo-600 to-red-700 text-transparent bg-clip-text font-poppins">
+          Pinterest Clone
         </h1>
         <h2
-          class="z-50 text-4xl font-extrabold text-center mb-10 cursor-default bg-gradient-to-r from-black to-black text-transparent bg-clip-text font-poppins">
+          class="z-50 text-4xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
           Vue 3 & FastAPI
         </h2>
       </div>
@@ -44,6 +44,7 @@
         <ScreenshotCard v-for="(card, index) in screenshots.slice(4, 6)" :key="index" :card="card"
           @click="openFullscreen(index + 4)" />
       </div>
+
     </div>
 
     <!-- Полноэкранное модальное окно -->
@@ -53,13 +54,13 @@
         <div class="relative flex items-center justify-center max-w-full w-full">
           <!-- Стрелка слева -->
           <button @click.stop="closeFullscreen"
-            class="absolute top-4 right-4 px-4 py-2 rounded-full bg-white/20 text-white text-3xl hover:bg-gray-100 hover:text-black transition z-50">
-            ✕
+            class="absolute top-4 right-4 px-3 py-3 rounded-full bg-white/20 text-white text-3xl hover:bg-gray-100 hover:text-black transition z-50 flex items-center justify-center">
+            <i class="pi pi-times"></i>
           </button>
 
           <button @click.stop="prevImage"
-            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition mr-4 z-20 flex items-center justify-center aspect-square">
-            &larr;
+            class="py-5 px-6 rounded-full text-white text-5xl hover:bg-gray-100 hover:text-black transition mr-4 z-20 flex items-center justify-center aspect-square">
+            <i class="pi pi-arrow-left"></i>
           </button>
 
           <!-- Контент модального окна -->
@@ -71,8 +72,8 @@
           </div>
           <!-- Стрелка справа -->
           <button @click.stop="nextImage"
-            class="p-4 rounded-full text-white text-6xl hover:bg-gray-100 hover:text-black transition ml-4 z-20">
-            &rarr;
+            class="py-5 px-6 rounded-full text-white text-5xl hover:bg-gray-100 hover:text-black transition ml-4 z-20 flex items-center justify-center aspect-square">
+            <i class="pi pi-arrow-right"></i>
           </button>
         </div>
       </div>

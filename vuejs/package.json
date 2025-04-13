@@ -24,6 +24,7 @@
     "framer-motion": "^12.6.2",
     "is-sorted": "^1.0.5",
     "js-confetti": "^0.12.0",
+    "lucide-vue-next": "^0.488.0",
     "masonry-flow": "^0.2.2",
     "masonry-layout": "^4.2.2",
     "particles.js": "^2.0.0",
