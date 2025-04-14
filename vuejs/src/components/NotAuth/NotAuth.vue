@@ -6,7 +6,6 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useToast } from "vue-toastification";
 import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
-import Test from '@/components/NotAuth/Test.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
 
 import { useRouter, useRoute } from 'vue-router'
@@ -496,7 +495,6 @@ async function googleAuth() {
 </script>
 
 <template>
-  <Test />
   <DescriptionApp />
   <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="showSignUp = false">
   <div class="relative p-4 w-full max-w-md max-h-full">
