@@ -115,7 +115,7 @@ const onClick = async () => {
 			available_tags.value[i].isImage = true
 		} else {
 			try {
-				const pinResponse = await axios.get(`/api/pins/upload/${available_tags.value[i].pinId}`, { responseType: 'blob' });
+				const pinResponse = await axios.get(`/api/tags/tags-with-first-pin/upload/${available_tags.value[i].pinId}`, { responseType: 'blob' });
 				const blobUrl = URL.createObjectURL(pinResponse.data);
 				const contentType = pinResponse.headers['content-type'];
 				if (contentType.startsWith('image/')) {

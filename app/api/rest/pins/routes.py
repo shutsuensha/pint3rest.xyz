@@ -117,6 +117,15 @@ async def create_pin_entity(
             rgb = await get_primary_color(image_path)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
+        
+
+        pin = await db.scalar(
+            update(PinsOrm)
+            .where(PinsOrm.id == pin.id)
+            .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})")
+            .returning(PinsOrm)
+        )
+        await db.commit()
 
     if file.content_type in ["video/mp4", "video/webm"]:
         # Генерируем уникальное имя для файла
@@ -133,15 +142,14 @@ async def create_pin_entity(
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         
-
-
-    pin = await db.scalar(
-        update(PinsOrm)
-        .where(PinsOrm.id == pin.id)
-        .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})")
-        .returning(PinsOrm)
-    )
-    await db.commit()
+        pin = await db.scalar(
+            update(PinsOrm)
+            .where(PinsOrm.id == pin.id)
+            .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})", videoPreview=new_image_path)
+            .returning(PinsOrm)
+        )
+        await db.commit()
+        
 
     make_update_pin_created_for_followers.delay(user_id, pin.id)
 

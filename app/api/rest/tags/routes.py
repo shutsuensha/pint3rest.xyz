@@ -4,9 +4,16 @@ from sqlalchemy import insert, select
 from app.api.rest.dependencies import db, filter, user_id
 from app.postgresql.models import PinsOrm, TagsOrm, pins_tags
 
+from fastapi.responses import FileResponse
+
 from app.api.rest.pins.schemas import PinOut
 
 from .schemas import TagOut, TagsIn
+
+
+import mimetypes
+
+mimetypes.add_type('image/webp', '.webp')
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 
@@ -75,6 +82,38 @@ async def get_tags_with_first_pin(user_id: user_id, db: db):
             })
 
     return result
+
+
+
+@router.get("/tags-with-first-pin/upload/{id}")
+async def get_image(user_id: user_id, id: int, db: db):
+    pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
+    if pin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
+    
+    # Определяем MIME тип
+    mime_type, _ = mimetypes.guess_type(pin.image)
+
+    # Если MIME тип не определен — задаем вручную
+    if mime_type is None:
+        if pin.image.endswith('.webp'):
+            mime_type = 'image/webp'
+        elif pin.image.endswith('.mp4'):
+            mime_type = 'video/mp4'
+        elif pin.image.endswith('.webm'):
+            mime_type = 'video/webm'
+        else:
+            mime_type = 'application/octet-stream'
+
+
+    if mime_type in ('video/mp4', 'video/webm'):
+        return FileResponse(pin.videoPreview)
+
+    return FileResponse(pin.image, media_type=mime_type)
+
+
+
+
 
 
 @router.get("/search/tags-with-first-pin", response_model=list[dict])
