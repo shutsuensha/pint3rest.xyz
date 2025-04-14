@@ -1,9 +1,12 @@
 <div align="center">
   <h1> 
-    Full-Stack Pinterest Clone
+    Pinterest Clone
   </h1>
     <h1> 
     Vue 3 & FastAPI
+    </h1>
+        <h1> 
+    1536 × 864
     </h1>
 </div>
 
