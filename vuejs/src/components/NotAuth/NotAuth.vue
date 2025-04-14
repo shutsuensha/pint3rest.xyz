@@ -6,7 +6,15 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useToast } from "vue-toastification";
 import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
+import Test from '@/components/NotAuth/Test.vue';
 import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
+
+import { useRouter, useRoute } from 'vue-router'
+
+
+const router = useRouter()
+const route = useRoute()
+
 
 import google_logo from '@/assets/g-logo.png';
 
@@ -159,6 +167,17 @@ function scrollToTop() {
 
 const fileError = ref(false)
 
+
+function addQueryToCurrentRoute() {
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      register: 'true'
+    }
+  })
+}
+
 async function submitSignUp() {
   const username = formSignUp.username.trim()
   const password = formSignUp.password.trim()
@@ -211,6 +230,8 @@ async function submitSignUp() {
         showSignUpLoader.value = false
         showSignUp.value = false
 
+        addQueryToCurrentRoute()
+
         emit('signup', access_token)
       } catch (error) {
         showSignUpLoader.value = false
@@ -253,6 +274,8 @@ async function submitSignUp() {
       showSignUpLoader.value = false
       showSignUp.value = false
       showLogin.value = true
+
+      addQueryToCurrentRoute()
 
       toast.success(`Verification Link is sending on ${email}`, { timeout: 10000, closeOnClick: false, position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
 
@@ -473,6 +496,7 @@ async function googleAuth() {
 </script>
 
 <template>
+  <Test />
   <DescriptionApp />
   <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="showSignUp = false">
   <div class="relative p-4 w-full max-w-md max-h-full">
@@ -496,21 +520,21 @@ async function googleAuth() {
       <div v-else class="p-5">
         <form class="space-y-4" @submit.prevent="submitSignUp">
           <div>
-            <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
-            <input v-model="formSignUp.username" type="text" name="username" id="username" autocomplete="off"
+            <label for="usernamesignup" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
+            <input v-model="formSignUp.username" type="text" name="username" id="usernamesignup" autocomplete="off"
               class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="akinak1337" />
           </div>
           <div>
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
-            <input v-model="formSignUp.password" type="password" name="password" id="password" placeholder="••••••••"
+            <label for="passwordsignup" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
+            <input v-model="formSignUp.password" type="password" name="password" id="passwordsignup" placeholder="••••••••"
               autocomplete="new-password"
               class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
           </div>
           <div class="flex items-center space-x-4">
             <div class="w-full">
-              <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image (.jpg .jpeg .gif .webp .png .bmp)</label>
-              <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp" @change="handleImageUpload"
+              <label for="imagesignup" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image (.jpg .jpeg .gif .webp .png .bmp)</label>
+              <input type="file" id="imagesignup" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp" @change="handleImageUpload"
                 class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
             </div>
           </div>
@@ -520,8 +544,8 @@ async function googleAuth() {
             </div>
           </div>
           <div>
-            <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email (Optional)</label>
-            <input v-model="formSignUp.email" type="text" name="email" id="email" autocomplete="off"
+            <label for="emailsignup" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email (Optional)</label>
+            <input v-model="formSignUp.email" type="text" name="email" id="emailsignup" autocomplete="off"
               class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
               placeholder="akinak1337@gmail.com" />
           </div>
@@ -562,15 +586,15 @@ async function googleAuth() {
         <div v-else class="p-5">
           <form class="space-y-4" @submit.prevent="submitLogin">
             <div>
-              <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input v-model="formLogin.username" type="text" name="username" id="username" autocomplete="off"
+              <label for="usernamelogin" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
+              <input v-model="formLogin.username" type="text" name="username" id="usernamelogin" autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
-              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
+              <label for="passwordlogin" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
-              <input v-model="formLogin.password" type="password" name="password" id="password" placeholder="••••••••"
+              <input v-model="formLogin.password" type="password" name="password" id="passwordlogin" placeholder="••••••••"
                 autocomplete="current-password"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
@@ -617,21 +641,21 @@ async function googleAuth() {
         <div v-else class="p-5">
           <form class="space-y-4" @submit.prevent="submitPasswordReset">
             <div>
-              <label for="username" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input v-model="formPasswordReset.username" type="text" name="username" id="username" autocomplete="off"
+              <label for="usernamepasswordreset" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
+              <input v-model="formPasswordReset.username" type="text" name="username" id="usernamepasswordreset" autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
-              <label for="email" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email</label>
-              <input v-model="formPasswordReset.email" type="text" name="email" id="email" autocomplete="off"
+              <label for="emailpasswordreset" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email</label>
+              <input v-model="formPasswordReset.email" type="text" name="email" id="emailpasswordreset" autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
             <div>
-              <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your
+              <label for="passwordpasswordreset" class="block mb-2 text-sm font-medium text-gray-900">Your
                 New Password</label>
-              <input v-model="formPasswordReset.password" type="password" name="password" id="password"
+              <input v-model="formPasswordReset.password" type="password" name="password" id="passwordpasswordreset"
                 autocomplete="new-password" placeholder="••••••••"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>

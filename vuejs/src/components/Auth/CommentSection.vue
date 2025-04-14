@@ -11,6 +11,11 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/en"; // Используем английскую локаль
 
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
+
+
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -292,16 +297,48 @@ async function addComment(comment) {
 
 function handleMediaUpload(event, comment) {
   const file = event.target.files[0];
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
-  if (file) {
+  const allowedTypes = [
+    'image/jpeg', 'image/jpg', 'image/gif', 'image/webp',
+    'image/png', 'image/bmp', 'video/mp4', 'video/webm'
+  ];
 
+  if (file) {
     if (!allowedTypes.includes(file.type)) {
-      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', {
+        position: "top-center",
+        bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+      });
       return;
     }
-    previewFile(file, comment);
+
+    if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      const fileURL = URL.createObjectURL(file);
+      const toastRef = toast; // захватываем toast
+
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(fileURL);
+
+        if (video.duration > 30) {
+          toastRef.warning('Video must be 30 seconds or less.', {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
+          return;
+        }
+
+        previewFile(file, comment);
+      };
+
+      video.src = fileURL;
+    } else {
+      previewFile(file, comment);
+    }
   }
 }
+
 
 const previewFile = (file, comment) => {
   comment.replyMediaFile = file;
@@ -436,7 +473,7 @@ async function deleteComment(id) {
           placeholder="Add Reply" /> -->
 
         <div :ref="(el) => comment.inputAddComment = el" class="relative w-full">
-          <input v-model="comment.replyContent" type="text" name="comment" id="comment" autocomplete="off"
+          <input v-model="comment.replyContent" type="text" name="comment" id="commentReply" autocomplete="off"
             @keydown.enter="addComment(comment)"
             class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
             placeholder="Add Reply" />

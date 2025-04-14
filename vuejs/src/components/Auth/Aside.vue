@@ -66,6 +66,7 @@ function closeModal() {
   updates.value = []
   offset.value = 0
   limit.value = 7
+  canLoad.value = true
   isPinsLoading.value = false
 }
 

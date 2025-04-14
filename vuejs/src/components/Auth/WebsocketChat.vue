@@ -9,6 +9,9 @@ import single_check from '@/assets/single_check.png';
 import EmojiPicker from 'vue3-emoji-picker'
 import 'vue3-emoji-picker/css'
 
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
 
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
 const unreadMessagesStore = useUnreadMessagesStore();
@@ -792,7 +795,7 @@ function showVideo(message) {
           </div>
         </div>
 
-        <input id="messageInput" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off"
+        <input id="messageInputMedia" v-model="messageContent" placeholder="Add caption..." autofocus autocomplete="off"
           :class="`border-${chatStore.bgColor}-600`"
           class="mt-4 py-2 focus:outline-none focus:ring-none focus:ring-none w-[350px] border-b-2" />
         <div class="w-[400px]">
@@ -986,10 +989,10 @@ function showVideo(message) {
     <!-- Поле ввода -->
     <div v-show="!sendingMessage" class=" h-[50px] flex relative justify-center items-center border-x border-gray-300"
       :style="{ width: !chatStore.side ? `calc(100vw - ${chatStore.size + 80}px)` : `calc(83vw - ${chatStore.size + 80}px)` }">
-      <label for="media">
+      <label for="mediaChats">
         <i class="absolute top-0 left-0 pi pi-paperclip text-2xl cursor-pointer px-2 py-3"></i>
       </label>
-      <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+      <input type="file" id="mediaChats" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
         @change="handleMediaUpload" class="hidden">
       <input ref="messageInput" id="messageInput" v-model="message" @keyup.enter="sendMessage"
         placeholder="Write a message..." autofocus="on" autocomplete="off"

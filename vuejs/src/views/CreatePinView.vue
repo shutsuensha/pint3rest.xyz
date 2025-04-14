@@ -95,13 +95,14 @@ function handleMediaUpload(event) {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
 
   if (file) {
-
     if (!allowedTypes.includes(file.type)) {
-      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', {
+        position: "top-center",
+        bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+      });
       return;
     }
 
-    // Check for image minimum dimensions
     const minWidth = 200;
     const minHeight = 300;
 
@@ -109,17 +110,39 @@ function handleMediaUpload(event) {
       const img = new Image();
       img.onload = () => {
         if (img.width < minWidth || img.height < minHeight) {
-          toast.warning(`Image must be at least ${minWidth}x${minHeight}.`, { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+          toast.warning(`Image must be at least ${minWidth}x${minHeight}.`, {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
           return;
         }
         previewFile(file);
       };
       img.src = URL.createObjectURL(file);
-    } else {
-      previewFile(file);
+
+    } else if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+
+        if (video.duration > 30) {
+          toast.warning('Video must be 30 seconds or less.', {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
+          return;
+        }
+
+        previewFile(file);
+      };
+
+      video.src = URL.createObjectURL(file);
     }
   }
 }
+
 
 const previewFile = (file) => {
   mediaFile.value = file;
@@ -149,9 +172,13 @@ const onDrop = (event) => {
 
   if (file) {
     if (!allowedTypes.includes(file.type)) {
-      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
+      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', {
+        position: "top-center",
+        bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+      });
       return;
     }
+
     const minWidth = 200;
     const minHeight = 300;
 
@@ -168,8 +195,27 @@ const onDrop = (event) => {
         previewFile(file);
       };
       img.src = URL.createObjectURL(file);
-    } else {
-      previewFile(file);
+
+    } else if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+
+        if (video.duration > 30) {
+          toast.warning('Video must be 30 seconds or less.', {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
+          return;
+        }
+
+        previewFile(file);
+      };
+
+      video.src = URL.createObjectURL(file);
+
     }
   }
 };
@@ -333,7 +379,7 @@ function checkPinAded(name) {
         </svg>
       </button>
       <div class="ml-56">
-        <label for="media" class="cursor-pointer" @dragover.prevent="onDragOver" @dragleave="onDragLeave"
+        <label for="mediacreate" class="cursor-pointer" @dragover.prevent="onDragOver" @dragleave="onDragLeave"
           @drop.prevent="onDrop">
           <!-- Media Preview -->
           <div id="mediaPreview" v-if="mediaPreview"
@@ -353,15 +399,15 @@ function checkPinAded(name) {
               class="relative  h-96 w-[271.84px] flex justify-center items-center text-center rounded-3xl mx-auto my-8">
               <div class="absolute flex flex-col items-center space-y-4">
                 <i class="pi pi-arrow-up text-4xl text-gray-400"></i>
-                <p class="mt-2 text-md text-black">Drag & Drop or Click to Upload</p>
+                <p class="mt-2 text-xl text-black">Drag & Drop or Click to Upload</p>
+                <p class="mt-2 text-sm text-gray-700">Images must be at least 200x300 pixels</p>
+                <p class="mt-2 text-sm text-gray-700">Videos must be 30 seconds or less</p>
                 <p class="mt-2 text-xs text-gray-700">.jpg .jpeg .gif .webp .png .bmp .mp4 .webm</p>
-                <p class="mt-2 text-xs text-gray-700">images must be at least 200x300 pixels</p>
-                <p class="mt-2 text-xs text-gray-700">Up to 100 mb</p>
               </div>
             </div>
           </div>
         </label>
-        <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+        <input type="file" id="mediacreate" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
           @change="handleMediaUpload" class="hidden" />
 
         <button @click="submitPin"
@@ -374,13 +420,13 @@ function checkPinAded(name) {
         <div class="space-y-7 mt-2 mb-10">
           <!-- Title Field -->
           <div>
-            <input v-model="formPin.title" type="text" name="title" id="title" autocomplete="off"
+            <input v-model="formPin.title" type="text" name="title" id="titleCreate" autocomplete="off"
               class="hover:bg-purple-100 transition duration-100  cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Add title" />
           </div>
           <!-- Description Field -->
           <div>
-            <textarea v-model="formPin.description" name="description" id="description"
+            <textarea v-model="formPin.description" name="description" id="descriptionCreate"
               class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl block w-full py-4 px-5 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Add description"></textarea>
           </div>

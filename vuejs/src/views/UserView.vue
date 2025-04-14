@@ -599,7 +599,7 @@ async function redirectToChat() {
           class="flex flex-col gap-2  bg-gray-200 h-auto max-h-[600px] text-2xl rounded-3xl  z-50 w-[800px] overflow-y-auto py-2 items-center">
 
           <h1 class="text-center text-6xl text-black mt-4 mb-4 ">Message to {{ user.username }}</h1>
-          <textarea v-model="messageContent" name="messageContent" id="messageContent" style="height: 200px;"
+          <textarea v-model="messageContent" name="messageContent" id="messageContentUser" style="height: 200px;"
             class=" cursor-pointer  text-black text-3xl rounded-3xl block w-3/4 py-10 px-10 focus:ring-black  bg-white focus:border-4 focus:border-white"></textarea>
 
           <button @click="sendMessage"
@@ -639,15 +639,15 @@ async function redirectToChat() {
           <div class="space-y-6">
             <!-- Username Input -->
             <div>
-              <label for="username" class="block text-gray-700 text-lg mb-2">Username</label>
-              <input v-model="editUsername" type="text" name="username" id="username" autocomplete="off"
+              <label for="usernameEditUsername" class="block text-gray-700 text-lg mb-2">Username</label>
+              <input v-model="editUsername" type="text" name="username" id="usernameEditUsername" autocomplete="off"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300" />
             </div>
 
             <!-- Description Input -->
             <div>
-              <label for="description" class="block text-gray-700 text-lg mb-2">Description</label>
-              <textarea v-model="editDescription" name="description" id="description" rows="4"
+              <label for="descriptionEditUser" class="block text-gray-700 text-lg mb-2">Description</label>
+              <textarea v-model="editDescription" name="description" id="descriptionEditUser" rows="4"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300 resize-none"></textarea>
             </div>
           </div>
@@ -710,10 +710,10 @@ async function redirectToChat() {
         <!-- Форма редактирования изображения -->
         <div v-else class="flex flex-col items-center justify-center gap-5">
           <div class="flex flex-col items-center w-full">
-            <label for="image" class="block mb-2 text-sm font-medium text-gray-700">
+            <label for="imageProfile" class="block mb-2 text-sm font-medium text-gray-700">
               Your Profile Image (.jpg, .jpeg, .gif, .webp, .png, .bmp)
             </label>
-            <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+            <input type="file" id="imageProfile" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
               @change="handleImageUpload"
               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition duration-300" />
             <img v-if="imagePreview" :src="imagePreview" alt="Image Preview"
@@ -753,10 +753,10 @@ async function redirectToChat() {
 
           <!-- Блок загрузки изображения -->
           <div class="mb-6">
-            <label for="image" class="block mb-2 text-sm font-semibold text-gray-700">
+            <label for="imageBanner" class="block mb-2 text-sm font-semibold text-gray-700">
               Select Banner Image (.jpg, .jpeg, .gif, .webp, .png, .bmp)
             </label>
-            <input type="file" id="image" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+            <input type="file" id="imageBanner" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
               @change="handleBannerUpload"
               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none focus:ring focus:ring-red-500" />
             <img v-if="bannerImagePreview" :src="bannerImagePreview" class="mt-4 rounded-xl w-full object-cover"

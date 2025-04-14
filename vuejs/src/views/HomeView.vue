@@ -3,10 +3,15 @@ import { onMounted, ref, onBeforeUnmount, nextTick, watch, computed, onActivated
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 
+import JSConfetti from 'js-confetti'
+
+
 import Pin from '@/components/Auth/Pin.vue';
 
 import PinsByTag from '@/components/Auth/PinsByTag.vue';
 import PinsBySearch from '@/components/Auth/PinsBySearch.vue';
+
+const confetti = new JSConfetti()
 
 
 import { useUnreadMessagesStore } from "@/stores/unreadMessages";
@@ -48,6 +53,7 @@ const cntTagLoading = ref(0)
 const limitTagLoading = ref(null)
 
 const tagFromUrl = ref(null)
+const registerQuery = ref(null)
 
 const available_tags = ref(null)
 const bgColors = ref(['bg-red-200', 'bg-orange-200', 'bg-amber-200', 'bg-lime-200', 'bg-green-200', 'bg-emerald-200', 'bg-teal-200', 'bg-sky-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200', 'bg-purple-200', 'bg-fuchsia-200', 'bg-pink-200', 'bg-rose-200'])
@@ -198,6 +204,18 @@ onActivated(() => {
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
   }
+
+  registerQuery.value = route.query.register || '';
+
+  if (registerQuery.value) {
+    setTimeout(() => {
+      confetti.addConfetti();
+    }, 2000);
+    clearQuery()
+  }
+
+
+
   if (available_tags.value) {
     tagFromUrl.value = route.query.tag || '';
     if (tagFromUrl.value) {

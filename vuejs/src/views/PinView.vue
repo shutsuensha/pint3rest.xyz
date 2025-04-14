@@ -7,6 +7,8 @@ import PinLikesPopover from '@/components/Auth/PinLikesPopover.vue';
 import CommentSection from '@/components/Auth/CommentSection.vue';
 import PinLikesSection from '@/components/Auth/PinLikesSection.vue';
 
+import { useToast } from "vue-toastification";
+
 import EmojiPicker from 'vue3-emoji-picker'
 
 import SearchBar from '@/components/Auth/SearchBar.vue';
@@ -19,6 +21,9 @@ const relatedObserverTarget = ref(null)
 const showMoreExplore = ref(true)
 
 const showExplore = ref(false)
+
+
+const toast = useToast();
 
 
 
@@ -551,7 +556,29 @@ function handleMediaUpload(event) {
       toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
       return;
     }
-    previewFile(file);
+
+    if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+
+        if (video.duration > 30) {
+          toast.warning('Video must be 30 seconds or less.', {
+            position: "top-center",
+            bodyClassName: ["cursor-pointer", "text-black", "font-bold"]
+          });
+          return;
+        }
+
+        previewFile(file);
+      };
+
+      video.src = URL.createObjectURL(file);
+    } else {
+      previewFile(file);
+    }
   }
 }
 
@@ -599,14 +626,6 @@ async function addComment() {
   }
 
   if (mediaFile.value) {
-
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm'];
-
-    if (!allowedTypes.includes(mediaFile.value.type)) {
-      toast.warning('Please select a valid media file (.jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm).', { position: "top-center", bodyClassName: ["cursor-pointer", "text-black", "font-bold"] });
-      return;
-    }
-
     sendComment.value = true
     showPicker.value = false
     try {
@@ -847,8 +866,7 @@ const hoverImage = ref(false)
     }">
       <!-- Left Column: Image or Video -->
       <div>
-        <div class="relative w-full max-w-2xl mx-auto" @mouseover="hoverImage = true"
-        @mouseleave="hoverImage = false">
+        <div class="relative w-full max-w-2xl mx-auto" @mouseover="hoverImage = true" @mouseleave="hoverImage = false">
           <img ref="pinImageRef" v-if="pinImage" :src="pinImage" alt="Pin Image" class="h-auto w-full rounded-3xl"
             @load="pinImageLoaded = true" />
           <div v-if="pinImageLoaded" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -877,7 +895,8 @@ const hoverImage = ref(false)
             </div>
           </div>
 
-          <div v-if="!isLoading && pin.href && hoverImage" class="absolute left-2 bottom-2 cursor-pointer font-bold">
+          <div v-if="!isLoading && pin.href && hoverImage"
+            class="absolute left-2 bottom-2 cursor-pointer font-semibold">
             <a :href="pin.href" target="_blank" class="w-full inline-block">
               <div
                 :class="[
@@ -1070,7 +1089,7 @@ const hoverImage = ref(false)
         <div v-if="!sendComment" class="flex items-center justify-center space-x-2 mb-4 mr-6 mt-2">
           <!-- Input for Comment -->
           <div ref="inputAddComment" class="relative w-full">
-            <input v-model="comment" type="text" name="comment" id="comment" autocomplete="off"
+            <input v-model="comment" type="text" name="comment" id="commentPin" autocomplete="off"
               @keydown.enter="addComment"
               class="transition cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl py-3 px-5 pr-20 w-full focus:ring-black focus:border-black"
               placeholder="Add Comment" />
@@ -1082,12 +1101,12 @@ const hoverImage = ref(false)
             </button>
 
             <!-- Media Upload Icon -->
-            <label for="media" class="absolute bottom-0.5 right-4 p-1">
+            <label for="mediaComment" class="absolute bottom-0.5 right-4 p-1">
               <i :style="{ color: pin.rgb }"
                 class="pi pi-images text-2xl cursor-pointer transition transform hover:scale-105"></i>
             </label>
 
-            <input type="file" id="media" name="media" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
+            <input type="file" id="mediaComment" name="mediaPin" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp,.mp4,.webm"
               @change="handleMediaUpload" class="hidden" />
 
             <EmojiPicker v-show="showPicker" :theme="'dark'" :hide-search="true" :native="true" @select="onSelectEmoji"

@@ -47,6 +47,7 @@ async def auth_google(code: str, db: db):
         select(UsersOrm).where(UsersOrm.google_id == user_data["id"])
     )
 
+    register = False
     if not user_by_google_id:
         username = user_data["email"].split("@")[0]
         user_by_username = await db.scalar(select(UsersOrm).where(UsersOrm.username == username))
@@ -71,12 +72,19 @@ async def auth_google(code: str, db: db):
             )
             .returning(UsersOrm)
         )
+        register = True
         await db.commit()
 
     access_token = create_access_token({"user_id": user_by_google_id.id})
     refresh_token = create_refresh_token({"user_id": user_by_google_id.id})
 
-    response_frontend = RedirectResponse(url=settings.FRONTEND_DOMAIN, status_code=302)
+    if not register:
+        response_frontend = RedirectResponse(url=settings.FRONTEND_DOMAIN, status_code=302)
+    else:
+        response_frontend = RedirectResponse(
+            url=f"{settings.FRONTEND_DOMAIN}?register=true",
+            status_code=302
+        )
 
     response_frontend.set_cookie("access_token", access_token)
     response_frontend.set_cookie("refresh_token", refresh_token)

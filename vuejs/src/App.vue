@@ -4,6 +4,7 @@ import JSConfetti from 'js-confetti'
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from 'vue-router';
 
+
 const confetti = new JSConfetti()
 
 const toast = useToast();
@@ -36,6 +37,7 @@ onMounted(() => {
 function logout() {
   has_token.value = false;
   access_token.value = null;
+  router.push('/')
 }
 
 
@@ -51,9 +53,6 @@ function signup(token) {
   access_token.value = token;
   has_token.value = true;
   register.value = true
-  setTimeout(() => {
-    confetti.addConfetti();
-  }, 1000); // 2000ms = 2 seconds
 }
 </script>
 

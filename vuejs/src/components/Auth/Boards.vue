@@ -98,7 +98,7 @@ const deleteBoard = async (boardId) => {
   } catch (error) {
     console.error('Error deleting board:', error);
   }
-  if (userSelectedBoardStore.selectedBoard.id === boardId) {
+  if (userSelectedBoardStore.selectedBoard && userSelectedBoardStore.selectedBoard.id === boardId) {
     userSelectedBoardStore.setBoard(null)
   }
   if (selectedBoardId.value === boardId) {
