@@ -32,7 +32,7 @@
 
 ## 📽 Overview
 
-[![Watch the video](.github/assets/overview.mp4)](.github/assets/overview.mp4)
+🎬 [Watch the demo video](.github/assets/overview.mp4)
 
 
 ## 🌸 Feed
@@ -121,6 +121,6 @@ MIT License – free to use & share! 🔓
 
 Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
 
-- 📧 Email: [yourname@example.com](mailto:dankupr21@gmail.com)
+- 📧 Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
 - 🧑‍💻 GitHub: [@shutsuensha](https://github.com/shutsuensha)
-- ✈️ Telegram: [@yourhandle](https://t.me/evalshine)
+- ✈️ Telegram: [@evalshine](https://t.me/evalshine)
