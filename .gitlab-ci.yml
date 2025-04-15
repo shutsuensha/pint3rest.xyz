@@ -68,6 +68,9 @@ tests:
     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
 
+
+
+
 # clear-images:
 #   stage: clear-images
 #   script:
