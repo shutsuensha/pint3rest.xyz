@@ -109,18 +109,18 @@
 </p>
 
 
-## 📊 Project Architecture
+## Project Architecture
 ![Architecture](.github/assets/architecture-pint3rest.jpg)
 
-## 💬 Discussion  
+## Discussion  
 Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pint3rest.xyz/discussions)!
 
-## 📜 License 📝
-MIT License – free to use & share! 🔓
+## License 
+MIT License – free to use & share!
 
-## 📬 Contacts
+## Contacts
 
 Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
 
-- 📧 Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- ✈️ Telegram: [@evalshine](https://t.me/evalshine)
+- Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
+- Telegram: [@evalshine](https://t.me/evalshine)
