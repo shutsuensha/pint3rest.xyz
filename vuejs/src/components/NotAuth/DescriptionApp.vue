@@ -10,11 +10,7 @@
         </h1>
         <h2
           class="z-50 text-4xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
-          Vue 3 & FastAPI
-        </h2>
-        <h2
-          class="z-50 text-4xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
-          1536 × 864
+          1536 × 864 / Vue 3 & FastAPI / just have fun
         </h2>
       </div>
 

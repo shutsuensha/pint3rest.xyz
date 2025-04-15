@@ -28,7 +28,7 @@
         <div class="absolute inset-0 bg-white rounded-3xl opacity-80 blur-xl"></div>
         <div class="relative z-50 p-4">
           <h2 data-kinesisdepth-element data-ks-depth="800"
-            class="text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-black to-red-600 mb-2 drop-shadow-lg">
+            class="text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-black to-pink-600 mb-2 drop-shadow-lg">
             {{ card.title }}
           </h2>
         </div>
