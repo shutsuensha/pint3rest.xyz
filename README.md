@@ -32,7 +32,8 @@
 
 ## 📽 Overview
 
-🎬 [Watch the demo video](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/blob/main/.github/assets/overview.mp4?raw=true)
+🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
+
 
 
 ## 🌸 Feed
