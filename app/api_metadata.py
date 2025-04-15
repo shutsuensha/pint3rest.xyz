@@ -1,191 +1,237 @@
 tags_metadata = [
     {
         "name": "users",
-        "description": "👤 **Пользователи**:\n"
-        "- 🔹 Регистрация\n"
-        "- 🔹 Верификация почты\n"
-        "- 🔹 Сброс пароля\n"
-        "- 🔹 JWT-аутентификация\n"
-        "- 🔹 Отзыв JWT-токена\n"
-        "- 🔹 Получение пользователя\n"
-        "- 🔹 Загрузка/изменение изображения\n"
-        "- 🔹 Загрузка/изменение баннера\n"
-        "- 🔹 Обновление информации",
+        "description": "👤 **Users**:\n"
+        "- 🔹 Registration\n"
+        "- 🔹 Email verification\n"
+        "- 🔹 Password reset\n"
+        "- 🔹 JWT authentication\n"
+        "- 🔹 JWT token revocation\n"
+        "- 🔹 Get user information\n"
+        "- 🔹 Upload/update profile image\n"
+        "- 🔹 Upload/update banner\n"
+        "- 🔹 Update profile details",
+    },
+    {
+        "name": "admin",
+        "description": "🧑‍⚖️ **Administration**:\n"
+        "- 🔹 Delete any pin\n"
+        "- 🔹 Delete any comment\n",
     },
     {
         "name": "pins",
-        "description": "📌 **Пины**:\n"
-        "- 🔹 Получение списка\n"
-        "- 🔹 Создание\n"
-        "- 🔹 Удаление\n"
-        "- 🔹 Поиск по тегам\n"
-        "- 🔹 Загрузка изображения/видео\n"
-        "- 🔹 Получение отдельного пина\n"
-        "- 🔹 Получение всех пинов пользователя\n"
-        "- 🔹 Сохранение и удаление пинов\n"
-        "- 🔹 Получение списка лайкнутых пинов",
+        "description": "📌 **Pins**:\n"
+        "- 🔹 Retrieve a list of pins\n"
+        "- 🔹 Create a pin\n"
+        "- 🔹 Delete a pin\n"
+        "- 🔹 Search by tags\n"
+        "- 🔹 Upload an image/video\n"
+        "- 🔹 Get an individual pin\n"
+        "- 🔹 Retrieve all user pins\n"
+        "- 🔹 Save and remove pins\n"
+        "- 🔹 Retrieve list of liked pins",
+    },
+    {
+        "name": "search",
+        "description": "🔍 **Search**:\n"
+        "- 🔹 Get a list of user search queries\n"
+        "- 🔹 Save a search query\n"
+        "- 🔹 Delete a search query\n",
+    },
+    {
+        "name": "boards",
+        "description": "📋 **Boards**:\n"
+        "- 🔹 Retrieve list of boards\n"
+        "- 🔹 Create a board\n"
+        "- 🔹 Delete a board\n"
+        "- 🔹 Get all pins on a board\n"
+        "- 🔹 Save and remove pins on a board\n",
+    },
+    {
+        "name": "recommendations",
+        "description": "🧠 **Recommendations**:\n"
+        "- 🔹 Check for recommendations for the user\n"
+        "- 🔹 Retrieve list of recommended pins for the user\n",
+    },
+    {
+        "name": "updates",
+        "description": "🔔 **Updates**:\n"
+        "- 🔹 Retrieve a list of updates for the user\n"
+        "- 🔹 Get an individual update by ID\n"
+        "- 🔹 Get the count of updates\n"
+        "- 🔹 Change the read status of an update\n",
     },
     {
         "name": "tags",
-        "description": "🏷 **Теги**:\n"
-        "- 🔹 Получение всех тегов\n"
-        "- 🔹 Создание тега\n"
-        "- 🔹 Получение пинов по тегу\n"
-        "- 🔹 Получение тегов на пине",
+        "description": "🏷 **Tags**:\n"
+        "- 🔹 Retrieve all tags\n"
+        "- 🔹 Create a tag\n"
+        "- 🔹 Get pins by tag\n"
+        "- 🔹 Get tags on a pin\n",
     },
     {
         "name": "comments",
-        "description": "💬 **Комментарии**:\n"
-        "- 🔹 Создание комментариев\n"
-        "- 🔹 Получение списка\n"
-        "- 🔹 Подсчет количества комментариев\n"
-        "- 🔹 Загрузка изображений/видео\n"
-        "- 🔹 Создание ответов на комментарии\n"
-        "- 🔹 Получение всех ответов на комментарии",
+        "description": "💬 **Comments**:\n"
+        "- 🔹 Create a comment\n"
+        "- 🔹 Retrieve a list of comments\n"
+        "- 🔹 Count the number of comments\n"
+        "- 🔹 Upload images/videos\n"
+        "- 🔹 Create replies to comments\n"
+        "- 🔹 Retrieve all replies to comments\n",
     },
     {
         "name": "likes",
-        "description": "❤️ **Лайки**:\n"
-        "- 🔹 Лайки на пинах/комментариях\n"
-        "- 🔹 Удаление лайков\n"
-        "- 🔹 Проверка наличия лайка\n"
-        "- 🔹 Подсчет количества лайков",
+        "description": "❤️ **Likes**:\n"
+        "- 🔹 Like on pins/comments\n"
+        "- 🔹 Remove a like\n"
+        "- 🔹 Check if a like exists\n"
+        "- 🔹 Count the number of likes\n",
     },
     {
         "name": "subscriptions",
-        "description": "🔔 **Подписки**:\n"
-        "- 🔹 Подписка/отписка от пользователя\n"
-        "- 🔹 Проверка подписки\n"
-        "- 🔹 Получение списка подписчиков\n"
-        "- 🔹 Получение списка подписок\n"
-        "- 🔹 Подсчет количества подписчиков/подписок",
+        "description": "🔔 **Subscriptions**:\n"
+        "- 🔹 Subscribe/unsubscribe to a user\n"
+        "- 🔹 Check subscription status\n"
+        "- 🔹 Retrieve list of subscribers\n"
+        "- 🔹 Retrieve list of subscriptions\n"
+        "- 🔹 Count number of subscribers/subscriptions\n",
     },
     {
         "name": "chats",
-        "description": "💬 **Чаты**:\n" "- 🔹 Изменение цвета/размера/открытости чата",
+        "description": "💬 **Chats**:\n"
+        "- 🔹 Change chat color, size, and visibility\n",
     },
     {
         "name": "messages",
-        "description": "📩 **Сообщения**:\n"
-        "- 🔹 Создание сообщений\n"
-        "- 🔹 История сообщений\n"
-        "- 🔹 Последнее сообщение\n"
-        "- 🔹 Проверка существования чатов\n"
-        "- 🔹 Создание изображений/видео в сообщениях\n"
-        "- 🔹 Подсчет непрочитанных сообщений",
-    },
-    {
-        "name": "notauth",
-        "description": "🏠 **Главная страница**:\n"
-        "- 🔹 Получение изображений для неавторизованных пользователей",
-    },
-    {
-        "name": "pins-cache",
-        "description": "🗄 **Кэширование пинов (пример)**:\n"
-        "- 🔹 Получение списка пинов с кэшем\n"
-        "- 🔹 Очистка кэша при удалении/создании пина",
-    },
-    {
-        "name": "users-google-auth",
-        "description": "🔑 **Google OAuth2 (пример)**:\n"
-        "- 🔹 Аутентификация через Google\n"
-        "- 🔹 Получение данных авторизованного пользователя",
-    },
-    {
-        "name": "users-httpx",
-        "description": "🔗 **HTTPX Users (пример)**:\n" "- 🔹 CRUD-операции через HTTPX",
-    },
-    {
-        "name": "users-mysql",
-        "description": "🛢 **MySQL Users (пример)**:\n"
-        "- 🔹 CRUD-операции через PostgreSQL + Aiomysql",
-    },
-    {
-        "name": "users-mongodb",
-        "description": "📦 **MongoDB Users (пример)**:\n"
-        "- 🔹 CRUD-операции через MongoDB (async)",
-    },
-    {
-        "name": "users-celery",
-        "description": "📤 **Celery (пример)**:\n"
-        "- 🔹 Загрузка медиа через Celery-воркер\n"
-        "- 🔹 Проверка статуса задачи",
+        "description": "📩 **Messages**:\n"
+        "- 🔹 Create messages\n"
+        "- 🔹 Retrieve message history\n"
+        "- 🔹 Get the latest message\n"
+        "- 🔹 Check if chats exist\n"
+        "- 🔹 Upload images/videos in messages\n"
+        "- 🔹 Count unread messages\n",
     },
     {
         "name": "sse",
-        "description": "📺 **Server-Sent Events (пример)**:\n" "- 🔹 Потоковая передача видео",
+        "description": "📺 **Server-Sent Events**:\n"
+        "- 🔹 SSE for chats (when another user sends you a message or starts a chat with you)\n"
+        "- 🔹 SSE for updates (when another user saves/likes/comments on your pin or follows you)\n"
+        "- 🔹 SSE for the unauthenticated page for streaming video\n",
+    },
+    {
+        "name": "notauth",
+        "description": "🏠 **Homepage**:\n"
+        "- 🔹 Retrieve images for unauthenticated users\n",
+    },
+    {
+        "name": "pins-cache",
+        "description": "🗄 **Pins Cache (Example)**:\n"
+        "- 🔹 Retrieve list of pins with caching\n"
+        "- 🔹 Clear cache when a pin is created/deleted\n",
+    },
+    {
+        "name": "users-google-auth",
+        "description": "🔑 **Google OAuth2 (Example)**:\n"
+        "- 🔹 Authentication via Google\n"
+        "- 🔹 Retrieve data of the authenticated user\n",
+    },
+    {
+        "name": "users-httpx",
+        "description": "🔗 **HTTPX Users (Example)**:\n"
+        "- 🔹 CRUD operations via HTTPX\n",
+    },
+    {
+        "name": "users-mysql",
+        "description": "🛢 **MySQL Users (Example)**:\n"
+        "- 🔹 CRUD operations using PostgreSQL + Aiomysql\n",
+    },
+    {
+        "name": "users-mongodb",
+        "description": "📦 **MongoDB Users (Example)**:\n"
+        "- 🔹 CRUD operations using asynchronous MongoDB\n",
+    },
+    {
+        "name": "users-celery",
+        "description": "📤 **Celery (Example)**:\n"
+        "- 🔹 Upload media via Celery worker\n"
+        "- 🔹 Check task status\n",
     },
     {
         "name": "yandex-s3",
-        "description": "☁ **Yandex S3 (пример)**:\n"
-        "- 🔹 Загрузка медиа в Yandex Bucket\n"
-        "- 🔹 Получение файлов из хранилища",
+        "description": "☁ **Yandex S3 (Example)**:\n"
+        "- 🔹 Upload media to a Yandex Bucket\n"
+        "- 🔹 Retrieve files from storage\n",
     },
     {
         "name": "graphql",
-        "description": "🔗 **GraphQL (пример)**:\n" "- 🔹 GraphQL API и документация",
+        "description": "🔗 **GraphQL (Example)**:\n"
+        "- 🔹 GraphQL API and documentation\n",
     },
 ]
 
 description = """
-### 🖼️ Описание API
-Этот API предназначен для работы с **Pinterest** – платформой для обмена изображениями, видео и идеями.
+### 🖼️ API Description
+This API is designed to work with **Pinterest** – a platform for sharing images, videos, and ideas.
 
-#### 🔑 Основной функционал:
-- **Пользователи**: регистрация, вход, выход, верификация почты, сброс пароля, JWT-аутентификация (access/refresh tokens), отзыв JWT-токенов, загрузка изображений, обновление профиля, просмотр профилей всех пользователей.
-- **Пины**: создание, удаление, сохранение, лайк пина, поиск, загрузка медиа, управление сохранениями, лайками и созданными пинами, просмотр всех пинов, просмотр отдельного пина + related.
-- **Теги**: управление тегами, поиск пинов по тегам.
-- **Комментарии**: добавление комментариев к пину, ответы на комментарии, загрузка медиа, просмотр комментариев на пине.
-- **Лайки**: лайки для пинов и комментариев.
-- **Подписки**: управление подписками, получение списка подписчиков и подписок.
-- **Чаты и сообщения**: просмотр чатов, просмотр истории чата, отправка сообщений.
+#### 🔑 Core Functionality:
+- **Users**: registration, login, logout, Google authentication, email verification, password reset, JWT authentication (access/refresh tokens), token revocation, image upload, profile update, and retrieval of all user profiles.
+- **Pins**: creation, deletion, saving, liking, search, media upload, management of saved, liked and created pins, retrieving all pins, and viewing individual pins along with related content.
+- **Tags**: tag management and searching pins by tags.
+- **Comments**: adding comments to a pin, replying to comments, media uploads, and retrieving pin comments.
+- **Likes**: likes for pins and comments.
+- **Subscriptions**: managing subscriptions, retrieving lists of subscribers and following users.
+- **Realtime Chats and Messages**: viewing chats, retrieving chat history, and sending messages.
+- **Realtime Updates**: receiving updates from other users.
+- **Recommendations**: users receive pin recommendations based on their viewed content.
+- **Search**: users can retrieve and delete their latest search queries.
+- **Admin**: administrators can delete any pin or comment.
+- **Boards**: users can create/delete boards, select a board, add pins to a selected board, view all boards, view pins on a board, and remove pins from a board.
 
-#### 🛠️ Используемые технологии:
-- **FastAPI** – REST и GraphQL API.
-- **FastAPI-Cache** – для кэширования на уровне API.
-- **FastAPI-Mail** – для отправки email через FastAPI.
-- **SQLAlchemy** – ORM для работы с базами данных.
-- **Pydantic** – для валидации запросов/ответов и **pydantic-settings** – для управления переменными окружения.
-- **JWT** – access/refresh tokens, revoke tokens.
-- **OAuth2** – Google Auth.
-- **PostgreSQL, MySQL, MongoDB** – для работы с реляционными и нереляционными базами данных.
-- **Redis** – для кэширования данных, отзыва токенов, работы брокера и получения результатов Celery, а также для Celery RedBeat.
-- **Celery** – для отправки писем верификации/сброса пароля, обработки изображений (сохранение, изменение размера, обновление базы данных).
-- **Celery Beat** – для отправки рекламы на почту.
-- **Docker** – для контейнеризации приложений.
-- **Docker Compose** – для управления многоконтейнерными приложениями.
-- **Nginx** – для проксирования запросов `/api`, `/ws` и обеспечения безопасности.
-- **SSL** – для безопасного соединения через HTTPS.
-- **VPS** – для размещения приложения на виртуальном сервере.
-- **Yandex S3** – для хранения и получения файлов (Yandex bucket).
-- **httpx** – для взаимодействия с внешними API.
-- **Websockets** – реализация чатов с использованием FastAPI.websockets.
-- **SSE (Server-Sent Events)** – для получения уведомлений от сервера на клиенте в режиме реального времени.
-- **Asyncio** – для асинхронного программирования.
-- **Aiofiles** – для асинхронной работы с файловой системой.
-- **Logging** – для ведения логов в приложении.
-- **Pytest** – для тестирования и обеспечения качества кода.
-- **Ruff** – линтинг и форматирование.
-- **Alembic** – для миграций базы данных.
-- **GitLab CI/CD** – для настройки CI/CD Pipeline (build, lint/format, migrations, test, deploy).
-- **GraphQL (Strawberry)** – для построения GraphQL API.
+#### 🛠️ Technologies Used:
+- **FastAPI** – REST and GraphQL API.
+- **FastAPI-Cache** – for API-level caching.
+- **FastAPI-Mail** – for sending emails via FastAPI.
+- **SQLAlchemy** – ORM for database management.
+- **Pydantic** – for request/response validation and **pydantic-settings** for managing environment variables.
+- **JWT** – access/refresh tokens and token revocation.
+- **OAuth2** – Google authentication.
+- **PostgreSQL, MySQL, MongoDB** – for working with both relational and non-relational databases.
+- **Redis** – for data caching, token revocation, message brokering, retrieving Celery results, and Celery RedBeat.
+- **Celery** – for sending verification/password reset emails and processing images (saving, resizing, and updating the database).
+- **Celery Beat** – for sending promotional emails.
+- **Docker** – for containerizing applications.
+- **Docker Compose** – for managing multi-container applications.
+- **Nginx** – for proxying requests (`/api`, `/ws`) and ensuring security.
+- **SSL** – for secure HTTPS connections.
+- **VPS** – for hosting the application on a virtual server.
+- **Yandex S3** – for file storage and retrieval (Yandex bucket).
+- **httpx** – for interacting with external APIs.
+- **Websockets** – for implementing chats with FastAPI.websockets.
+- **SSE (Server-Sent Events)** – for real-time notifications from the server to the client.
+- **Asyncio** – for asynchronous programming.
+- **Aiofiles** – for asynchronous file system operations.
+- **Logging** – for application logging.
+- **Pytest** – for testing and quality assurance.
+- **Ruff** – for linting and formatting.
+- **Alembic** – for database migrations.
+- **GitLab CI/CD** – for configuring the CI/CD pipeline (build, lint/format, migrations, testing, deployment).
+- **GraphQL (Strawberry)** – for building the GraphQL API.
+- **Redis Stream** – for transferring messages from Celery to FastAPI.
 
-
-
-#### 📝 Автор
+#### 📝 Author:
 - 🐰 **Daniil Kupryianchyk**
 
-#### 📬 Контакты:
+#### 📬 Contacts:
 - 📧 **Email**: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
 - 💬 **Telegram**: [@evalshine](https://t.me/evalshine)
 - 🐙 **GitHub**: [shutsuensha](https://github.com/shutsuensha)
 
-#### 🔗 Полезные ссылки:
+#### 🔗 Useful Links:
 - 🚀 **GraphQL API**: [`pint3rest.xyz/api/graphql`](https://pint3rest.xyz/api/graphql)
-- 📜 **Документация (Swagger UI)**: [`pint3rest.xyz/api/docs`](https://pint3rest.xyz/api/docs)
-- 📑 **Документация (ReDoc)**: [`pint3rest.xyz/api/redoc`](https://pint3rest.xyz/api/redoc)
+- 📜 **Documentation (Swagger UI)**: [`pint3rest.xyz/api/docs`](https://pint3rest.xyz/api/docs)
+- 📑 **Documentation (ReDoc)**: [`pint3rest.xyz/api/redoc`](https://pint3rest.xyz/api/redoc)
 - 📜 **OpenAPI JSON**: [`pint3rest.xyz/api/openapi.json`](https://pint3rest.xyz/api/openapi.json)
-- 🌐 **Главная страница**: [`pint3rest.xyz`](https://pint3rest.xyz)
+- 🌐 **Homepage**: [`pint3rest.xyz`](https://pint3rest.xyz)
 """
 
 title = "Pinterest Rest API"

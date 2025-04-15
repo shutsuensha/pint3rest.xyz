@@ -36,9 +36,9 @@ templates = Jinja2Templates(directory="app/templates")
     "/register",
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
-    responses={
+    responses = {
         201: {
-            "description": "Пользователь успешно зарегистрирован. Если указан email, отправляется письмо с подтверждением.",
+            "description": "User successfully registered. If an email is provided, a confirmation email is sent.",
             "content": {
                 "application/json": {
                     "example": {
@@ -58,19 +58,19 @@ templates = Jinja2Templates(directory="app/templates")
             },
         },
         409: {
-            "description": "Пользователь с таким именем уже существует.",
+            "description": "A user with this username already exists.",
             "content": {"application/json": {"example": {"detail": "user already exists"}}},
         },
     },
 )
 async def register_user(user_in: UserIn, db: db):
     """
-    Регистрирует нового пользователя.
+    Registers a new user.
 
-    - **username**: уникальное имя пользователя
-    - **password**: пароль пользователя (будет захеширован)
-    - **email** (необязательно): если указан, отправляется письмо с подтверждением
-    - **Ответ**: объект пользователя без пароля
+    - **username**: unique username
+    - **password**: user's password (will be hashed)
+    - **email** (optional): if provided, a confirmation email will be sent
+    - **Response**: user object without the password
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
     if user:
@@ -113,29 +113,29 @@ async def register_user(user_in: UserIn, db: db):
     response_class=HTMLResponse,
     responses={
         200: {
-            "description": "Учетная запись пользователя успешно подтверждена",
+            "description": "User account successfully confirmed",
             "content": {
                 "text/html": {
-                    "example": "<html><body><h1>Аккаунт успешно подтвержден</h1></body></html>"
+                    "example": "<html><body><h1>Account successfully confirmed</h1></body></html>"
                 }
             },
         },
         409: {
-            "description": "Пользователь не найден",
-            "content": {"application/json": {"example": {"detail": "Пользователь не найден"}}},
+            "description": "User not found",
+            "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
     },
 )
 async def verify_user_account(request: Request, token: str, db: db):
     """
-    Подтверждает учетную запись пользователя по предоставленному токену.
+    Confirms the user's account with the provided token.
 
-    - **token**: Токен, используемый для подтверждения пользователя, содержащий имя пользователя.
-    - Возвращает страницу с успешным подтверждением, если пользователь найден и успешно подтвержден.
-    - Возвращает ошибку 409, если пользователь не найден.
+    - **token**: The token used for confirming the user, which contains the username.
+    - Returns a page with a successful confirmation if the user is found and successfully confirmed.
+    - Returns a 409 error if the user is not found.
 
-    **Ответы:**
-    - 200: Успешное подтверждение учетной записи.
+    **Responses:**
+    - 200: Successful account confirmation.
     """
     token_data = decode_url_safe_token(token)
     user_username = token_data.get("username")
@@ -161,29 +161,29 @@ async def verify_user_account(request: Request, token: str, db: db):
 
 @router.post(
     "/password-reset-request",
-    responses={
+        responses={
         200: {
-            "description": "Ссылка для сброса пароля успешно отправлена на вашу почту",
+            "description": "Password reset link has been successfully sent to your email",
             "content": {
                 "application/json": {
-                    "example": {"message": "password reset link is send to your email"}
+                    "example": {"message": "password reset link is sent to your email"}
                 }
             },
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "user not found"}}},
         },
         403: {
-            "description": "Пользователь не имеет привязанного email для сброса пароля",
+            "description": "User does not have an email associated for password reset",
             "content": {
                 "application/json": {
-                    "example": {"detail": "user does not have email, u cant do password reset"}
+                    "example": {"detail": "user does not have email, you can't reset password"}
                 }
             },
         },
         400: {
-            "description": "Неверный email для сброса пароля",
+            "description": "Invalid email for password reset",
             "content": {
                 "application/json": {
                     "example": {"detail": "enter your email for account <username>"}
@@ -191,11 +191,11 @@ async def verify_user_account(request: Request, token: str, db: db):
             },
         },
         405: {
-            "description": "Ошибка при сбросе пароля, требуется подтверждение email",
+            "description": "Error while resetting password, email confirmation required",
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "first u need verify your email then u can password, verification link is send to your email"
+                        "detail": "first you need to verify your email, then you can reset password, verification link is sent to your email"
                     }
                 }
             },
@@ -204,18 +204,18 @@ async def verify_user_account(request: Request, token: str, db: db):
 )
 async def password_reset_request(reset_model: PasswordResetRequestModel, db: db):
     """
-    Запрос на сброс пароля пользователя.
+    Request to reset the user's password.
 
-    - **reset_model.username**: Имя пользователя, для которого запрашивается сброс пароля.
-    - **reset_model.email**: Email, указанный пользователем для сброса пароля.
-    - **reset_model.password**: Новый пароль, который будет установлен после сброса.
+    - **reset_model.username**: The username for which the password reset is requested.
+    - **reset_model.email**: The email provided by the user for password reset.
+    - **reset_model.password**: The new password to be set after the reset.
 
-    **Ответы:**
-    - 200: Ссылка для сброса пароля успешно отправлена на почту.
-    - 404: Пользователь не найден.
-    - 403: Пользователь не имеет email для сброса пароля.
-    - 400: Введен неверный email для указанного пользователя.
-    - 405: Ошибка сброса пароля, требуется подтверждение email.
+    **Responses:**
+    - 200: Password reset link has been successfully sent to the email.
+    - 404: User not found.
+    - 403: User does not have an email for password reset.
+    - 400: Invalid email entered for the specified user.
+    - 405: Error resetting password, email confirmation required.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == reset_model.username))
     if not user:
@@ -266,19 +266,19 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
     response_class=HTMLResponse,
     responses={
         200: {
-            "description": "Пароль успешно сброшен",
+            "description": "Password successfully reset",
             "content": {
                 "text/html": {
-                    "example": "<html><body><h1>Пароль успешно сброшен</h1></body></html>"
+                    "example": "<html><body><h1>Password successfully reset</h1></body></html>"
                 }
             },
         },
         409: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "user not found"}}},
         },
         400: {
-            "description": "Неверный токен для сброса пароля",
+            "description": "Invalid token for password reset",
             "content": {
                 "application/json": {"example": {"detail": "Invalid token for password reset"}}
             },
@@ -287,17 +287,17 @@ async def password_reset_request(reset_model: PasswordResetRequestModel, db: db)
 )
 async def reset_account_password(request: Request, token: str, db: db):
     """
-    Сброс пароля пользователя с помощью токена.
+    Reset the user's password using a token.
 
-    - **token**: Токен, содержащий имя пользователя и новый пароль.
-    - Возвращает страницу с успешным сбросом пароля, если все данные верны.
-    - Возвращает ошибку 409, если пользователь не найден.
-    - Возвращает ошибку 400, если токен сброса пароля недействителен.
+    - **token**: The token containing the username and the new password.
+    - Returns a page with a successful password reset if all data is correct.
+    - Returns error 409 if the user is not found.
+    - Returns error 400 if the password reset token is invalid.
 
-    **Ответы:**
-    - 200: Пароль успешно сброшен.
-    - 409: Пользователь не найден.
-    - 400: Неверный токен для сброса пароля.
+    **Responses:**
+    - 200: Password successfully reset.
+    - 409: User not found.
+    - 400: Invalid token for password reset.
     """
     token_data = decode_url_safe_token(token)
 
@@ -326,7 +326,7 @@ async def reset_account_password(request: Request, token: str, db: db):
     "/login",
     responses={
         200: {
-            "description": "Пользователь успешно вошел в систему",
+            "description": "User successfully logged in",
             "content": {
                 "application/json": {
                     "example": {
@@ -337,28 +337,28 @@ async def reset_account_password(request: Request, token: str, db: db):
             },
         },
         401: {
-            "description": "Неверные данные для входа",
+            "description": "Invalid login credentials",
             "content": {"application/json": {"example": {"detail": "user not found"}}},
         },
         403: {
-            "description": "Пользователь не подтвердил email",
+            "description": "User has not verified their email",
             "content": {
-                "application/json": {"example": {"detail": "Verification link is send to <email>"}}
+                "application/json": {"example": {"detail": "Verification link is sent to <email>"}}
             },
         },
     },
 )
 async def login_user(user_in: UserIn, response: Response, db: db):
     """
-    Вход пользователя в систему.
+    User login.
 
-    - **user_in.username**: Имя пользователя для входа.
-    - **user_in.password**: Пароль пользователя для входа.
+    - **user_in.username**: Username for login.
+    - **user_in.password**: Password for login.
 
-    **Ответы:**
-    - 200: Пользователь успешно вошел в систему, возвращает токены.
-    - 401: Неверные данные для входа (пользователь не найден или пароль не совпадает).
-    - 403: Пользователь не подтвердил email, ссылка на подтверждение отправлена на его почту.
+    **Responses:**
+    - 200: User successfully logged in, returns tokens.
+    - 401: Invalid login credentials (user not found or incorrect password).
+    - 403: User has not verified their email, a verification link has been sent to their email.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_in.username))
     if not user:
@@ -388,7 +388,7 @@ async def login_user(user_in: UserIn, response: Response, db: db):
     "/refresh_token",
     responses={
         200: {
-            "description": "Новый access токен успешно выдан",
+            "description": "New access token successfully issued",
             "content": {
                 "application/json": {
                     "example": {
@@ -399,20 +399,20 @@ async def login_user(user_in: UserIn, response: Response, db: db):
             },
         },
         401: {
-            "description": "Ошибка авторизации, токен не предоставлен или был отозван",
+            "description": "Authorization error, token not provided or has been revoked",
             "content": {"application/json": {"example": {"detail": "Unauthorized"}}},
         },
-    },
+    }
 )
 async def get_new_access_token(request: Request, response: Response):
     """
-    Получение нового access токена с использованием refresh токена.
+    Get a new access token using the refresh token.
 
-    - **refresh_token**: Refresh токен, который должен быть передан в cookies.
+    - **refresh_token**: The refresh token that should be passed in the cookies.
 
-    **Ответы:**
-    - 200: Новый access токен выдан, возвращает access и refresh токены.
-    - 401: Ошибка авторизации, refresh токен не предоставлен или был отозван.
+    **Responses:**
+    - 200: A new access token is issued, returns both access and refresh tokens.
+    - 401: Authorization error, refresh token not provided or has been revoked.
     """
     refresh_token = request.cookies.get("refresh_token", None)
     if not refresh_token:
@@ -429,19 +429,19 @@ async def get_new_access_token(request: Request, response: Response):
     "/logout",
     responses={
         200: {
-            "description": "Пользователь успешно вышел из системы",
+            "description": "User successfully logged out",
             "content": {"application/json": {"example": {"status": "OK"}}},
         }
     },
 )
 async def logout(response: Response, request: Request):
     """
-    Выход пользователя из системы.
+    User logout.
 
-    Удаляет access и refresh токены из cookies и отзывает их.
+    Removes the access and refresh tokens from cookies and revokes them.
 
-    **Ответы:**
-    - 200: Пользователь успешно вышел из системы.
+    **Responses:**
+    - 200: User successfully logged out.
     """
     access_token = request.cookies.get("access_token", None)
     refresh_token = request.cookies.get("refresh_token", None)
@@ -459,9 +459,9 @@ async def logout(response: Response, request: Request):
 @router.get(
     "/me",
     response_model=UserOut,
-    responses={
+    responses = {
         200: {
-            "description": "Пользователь найден и возвращен",
+            "description": "User found and returned",
             "content": {
                 "application/json": {
                     "example": {"id": 1, "username": "username", "image": "image.jpg"}
@@ -472,12 +472,12 @@ async def logout(response: Response, request: Request):
 )
 async def get_me(user_id: user_id, db: db):
     """
-    Получение информации о текущем пользователе по ID.
+    Get information about the current user by ID.
 
-    - **user_id**: ID пользователя для получения его данных.
+    - **user_id**: The user ID to retrieve their data.
 
-    **Ответы:**
-    - 200: Информация о пользователе успешно возвращена.
+    **Responses:**
+    - 200: User information successfully returned.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
     return user
@@ -488,7 +488,7 @@ async def get_me(user_id: user_id, db: db):
     response_model=UserOut,
     responses={
         200: {
-            "description": "Пользователь найден и возвращен",
+            "description": "User found and returned",
             "content": {
                 "application/json": {
                     "example": {"id": 1, "username": "username", "image": "image.jpg"}
@@ -496,20 +496,20 @@ async def get_me(user_id: user_id, db: db):
             },
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
     },
 )
 async def get_user_by_id(user_id: user_id, id: int, db: db):
     """
-    Получение информации о пользователе по ID.
+    Retrieve user information by ID.
 
-    - **id**: ID пользователя для получения его данных.
+    - **id**: The user's ID to retrieve their data.
 
-    **Ответы:**
-    - 200: Информация о пользователе успешно возвращена.
-    - 404: Пользователь не найден.
+    **Responses:**
+    - 200: User information successfully returned.
+    - 404: User not found.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
@@ -520,9 +520,9 @@ async def get_user_by_id(user_id: user_id, id: int, db: db):
 @router.get(
     "/user_username/{username}",
     response_model=UserOut,
-    responses={
+    responses = {
         200: {
-            "description": "Пользователь найден и возвращен",
+            "description": "User found and returned",
             "content": {
                 "application/json": {
                     "example": {"id": 1, "username": "username", "image": "image.jpg"}
@@ -530,20 +530,20 @@ async def get_user_by_id(user_id: user_id, id: int, db: db):
             },
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
     },
 )
 async def get_user_by_username(user_id: user_id, username: str, db: db):
     """
-    Получение информации о пользователе по имени пользователя (username).
+    Get user information by username.
 
-    - **username**: Имя пользователя для получения его данных.
+    - **username**: The username to retrieve the user's data.
 
-    **Ответы:**
-    - 200: Информация о пользователе успешно возвращена.
-    - 404: Пользователь не найден.
+    **Responses:**
+    - 200: User information successfully returned.
+    - 404: User not found.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.username == username))
     if user is None:
@@ -556,7 +556,7 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
     response_model=UserOut,
     responses={
         200: {
-            "description": "Изображение успешно загружено и обновлено",
+            "description": "Image successfully uploaded and updated",
             "content": {
                 "application/json": {
                     "example": {"id": 1, "username": "username", "image": "image_path"}
@@ -564,22 +564,23 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
             },
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
-    },
+    }
 )
 async def upload_image(id: int, db: db, file: UploadFile):
     """
-    Загрузка изображения для пользователя.
+    Image upload for the user.
 
-    - **id**: ID пользователя, для которого загружается изображение.
-    - **file**: Загружаемый файл изображения.
+    - **id**: User ID for which the image is being uploaded.
+    - **file**: The uploaded image file.
 
-    **Ответы:**
-    - 200: Изображение успешно загружено и обновлено.
-    - 404: Пользователь не найден.
+    **Responses:**
+    - 200: Image successfully uploaded and updated.
+    - 404: User not found.
     """
+
 
     ALLOWED_FILE_TYPES = [
         "image/jpeg",
@@ -618,26 +619,26 @@ async def upload_image(id: int, db: db, file: UploadFile):
 
 @router.get(
     "/upload/{id}",
-    responses={
+    responses = {
         200: {
-            "description": "Изображение пользователя успешно найдено и возвращено",
+            "description": "User's image successfully found and returned",
             "content": {"application/octet-stream": {}},
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
     },
 )
 async def get_image(user_id: user_id, id: int, db: db):
     """
-    Получение изображения пользователя по ID.
+    Get the user's image by ID.
 
-    - **id**: ID пользователя, чье изображение нужно получить.
+    - **id**: The ID of the user whose image is to be retrieved.
 
-    **Ответы:**
-    - 200: Изображение пользователя найдено и возвращено.
-    - 404: Пользователь не найден.
+    **Responses:**
+    - 200: The user's image was found and returned.
+    - 404: User not found.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
@@ -651,7 +652,7 @@ async def get_image(user_id: user_id, id: int, db: db):
     response_model=UserOut,
     responses={
         200: {
-            "description": "Изображение баннера успешно загружено и обновлено.",
+            "description": "The banner image was successfully uploaded and updated.",
             "content": {
                 "application/json": {
                     "example": {"id": 1, "username": "user1", "banner_image": "path/to/banner.jpg"}
@@ -662,14 +663,15 @@ async def get_image(user_id: user_id, id: int, db: db):
 )
 async def update_user_banner_image(id: int, db: db, file: UploadFile):
     """
-    Обновление изображения баннера пользователя по ID.
+    Updating the user's banner image by ID.
 
-    - **id**: ID пользователя, чей баннер необходимо обновить.
-    - **file**: Новый файл изображения баннера.
+    - **id**: The ID of the user whose banner needs to be updated.
+    - **file**: The new banner image file.
 
-    **Ответы:**
-    - 200: Изображение баннера успешно обновлено.
+    **Responses:**
+    - 200: The banner image was successfully updated.
     """
+
 
     ALLOWED_FILE_TYPES = [
         "image/jpeg",
@@ -709,24 +711,24 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
     "/banner/upload/{id}",
     responses={
         200: {
-            "description": "Изображение баннера пользователя успешно найдено и возвращено.",
+            "description": "The user's banner image was successfully found and returned.",
             "content": {"application/octet-stream": {}},
         },
         404: {
-            "description": "Пользователь не найден",
+            "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
-    },
+    }
 )
 async def get_user_banner(user_id: user_id, id: int, db: db):
     """
-    Получение изображения баннера пользователя по ID.
+    Get the user's banner image by ID.
 
-    - **id**: ID пользователя, чей баннер нужно получить.
+    - **id**: The user's ID whose banner image needs to be fetched.
 
-    **Ответы:**
-    - 200: Изображение баннера найдено и возвращено.
-    - 404: Пользователь не найден.
+    **Responses:**
+    - 200: The banner image was found and returned.
+    - 404: User not found.
     """
     user = await db.scalar(select(UsersOrm).where(UsersOrm.id == id))
     if user is None:
@@ -738,27 +740,27 @@ async def get_user_banner(user_id: user_id, id: int, db: db):
 @router.patch(
     "/information",
     response_model=UserOut,
-    responses={
+    responses = {
         200: {
-            "description": "Информация пользователя успешно обновлена.",
+            "description": "User information successfully updated.",
             "content": {"application/json": {"example": {"id": 1, "username": "new_username"}}},
         },
         409: {
-            "description": "Пользователь не найден.",
+            "description": "User not found.",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
     },
 )
 async def update_user_information(user_model: UserPatch, user_id: user_id, db: db):
     """
-    Обновление информации пользователя (например, имени пользователя, описания и т. д.).
+    Update user information (e.g., username, description, etc.).
 
-    - **user_id**: ID пользователя, чью информацию нужно обновить.
-    - **user_model**: Модель данных для обновления информации пользователя.
+    - **user_id**: The ID of the user whose information needs to be updated.
+    - **user_model**: The data model for updating the user's information.
 
-    **Ответы:**
-    - 200: Информация пользователя успешно обновлена.
-    - 409: Пользователь с таким ID не найден.
+    **Responses:**
+    - 200: User information successfully updated.
+    - 409: User with this ID not found.
     """
     if user_model.username:
         user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_model.username))
