@@ -113,7 +113,7 @@
 ![Architecture](.github/assets/architecture-pint3rest.jpg)
 
 ## Discussion  
-Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pint3rest.xyz/discussions)!
+Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/discussions)!
 
 ## License 
 MIT License – free to use & share!
