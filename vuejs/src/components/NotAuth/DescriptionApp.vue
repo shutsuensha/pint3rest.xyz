@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-400 to-white text-gray-900 relative">
-    <img src="/screen.jpg" class="absolute top-0 right-0 h-full opacity-40 mask-gradient" />
+    <img src="/screen.jpg" class="absolute top-0 right-0 h-[800px] opacity-40 mask-gradient" />
     <div class=" max-w-7xl mx-auto px-6 py-12 z-50">
       <!-- Заголовок с динамическим градиентом -->
       <div v-if="fontLoaded">
@@ -9,11 +9,14 @@
           Pinterest Clone
         </h1>
         <h2
-          class="z-50 text-4xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
+          class="z-50 text-4xl font-semibold text-center mb-2 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
           1536 × 864 / Vue 3 & FastAPI / just have fun
         </h2>
       </div>
 
+      <div class="grid grid-cols-1 gap-4 h-[600px]">
+        <Overview :card="overview" />
+      </div>
 
       <!-- Первая галерея -->
       <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
@@ -22,10 +25,10 @@
       </div>
 
       <!-- Текстовый блок -->
-      <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
+      <!-- <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
         <h2 class="text-4xl font-bold ">👤 Users 📌 Pins ❤️ Likes 💬 Comments 💭 Chats </h2>
-      </div>
+      </div> -->
 
       <!-- Вторая галерея -->
       <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
@@ -34,15 +37,36 @@
       </div>
 
       <!-- Текстовый блок -->
-      <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
+      <!-- <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
         data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
         <h2 class="text-4xl font-bold">Easy registration with no hassle! 🚀 Give it a try now! 😊</h2>
-      </div>
+      </div> -->
 
       <!-- Третья галерея -->
       <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
         <ScreenshotCard v-for="(card, index) in screenshots.slice(4, 6)" :key="index" :card="card"
           @click="openFullscreen(index + 4)" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(6, 8)" :key="index" :card="card"
+          @click="openFullscreen(index + 6)" />
+      </div>
+
+
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(8, 10)" :key="index" :card="card"
+          @click="openFullscreen(index + 8)" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4" data-kinesisscroll-item data-ks-strength="-50" data-ks-transformaxis="Y">
+        <ScreenshotCard v-for="(card, index) in screenshots.slice(10, 12)" :key="index" :card="card"
+          @click="openFullscreen(index + 10)" />
+      </div>
+
+        <div class="cursor-default mb-12 text-center px-4 py-6 bg-white/70 backdrop-blur-md rounded-lg shadow-lg"
+        data-kinesisscroll-item data-ks-strength="30" data-ks-transformaxis="Y">
+        <h2 class="text-4xl font-bold">No commitments — just have a good time</h2>
       </div>
 
     </div>
@@ -85,6 +109,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import ScreenshotCard from '@/components/NotAuth/ScreenshotCard.vue'
 import { initializeKinesis } from "@amineyarman/kinesis";
+import Overview from '@/components/NotAuth/Overview.vue'
 
 const fontLoaded = ref(false)
 
@@ -100,42 +125,86 @@ onMounted(async () => {
   initializeKinesis();
 });
 
+const overview = ref(
+  {
+    src: '/screenshots/overview.png',
+    stream: 'overview.mp4',
+    title: 'Overview',
+  })
+
+
 const screenshots = ref([
   {
-    src: '/screenshots/pint3rest-home.png',
-    stream: 'home.mp4',
-    title: '🏠 Home',
-    description: 'A stylish feed designed to spark creativity and inspiration. Explore a curated collection of visually stunning content that fuels your imagination.'
+    src: '/screenshots/feed.png',
+    stream: 'feed.mp4',
+    title: '🌸 Feed',
+    description: 'The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.'
   },
   {
-    src: '/screenshots/pint3rest-search.png',
+    src: '/screenshots/detail.png',
+    stream: 'detail.mp4',
+    title: '📌 Pin + Related',
+    description: 'A detailed pin with title, description, href, tags, and the user who created it. Includes comments and likes. Below the pin, related pins are displayed based on connected tags.'
+  },
+  {
+    src: '/screenshots/search.png',
     stream: 'search.mp4',
     title: '🔍 Search',
-    description: 'Discover trending ideas and the latest content with our advanced search tools. Quickly find inspiration and innovative concepts.'
+    description: 'Pin search by query and tags, with a quick search feature available on any page. It also displays popular pins and a list of recent searches.'
   },
   {
-    src: '/screenshots/pint3rest-user.png',
-    stream: 'profile.mp4',
-    title: '👤 Profile',
-    description: 'Your personalized profile where your creativity shines. Showcase your interests, connect with others, and manage your content effortlessly.'
-  },
-  {
-    src: '/screenshots/pint3rest-detail.png',
-    stream: 'detail.mp4',
-    title: '📌 Pin',
-    description: 'Dive into detailed insights on every pin, including likes, comments, and saves. Gain a deeper understanding of what makes each pin unique.'
-  },
-  {
-    src: '/screenshots/pint3rest-create.png',
+    src: '/screenshots/create.png',
     stream: 'create.mp4',
     title: '✨ New Pin',
-    description: 'Easily create and share stunning pins with our intuitive interface. Turn your ideas into captivating visuals in seconds.'
+    description: 'Pin creation — image/gif/video, with the option to add additional information to the pin and assign tags to it.'
   },
   {
-    src: '/screenshots/pint3rest-chats.png',
+    src: '/screenshots/user.png',
+    stream: 'user.mp4',
+    title: '👤 User Profile',
+    description: 'User profile — profile editing by the owner, creation of boards, viewing/editing created/liked/saved pins, viewing/editing pins on boards. Users can also follow/unfollow and message other users.'
+  },
+  {
+    src: '/screenshots/followers.png',
+    stream: 'followers.mp4',
+    title: '👥 Followers/Following',
+    description: 'View followers/following for any user.'
+  },
+  {
+    src: '/screenshots/boards.png',
+    stream: 'boards.mp4',
+    title: '🧷 Boards',
+    description: 'Users create boards and add/remove pins on them'
+  },
+  {
+    src: '/screenshots/recomendations.png',
+    stream: 'recomendations.mp4',
+    title: '⭐ Recommendations',
+    description: 'Users receive real-time recommendations based on their recently viewed pins.'
+  },
+  {
+    src: '/screenshots/updates.png',
+    stream: 'realtimeUpdates.mp4',
+    title: '🔔 Realtime Updates',
+    description: 'Users receive real-time updates from others when their pins are saved, commented on, or liked.'
+  },
+  {
+    src: '/screenshots/cahts.png',
     stream: 'chats.mp4',
     title: '💬 Chats',
-    description: 'Engage in real-time, limitless conversations with fellow creatives. Share ideas, feedback, and inspiration instantly.'
+    description: 'By messaging another user, you create a chat where you can exchange messages and media in real time. Chats can be customized in terms of size and color. You can also see which users are online on the site or in the chat.'
+  },
+  {
+    src: '/screenshots/chats_updates.png',
+    stream: 'chats_updates.mp4',
+    title: '💬🔔 Chats Updates',
+    description: 'On any page, you receive real-time updates about new messages from other users.'
+  },
+  {
+    src: '/screenshots/comments_likes.png',
+    stream: 'comments_likes.mp4',
+    title: '📝❤️ Comments/Likes',
+    description: 'You can comment on, like, and save a pin, as well as comment on and like other comments.'
   },
 ])
 

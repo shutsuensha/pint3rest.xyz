@@ -496,67 +496,76 @@ async function googleAuth() {
 
 <template>
   <DescriptionApp />
-  <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="showSignUp = false">
-  <div class="relative p-4 w-full max-w-md max-h-full">
-    <!-- Modal content -->
-    <div class="relative bg-white rounded-3xl">
-      <!-- Modal header -->
-      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-        <!-- Logo -->
-        <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest 😇</h3>
-        <button @click="showSignUp = false" type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
+  <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    @click.self="showSignUp = false">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-3xl">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <!-- Logo -->
+          <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest 😇</h3>
+          <button @click="showSignUp = false" type="button"
+            class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
 
-      <ClipLoader v-if="showSignUpLoader" :color="color" :size="size" class="flex items-center justify-center h-96 font-extrabold" />
+        <ClipLoader v-if="showSignUpLoader" :color="color" :size="size"
+          class="flex items-center justify-center h-96 font-extrabold" />
 
-      <!-- Modal body -->
-      <div v-else class="p-5">
-        <form class="space-y-4" @submit.prevent="submitSignUp">
-          <div>
-            <label for="usernamesignup" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
-            <input v-model="formSignUp.username" type="text" name="username" id="usernamesignup" autocomplete="off"
-              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
-              placeholder="akinak1337" />
-          </div>
-          <div>
-            <label for="passwordsignup" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
-            <input v-model="formSignUp.password" type="password" name="password" id="passwordsignup" placeholder="••••••••"
-              autocomplete="new-password"
-              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
-          </div>
-          <div class="flex items-center space-x-4">
-            <div class="w-full">
-              <label for="imagesignup" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image (.jpg .jpeg .gif .webp .png .bmp)</label>
-              <input type="file" id="imagesignup" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp" @change="handleImageUpload"
-                class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+        <!-- Modal body -->
+        <div v-else class="p-5">
+          <form class="space-y-4" @submit.prevent="submitSignUp">
+            <div>
+              <label for="usernamesignup" class="block mb-2 text-sm font-medium text-gray-900">Your username</label>
+              <input v-model="formSignUp.username" type="text" name="username" id="usernamesignup" autocomplete="off"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                placeholder="akinak1337" />
             </div>
-          </div>
-          <div class="w-full flex justify-center">
-            <div class="w-28 h-28 object-cover rounded-full" v-if="imagePreview">
-              <img :src="imagePreview" class="w-full h-full object-cover rounded-full" alt="Image Preview" />
+            <div>
+              <label for="passwordsignup" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
+              <input v-model="formSignUp.password" type="password" name="password" id="passwordsignup"
+                placeholder="••••••••" autocomplete="new-password"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
-          </div>
-          <div>
-            <label for="emailsignup" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email (Optional)</label>
-            <input v-model="formSignUp.email" type="text" name="email" id="emailsignup" autocomplete="off"
-              class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
-              placeholder="akinak1337@gmail.com" />
-          </div>
-          <button type="submit"
-            class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign Up</button>
-          <div class="text-sm font-medium text-gray-500">
-            Already have an account? <a @click="showSignUp = false; showLogin = true" class="text-red-500 hover:underline cursor-pointer">Login</a>
-          </div>
-        </form>
+            <div class="flex items-center space-x-4">
+              <div class="w-full">
+                <label for="imagesignup" class="block mb-2 text-sm font-medium text-gray-900">Your Profile Image (.jpg
+                  .jpeg .gif .webp .png .bmp)</label>
+                <input type="file" id="imagesignup" name="image" accept=".jpg,.jpeg,.gif,.webp,.png,.bmp"
+                  @change="handleImageUpload"
+                  class="hover:bg-red-100 transition duration-300 block w-full text-sm text-gray-900 border border-gray-300 rounded-3xl cursor-pointer bg-gray-50 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500">
+              </div>
+            </div>
+            <div class="w-full flex justify-center">
+              <div class="w-28 h-28 object-cover rounded-full" v-if="imagePreview">
+                <img :src="imagePreview" class="w-full h-full object-cover rounded-full" alt="Image Preview" />
+              </div>
+            </div>
+            <div>
+              <label for="emailsignup" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email
+                (Optional)</label>
+              <input v-model="formSignUp.email" type="text" name="email" id="emailsignup" autocomplete="off"
+                class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
+                placeholder="akinak1337@gmail.com" />
+            </div>
+            <button type="submit"
+              class="w-full transition duration-300 text-white bg-red-500 hover:bg-red-600 font-semibold rounded-3xl text-sm px-5 py-3 text-center">Sign
+              Up</button>
+            <div class="text-sm font-medium text-gray-500">
+              Already have an account? <a @click="showSignUp = false; showLogin = true"
+                class="text-red-500 hover:underline cursor-pointer">Login</a>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <div v-show="showLogin" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     @click.self="showLogin = false">
@@ -567,7 +576,7 @@ async function googleAuth() {
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <!-- Logo -->
           <h3 class="text-lg font-semibold text-gray-900">
-            Log In to Pinterest 🤫 
+            Log In to Pinterest 🤫
           </h3>
           <button @click="showLogin = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -592,8 +601,8 @@ async function googleAuth() {
             <div>
               <label for="passwordlogin" class="block mb-2 text-sm font-medium text-gray-900">Your
                 password</label>
-              <input v-model="formLogin.password" type="password" name="password" id="passwordlogin" placeholder="••••••••"
-                autocomplete="current-password"
+              <input v-model="formLogin.password" type="password" name="password" id="passwordlogin"
+                placeholder="••••••••" autocomplete="current-password"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500" />
             </div>
             <button type="submit"
@@ -639,14 +648,18 @@ async function googleAuth() {
         <div v-else class="p-5">
           <form class="space-y-4" @submit.prevent="submitPasswordReset">
             <div>
-              <label for="usernamepasswordreset" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-              <input v-model="formPasswordReset.username" type="text" name="username" id="usernamepasswordreset" autocomplete="off"
+              <label for="usernamepasswordreset" class="block mb-2 text-sm font-medium text-gray-900 ">Your
+                username</label>
+              <input v-model="formPasswordReset.username" type="text" name="username" id="usernamepasswordreset"
+                autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337" />
             </div>
             <div>
-              <label for="emailpasswordreset" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your email</label>
-              <input v-model="formPasswordReset.email" type="text" name="email" id="emailpasswordreset" autocomplete="off"
+              <label for="emailpasswordreset" class="mb-2 text-sm font-medium text-gray-900 flex flex-col">Your
+                email</label>
+              <input v-model="formPasswordReset.email" type="text" name="email" id="emailpasswordreset"
+                autocomplete="off"
                 class="hover:bg-red-100 transition duration-300 cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-3xl block w-full py-3 px-5 focus:ring-red-500 focus:border-red-500"
                 placeholder="akinak1337@gmail.com" />
             </div>
