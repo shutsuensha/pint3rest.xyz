@@ -32,7 +32,7 @@
 
 ## 📽 Overview
 
-🎬 [Watch the demo video](.github/assets/overview.mp4)
+🎬 [Watch the demo video](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/blob/main/.github/assets/overview.mp4?raw=true)
 
 
 ## 🌸 Feed
@@ -122,5 +122,4 @@ MIT License – free to use & share! 🔓
 Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
 
 - 📧 Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- 🧑‍💻 GitHub: [@shutsuensha](https://github.com/shutsuensha)
 - ✈️ Telegram: [@evalshine](https://t.me/evalshine)
