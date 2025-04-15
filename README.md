@@ -2,18 +2,18 @@
   <h1> 
     Pinterest Clone
   </h1>
-    <h1> 
-    Vue 3 & FastAPI
-    </h1>
-        <h1> 
-    1536 × 864
-    </h1>
+    <h3> 
+    1536 × 864 / Vue 3 & FastAPI / just have fun
+    </h3>
 </div>
 
 <div align="center">
   <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
-      🌐 Pint3rest 
+      🌐 Pinterest 
   </a>
+</div>
+
+<div align="center">
   <a href="https://pint3rest.xyz/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
     📚 API Docs
   </a>
@@ -28,42 +28,88 @@
   </a>
 </div>
 
-<div align="center">
-  <h2>👤 Users  📌 Pins  ❤️ Likes  💬 Comments  💭 Chats</h2>
-</div>
+![Logo](.github/assets/overview.png)
 
-![Logo](.github/assets/logo.png)
+## 📽 Overview
+
+[![Watch the video](.github/assets/overview.mp4)](.github/assets/overview.mp4)
 
 
-## 🏠 Home  
+## 🌸 Feed
+### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
 <p align="center">
-  <img src=".github/assets/pint3rest-home.png" width="100%">
+  <img src=".github/assets/feed.png" width="100%">
 </p>
 
-## 📌 Detail Page  
+## 📌 Pin + Related  
+### A detailed pin with title, description, href, tags, and the user who created it. Includes comments and likes. Below the pin, related pins are displayed based on connected tags.
 <p align="center">
-  <img src=".github/assets/pint3rest-detail.png" width="100%">
+  <img src=".github/assets/detail.png" width="100%">
 </p>
 
-## ➕ Create  
+## 🔍 Search
+### Pin search by query and tags, with a quick search feature available on any page. It also displays popular pins and a list of recent searches.
 <p align="center">
-  <img src=".github/assets/pint3rest-create.png" width="100%">
+  <img src=".github/assets/search.png" width="100%">
+</p>
+
+## ✨ New Pin
+### Pin creation — image/gif/video, with the option to add additional information to the pin and assign tags to it.
+<p align="center">
+  <img src=".github/assets/create.png" width="100%">
 </p>
 
 ## 👤 User Profile  
+### User profile — profile editing by the owner, creation of boards, viewing/editing created/liked/saved pins, viewing/editing pins on boards. Users can also follow/unfollow and message other users.
 <p align="center">
-  <img src=".github/assets/pint3rest-user.png" width="100%">
+  <img src=".github/assets/user.png" width="100%">
 </p>
 
-## 💬 Chats  
+## 👥 Followers/Following
+### View followers/following for any user.
 <p align="center">
-  <img src=".github/assets/pint3rest-chats.png" width="100%">
+  <img src=".github/assets/followers.png" width="100%">
 </p>
 
-## 🔎 Search  
+## 🧷 Boards
+### Users create boards and add/remove pins on them
 <p align="center">
-  <img src=".github/assets/pint3rest-search.png" width="100%">
+  <img src=".github/assets/boards.png" width="100%">
 </p>
+
+## ⭐ Recommendations
+### Users receive real-time recommendations based on their recently viewed pins.
+<p align="center">
+  <img src=".github/assets/recomendations.png" width="100%">
+</p>
+
+## 🔔 Realtime Updates
+### Users receive real-time updates from others when their pins are saved, commented on, or liked.
+<p align="center">
+  <img src=".github/assets/updates.png" width="100%">
+</p>
+
+## 💬 Chats
+### By messaging another user, you create a chat where you can exchange messages and media in real time. Chats can be customized in terms of size and color. You can also see which users are online on the site or in the chat.
+<p align="center">
+  <img src=".github/assets/cahts.png" width="100%">
+</p>
+
+## 💬🔔 Chats Updates
+### On any page, you receive real-time updates about new messages from other users.
+<p align="center">
+  <img src=".github/assets/chats_updates.png" width="100%">
+</p>
+
+## 📝❤️ Comments/Likes
+### You can comment on, like, and save a pin, as well as comment on and like other comments.
+<p align="center">
+  <img src=".github/assets/comments_likes.png" width="100%">
+</p>
+
+
+## 📊 Project Architecture
+![Architecture](.github/assets/architecture-pint3rest.jpg)
 
 ## 💬 Discussion  
 Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pint3rest.xyz/discussions)!
@@ -71,5 +117,10 @@ Have suggestions or improvements for the project? Feel free to discuss them in t
 ## 📜 License 📝
 MIT License – free to use & share! 🔓
 
-## 📊 Project Architecture
-![Architecture](.github/assets/architecture-pint3rest.jpg)
+## 📬 Contacts
+
+Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
+
+- 📧 Email: [yourname@example.com](mailto:dankupr21@gmail.com)
+- 🧑‍💻 GitHub: [@shutsuensha](https://github.com/shutsuensha)
+- ✈️ Telegram: [@yourhandle](https://t.me/evalshine)
