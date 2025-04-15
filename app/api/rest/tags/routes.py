@@ -1,19 +1,15 @@
+import mimetypes
+
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import FileResponse
 from sqlalchemy import insert, select
 
 from app.api.rest.dependencies import db, filter, user_id
 from app.postgresql.models import PinsOrm, TagsOrm, pins_tags
 
-from fastapi.responses import FileResponse
-
-from app.api.rest.pins.schemas import PinOut
-
 from .schemas import TagOut, TagsIn
 
-
-import mimetypes
-
-mimetypes.add_type('image/webp', '.webp')
+mimetypes.add_type("image/webp", ".webp")
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 
@@ -43,6 +39,7 @@ async def get_all_tags(db: db, user_id: user_id):
 
 from sqlalchemy import desc
 
+
 @router.get("/tags-with-first-pin", response_model=list[dict])
 async def get_tags_with_first_pin(user_id: user_id, db: db):
     result = []
@@ -53,11 +50,7 @@ async def get_tags_with_first_pin(user_id: user_id, db: db):
     last_pin = last_pin_result.scalar_one_or_none()
 
     # Добавляем "Everything" первым
-    result.append({
-        "id": 0,
-        "name": "Everything",
-        "pinId": last_pin.id if last_pin else None
-    })
+    result.append({"id": 0, "name": "Everything", "pinId": last_pin.id if last_pin else None})
 
     # Основные теги
     tags_stmt = select(TagsOrm)
@@ -75,14 +68,9 @@ async def get_tags_with_first_pin(user_id: user_id, db: db):
         pin = pin_result.scalar_one_or_none()
 
         if pin:
-            result.append({
-                "id": tag.id,
-                "name": tag.name,
-                "pinId": pin.id
-            })
+            result.append({"id": tag.id, "name": tag.name, "pinId": pin.id})
 
     return result
-
 
 
 @router.get("/tags-with-first-pin/upload/{id}")
@@ -90,30 +78,25 @@ async def get_image(user_id: user_id, id: int, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
-    
+
     # Определяем MIME тип
     mime_type, _ = mimetypes.guess_type(pin.image)
 
     # Если MIME тип не определен — задаем вручную
     if mime_type is None:
-        if pin.image.endswith('.webp'):
-            mime_type = 'image/webp'
-        elif pin.image.endswith('.mp4'):
-            mime_type = 'video/mp4'
-        elif pin.image.endswith('.webm'):
-            mime_type = 'video/webm'
+        if pin.image.endswith(".webp"):
+            mime_type = "image/webp"
+        elif pin.image.endswith(".mp4"):
+            mime_type = "video/mp4"
+        elif pin.image.endswith(".webm"):
+            mime_type = "video/webm"
         else:
-            mime_type = 'application/octet-stream'
+            mime_type = "application/octet-stream"
 
-
-    if mime_type in ('video/mp4', 'video/webm'):
+    if mime_type in ("video/mp4", "video/webm"):
         return FileResponse(pin.videoPreview)
 
     return FileResponse(pin.image, media_type=mime_type)
-
-
-
-
 
 
 @router.get("/search/tags-with-first-pin", response_model=list[dict])
@@ -136,11 +119,7 @@ async def get_tags_with_first_pin(user_id: user_id, db: db):
         pin = pin_result.scalar_one_or_none()
 
         if pin:
-            result.append({
-                "id": tag.id,
-                "name": tag.name,
-                "pinId": pin.id
-            })
+            result.append({"id": tag.id, "name": tag.name, "pinId": pin.id})
 
     return result
 

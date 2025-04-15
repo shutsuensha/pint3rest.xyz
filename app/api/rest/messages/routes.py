@@ -1,28 +1,23 @@
-import asyncio
 import json
+import mimetypes
 import uuid
-from typing import Dict
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse
 from pydantic import ValidationError
 from sqlalchemy import desc, func, insert, or_, select, update
 
 from app.api.rest.dependencies import db, filter, user_id
+from app.api.rest.sse.routes import active_connections
 from app.api.rest.utils import save_file
 from app.config import settings
 from app.postgresql.models import ChatOrm, MessageOrm
 
 from .schemas import ChatOut, MessageIn, MessageOut
 
-from app.api.rest.sse.routes import active_connections
-
-import mimetypes
-
-mimetypes.add_type('image/webp', '.webp')
+mimetypes.add_type("image/webp", ".webp")
 
 router = APIRouter(prefix="/messages", tags=["messages"])
-
 
 
 @router.post("/", response_model=MessageOut, status_code=status.HTTP_201_CREATED)
@@ -66,11 +61,23 @@ async def user_send_message_in_chat(db: db, user_id: user_id, message: MessageIn
 async def create_message_entity(
     db: db, user_id: user_id, message: str = Form(...), file: UploadFile = File(...)
 ):
-    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    ALLOWED_FILE_TYPES = [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+        "image/png",
+        "image/bmp",
+        "video/mp4",
+        "video/webm",
+    ]
 
     if file.content_type not in ALLOWED_FILE_TYPES:
-        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
-    
+        raise HTTPException(
+            status_code=415,
+            detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm",
+        )
+
     try:
         message = json.loads(message)
         message = MessageIn(**message)
@@ -202,14 +209,14 @@ async def get_image(user_id: user_id, id: int, db: db):
 
         # Определяем MIME тип
     mime_type, _ = mimetypes.guess_type(message.image)
-    
+
     # Если MIME тип не определен, принудительно задаем для WebP
 
     if mime_type is None:
-        if message.image.endswith('.webp'):
-            mime_type = 'image/webp'
+        if message.image.endswith(".webp"):
+            mime_type = "image/webp"
         else:
-            mime_type = 'application/octet-stream'
+            mime_type = "application/octet-stream"
 
     return FileResponse(message.image, media_type=mime_type)
 

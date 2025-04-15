@@ -1,9 +1,10 @@
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from app.api.rest.dependencies import db, user_id
-from sqlalchemy import select, delete
-from app.postgresql.models import SearchOrm, UsersOrm
-from .schemas import SearchQueryModel
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import select
 
+from app.api.rest.dependencies import db, user_id
+from app.postgresql.models import SearchOrm
+
+from .schemas import SearchQueryModel
 
 router = APIRouter(prefix="/search", tags=["search"])
 
@@ -25,9 +26,8 @@ async def create_query_search(queryModel: SearchQueryModel, db: db, user_id: use
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_query_search(queryModel: SearchQueryModel, user_id: user_id, db: db):
-    query_stmt = (
-        select(SearchOrm)
-        .where(SearchOrm.user_id == user_id, SearchOrm.query == queryModel.query)
+    query_stmt = select(SearchOrm).where(
+        SearchOrm.user_id == user_id, SearchOrm.query == queryModel.query
     )
     result = await db.execute(query_stmt)
     search_entry = result.scalar_one_or_none()

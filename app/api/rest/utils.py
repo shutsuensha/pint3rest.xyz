@@ -1,20 +1,16 @@
+import asyncio
 import os
 from datetime import datetime, timedelta, timezone
 
 import aiofiles
 import cv2
 import jwt
+import numpy as np
 from fastapi import HTTPException
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from passlib.context import CryptContext
-
-
-import asyncio
 from PIL import Image
-import numpy as np
 from sklearn.cluster import KMeans
-import cairosvg
-import os
 
 from app.config import settings
 
@@ -93,7 +89,7 @@ async def get_primary_color(image_path, n_colors=1):
     file_extension = os.path.splitext(image_path)[1].lower()
 
     # Если это изображение (без .svg)
-    if file_extension in ['.jpg', '.jpeg', '.gif', '.webp', '.png', '.bmp']:
+    if file_extension in [".jpg", ".jpeg", ".gif", ".webp", ".png", ".bmp"]:
         # Открываем изображение асинхронно
         image = await asyncio.to_thread(Image.open, image_path)
 
@@ -109,11 +105,13 @@ async def get_primary_color(image_path, n_colors=1):
         kmeans = KMeans(n_clusters=n_colors, random_state=42)
         await asyncio.to_thread(kmeans.fit, pixels)
         dominant_color = kmeans.cluster_centers_[0]
-        
+
         return tuple(map(int, dominant_color))
 
     else:
-        raise ValueError("Неподдерживаемый формат файла. Пожалуйста, выберите одно из поддерживаемых изображений (.jpg, .jpeg, .gif, .webp, .png, .bmp).")
+        raise ValueError(
+            "Неподдерживаемый формат файла. Пожалуйста, выберите одно из поддерживаемых изображений (.jpg, .jpeg, .gif, .webp, .png, .bmp)."
+        )
 
 
 async def extract_first_frame(video_path, output_image_path=None):

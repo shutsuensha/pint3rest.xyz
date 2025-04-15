@@ -3,9 +3,8 @@ from sqlalchemy import delete, func, insert, select
 
 from app.api.rest.dependencies import db, filter, user_id
 from app.api.rest.users.schemas import UserOut
-from app.postgresql.models import SubsrciptionsOrm, UsersOrm
-
 from app.celery.tasks import make_update_follow
+from app.postgresql.models import SubsrciptionsOrm, UsersOrm
 
 router = APIRouter(prefix="/subscription", tags=["subscriptions"])
 

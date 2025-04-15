@@ -82,8 +82,7 @@ async def auth_google(code: str, db: db):
         response_frontend = RedirectResponse(url=settings.FRONTEND_DOMAIN, status_code=302)
     else:
         response_frontend = RedirectResponse(
-            url=f"{settings.FRONTEND_DOMAIN}?register=true",
-            status_code=302
+            url=f"{settings.FRONTEND_DOMAIN}?register=true", status_code=302
         )
 
     response_frontend.set_cookie("access_token", access_token)

@@ -1,28 +1,29 @@
+import random
+from datetime import datetime, timezone
 from pathlib import Path
 
 from asgiref.sync import async_to_sync
 from PIL import Image
-from sqlalchemy import select, update, insert, delete
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import SQLAlchemyError
 
+import redis
+from app.api.rest.updates.schemas import UpdateResponse
 from app.celery.celery_app import celery_instance
 from app.config import settings
 from app.logger import logger
 from app.mail.mail import create_message, mail
 from app.postgresql.database import get_sync_db
-from app.postgresql.models import UsersOrm, users_view_pins, pins_tags, PinsOrm, UsersRecommendationsPinsOrm, UpdatesOrm, CommentsOrm, SubsrciptionsOrm
-
-from app.api.rest.updates.schemas import UpdateResponse
-
-from datetime import datetime, timezone
-
-import time
-
-import json
-import random
-
-
-import redis
+from app.postgresql.models import (
+    CommentsOrm,
+    PinsOrm,
+    SubsrciptionsOrm,
+    UpdatesOrm,
+    UsersOrm,
+    UsersRecommendationsPinsOrm,
+    pins_tags,
+    users_view_pins,
+)
 
 redis_client = redis.Redis.from_url(settings.REDIS_URL_CELERY_BROKER, decode_responses=True)
 
@@ -123,15 +124,20 @@ def save_file_celery_and_crop_300x300(file_content: bytes, path: str, user_id: i
 
     return {"image saved path": path, "image saved 300x300 path": str(new_path)}
 
+
 @celery_instance.task
 def user_view_pin(user_id: int, pin_id: int):
     try:
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
-        existing_link =  db.execute(select(users_view_pins).where((users_view_pins.c.user_id == user_id) & (users_view_pins.c.pin_id == pin_id)))
+        existing_link = db.execute(
+            select(users_view_pins).where(
+                (users_view_pins.c.user_id == user_id) & (users_view_pins.c.pin_id == pin_id)
+            )
+        )
         if not existing_link.scalar():
             stmt = insert(users_view_pins).values(user_id=user_id, pin_id=pin_id)
             db.execute(stmt)
@@ -147,23 +153,24 @@ def user_view_pin(user_id: int, pin_id: int):
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
 
+
 @celery_instance.task
 def make_user_recommendations(user_id: int):
     try:
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
         result = db.execute(select(users_view_pins).where(users_view_pins.c.user_id == user_id))
         pins_viewed = result.fetchall()
 
         if not pins_viewed:
             return
-        
+
         result_pins = []
         for el in pins_viewed:
-            result =  db.execute(select(pins_tags).where(pins_tags.c.pin_id == el[1]))
+            result = db.execute(select(pins_tags).where(pins_tags.c.pin_id == el[1]))
             rows = result.all()
 
             pins = {}
@@ -186,22 +193,28 @@ def make_user_recommendations(user_id: int):
 
         if not unique_pins:
             return
-        
+
         messages = [
             "Excellent taste!",
             "These ideas are in your style!",
             "You'll like these pins.",
             "This matches your vibe.",
-            "Based on your preferences."
+            "Based on your preferences.",
         ]
-        
-        new_update = UpdatesOrm(user_update_to_id=user_id, content=random.choice(messages), update_type="recommendations")
+
+        new_update = UpdatesOrm(
+            user_update_to_id=user_id,
+            content=random.choice(messages),
+            update_type="recommendations",
+        )
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
 
         for id in unique_pins:
-            stmt = insert(UsersRecommendationsPinsOrm).values(user_id=user_id, pin_id=id, update_id=new_update.id)
+            stmt = insert(UsersRecommendationsPinsOrm).values(
+                user_id=user_id, pin_id=id, update_id=new_update.id
+            )
             db.execute(stmt)
         db.commit()
 
@@ -218,7 +231,7 @@ def make_user_recommendations(user_id: int):
             content=new_update.content,
             created_at=new_update.created_at,
             is_read=new_update.is_read,
-            update_type=new_update.update_type
+            update_type=new_update.update_type,
         )
 
         redis_client.publish(f"notifications:{user_id}", update_data.json())
@@ -233,26 +246,28 @@ def make_user_recommendations(user_id: int):
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
 
+
 @celery_instance.task
 def make_update_follow(user_update_to: int, user_follow: int):
     try:
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="follow", user_id=user_follow)
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to, update_type="follow", user_id=user_follow
+        )
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
-
 
         update_data = UpdateResponse(
             id=new_update.id,
             created_at=new_update.created_at,
             is_read=new_update.is_read,
             update_type=new_update.update_type,
-            user_id=new_update.user_id
+            user_id=new_update.user_id,
         )
 
         redis_client.publish(f"notifications:{user_update_to}", update_data.json())
@@ -266,7 +281,7 @@ def make_update_follow(user_update_to: int, user_follow: int):
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-        
+
 
 @celery_instance.task
 def make_update_like_pin(user_update_to: int, user_liked: int, pin_id: int):
@@ -274,13 +289,17 @@ def make_update_like_pin(user_update_to: int, user_liked: int, pin_id: int):
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="like_pin", user_id=user_liked, pin_id=pin_id)
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="like_pin",
+            user_id=user_liked,
+            pin_id=pin_id,
+        )
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
-
 
         update_data = UpdateResponse(
             id=new_update.id,
@@ -288,7 +307,7 @@ def make_update_like_pin(user_update_to: int, user_liked: int, pin_id: int):
             is_read=new_update.is_read,
             update_type=new_update.update_type,
             user_id=new_update.user_id,
-            pin_id=new_update.pin_id
+            pin_id=new_update.pin_id,
         )
 
         redis_client.publish(f"notifications:{user_update_to}", update_data.json())
@@ -310,13 +329,18 @@ def make_update_save_pin(user_update_to: int, user_saved: int, pin_id: int, wher
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="save_pin", content=where_to_save, user_id=user_saved, pin_id=pin_id)
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="save_pin",
+            content=where_to_save,
+            user_id=user_saved,
+            pin_id=pin_id,
+        )
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
-
 
         update_data = UpdateResponse(
             id=new_update.id,
@@ -325,7 +349,7 @@ def make_update_save_pin(user_update_to: int, user_saved: int, pin_id: int, wher
             update_type=new_update.update_type,
             content=new_update.content,
             user_id=new_update.user_id,
-            pin_id=new_update.pin_id
+            pin_id=new_update.pin_id,
         )
 
         redis_client.publish(f"notifications:{user_update_to}", update_data.json())
@@ -339,7 +363,7 @@ def make_update_save_pin(user_update_to: int, user_saved: int, pin_id: int, wher
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-        
+
 
 @celery_instance.task
 def make_update_comment_pin(user_update_to: int, user_commented: int, pin_id: int, comment_id: int):
@@ -347,86 +371,18 @@ def make_update_comment_pin(user_update_to: int, user_commented: int, pin_id: in
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="comment_pin", user_id=user_commented, pin_id=pin_id, comment_id=comment_id)
-        db.add(new_update)
-        db.commit()
-        db.refresh(new_update)
-
-
-        update_data = UpdateResponse(
-            id=new_update.id,
-            created_at=new_update.created_at,
-            is_read=new_update.is_read,
-            update_type=new_update.update_type,
-            user_id=new_update.user_id,
-            pin_id=new_update.pin_id,
-            comment_id=new_update.comment_id
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="comment_pin",
+            user_id=user_commented,
+            pin_id=pin_id,
+            comment_id=comment_id,
         )
-
-        redis_client.publish(f"notifications:{user_update_to}", update_data.json())
-    except Exception as e:
-        db.rollback()
-        logger.error(f"Celery error using sync db connection: {e}", exc_info=True)
-        raise e
-    finally:
-        try:
-            db.close()
-        except Exception as e:
-            logger.error(f"Error closing db session: {e}", exc_info=True)
-            raise e
-        
-
-@celery_instance.task
-def make_update_like_comment(user_update_to: int, user_liked: int, comment_id: int, pin_id):
-    try:
-        db = next(get_sync_db())
-    except SQLAlchemyError as e:
-        raise e
-    
-    try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="like_comment", user_id=user_liked, pin_id=pin_id, comment_id=comment_id)
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
-
-
-        update_data = UpdateResponse(
-            id=new_update.id,
-            created_at=new_update.created_at,
-            is_read=new_update.is_read,
-            update_type=new_update.update_type,
-            user_id=new_update.user_id,
-            pin_id=new_update.pin_id,
-            comment_id=new_update.comment_id
-        )
-
-        redis_client.publish(f"notifications:{user_update_to}", update_data.json())
-    except Exception as e:
-        db.rollback()
-        logger.error(f"Celery error using sync db connection: {e}", exc_info=True)
-        raise e
-    finally:
-        try:
-            db.close()
-        except Exception as e:
-            logger.error(f"Error closing db session: {e}", exc_info=True)
-            raise e
-        
-@celery_instance.task
-def make_update_reply_comment(user_update_to: int, user_commented: int, pin_id: int, comment_id: int, reply_id):
-    try:
-        db = next(get_sync_db())
-    except SQLAlchemyError as e:
-        raise e
-    
-    try:
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="reply_comment",user_id=user_commented, pin_id=pin_id, comment_id=comment_id, reply_id=reply_id)
-        db.add(new_update)
-        db.commit()
-        db.refresh(new_update)
-
 
         update_data = UpdateResponse(
             id=new_update.id,
@@ -436,7 +392,6 @@ def make_update_reply_comment(user_update_to: int, user_commented: int, pin_id: 
             user_id=new_update.user_id,
             pin_id=new_update.pin_id,
             comment_id=new_update.comment_id,
-            reply_id=new_update.reply_id
         )
 
         redis_client.publish(f"notifications:{user_update_to}", update_data.json())
@@ -450,7 +405,94 @@ def make_update_reply_comment(user_update_to: int, user_commented: int, pin_id: 
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-        
+
+
+@celery_instance.task
+def make_update_like_comment(user_update_to: int, user_liked: int, comment_id: int, pin_id):
+    try:
+        db = next(get_sync_db())
+    except SQLAlchemyError as e:
+        raise e
+
+    try:
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="like_comment",
+            user_id=user_liked,
+            pin_id=pin_id,
+            comment_id=comment_id,
+        )
+        db.add(new_update)
+        db.commit()
+        db.refresh(new_update)
+
+        update_data = UpdateResponse(
+            id=new_update.id,
+            created_at=new_update.created_at,
+            is_read=new_update.is_read,
+            update_type=new_update.update_type,
+            user_id=new_update.user_id,
+            pin_id=new_update.pin_id,
+            comment_id=new_update.comment_id,
+        )
+
+        redis_client.publish(f"notifications:{user_update_to}", update_data.json())
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Celery error using sync db connection: {e}", exc_info=True)
+        raise e
+    finally:
+        try:
+            db.close()
+        except Exception as e:
+            logger.error(f"Error closing db session: {e}", exc_info=True)
+            raise e
+
+
+@celery_instance.task
+def make_update_reply_comment(
+    user_update_to: int, user_commented: int, pin_id: int, comment_id: int, reply_id
+):
+    try:
+        db = next(get_sync_db())
+    except SQLAlchemyError as e:
+        raise e
+
+    try:
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="reply_comment",
+            user_id=user_commented,
+            pin_id=pin_id,
+            comment_id=comment_id,
+            reply_id=reply_id,
+        )
+        db.add(new_update)
+        db.commit()
+        db.refresh(new_update)
+
+        update_data = UpdateResponse(
+            id=new_update.id,
+            created_at=new_update.created_at,
+            is_read=new_update.is_read,
+            update_type=new_update.update_type,
+            user_id=new_update.user_id,
+            pin_id=new_update.pin_id,
+            comment_id=new_update.comment_id,
+            reply_id=new_update.reply_id,
+        )
+
+        redis_client.publish(f"notifications:{user_update_to}", update_data.json())
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Celery error using sync db connection: {e}", exc_info=True)
+        raise e
+    finally:
+        try:
+            db.close()
+        except Exception as e:
+            logger.error(f"Error closing db session: {e}", exc_info=True)
+            raise e
 
 
 @celery_instance.task
@@ -459,14 +501,20 @@ def make_update_like_reply(user_update_to: int, user_liked: int, reply_id: int, 
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
         comment = db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
-        new_update = UpdatesOrm(user_update_to_id=user_update_to, update_type="like_reply", user_id=user_liked, pin_id=comment.pin_id, comment_id=comment_id, reply_id=reply_id)
+        new_update = UpdatesOrm(
+            user_update_to_id=user_update_to,
+            update_type="like_reply",
+            user_id=user_liked,
+            pin_id=comment.pin_id,
+            comment_id=comment_id,
+            reply_id=reply_id,
+        )
         db.add(new_update)
         db.commit()
         db.refresh(new_update)
-
 
         update_data = UpdateResponse(
             id=new_update.id,
@@ -476,7 +524,7 @@ def make_update_like_reply(user_update_to: int, user_liked: int, reply_id: int, 
             user_id=new_update.user_id,
             pin_id=new_update.pin_id,
             comment_id=new_update.comment_id,
-            reply_id=new_update.reply_id
+            reply_id=new_update.reply_id,
         )
 
         redis_client.publish(f"notifications:{user_update_to}", update_data.json())
@@ -490,7 +538,7 @@ def make_update_like_reply(user_update_to: int, user_liked: int, reply_id: int, 
         except Exception as e:
             logger.error(f"Error closing db session: {e}", exc_info=True)
             raise e
-        
+
 
 @celery_instance.task
 def make_update_pin_created_for_followers(user_id: int, pin_id: int):
@@ -498,16 +546,20 @@ def make_update_pin_created_for_followers(user_id: int, pin_id: int):
         db = next(get_sync_db())
     except SQLAlchemyError as e:
         raise e
-    
+
     try:
         stmt = select(SubsrciptionsOrm).where(SubsrciptionsOrm.following_id == user_id)
         subscriptions = db.scalars(stmt).all()
         for subsciber in subscriptions:
-            new_update = UpdatesOrm(user_update_to_id=subsciber.follower_id, update_type="pin_created_for_followers", user_id=user_id, pin_id=pin_id)
+            new_update = UpdatesOrm(
+                user_update_to_id=subsciber.follower_id,
+                update_type="pin_created_for_followers",
+                user_id=user_id,
+                pin_id=pin_id,
+            )
             db.add(new_update)
             db.commit()
             db.refresh(new_update)
-
 
             update_data = UpdateResponse(
                 id=new_update.id,
@@ -515,7 +567,7 @@ def make_update_pin_created_for_followers(user_id: int, pin_id: int):
                 is_read=new_update.is_read,
                 update_type=new_update.update_type,
                 user_id=new_update.user_id,
-                pin_id=new_update.pin_id
+                pin_id=new_update.pin_id,
             )
 
             redis_client.publish(f"notifications:{subsciber.follower_id}", update_data.json())

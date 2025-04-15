@@ -1,46 +1,19 @@
-import aiofiles
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
-from fastapi.templating import Jinja2Templates
-
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
-import aiofiles
-import os
-from app.config import settings
-
-from app.config import settings
-
-from redis import asyncio as aioredis
-
-import json
-import uuid
-
-from datetime import datetime, timezone
-
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
-from sqlalchemy import delete, desc, insert, or_, select, update
-
-from fastapi.responses import FileResponse, StreamingResponse
-
-from app.postgresql.database import async_session_maker
-
-from app.api.rest.dependencies import db, filter, filter_with_value, user_id
-from app.api.rest.tags.routes import get_all_tags
-from app.api.rest.utils import extract_first_frame, get_primary_color, save_file
-from app.config import settings
-from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins, users_view_pins, UsersRecommendationsPinsOrm, UpdatesOrm
-
-from app.celery.tasks import make_user_recommendations
-
-from app.api.rest.pins.schemas import PinOut
-
-
 import asyncio
-
+import json
+import os
+from datetime import datetime, timezone
 from typing import Dict
 
+import aiofiles
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
+
+from app.api.rest.dependencies import db
+from app.celery.tasks import make_user_recommendations
+from app.config import settings
+from app.postgresql.models import UsersOrm
 from redis import asyncio as aioredis
 
 router = APIRouter(prefix="/sse", tags=["sse"])
@@ -81,8 +54,8 @@ async def video_stream(request: Request):
     if range_header:
         try:
             # Пример заголовка: "bytes=0-"
-            range_value = range_header.strip().lower().split('=')[1]
-            start_str, end_str = range_value.split('-')
+            range_value = range_header.strip().lower().split("=")[1]
+            start_str, end_str = range_value.split("-")
             start = int(start_str)
             end = int(end_str) if end_str else file_size - 1
         except Exception:
@@ -119,6 +92,7 @@ async def video_stream(request: Request):
 
     # Если заголовок Range не указан, отдаем весь файл
     else:
+
         async def full_video_streamer():
             async with aiofiles.open(file_path, mode="rb") as video:
                 while True:
@@ -150,7 +124,7 @@ async def range_video_streamer(file_path: str, start: int, end: int, request: Re
             if await request.is_disconnected():
                 print("Клиент отключился, прекращаем стриминг.")
                 break
-            
+
             chunk_size = min(1024 * 1024, remaining)
             chunk = await video.read(chunk_size)
             if not chunk:
@@ -164,34 +138,32 @@ async def video_stream(name: str, request: Request):
     file_path = f"{settings.MEDIA_PATH}/stream/{name}"
     file_size = os.path.getsize(file_path)
     range_header = request.headers.get("Range")
-    
+
     if range_header is None:
         # Если заголовок Range отсутствует, возвращаем полный файл
         return StreamingResponse(aiofiles.open(file_path, mode="rb"), media_type="video/mp4")
-    
+
     # Пример: "bytes=0-"
     try:
-        range_value = range_header.strip().lower().split('=')[1]
-        start_str, end_str = range_value.split('-')
+        range_value = range_header.strip().lower().split("=")[1]
+        start_str, end_str = range_value.split("-")
         start = int(start_str)
         end = int(end_str) if end_str else file_size - 1
     except Exception:
         raise HTTPException(status_code=400, detail="Неверный формат Range-заголовка")
-    
+
     if start >= file_size or end >= file_size:
         raise HTTPException(status_code=416, detail="Диапазон вне границ файла")
-    
+
     headers = {
         "Content-Range": f"bytes {start}-{end}/{file_size}",
         "Accept-Ranges": "bytes",
         "Content-Length": str(end - start + 1),
         "Content-Type": "video/mp4",
     }
-    
+
     return StreamingResponse(
-        range_video_streamer(file_path, start, end, request),
-        status_code=206,
-        headers=headers
+        range_video_streamer(file_path, start, end, request), status_code=206, headers=headers
     )
 
 
@@ -221,6 +193,10 @@ async def event_stream(user_id: int, make_recommendation: bool):
 async def stream(user_id: int, db: db):
     result = await db.execute(select(UsersOrm).filter_by(id=user_id))
     user = result.scalars().first()
-    make_recommendation = user.recommendation_created_at is None or user.recommendation_created_at.date() != datetime.now(timezone.utc).date()
-    return StreamingResponse(event_stream(user_id, make_recommendation), media_type="text/event-stream")
-
+    make_recommendation = (
+        user.recommendation_created_at is None
+        or user.recommendation_created_at.date() != datetime.now(timezone.utc).date()
+    )
+    return StreamingResponse(
+        event_stream(user_id, make_recommendation), media_type="text/event-stream"
+    )

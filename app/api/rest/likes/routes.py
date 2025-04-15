@@ -2,11 +2,10 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import delete, func, insert, select
 
 from app.api.rest.dependencies import db, filter, user_id
+from app.celery.tasks import make_update_like_comment, make_update_like_pin, make_update_like_reply
 from app.postgresql.models import CommentsOrm, LikesOrm, PinsOrm
 
 from .schemas import LikeOut
-
-from app.celery.tasks import make_update_like_pin, make_update_like_comment, make_update_like_reply
 
 router = APIRouter(prefix="/likes", tags=["likes"])
 

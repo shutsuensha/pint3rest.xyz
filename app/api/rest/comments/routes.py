@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import uuid
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
@@ -8,16 +9,13 @@ from sqlalchemy import func, insert, select, update
 
 from app.api.rest.dependencies import db, filter, user_id
 from app.api.rest.utils import save_file
+from app.celery.tasks import make_update_comment_pin, make_update_reply_comment
 from app.config import settings
 from app.postgresql.models import CommentsOrm, PinsOrm
 
-from app.celery.tasks import make_update_comment_pin, make_update_reply_comment
-
 from .schemas import CommentIn, CommentOut
 
-import mimetypes
-
-mimetypes.add_type('image/webp', '.webp')
+mimetypes.add_type("image/webp", ".webp")
 
 router = APIRouter(prefix="/comments", tags=["comments"])
 
@@ -37,7 +35,7 @@ async def create_comment_on_pin(pin_id: int, db: db, user_id: user_id, comment_m
 
     if pin.user_id != user_id:
         make_update_comment_pin.delay(pin.user_id, user_id, pin.id, comment.id)
-    
+
     return comment
 
 
@@ -59,10 +57,7 @@ async def get_comments_on_pin(pin_id: int, db: db, user_id: user_id, filter: fil
 
 @router.get("/get-by-id/{comment_id}", response_model=CommentOut)
 async def get_comment_by_id(comment_id: int, db: db, user_id: user_id):
-    comment = await db.scalar(
-        select(CommentsOrm)
-        .where(CommentsOrm.id == comment_id)
-    )
+    comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     return comment
 
 
@@ -118,14 +113,14 @@ async def get_image(user_id: user_id, id: int, db: db):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
 
     mime_type, _ = mimetypes.guess_type(comment.image)
-    
+
     # Если MIME тип не определен, принудительно задаем для WebP
 
     if mime_type is None:
-        if comment.image.endswith('.webp'):
-            mime_type = 'image/webp'
+        if comment.image.endswith(".webp"):
+            mime_type = "image/webp"
         else:
-            mime_type = 'application/octet-stream'
+            mime_type = "application/octet-stream"
 
     return FileResponse(comment.image, media_type=mime_type)
 
@@ -148,7 +143,9 @@ async def create_comment_on_comment(
     await db.commit()
 
     if comment.user_id != user_id:
-        make_update_reply_comment.delay(comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id)
+        make_update_reply_comment.delay(
+            comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id
+        )
     return reply_comment
 
 
@@ -180,11 +177,22 @@ async def create_comment_on_pin_entity(
     comment_model: str = Form(...),
     file: UploadFile = File(...),
 ):
-    
-    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    ALLOWED_FILE_TYPES = [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+        "image/png",
+        "image/bmp",
+        "video/mp4",
+        "video/webm",
+    ]
     if file.content_type not in ALLOWED_FILE_TYPES:
-        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
-    
+        raise HTTPException(
+            status_code=415,
+            detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm",
+        )
+
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == pin_id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
@@ -232,11 +240,22 @@ async def create_comment_on_comment_entity(
     comment_model: str = Form(...),
     file: UploadFile = File(...),
 ):
-    
-    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    ALLOWED_FILE_TYPES = [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+        "image/png",
+        "image/bmp",
+        "video/mp4",
+        "video/webm",
+    ]
     if file.content_type not in ALLOWED_FILE_TYPES:
-        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
-    
+        raise HTTPException(
+            status_code=415,
+            detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm",
+        )
+
     comment = await db.scalar(select(CommentsOrm).where(CommentsOrm.id == comment_id))
     if comment is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="comment not found")
@@ -267,5 +286,7 @@ async def create_comment_on_comment_entity(
     await db.commit()
 
     if comment.user_id != user_id:
-        make_update_reply_comment.delay(comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id)
+        make_update_reply_comment.delay(
+            comment.user_id, user_id, comment.pin_id, comment.id, reply_comment.id
+        )
     return reply_comment

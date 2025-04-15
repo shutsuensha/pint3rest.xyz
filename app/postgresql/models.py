@@ -1,18 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import (
-    TIMESTAMP,
-    Boolean,
-    Column,
-    ForeignKey,
-    Integer,
-    String,
-    Table,
-    ARRAY
-)
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.sql import func
-
 
 
 class Base(DeclarativeBase):
@@ -46,13 +35,12 @@ class UsersOrm(Base):
     side_open: Mapped[bool | None] = mapped_column(Boolean, default=True)
 
     selected_board: Mapped[int | None] = mapped_column(
-        ForeignKey("boards.id", ondelete="SET NULL"), default=None
+        ForeignKey("boards.id", ondelete="SET NULL", name="fk_users_selected_board"), default=None
     )
 
     recommendation_created_at: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True), default=None
     )
-
 
 
 class PinsOrm(Base):
@@ -78,7 +66,9 @@ class BoardsOrm(Base):
     __tablename__ = "boards"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", name="fk_boards_user_id"), nullable=False
+    )
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
@@ -91,7 +81,6 @@ class TagsOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-
 
 
 class CommentsOrm(Base):
@@ -114,6 +103,7 @@ class CommentsOrm(Base):
 
     image: Mapped[str | None] = mapped_column(String(200), default=None)
 
+
 class LikesOrm(Base):
     __tablename__ = "likes"
 
@@ -127,6 +117,7 @@ class LikesOrm(Base):
         ForeignKey("comments.id", ondelete="CASCADE"), default=None
     )
 
+
 class SubsrciptionsOrm(Base):
     __tablename__ = "subscriptions"
 
@@ -136,14 +127,12 @@ class SubsrciptionsOrm(Base):
     following_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
 
-
 class ChatOrm(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_1_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     user_2_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-
 
 
 class MessageOrm(Base):
@@ -190,10 +179,7 @@ class UpdatesOrm(Base):
 
     is_read: Mapped[bool | None] = mapped_column(Boolean, default=False)
 
-    
-    user_id: Mapped[int | None] = mapped_column(
-        ForeignKey("users.id"), default=None
-    )
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), default=None)
 
     pin_id: Mapped[int | None] = mapped_column(
         ForeignKey("pins.id", ondelete="CASCADE"), default=None
@@ -206,7 +192,7 @@ class UpdatesOrm(Base):
     reply_id: Mapped[int | None] = mapped_column(
         ForeignKey("comments.id", ondelete="CASCADE"), default=None
     )
-    
+
 
 class UsersRecommendationsPinsOrm(Base):
     __tablename__ = "users_recommendations_pins"
@@ -215,7 +201,6 @@ class UsersRecommendationsPinsOrm(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     pin_id: Mapped[int] = mapped_column(ForeignKey("pins.id", ondelete="CASCADE"), nullable=False)
     update_id: Mapped[int] = mapped_column(ForeignKey("updates.id"), nullable=False)
-
 
 
 pins_tags = Table(
@@ -236,7 +221,7 @@ board_pins = Table(
     "board_pins",
     Base.metadata,
     Column("board_id", Integer, ForeignKey("boards.id", ondelete="CASCADE"), primary_key=True),
-    Column("pin_id", Integer, ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True)
+    Column("pin_id", Integer, ForeignKey("pins.id", ondelete="CASCADE"), primary_key=True),
 )
 
 users_view_pins = Table(

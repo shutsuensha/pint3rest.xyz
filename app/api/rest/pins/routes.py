@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import uuid
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
@@ -9,17 +10,24 @@ from app.api.rest.dependencies import db, filter, filter_with_value, user_id
 from app.api.rest.tags.routes import get_all_tags
 from app.api.rest.utils import extract_first_frame, get_primary_color, save_file
 from app.config import settings
-from app.postgresql.models import LikesOrm, PinsOrm, TagsOrm, UsersOrm, pins_tags, users_pins, users_view_pins
+from app.postgresql.models import (
+    LikesOrm,
+    PinsOrm,
+    TagsOrm,
+    UsersOrm,
+    pins_tags,
+    users_pins,
+)
 
 from .schemas import PinIn, PinOut
 
-import mimetypes
+mimetypes.add_type("image/webp", ".webp")
 
-mimetypes.add_type('image/webp', '.webp')
-
-from app.celery.tasks import user_view_pin, make_update_save_pin, make_update_pin_created_for_followers
-
-
+from app.celery.tasks import (
+    make_update_pin_created_for_followers,
+    make_update_save_pin,
+    user_view_pin,
+)
 
 router = APIRouter(prefix="/pins", tags=["pins"])
 
@@ -100,10 +108,22 @@ async def create_pin(user_id: user_id, db: db, pin_model: PinIn):
 async def create_pin_entity(
     user_id: user_id, db: db, pin_model: str = Form(...), file: UploadFile = File(...)
 ):
-    ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp', 'video/mp4', 'video/webm']
+    ALLOWED_FILE_TYPES = [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+        "image/png",
+        "image/bmp",
+        "video/mp4",
+        "video/webm",
+    ]
 
     if file.content_type not in ALLOWED_FILE_TYPES:
-        raise HTTPException(status_code=415, detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm")
+        raise HTTPException(
+            status_code=415,
+            detail="Invalid file type. Allowed types: .jpg, .jpeg, .gif, .webp, .png, .bmp, .mp4, .webm",
+        )
 
     pin_data = json.loads(pin_model)
     pin = await db.scalar(insert(PinsOrm).values(**pin_data, user_id=user_id).returning(PinsOrm))
@@ -112,12 +132,18 @@ async def create_pin_entity(
     image_path = f"{settings.MEDIA_PATH}pins/{unique_filename}"
     await save_file(file.file, image_path)
 
-    if file.content_type in ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/png', 'image/bmp']:
+    if file.content_type in [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/webp",
+        "image/png",
+        "image/bmp",
+    ]:
         try:
             rgb = await get_primary_color(image_path)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
-        
 
         pin = await db.scalar(
             update(PinsOrm)
@@ -141,15 +167,18 @@ async def create_pin_entity(
             rgb = await get_primary_color(new_image_path)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
-        
+
         pin = await db.scalar(
             update(PinsOrm)
             .where(PinsOrm.id == pin.id)
-            .values(image=image_path, rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})", videoPreview=new_image_path)
+            .values(
+                image=image_path,
+                rgb=f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})",
+                videoPreview=new_image_path,
+            )
             .returning(PinsOrm)
         )
         await db.commit()
-        
 
     make_update_pin_created_for_followers.delay(user_id, pin.id)
 
@@ -203,17 +232,17 @@ async def get_image(user_id: user_id, id: int, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
-    
+
     # Определяем MIME тип
     mime_type, _ = mimetypes.guess_type(pin.image)
-    
+
     # Если MIME тип не определен, принудительно задаем для WebP
 
     if mime_type is None:
-        if pin.image.endswith('.webp'):
-            mime_type = 'image/webp'
+        if pin.image.endswith(".webp"):
+            mime_type = "image/webp"
         else:
-            mime_type = 'application/octet-stream'
+            mime_type = "application/octet-stream"
 
     return FileResponse(pin.image, media_type=mime_type)
 
@@ -223,9 +252,9 @@ async def get_pin_by_id(user_id: user_id, id: int, db: db):
     pin = await db.scalar(select(PinsOrm).where(PinsOrm.id == id))
     if pin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="pin not found")
-    
+
     user_view_pin.delay(user_id, id)
-        
+
     return pin
 
 
@@ -236,7 +265,11 @@ async def get_user_created_pins(id: int, user_id: user_id, db: db, filter: filte
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     pins = await db.scalars(
-        select(PinsOrm).where(PinsOrm.user_id == id).offset(filter.offset).limit(filter.limit).order_by(desc(PinsOrm.id))
+        select(PinsOrm)
+        .where(PinsOrm.user_id == id)
+        .offset(filter.offset)
+        .limit(filter.limit)
+        .order_by(desc(PinsOrm.id))
     )
     return pins
 
