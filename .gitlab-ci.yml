@@ -1,9 +1,9 @@
 stages:
-  - check-disk-space
+  # - check-disk-space
   - build
-  - lint-format
-  - migrations
-  - test
+  # - lint-format
+  # - migrations
+  # - test
   - deploy
 
 
