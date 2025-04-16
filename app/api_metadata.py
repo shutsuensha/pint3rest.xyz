@@ -98,8 +98,7 @@ tags_metadata = [
     },
     {
         "name": "chats",
-        "description": "💬 **Chats**:\n"
-        "- 🔹 Change chat color, size, and visibility\n",
+        "description": "💬 **Chats**:\n" "- 🔹 Change chat color, size, and visibility\n",
     },
     {
         "name": "messages",
@@ -120,8 +119,7 @@ tags_metadata = [
     },
     {
         "name": "notauth",
-        "description": "🏠 **Homepage**:\n"
-        "- 🔹 Retrieve images for unauthenticated users\n",
+        "description": "🏠 **Homepage**:\n" "- 🔹 Retrieve images for unauthenticated users\n",
     },
     {
         "name": "pins-cache",
@@ -137,8 +135,7 @@ tags_metadata = [
     },
     {
         "name": "users-httpx",
-        "description": "🔗 **HTTPX Users (Example)**:\n"
-        "- 🔹 CRUD operations via HTTPX\n",
+        "description": "🔗 **HTTPX Users (Example)**:\n" "- 🔹 CRUD operations via HTTPX\n",
     },
     {
         "name": "users-mysql",
@@ -164,8 +161,7 @@ tags_metadata = [
     },
     {
         "name": "graphql",
-        "description": "🔗 **GraphQL (Example)**:\n"
-        "- 🔹 GraphQL API and documentation\n",
+        "description": "🔗 **GraphQL (Example)**:\n" "- 🔹 GraphQL API and documentation\n",
     },
 ]
 

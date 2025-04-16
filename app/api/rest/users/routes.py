@@ -36,7 +36,7 @@ templates = Jinja2Templates(directory="app/templates")
     "/register",
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
-    responses = {
+    responses={
         201: {
             "description": "User successfully registered. If an email is provided, a confirmation email is sent.",
             "content": {
@@ -161,7 +161,7 @@ async def verify_user_account(request: Request, token: str, db: db):
 
 @router.post(
     "/password-reset-request",
-        responses={
+    responses={
         200: {
             "description": "Password reset link has been successfully sent to your email",
             "content": {
@@ -402,7 +402,7 @@ async def login_user(user_in: UserIn, response: Response, db: db):
             "description": "Authorization error, token not provided or has been revoked",
             "content": {"application/json": {"example": {"detail": "Unauthorized"}}},
         },
-    }
+    },
 )
 async def get_new_access_token(request: Request, response: Response):
     """
@@ -459,7 +459,7 @@ async def logout(response: Response, request: Request):
 @router.get(
     "/me",
     response_model=UserOut,
-    responses = {
+    responses={
         200: {
             "description": "User found and returned",
             "content": {
@@ -520,7 +520,7 @@ async def get_user_by_id(user_id: user_id, id: int, db: db):
 @router.get(
     "/user_username/{username}",
     response_model=UserOut,
-    responses = {
+    responses={
         200: {
             "description": "User found and returned",
             "content": {
@@ -567,7 +567,7 @@ async def get_user_by_username(user_id: user_id, username: str, db: db):
             "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
-    }
+    },
 )
 async def upload_image(id: int, db: db, file: UploadFile):
     """
@@ -580,7 +580,6 @@ async def upload_image(id: int, db: db, file: UploadFile):
     - 200: Image successfully uploaded and updated.
     - 404: User not found.
     """
-
 
     ALLOWED_FILE_TYPES = [
         "image/jpeg",
@@ -619,7 +618,7 @@ async def upload_image(id: int, db: db, file: UploadFile):
 
 @router.get(
     "/upload/{id}",
-    responses = {
+    responses={
         200: {
             "description": "User's image successfully found and returned",
             "content": {"application/octet-stream": {}},
@@ -672,7 +671,6 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
     - 200: The banner image was successfully updated.
     """
 
-
     ALLOWED_FILE_TYPES = [
         "image/jpeg",
         "image/jpg",
@@ -718,7 +716,7 @@ async def update_user_banner_image(id: int, db: db, file: UploadFile):
             "description": "User not found",
             "content": {"application/json": {"example": {"detail": "User not found"}}},
         },
-    }
+    },
 )
 async def get_user_banner(user_id: user_id, id: int, db: db):
     """
@@ -740,7 +738,7 @@ async def get_user_banner(user_id: user_id, id: int, db: db):
 @router.patch(
     "/information",
     response_model=UserOut,
-    responses = {
+    responses={
         200: {
             "description": "User information successfully updated.",
             "content": {"application/json": {"example": {"id": 1, "username": "new_username"}}},
