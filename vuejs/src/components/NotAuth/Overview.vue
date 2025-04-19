@@ -81,6 +81,7 @@ const handleMouseEnter = () => {
 const handleMouseLeave = () => {
   glowVisible.value = false
   showVideo.value = false
+  canPlay.value = false
   if (timeoutId) {
     clearTimeout(timeoutId); // Останавливаем таймер
     timeoutId = null;

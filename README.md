@@ -2,12 +2,13 @@
   <h1> 
     Pinterest Clone
   </h1>
-    <h3> 
+  <h3> 
     1536 × 864 / Vue 3 & FastAPI / just have fun
-    </h3>
+  </h3>
 </div>
 
-<div align="center">
+<div align="center" style="margin-top: 10px;">
+  <p>If you like this project, please give it a ⭐</p>
   <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
       🌐 Pinterest 
   </a>
@@ -124,3 +125,4 @@ Feel free to reach out if you have any questions, suggestions, or collaboration 
 
 - Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
 - Telegram: [@evalshine](https://t.me/evalshine)
+- Linkedin: [daniil-kupryianchyk](https://www.linkedin.com/in/daniil-kupryianchyk-960594322)
