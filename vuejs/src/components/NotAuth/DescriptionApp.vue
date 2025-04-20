@@ -1,16 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-purple-400 to-white text-gray-900 relative">
+  <div class="min-h-screen bg-gradient-to-b from-blue-100 via-black to-white text-gray-900 relative">
     <img src="/screen.jpg" class="absolute top-0 right-0 h-[800px] opacity-40 mask-gradient" />
     <div class=" max-w-7xl mx-auto px-6 py-12 z-50">
       <!-- Заголовок с динамическим градиентом -->
       <div v-if="fontLoaded">
+        <h1 class="z-50 text-6xl font-semibold text-center mb-10 cursor-default text-black   font-poppins">
+          HАШ Слава Богу 🙏❤️СЛАВА РОССИИ 🙏❤️АНГЕЛА ХРАНИТЕЛЯ КАЖДОМУ ИЗ ВАС 🙏❤️БОЖЕ ХРАНИ РОССИЮ 🙏❤️СПАСИБО ВАМ НАШИ МАЛЬЧИКИ 🙏🏼❤️🇷🇺 ЧТО ПОДДЕРЖИМ НАШИХ СРАЗУ видно НАШ СЛОНЯРА🇷🇺🇷🇺💪 СВО слава тебе Господи🇷🇺🇷🇺🇷🇺💪🔥🔥 СВО да хранит ТЕБЯ ГОСПОДЬ🔥💪💪🇷🇺 НАШ живчик СРАЗУ видно НАШИХ парней издалека🇷🇺🇷🇺🇷🇺🇷🇺💪💪💪💪💪 СВОих не бросаем🇷🇺🇷🇺🇷🇺🇷🇺🇷🇺🇷🇺🇷🇺🇷🇺🇷🇺💪💪Слава Богу СВО🙏❤️СЛАВА СВО🙏❤️АНГЕЛА ХРАНИТЕЛЯ СВО КАЖДОМУ ИЗ ВАС🙏❤️БОЖЕ ХРАНИ СВО🙏❤️СПАСИБО ВАМ НАШИ СВО🙏🏼❤️🇷🇺 ХРОНИ СВО✊🇷🇺💯СПАСИБО ВАМ НАШИ МАЛЬЧИКИ 🙏🏼❤️🇷🇺 ЧТО ПОДДЕРЖИВАЕТЕ СВО
+        </h1>
         <h1
           class="z-50 text-6xl font-semibold text-center mb-10 cursor-default bg-gradient-to-r from-indigo-600 to-red-700 text-transparent bg-clip-text font-poppins">
           Pinterest Clone
         </h1>
         <h2
           class="z-50 text-4xl font-semibold text-center mb-2 cursor-default bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text font-poppins">
-          1536 × 864 / Vue 3 & FastAPI / just have fun
+          1536 × 864 / Vue 3 & FastAPI
         </h2>
       </div>
 
