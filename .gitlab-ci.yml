@@ -26,6 +26,7 @@ build-fastapi:
   script:
     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
+
 build-vuejs:  
   stage: build
   script:
