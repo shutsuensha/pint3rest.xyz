@@ -5,6 +5,9 @@ import { useRoute, useRouter } from 'vue-router';
 
 import JSConfetti from 'js-confetti'
 
+// import confetti from 'canvas-confetti'
+
+
 
 import Pin from '@/components/Auth/Pin.vue';
 
@@ -209,7 +212,21 @@ onActivated(() => {
 
   if (registerQuery.value) {
     setTimeout(() => {
-      confetti.addConfetti();
+      confetti.addConfetti({
+        emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🦄'],
+        confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7'],
+        confettiRadius: 6,
+        confettiNumber: 100,
+        emojiSize: 40,
+        emojiNumber: 50,
+        shapes: ['circle', 'square'],
+        confettiGravity: 0.5,
+        confettiDrift: 0.1,
+        confettiStartVelocity: 30,
+        confettiAngle: 90,
+        confettiSpread: 180,
+        confettiDuration: 5000
+      });
     }, 2000);
     clearQuery()
   }

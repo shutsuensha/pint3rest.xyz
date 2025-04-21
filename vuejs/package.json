@@ -21,6 +21,7 @@
     "animejs": "^3.2.1",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
+    "canvas-confetti": "^1.9.3",
     "dayjs": "^1.11.13",
     "emoji-picker-element": "^1.26.1",
     "flowbite": "^2.5.2",

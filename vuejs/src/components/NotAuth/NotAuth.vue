@@ -1,12 +1,17 @@
 <script setup>
-import { onMounted, ref, reactive, computed } from 'vue';
+import { onMounted, ref, reactive, computed, onUnmounted } from 'vue';
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import axios from 'axios'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useToast } from "vue-toastification";
 import DescriptionApp from '@/components/NotAuth/DescriptionApp.vue';
-import { initializeKinesis } from "@amineyarman/kinesis"; // Import the function
+import { initializeKinesis } from "@amineyarman/kinesis"; // Import the functio
+
+import Overview from '@/components/NotAuth/Overview.vue'
+
+import logo from '@/assets/logo.png'
+
 
 import { useRouter, useRoute } from 'vue-router'
 
@@ -16,6 +21,64 @@ const route = useRoute()
 
 
 import google_logo from '@/assets/g-logo.png';
+
+const scrollContainer = ref(null)
+let currentIndex = 0
+let isScrolling = false
+const sectionsCount = 2
+
+const easings = {
+  easeInOutCubic(t, b, c, d) {
+    t /= d / 2
+    if (t < 1) return c / 2 * t * t * t + b
+    t -= 2
+    return c / 2 * (t * t * t + 2) + b
+  },
+  linear(t, b, c, d) {
+    return c * t / d + b
+  },
+}
+
+function scrollToSection(index, easingName = 'easeInOutCubic') {
+  if (index < 0 || index >= sectionsCount) return
+  isScrolling = true
+
+  const container = scrollContainer.value
+  const start = container.scrollTop
+  const end = container.children[index].offsetTop
+  const change = end - start
+  const duration = 800
+  let startTime = null
+
+  const ease = easings[easingName] || easings.linear
+
+  function animateScroll(timestamp) {
+    if (!startTime) startTime = timestamp
+    const elapsed = timestamp - startTime
+    const next = ease(elapsed, start, change, duration)
+    container.scrollTop = next
+
+    if (elapsed < duration) {
+      requestAnimationFrame(animateScroll)
+    } else {
+      container.scrollTop = end
+      currentIndex = index
+      isScrolling = false
+    }
+  }
+
+  requestAnimationFrame(animateScroll)
+}
+
+function onWheel(e) {
+  e.preventDefault()
+  if (isScrolling) return
+  if (e.deltaY > 0) scrollToSection(currentIndex + 1)
+  else if (e.deltaY < 0) scrollToSection(currentIndex - 1)
+}
+
+
+
 
 
 const tailwindColors = {
@@ -295,6 +358,18 @@ async function submitSignUp() {
   }
 }
 
+const testLoginLoading = ref(false)
+
+async function handleTestLogin() {
+
+  testLoginLoading.value = true
+
+  formLogin.username = 'testusername'
+  formLogin.password = 'testusername'
+
+  submitLogin()
+}
+
 async function submitLogin() {
   const username = formLogin.username.trim()
   const password = formLogin.password.trim()
@@ -322,6 +397,7 @@ async function submitLogin() {
 
     showLoginLoader.value = false
     showLogin.value = false
+    testLoginLoading.value = false
 
     emit('login', access_token)
   } catch (error) {
@@ -460,7 +536,15 @@ function handleImageUpload(event) {
   }
 }
 
+onUnmounted(() => {
+  if (scrollContainer.value) {
+    scrollContainer.value.removeEventListener('wheel', onWheel)
+  }
+})
+
 onMounted(async () => {
+  scrollContainer.value.addEventListener('wheel', onWheel, { passive: false })
+
   document.title = 'Pinterest'
   initializeKinesis()
 
@@ -492,10 +576,16 @@ async function googleAuth() {
     console.error(error)
   }
 }
+
+const overview = ref(
+  {
+    src: '/screenshots/overview.png',
+    stream: 'overview.mp4',
+    title: 'Overview',
+  })
 </script>
 
 <template>
-  <DescriptionApp />
   <div v-show="showSignUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     @click.self="showSignUp = false">
     <div class="relative p-4 w-full max-w-md max-h-full">
@@ -760,140 +850,205 @@ async function googleAuth() {
 
   <!-- <ClipLoader v-if="loading" :color="color" :size="size"
     class="flex items-center justify-center h-screen font-extrabold" /> -->
-  <div v-if="loading" class="flex items-center justify-center h-screen">
-    <span class="loader text-4xl"></span>
-  </div>
-  <div v-else :style="{ background: `linear-gradient(to top, ${colorBg}, white)` }"
-    class="flex items-center justify-center h-screen">
+  <div ref="scrollContainer" class="relative overflow-hidden h-screen">
 
-    <div class="items-center space-y-6 flex flex-col">
-      <div v-if="bg === 'bg-green-300'" class="grid grid-cols-5 gap-4">
-        <div v-for="(image, index) in images.slice(0, 5)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
-          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
+    <div v-if="loading" class="flex items-center justify-center h-screen">
+      <span class="loader text-4xl"></span>
+    </div>
+    <div v-else :style="{ background: `linear-gradient(to top, ${colorBg}, white)` }"
+      class="flex items-center justify-center h-screen overflow-hidden relative">
+
+      <img src="/screen.jpg" class="absolute top-0 right-0 h-screen opacity-60 w-[700px] mask-gradient" />
+
+      <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2" @click="scrollToSection(1)">
+        <button
+          class="items-center justify-center flex z-50 px-6 py-3 text-white text-lg font-semibold bg-red-600 rounded-3xl animate-bounce-slow">
+          Overview <i class="ml-2 pi pi-angle-down"></i>
+        </button>
+      </div>
+
+      <!-- <img src="/screen.jpg" class="absolute top-0 right-0 h-screen w-[700px] opacity-40 mask-gradient" /> -->
+      <div class="relative z-10 max-w-7xl mx-auto px-6 py-12 flex flex-col items-center">
+        <!-- Логотип и заголовки -->
+        <img :src="logo" alt="Pinterest Logo" class="w-24 h-24 mb-6" />
+
+        <h1
+          class="text-6xl font-semibold mb-4 text-center bg-gradient-to-r from-indigo-600 to-red-700 text-transparent bg-clip-text">
+          Pinterest Clone
+        </h1>
+        <h2
+          class="text-4xl font-semibold mb-12 text-center bg-gradient-to-r from-purple-600 to-red-700 text-transparent bg-clip-text">
+          1536 × 864 / Vue 3 &amp; FastAPI
+        </h2>
+
+        <div class="w-full max-w-sm bg-white bg-opacity-50 backdrop-blur-sm rounded-3xl p-8 shadow-lg">
+          <h3 class="text-2xl font-bold mb-1 text-gray-800 text-center">Quick Log In</h3>
+
+          <div v-if="testLoginLoading" class="flex items-center justify-center h-full p-3">
+            <span class="text-center loader2"></span>
+          </div>
+
+          <button v-if="!testLoginLoading" @click="handleTestLogin"
+            class="w-full mt-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-3xl transition">
+            Login as Test User
+          </button>
         </div>
       </div>
-      <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-4">
-        <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-2"
-          :data-aos="index % 2 !== 0 ? 'flip-right' : 'zoom-in'" data-aos-easing="ease" :data-aos-duration="2000">
-          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
+
+      <div class="items-center space-y-6 flex flex-col">
+        <div v-if="bg === 'bg-green-300'" class="grid grid-cols-5 gap-1">
+          <div v-for="(image, index) in images.slice(0, 5)" :key="index" class="p-1"
+            :data-aos="index % 2 === 0 ? 'fade-down' : 'fade-up'">
+            <img :src="image" alt="Image" class="w-[240px] h-60 rounded-3xl object-cover">
+          </div>
         </div>
-      </div>
-      <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-4">
-        <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'zoom-in' : 'flip-right'" data-aos-easing="ease" :data-aos-duration="2000">
-          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
+        <div v-if="bg === 'bg-violet-300'" class="grid grid-cols-5 gap-1">
+          <div v-for="(image, index) in images.slice(5, 10)" :key="index" class="p-1"
+            :data-aos="index % 2 !== 0 ? 'flip-right' : 'zoom-in'" data-aos-easing="ease" :data-aos-duration="2000">
+            <img :src="image" alt="Image" class="w-[240px] h-60 rounded-3xl object-cover">
+          </div>
         </div>
-      </div>
-      <div v-if="bg === 'bg-teal-300'" class="grid grid-cols-5 gap-4">
-        <div v-for="(image, index) in images.slice(15, 20)" :key="index" class="p-2"
-          :data-aos="index % 2 === 0 ? 'zoom-in' : 'zoom-out'" data-aos-easing="ease" :data-aos-duration="2000">
-          <img :src="image" alt="Image" class="w-[240px] h-80 rounded-3xl object-cover">
+        <div v-if="bg === 'bg-red-300'" class="grid grid-cols-5 gap-1">
+          <div v-for="(image, index) in images.slice(10, 15)" :key="index" class="p-1"
+            :data-aos="index % 2 === 0 ? 'zoom-in' : 'flip-right'" data-aos-easing="ease" :data-aos-duration="2000">
+            <img :src="image" alt="Image" class="w-[240px] h-60 rounded-3xl object-cover">
+          </div>
         </div>
-      </div>
-      <div class="text-center z-30">
-        <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" data-aos="zoom-in" data-aos-easing="ease"
-          :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
-          :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'fade-up'" data-aos-easing="ease"
-          :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <h1 v-if="bg === 'bg-teal-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
-          :data-aos-duration="2000">{{ textWelcome }}</h1>
-        <div v-if="bg === 'bg-green-300'" class="space-x-2 flex flex-row justify-center items-center"
-          :data-aos="'fade-up'" data-aos-easing="ease" :data-aos-duration="3000">
-          <!-- Signup Button -->
-          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
-            Sign Up
-          </button>
-
-          <!-- Login Button -->
-          <button @mouseenter="changeBgColor2" @click="showLogin = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
-            Log In
-          </button>
-
-          <button @click="googleAuth" @mouseenter="changeBgColor3"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
-              <span>Google</span>
-            </div>
-          </button>
+        <div v-if="bg === 'bg-teal-300'" class="grid grid-cols-5 gap-1">
+          <div v-for="(image, index) in images.slice(15, 20)" :key="index" class="p-1"
+            :data-aos="index % 2 === 0 ? 'zoom-in' : 'zoom-out'" data-aos-easing="ease" :data-aos-duration="2000">
+            <img :src="image" alt="Image" class="w-[240px] h-60 rounded-3xl object-cover">
+          </div>
         </div>
-        <div v-if="bg === 'bg-violet-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="``"
-          data-aos-easing="ease" :data-aos-duration="2000">
-          <!-- Signup Button -->
-          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
-            Sign Up
-          </button>
+        <div class="text-center z-30">
+          <h1 v-if="bg === 'bg-red-300'" class="text-4xl  text-black mb-6" data-aos="zoom-in" data-aos-easing="ease"
+            :data-aos-duration="2000">{{ textWelcome }}</h1>
+          <h1 v-if="bg === 'bg-violet-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'"
+            data-aos-easing="ease" :data-aos-duration="2000">{{ textWelcome }}</h1>
+          <h1 v-if="bg === 'bg-green-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'"
+            data-aos-easing="ease" :data-aos-duration="2000">{{ textWelcome }}</h1>
+          <h1 v-if="bg === 'bg-teal-300'" class="text-4xl  text-black mb-6" :data-aos="'zoom-in'" data-aos-easing="ease"
+            :data-aos-duration="2000">{{ textWelcome }}</h1>
+          <div v-if="bg === 'bg-green-300'" class="space-x-2 flex flex-row justify-center items-center"
+            :data-aos="'zoom-in'" data-aos-easing="ease" :data-aos-duration="3000">
+            <!-- Signup Button -->
+            <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+              Sign Up
+            </button>
 
-          <!-- Login Button -->
-          <button @mouseenter="changeBgColor2" @click="showLogin = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
-            Log In
-          </button>
+            <!-- Login Button -->
+            <button @mouseenter="changeBgColor2" @click="showLogin = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+              Log In
+            </button>
 
-          <button @click="googleAuth" @mouseenter="changeBgColor3"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
-              <span>Google</span>
-            </div>
-          </button>
-        </div>
-        <div v-if="bg === 'bg-red-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
-          data-aos-easing="ease" :data-aos-duration="2000">
-          <!-- Signup Button -->
-          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
-            Sign Up
-          </button>
+            <button @click="googleAuth" @mouseenter="changeBgColor3"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+              <div class="flex flex-row gap-2 items-center justify-center">
+                <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+                <span>Google</span>
+              </div>
+            </button>
+          </div>
+          <div v-if="bg === 'bg-violet-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="``"
+            data-aos-easing="ease" :data-aos-duration="2000">
+            <!-- Signup Button -->
+            <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+              Sign Up
+            </button>
 
-          <!-- Login Button -->
-          <button @mouseenter="changeBgColor2" @click="showLogin = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
-            Log In
-          </button>
+            <!-- Login Button -->
+            <button @mouseenter="changeBgColor2" @click="showLogin = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+              Log In
+            </button>
 
-          <button @click="googleAuth" @mouseenter="changeBgColor3"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
-              <span>Google</span>
-            </div>
-          </button>
-        </div>
-        <div v-if="bg === 'bg-teal-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
-          data-aos-easing="ease" :data-aos-duration="3000">
-          <!-- Signup Button -->
-          <button @mouseenter="changeBgColor1" @click="showSignUp = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
-            Sign Up
-          </button>
+            <button @click="googleAuth" @mouseenter="changeBgColor3"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+              <div class="flex flex-row gap-2 items-center justify-center">
+                <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+                <span>Google</span>
+              </div>
+            </button>
+          </div>
+          <div v-if="bg === 'bg-red-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
+            data-aos-easing="ease" :data-aos-duration="2000">
+            <!-- Signup Button -->
+            <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+              Sign Up
+            </button>
 
-          <!-- Login Button -->
-          <button @mouseenter="changeBgColor2" @click="showLogin = true"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
-            Log In
-          </button>
+            <!-- Login Button -->
+            <button @mouseenter="changeBgColor2" @click="showLogin = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+              Log In
+            </button>
 
-          <button @click="googleAuth" @mouseenter="changeBgColor3"
-            :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
-              <span>Google</span>
-            </div>
-          </button>
+            <button @click="googleAuth" @mouseenter="changeBgColor3"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+              <div class="flex flex-row gap-2 items-center justify-center">
+                <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+                <span>Google</span>
+              </div>
+            </button>
+          </div>
+          <div v-if="bg === 'bg-teal-300'" class="space-x-2 flex flex-row justify-center items-center" :data-aos="''"
+            data-aos-easing="ease" :data-aos-duration="3000">
+            <!-- Signup Button -->
+            <button @mouseenter="changeBgColor1" @click="showSignUp = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg} ${buttonText} font-semibold rounded-3xl transition ${buttonBgHover} ${buttonBgHoverText}`">
+              Sign Up
+            </button>
+
+            <!-- Login Button -->
+            <button @mouseenter="changeBgColor2" @click="showLogin = true"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg2} ${buttonText2} font-semibold rounded-3xl transition ${buttonBgHover2} ${buttonBgHoverText2}`">
+              Log In
+            </button>
+
+            <button @click="googleAuth" @mouseenter="changeBgColor3"
+              :class="`hover:-translate-y-2 px-6 py-3 ${buttonBg3} ${buttonText3} font-semibold rounded-3xl transition ${buttonBgHover3} ${buttonBgHoverText3}`">
+              <div class="flex flex-row gap-2 items-center justify-center">
+                <img :src="google_logo" alt="Google Logo" class="rounded-full w-5 h-5">
+                <span>Google</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
+
+    <div class="h-screen overflow-hidden w-full">
+      <div class="z-0 pointer-events-none">
+        <Overview :card="overview" />
+      </div>
+    </div>
+
   </div>
+
 </template>
 
 <style scoped>
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
 .loader {
   transform: rotateZ(45deg);
   perspective: 1000px;
@@ -976,6 +1131,52 @@ async function googleAuth() {
 
   87% {
     box-shadow: .2em -.2em 0 0 currentcolor;
+  }
+}
+
+
+.mask-gradient {
+  -webkit-mask-image: linear-gradient(to bottom, white, transparent),
+    linear-gradient(to left, white, transparent);
+  mask-image: linear-gradient(to bottom, white, transparent),
+    linear-gradient(to left, white, transparent);
+  -webkit-mask-composite: multiply;
+  mask-composite: intersect;
+}
+
+
+.loader2 {
+  width: 48px;
+  height: 48px;
+  background: #FFF;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loader2::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  color: #FF3D00;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 25px 2px, 10px 22px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
