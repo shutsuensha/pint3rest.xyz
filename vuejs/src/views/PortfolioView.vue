@@ -1,34 +1,57 @@
 <template>
-  <div class="bg-black text-white font-sans z-50">
+  <div class="bg-black text-white font-sans z-30">
 
     <nav class="fixed top-0 left-0 w-full bg-black bg-opacity-50 backdrop-blur-lg p-6 z-50">
-
-      <div class="flex justify-center items-center max-w-5xl mx-auto">
+      <div class="flex justify-center items-center max-w-6xl mx-auto gap-2">
         <a href="#hero"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#hero')">Home</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#hero')">
+          <HomeIcon class="w-5 h-5" /> Home
+        </a>
         <a href="#about"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#about')">About</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#about')">
+          <UserIcon class="w-5 h-5" /> About
+        </a>
         <a href="#skills"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#skills')">Skills</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#skills')">
+          <CpuIcon class="w-5 h-5" /> Skills
+        </a>
+        <a href="#services"
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#services')">
+          <HammerIcon class="w-5 h-5" /> Services
+        </a>
         <a href="#projects"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#projects')">Proejcts</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#projects')">
+          <LayoutDashboardIcon class="w-5 h-5" /> Projects
+        </a>
         <a href="#experience"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#experience')">Experience</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#experience')">
+          <BriefcaseIcon class="w-5 h-5" /> Experience
+        </a>
         <a href="#achievements"
-          class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
-          @click.prevent="scrollTo('#achievements')">Achievements</a>
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#achievements')">
+          <TrophyIcon class="w-5 h-5" /> Achievements
+        </a>
+        <a href="#contact"
+          class="flex items-center gap-2 text-white text-2xl font-semibold hover:text-indigo-400 px-6 py-2 transition-all"
+          @click.prevent="scrollTo('#contact')">
+          <MailIcon class="w-5 h-5" /> Contact
+        </a>
       </div>
     </nav>
+
+    <canvas ref="canvasRef" class="fixed inset-0"></canvas>
 
 
 
     <section id="hero"
-      class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden"
+      class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50"
       data-aos="fade-up">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1920 1080"
         class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse scale-150">
@@ -52,8 +75,9 @@
         </g>
       </svg>
 
+
       <h1
-        class="z-10 text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500 mb-4"
+        class="z-50 text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500 mb-4 "
         style="line-height: 1.2;">
         Daniil Kupryianchyk
       </h1>
@@ -61,10 +85,12 @@
         Python Backend Developer
       </h2>
       <a href="/cv.pdf" download
-        class="z-10 inline-block mt-4 px-6 py-3 border border-indigo-400 rounded-full hover:bg-indigo-600 transition">
-        Download CV
+        class="z-50 inline-block mt-4 px-6 py-3 rounded-full border border-indigo-400 bg-indigo-500 text-white font-semibold shadow-md hover:bg-indigo-600 hover:shadow-lg transition duration-300">
+        📄 Download CV
       </a>
     </section>
+
+    <div class="background-gradient"></div>
 
 
 
@@ -90,8 +116,11 @@
     </section>
 
     <section id="skills"
-      class="px-6 py-20 w-full bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-500 text-white"
-      data-aos="fade-up">
+      class="px-6 py-20 w-full bg-gradient-to-r from-indigo-700/50 via-purple-600/90 to-pink-500/50 text-white" style="
+    background: linear-gradient(to right, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.5), rgba(236, 72, 153, 0.5));
+    -webkit-mask-image: linear-gradient(to bottom, transparent, white 10%, white 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, white 10%, white 90%, transparent);
+  " data-aos="fade-up">
       <h2 class="text-5xl font-extrabold mb-16 text-center">
         Skills
       </h2>
@@ -195,10 +224,56 @@
       </div>
     </section>
 
+    <section id="services" class="bg-gradient-to-br  bg-black/50 text-white py-2 px-6" data-aos="fade-up">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-5xl font-extrabold text-center text-pink-400 mb-16 tracking-wide mt-20">My Services</h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+          <div
+            class="bg-black rounded-3xl p-8 shadow-2xl hover:shadow-pink-500/90 transition-shadow duration-300 backdrop-blur-xs">
+            <LayoutDashboardIcon class="w-10 h-10 text-indigo-400 mb-6" />
+            <h3 class="text-2xl font-semibold mb-4 text-white">Web App Development</h3>
+            <p class="text-gray-300 text-lg leading-relaxed">
+              Fast, responsive & scalable web apps built with cutting-edge tools tailored to your vision.
+            </p>
+          </div>
+
+          <div
+            class="bg-black rounded-3xl p-8 shadow-2xl hover:shadow-yellow-500/90 transition-shadow duration-300 backdrop-blur-xs">
+            <GaugeIcon class="w-10 h-10 text-indigo-400 mb-6" />
+            <h3 class="text-2xl font-semibold mb-4 text-white">Performance Optimization</h3>
+            <p class="text-gray-300 text-lg leading-relaxed">
+              Supercharge your backend with caching (Redis), async tasks (Celery), and blazing-fast queries.
+            </p>
+          </div>
+
+          <div
+            class="bg-black rounded-3xl p-8 shadow-2xl hover:shadow-green-500/90 transition-shadow duration-300 backdrop-blur-xs">
+            <NetworkIcon class="w-10 h-10 text-indigo-400 mb-6" />
+            <h3 class="text-2xl font-semibold mb-4 text-white">Architecture Consulting</h3>
+            <p class="text-gray-300 text-lg leading-relaxed">
+              Craft secure, modular & scalable systems using Docker, CI/CD, and microservices.
+            </p>
+          </div>
+
+          <div
+            class="bg-black rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/90 transition-shadow duration-300 backdrop-blur-xs">
+            <LinkIcon class="w-10 h-10 text-indigo-400 mb-6" />
+            <h3 class="text-2xl font-semibold mb-4 text-white">API Development</h3>
+            <p class="text-gray-300 text-lg leading-relaxed">
+              Robust RESTful & GraphQL APIs plus seamless integration with third-party services.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
 
 
-    <section id="projects" class="px-0 py-20 bg-black min-h-screen" data-aos="fade-up">
+
+    <section id="projects" class="px-0 py-20 bg-black/50 min-h-screen" data-aos="fade-up">
       <h2
         class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
         Projects
@@ -239,7 +314,7 @@
 
 
 
-    <section id="experience" class="px-6 py-20 max-w-5xl mx-auto" data-aos="fade-right">
+    <section id="experience" class="px-6 py-20 max-w-5xl mx-auto bg-black/80" data-aos="fade-right">
       <h2
         class="text-5xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
         Experience
@@ -300,36 +375,42 @@
         Achievements
       </h2>
 
-      <!-- Certificates with multiple images in a row -->
-      <div class="flex flex-col  p-6 rounded-xl shadow hover:shadow-indigo-500/50 transition">
-        <!-- Certificates Section -->
-        <div class="flex flex-row gap-6">
-          <!-- Certificate 1 -->
-          <div class="flex-1">
-            <img
-              src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/FastAPI-ArtemShumeiko-1.png"
-              alt="Certificate 1" class="w-full rounded-lg shadow-md hover:shadow-lg transition-all">
+      <!-- Слайдер Swiper -->
+      <Swiper :modules="[Navigation]" spaceBetween="10" slidesPerView="1" navigation :loop="true"
+        class="swiper-container cursor-grab active:cursor-grabbing">
+        <!-- 1-й слайд (2 сертификата FastAPI) -->
+
+
+        <SwiperSlide>
+          <div class="flex flex-row gap-6">
+            <!-- Certificate 1 -->
+            <div class="flex-1">
+              <img
+                src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/FastAPI-ArtemShumeiko-1.png"
+                alt="Certificate 1" class="w-full  rounded-lg shadow-md hover:shadow-lg transition-all" />
+            </div>
+
+            <!-- Certificate 2 -->
+            <div class="flex-1">
+              <img
+                src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/FastAPI-ArtemShumeiko-2.png"
+                alt="Certificate 2" class="w-full rounded-lg shadow-md hover:shadow-lg transition-all" />
+            </div>
           </div>
+        </SwiperSlide>
 
-          <!-- Certificate 2 -->
-          <div class="flex-1">
-            <img
-              src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/FastAPI-ArtemShumeiko-2.png"
-              alt="Certificate 2" class="w-full rounded-lg shadow-md hover:shadow-lg transition-all">
+        <SwiperSlide>
+          <div class="text-center">
+            <img src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/TMS-1.png"
+              alt="TeachMeSkills Certificate" class="w-full  rounded-lg shadow-md hover:shadow-lg transition-all" />
           </div>
-        </div>
-      </div>
+        </SwiperSlide>
 
-      <!-- Certificate with a single image -->
-      <div class="p-6 rounded-xl shadow hover:shadow-indigo-500/50 transition mt-8 text-center">
-
-        <!-- Certificate Image -->
-        <img src="https://raw.githubusercontent.com/shutsuensha/shutsuensha/refs/heads/main/TMS-1.png"
-          alt="TeachMeSkills Certificate" class="w-full rounded-lg shadow-md hover:shadow-lg transition-all">
-      </div>
+        <!-- 2-й слайд (1 сертификат TeachMeSkills) -->
+      </Swiper>
     </section>
 
-    <footer class="bg-black text-white font-sans relative overflow-hidden">
+    <footer id="contact" class="bg-black/40 text-white font-sans relative overflow-hidden">
       <!-- Neon Gradient Background -->
       <div class="absolute inset-0 pointer-events-none">
         <svg class="w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 1920 1080">
@@ -338,21 +419,22 @@
               <stop offset="0%" stop-color="#8b5cf6" />
               <stop offset="100%" stop-color="#ec4899" />
             </linearGradient>
+            <filter id="footer-blur">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="100" />
+            </filter>
           </defs>
           <rect width="1920" height="1080" fill="url(#grad-footer)" filter="url(#footer-blur)" />
-          <filter id="footer-blur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="100" />
-          </filter>
         </svg>
       </div>
 
-      <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div
+        class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-center gap-12">
         <!-- Контакты -->
-        <div class="space-y-6">
+        <div class="space-y-6 text-center md:text-left md:flex-1">
           <h3 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
             Связаться со мной
           </h3>
-          <div class="flex space-x-4">
+          <div class="flex justify-center md:justify-start space-x-4">
             <!-- GitHub -->
             <a href="https://github.com/shutsuensha" target="_blank" class="hover:text-purple-400 transition">
               <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -390,7 +472,8 @@
           </p>
         </div>
 
-        <form @submit.prevent="sendMessage" class="space-y-6">
+        <!-- Форма -->
+        <form @submit.prevent="sendMessage" class="space-y-6 w-full md:flex-1">
           <div>
             <label class="block text-sm font-medium mb-2" for="name">Имя</label>
             <input v-model="form.name" id="name" type="text" required
@@ -423,20 +506,29 @@
       </div>
 
       <div class="text-center text-gray-600 text-sm pb-6">
-        © {{ new Date().getFullYear() }} Daniil Kupryianchyk. Все права защищены.
+        © {{ new Date().getFullYear() }} Daniil Kupryianchyk. Все права защищены.
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onBeforeUnmount } from 'vue'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import axios from 'axios'
 
 
 import { reactive } from 'vue'
+
+import * as THREE from 'three'
+
+const canvasRef = ref(null)
+
+
+let renderer, scene, camera, points, animationId
+
+
 
 
 const form = ref({
@@ -455,12 +547,16 @@ import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
 
 
+import JSConfetti from 'js-confetti'
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
     form.value.attachment = file
   }
 }
+
+const confetti = new JSConfetti()
 
 const sendMessage = async () => {
   try {
@@ -480,82 +576,165 @@ const sendMessage = async () => {
       },
     })
 
-    alert('Сообщение отправлено!')
+    confetti.addConfetti({
+      emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🦄'],
+      confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7'],
+      confettiRadius: 6,
+      confettiNumber: 100,
+      emojiSize: 40,
+      emojiNumber: 50,
+      shapes: ['circle', 'square'],
+      confettiGravity: 0.5,
+      confettiDrift: 0.1,
+      confettiStartVelocity: 30,
+      confettiAngle: 90,
+      confettiSpread: 180,
+      confettiDuration: 5000
+    })
     form.value.name = ''
     form.value.email = ''
     form.value.message = ''
     form.value.attachment = null
-  } catch (error) {
-    console.error('Error:', error)
-    alert('Произошла ошибка при отправке сообщения.')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Произошла ошибка при отправке сообщения.')
+    }
   }
-}
 
 
 
 onMounted(() => {
-  document.title = "Resume - Daniil Kupryianchyk"
-  AOS.init({ once: false, duration: 2000 })
-})
+    document.title = "Portfolio - Daniil Kupryianchyk";
 
-const projects = ref([
-  {
-    title: 'Pinterest Clone',
-    description: 'Full-featured FastAPI backend and Vue3 frontend with real-time chat, real-time updates, media uploads, boards, pins, comments, likes, recommendations and more.',
-    link: 'https://github.com/shutsuensha/pinterest-clone-vue3-fastapi',
-    image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
-    stack: [
-      'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'SQLAlchemy', 'Pydantic', 'pydantic-settings', 'JWT',
-      'OAuth2', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker',
-      'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'httpx', 'Websockets', 'SSE',
-      'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
-      'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
-    ],
-    demo: 'https://pint3rest.xyz'
-  },
-  {
-    title: 'Krossovki By - Diploma project from TeachMeSkills',
-    description: 'Django e-commerce backend, user auth, order tracking, and admin dashboard.',
-    link: 'https://github.com/shutsuensha/online-store',
-    image: 'https://raw.githubusercontent.com/shutsuensha/online-store/refs/heads/main/assets/screenshots/logo.png',
-    stack: ['Django', 'PostgreSQL', 'Tailwind CSS'],
-    demo: null, // нет live demo
-  }
-])
+    // Устанавливаем иконку как эмодзи кролика
+    const link = document.querySelector("link[rel='icon']") || document.createElement('link');
+    link.rel = 'icon';
+    link.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text x="0" y="26" font-size="30">🐰</text></svg>';
+    document.head.appendChild(link);
+
+    AOS.init({ once: false, duration: 2000 });
 
 
+    scene = new THREE.Scene()
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+    camera.position.z = 50
 
-function scrollTo(selector) {
-  const target = document.querySelector(selector)
-  if (!target) return
+    renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.value,
+      alpha: true,
+      antialias: true,
+    })
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setPixelRatio(window.devicePixelRatio)
 
-  const offset = 80 // если у тебя фиксированное меню
-  const targetPosition = target.offsetTop - offset
-  const startPosition = window.pageYOffset
-  const distance = targetPosition - startPosition
-  const duration = 1000 // время анимации в миллисекундах
-  let startTime = null
+    const geometry = new THREE.BufferGeometry()
+    const vertices = []
 
-  function animation(currentTime) {
-    if (startTime === null) startTime = currentTime
-    const timeElapsed = currentTime - startTime
-    const run = ease(timeElapsed, startPosition, distance, duration)
-    window.scrollTo(0, run)
-    if (timeElapsed < duration) {
-      requestAnimationFrame(animation)
+    const particleCount = 10000
+    for (let i = 0; i < particleCount; i++) {
+      const x = (Math.random() - 0.5) * 200
+      const y = (Math.random() - 0.5) * 200
+      const z = (Math.random() - 0.5) * 200
+      vertices.push(x, y, z)
     }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+
+    const material = new THREE.PointsMaterial({
+      color: 0x00ffff,
+      size: 0.5,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+
+    points = new THREE.Points(geometry, material)
+    scene.add(points)
+
+    animate()
+    window.addEventListener('resize', onWindowResize)
+
+
+
+  });
+
+  const projects = ref([
+    {
+      title: 'Pinterest Clone',
+      description: 'Full-featured FastAPI backend and Vue3 frontend with real-time chat, real-time updates, media uploads, boards, pins, comments, likes, recommendations and more.',
+      link: 'https://github.com/shutsuensha/pinterest-clone-vue3-fastapi',
+      image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
+      stack: [
+        'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'SQLAlchemy', 'Pydantic', 'pydantic-settings', 'JWT',
+        'OAuth2', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker',
+        'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'httpx', 'Websockets', 'SSE',
+        'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
+        'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
+      ],
+      demo: 'https://pint3rest.xyz'
+    },
+    {
+      title: 'Krossovki By - Diploma project from TeachMeSkills',
+      description: 'Django e-commerce backend, user auth, order tracking, and admin dashboard.',
+      link: 'https://github.com/shutsuensha/online-store',
+      image: 'https://raw.githubusercontent.com/shutsuensha/online-store/refs/heads/main/assets/screenshots/logo.png',
+      stack: ['Django', 'PostgreSQL', 'Tailwind CSS'],
+      demo: null, // нет live demo
+    }
+  ])
+
+
+
+  function scrollTo(selector) {
+    const target = document.querySelector(selector)
+    if (!target) return
+
+    const offset = 80 // если у тебя фиксированное меню
+    const targetPosition = target.offsetTop - offset
+    const startPosition = window.pageYOffset
+    const distance = targetPosition - startPosition
+    const duration = 1000 // время анимации в миллисекундах
+    let startTime = null
+
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime
+      const timeElapsed = currentTime - startTime
+      const run = ease(timeElapsed, startPosition, distance, duration)
+      window.scrollTo(0, run)
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation)
+      }
+    }
+
+    // Эasing функция для плавности (с задержкой в начале и конце)
+    function ease(t, b, c, d) {
+      const ts = (t /= d) * t
+      const tc = ts * t
+      return b + c * (tc + -3 * ts + 3 * t)
+    }
+
+    requestAnimationFrame(animation)
   }
 
-  // Эasing функция для плавности (с задержкой в начале и конце)
-  function ease(t, b, c, d) {
-    const ts = (t /= d) * t
-    const tc = ts * t
-    return b + c * (tc + -3 * ts + 3 * t)
+
+  onBeforeUnmount(() => {
+    cancelAnimationFrame(animationId)
+    window.removeEventListener('resize', onWindowResize)
+  })
+
+
+  function animate() {
+    animationId = requestAnimationFrame(animate)
+    points.rotation.x += 0.0005
+    points.rotation.y += 0.001
+    renderer.render(scene, camera)
   }
 
-  requestAnimationFrame(animation)
-}
-
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+  }
 </script>
 
 <style scoped>
@@ -636,5 +815,22 @@ body {
 
 .swiper-slide .absolute {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 80%, rgba(0, 0, 0, 0) 100%);
+}
+
+.neon-text {
+  font-size: 5rem;
+  color: #fff;
+  text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #ff00ff, 0 0 20px #ff00ff, 0 0 25px #ff00ff;
+  animation: neon-animation 1.5s infinite alternate;
+}
+
+@keyframes neon-animation {
+  0% {
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #ff00ff, 0 0 20px #ff00ff, 0 0 25px #ff00ff;
+  }
+
+  100% {
+    text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff, 0 0 60px #ff00ff;
+  }
 }
 </style>

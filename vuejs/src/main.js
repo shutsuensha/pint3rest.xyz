@@ -7,6 +7,8 @@ import router from './router';
 import mitt from 'mitt'
 import { VueMasonryPlugin } from "vue-masonry";
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
+import * as lucideIcons from 'lucide-vue-next'
+
 
 
 
@@ -17,6 +19,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 const app = createApp(App)
+
+Object.entries(lucideIcons).forEach(([name, component]) => {
+  app.component(name, component)
+})
 
 app.config.globalProperties.emitter = emitter
 

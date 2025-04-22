@@ -3,7 +3,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import JSConfetti from 'js-confetti'
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from 'vue-router';
-import ResumeView from '@/views/ResumeView.vue';
+import PortfolioView from '@/views/PortfolioView.vue';
 
 const confetti = new JSConfetti()
 
@@ -57,8 +57,8 @@ function signup(token) {
 </script>
 
 <template>
-  <Auth v-if="has_token === true && route.path !== '/resume'" :access_token="access_token" @logout="logout()" :register="register"
+  <Auth v-if="has_token === true && route.path !== '/portfolio'" :access_token="access_token" @logout="logout()" :register="register"
     @createPinModelClose="register = false" />
-  <NotAuth v-if="has_token === false && route.path !== '/resume'" @login="(token) => { login(token) }" @signup="(token) => { signup(token) }" />
-  <ResumeView v-if="route.path === '/resume'"/>
+  <NotAuth v-if="has_token === false && route.path !== '/portfolio'" @login="(token) => { login(token) }" @signup="(token) => { signup(token) }" />
+  <PortfolioView v-if="route.path === '/portfolio'"/>
 </template>
