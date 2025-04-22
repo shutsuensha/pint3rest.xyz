@@ -34,74 +34,74 @@
 
 🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
 
-## 🌸 Feed
-### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
+### 🌸 Feed
+#### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
 <p align="center">
   <img src=".github/assets/feed.png" width="100%">
 </p>
 
-## 📌 Pin + Related  
-### A detailed pin with title, description, href, tags, and the user who created it. Includes comments and likes. Below the pin, related pins are displayed based on connected tags.
+### 📌 Pin + Related  
+#### A detailed pin with title, description, href, tags, and the user who created it. Includes comments and likes. Below the pin, related pins are displayed based on connected tags.
 <p align="center">
   <img src=".github/assets/detail.png" width="100%">
 </p>
 
-## 🔍 Search
-### Pin search by query and tags, with a quick search feature available on any page. It also displays popular pins and a list of recent searches.
+### 🔍 Search
+#### Pin search by query and tags, with a quick search feature available on any page. It also displays popular pins and a list of recent searches.
 <p align="center">
   <img src=".github/assets/search.png" width="100%">
 </p>
 
-## ✨ New Pin
-### Pin creation — image/gif/video, with the option to add additional information to the pin and assign tags to it.
+### ✨ New Pin
+#### Pin creation — image/gif/video, with the option to add additional information to the pin and assign tags to it.
 <p align="center">
   <img src=".github/assets/create.png" width="100%">
 </p>
 
-## 👤 User Profile  
-### User profile — profile editing by the owner, creation of boards, viewing/editing created/liked/saved pins, viewing/editing pins on boards. Users can also follow/unfollow and message other users.
+### 👤 User Profile  
+#### User profile — profile editing by the owner, creation of boards, viewing/editing created/liked/saved pins, viewing/editing pins on boards. Users can also follow/unfollow and message other users.
 <p align="center">
   <img src=".github/assets/user.png" width="100%">
 </p>
 
-## 👥 Followers/Following
-### View followers/following for any user.
+### 👥 Followers/Following
+#### View followers/following for any user.
 <p align="center">
   <img src=".github/assets/followers.png" width="100%">
 </p>
 
-## 🧷 Boards
-### Users create boards and add/remove pins on them
+### 🧷 Boards
+#### Users create boards and add/remove pins on them
 <p align="center">
   <img src=".github/assets/boards.png" width="100%">
 </p>
 
-## ⭐ Recommendations
-### Users receive real-time recommendations based on their recently viewed pins.
+### ⭐ Recommendations
+#### Users receive real-time recommendations based on their recently viewed pins.
 <p align="center">
   <img src=".github/assets/recomendations.png" width="100%">
 </p>
 
-## 🔔 Realtime Updates
-### Users receive real-time updates from others when their pins are saved, commented on, or liked.
+### 🔔 Realtime Updates
+#### Users receive real-time updates from others when their pins are saved, commented on, or liked.
 <p align="center">
   <img src=".github/assets/updates.png" width="100%">
 </p>
 
-## 💬 Chats
-### By messaging another user, you create a chat where you can exchange messages and media in real time. Chats can be customized in terms of size and color. You can also see which users are online on the site or in the chat.
+### 💬 Chats
+#### By messaging another user, you create a chat where you can exchange messages and media in real time. Chats can be customized in terms of size and color. You can also see which users are online on the site or in the chat.
 <p align="center">
   <img src=".github/assets/cahts.png" width="100%">
 </p>
 
-## 💬🔔 Chats Updates
-### On any page, you receive real-time updates about new messages from other users.
+### 💬🔔 Chats Updates
+#### On any page, you receive real-time updates about new messages from other users.
 <p align="center">
   <img src=".github/assets/chats_updates.png" width="100%">
 </p>
 
-## 📝❤️ Comments/Likes
-### You can comment on, like, and save a pin, as well as comment on and like other comments.
+### 📝❤️ Comments/Likes
+#### You can comment on, like, and save a pin, as well as comment on and like other comments.
 <p align="center">
   <img src=".github/assets/comments_likes.png" width="100%">
 </p>
