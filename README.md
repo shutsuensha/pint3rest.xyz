@@ -30,6 +30,28 @@
 
 ![Logo](.github/assets/overview.png)
 
+## 🔥 Features at a Glance
+
+- 🖼️ Masonry grid feed with infinite scroll  
+- 🔍 Search by query and tags  
+- 📌 Detailed pins with comments, likes, related pins  
+- 📝 Create/edit pins and boards  
+- 👤 User profiles with followers/following  
+- 💬 Real-time chat & notifications  
+- 📡 SSE & WebSocket-powered updates  
+- 🧠 Smart recommendations based on user activity  
+- 🔐 JWT & Google OAuth2  
+- ⚙️ REST & GraphQL APIs  
+- 📦 Dockerized with GitLab CI/CD
+- 🌐 Nginx Reverse Proxy/Security/Optimization
+
+## 🎯 Use Cases
+
+- Build your own image-sharing platform
+- Learn modern full-stack development with Vue + FastAPI
+- Use the project as a boilerplate for social media apps
+- Practice advanced CI/CD & real-time data techniques
+
 ## 📽 Overview
 
 🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
