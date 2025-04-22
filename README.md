@@ -28,142 +28,166 @@
   </a>
 </div>
 
-![Логотип](.github/assets/overview.png)
+![Logo](.github/assets/overview.png)
 
-## 📽 Обзор
+## 📽 Overview
 
-🎬 **[Посмотреть демонстрационное видео на YouTube](https://youtu.be/3NwWrd8uvFQ)**
+🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
 
 
-## 🛠️ Используемые технологии
+## 🛠️ Technologies Used
 
 ### 🧩 Backend  
-- **FastAPI** – REST и GraphQL API  
-- **SQLAlchemy** – ORM для работы с базами данных  
-- **Pydantic** – валидация данных и управление окружением  
-- **JWT** – токены доступа/обновления с поддержкой отзыва  
-- **OAuth2** – аутентификация через Google  
-- **httpx** – взаимодействие с внешними API  
-- **FastAPI-Cache** – кэширование на уровне API  
-- **FastAPI-Mail** – отправка email через FastAPI  
-- **GraphQL (Strawberry)** – GraphQL слой API  
+- **FastAPI** – REST & GraphQL API  
+- **SQLAlchemy** – ORM for database interactions  
+- **Pydantic** – data validation & environment management  
+- **JWT** – access/refresh tokens with revocation support  
+- **OAuth2** – Google authentication  
+- **httpx** – interaction with external APIs  
+- **FastAPI-Cache** – API-level caching  
+- **FastAPI-Mail** – sending emails via FastAPI  
+- **GraphQL (Strawberry)** – GraphQL API layer  
 
-### 🗄 Базы данных  
-- **PostgreSQL**, **MySQL**, **MongoDB** – реляционные и нереляционные базы данных  
-- **Redis** – кэширование, отзыв токенов, Celery брокер/результаты, RedBeat  
+### 🗄 Databases  
+- **PostgreSQL**, **MySQL**, **MongoDB** – relational & non-relational databases  
+- **Redis** – caching, token revocation, Celery broker/results, RedBeat  
 
-### ⏱ Асинхронные задачи и Realtime  
-- **Celery** – асинхронные задачи: отправка email, обработка изображений  
-- **Celery Beat** – периодические задачи (например, промо-емейлы)  
-- **Redis Stream** – транспорт сообщений между Celery и FastAPI  
-- **WebSockets** – чат в реальном времени с `FastAPI.websockets`  
-- **SSE (Server-Sent Events)** – уведомления в реальном времени  
-- **Asyncio**, **Aiofiles** – асинхронные операции  
+### ⏱ Async Tasks & Realtime  
+- **Celery** – async tasks: email sending, image processing  
+- **Celery Beat** – periodic tasks (e.g., promo emails)  
+- **Redis Stream** – message transport between Celery and FastAPI  
+- **WebSockets** – real-time chat with `FastAPI.websockets`  
+- **SSE (Server-Sent Events)** – real-time notifications  
+- **Asyncio**, **Aiofiles** – asynchronous operations  
 
-### 🧪 Тестирование и качество кода  
-- **Pytest** – тестовый фреймворк  
-- **Ruff** – линтинг и форматирование  
-- **Alembic** – миграции баз данных  
+### 🧪 Testing & Code Quality  
+- **Pytest** – testing framework  
+- **Ruff** – linting & formatting  
+- **Alembic** – database migrations  
 
-### 📦 Развертывание  
-- **Docker**, **Docker Compose** – контейнеризация и оркестрация  
-- **Nginx** – обратный прокси с маршрутизацией для API и WebSocket  
-- **SSL** – безопасное HTTPS соединение  
-- **VPS** – развертывание на виртуальном сервере  
-- **GitLab CI/CD** – автоматизированный процесс сборки, линтинга, тестирования и развертывания  
-- **Yandex S3** – хранение медиа-файлов (Yandex Object Storage)
+### 📦 Deployment  
+- **Docker**, **Docker Compose** – containerization & orchestration  
+- **Nginx** – reverse proxy with API & WebSocket routing  
+- **SSL** – secure HTTPS  
+- **VPS** – deployment on virtual server  
+- **GitLab CI/CD** – automated build, lint, test, deploy pipeline  
+- **Yandex S3** – media file storage (Yandex Object Storage)
 
 ### 🎨 Frontend  
-- **Vue 3** – современный JavaScript фреймворк  
-- **Pinia** – управление состоянием  
-- **Vue Router** – маршрутизация  
-- **Tailwind CSS** – утилитарный CSS фреймворк  
-- **Axios** – HTTP клиент  
+- **Vue 3** – modern JavaScript frontend framework  
+- **Pinia** – state management  
+- **Vue Router** – routing  
+- **Tailwind CSS** – utility-first CSS framework  
+- **Axios** – HTTP client  
+- **Party.js** – click-based UI animations  
 
-## 🌸 Лента
-### Лента – основная страница с поиском и тегами, отображающая пины в виде GIF, видео и изображений. Она показывает пользователей, которые опубликовали эти пины. Макет выполнен в стиле masonry grid с бесконечной прокруткой.
+
+## 🌸 Feed
+### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
 <p align="center">
   <img src=".github/assets/feed.png" width="100%">
 </p>
 
-## 📌 Пин + Связанные  
-### Детализированный пин с заголовком, описанием, ссылкой, тегами и пользователем, который его создал. Включает комментарии и лайки. Под пином отображаются связанные пины на основе общих тегов.
+## 📌 Pin + Related  
+### A detailed pin with title, description, href, tags, and the user who created it. Includes comments and likes. Below the pin, related pins are displayed based on connected tags.
 <p align="center">
   <img src=".github/assets/detail.png" width="100%">
 </p>
 
-## 🔍 Поиск
-### Поиск пинов по запросу и тегам, с быстрым поиском, доступным на любой странице. Также отображаются популярные пины и список недавних поисков.
+## 🔍 Search
+### Pin search by query and tags, with a quick search feature available on any page. It also displays popular pins and a list of recent searches.
 <p align="center">
   <img src=".github/assets/search.png" width="100%">
 </p>
 
-## ✨ Новый Пин
-### Создание пина — изображение/GIF/видео, с возможностью добавления дополнительной информации и тегов.
+## ✨ New Pin
+### Pin creation — image/gif/video, with the option to add additional information to the pin and assign tags to it.
 <p align="center">
   <img src=".github/assets/create.png" width="100%">
 </p>
 
-## 👤 Профиль пользователя  
-### Профиль пользователя — редактирование профиля владельцем, создание досок, просмотр/редактирование созданных/понравившихся/сохраненных пинов, просмотр/редактирование пинов на досках. Пользователи также могут подписываться/отписываться и писать сообщения другим пользователям.
+## 👤 User Profile  
+### User profile — profile editing by the owner, creation of boards, viewing/editing created/liked/saved pins, viewing/editing pins on boards. Users can also follow/unfollow and message other users.
 <p align="center">
   <img src=".github/assets/user.png" width="100%">
 </p>
 
-## 👥 Подписчики/Подписки
-### Просмотр подписчиков/подписок любого пользователя.
+## 👥 Followers/Following
+### View followers/following for any user.
 <p align="center">
   <img src=".github/assets/followers.png" width="100%">
 </p>
 
-## 🧷 Доски
-### Пользователи создают доски и добавляют/удаляют пины на них
+## 🧷 Boards
+### Users create boards and add/remove pins on them
 <p align="center">
   <img src=".github/assets/boards.png" width="100%">
 </p>
 
-## ⭐ Рекомендации
-### Пользователи получают рекомендации в реальном времени на основе недавно просмотренных пинов.
+## ⭐ Recommendations
+### Users receive real-time recommendations based on their recently viewed pins.
 <p align="center">
   <img src=".github/assets/recomendations.png" width="100%">
 </p>
 
-## 🔔 Обновления в реальном времени
-### Пользователи получают обновления в реальном времени, когда их пины сохраняются, комментируются или лайкаются.
+## 🔔 Realtime Updates
+### Users receive real-time updates from others when their pins are saved, commented on, or liked.
 <p align="center">
   <img src=".github/assets/updates.png" width="100%">
 </p>
 
-## 💬 Чаты
-### Создавая чат с другим пользователем, можно обмениваться сообщениями и медиа в реальном времени. Чаты можно настроить по размеру и цвету. Также можно увидеть, какие пользователи онлайн на сайте или в чате.
+## 💬 Chats
+### By messaging another user, you create a chat where you can exchange messages and media in real time. Chats can be customized in terms of size and color. You can also see which users are online on the site or in the chat.
 <p align="center">
   <img src=".github/assets/cahts.png" width="100%">
 </p>
 
-## 💬🔔 Обновления чатов
-### На любой странице пользователь получает обновления о новых сообщениях от других пользователей.
+## 💬🔔 Chats Updates
+### On any page, you receive real-time updates about new messages from other users.
 <p align="center">
   <img src=".github/assets/chats_updates.png" width="100%">
 </p>
 
-## 📝❤️ Комментарии/Лайки
-### Можно комментировать, лайкать и сохранять пины, а также комментировать и лайкать другие комментарии.
+## 📝❤️ Comments/Likes
+### You can comment on, like, and save a pin, as well as comment on and like other comments.
 <p align="center">
   <img src=".github/assets/comments_likes.png" width="100%">
 </p>
 
-## Архитектура проекта
-![Архитектура](.github/assets/architecture-pint3rest.jpg)
 
-## Обсуждение  
-Есть предложения или улучшения для проекта? Обсуждайте их в [разделе обсуждений](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/discussions)!
+## Project Architecture
+![Architecture](.github/assets/architecture-pint3rest.jpg)
 
-## Лицензия 
-MIT License – свободно для использования и распространения!
+## ⚙️ CI/CD Pipeline
 
-## Контакты
+This project uses **GitLab CI/CD** for continuous integration and delivery. The pipeline automates the following stages:
 
-Не стесняйтесь обращаться, если у вас есть вопросы, предложения или идеи для сотрудничества:
+- ✅ **Lint & Format**  
+  Ensures code quality using `ruff`.
+
+- 🧪 **Testing**  
+  Runs unit and integration tests using `pytest`.
+
+- 🐳 **Docker Build**  
+  Builds Docker images for frontend and backend.
+
+- 📦 **Deploy**  
+  Automatically deploys the latest version to a **VPS** via SSH after successful testing. It uses `docker-compose` to bring up services.
+
+- 📬 **Notifications**  
+  The pipeline sends status notifications (success/failure) to Telegram.
+
+You can view the CI/CD configuration in [`.gitlab-ci.yml`](.gitlab-ci.yml).
+
+## Discussion  
+Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/discussions)!
+
+## License 
+MIT License – free to use & share!
+
+## Contacts
+
+Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
 
 - Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
 - Telegram: [@evalshine](https://t.me/evalshine)
