@@ -7,23 +7,24 @@
   </h3>
 </div>
 
-<div align="center" style="margin-top: 10px;">
-  <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
-      🌐 Pinterest 
+<div align="center" style="margin-top: 30px; font-family: 'Arial', sans-serif;">
+  <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+    🌐 Explore Pinterest
   </a>
+  <p style="font-size: 1.1em; color: #555; margin-top: 10px;">Quick try with a <a href="https://pint3rest.xyz" style="color: #8E44AD; font-weight: bold;">test account</a> and get started!</p>
 </div>
 
-<div align="center">
-  <a href="https://pint3rest.xyz/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+<div align="center" style="margin-top: 20px;">
+  <a href="https://pint3rest.xyz/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📚 API Docs
   </a>
-  <a href="https://pint3rest.xyz/api/graphql" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+  <a href="https://pint3rest.xyz/api/graphql" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     🔥 GraphQL API
   </a>
-  <a href="https://pint3rest.xyz/api/openapi.json" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+  <a href="https://pint3rest.xyz/api/openapi.json" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📄 OpenAPI JSON
   </a>
-  <a href="https://pint3rest.xyz/api/redoc" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; font-size: 1.2em; font-weight: bold; color: #8E44AD; text-decoration: none;">
+  <a href="https://pint3rest.xyz/api/redoc" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📖 ReDoc
   </a>
 </div>
