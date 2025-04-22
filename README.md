@@ -8,9 +8,10 @@
 </div>
 
 <div align="center" style="margin-top: 30px; font-family: 'Arial', sans-serif;">
-  <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease, transform 0.3s ease;">
     🌐 Explore Pinterest
   </a>
+  <p style="font-size: 1.1em; color: #555; margin-top: 10px;">Quick try with test account and get started!</p>
 </div>
 
 <div align="center" style="margin-top: 20px;">
