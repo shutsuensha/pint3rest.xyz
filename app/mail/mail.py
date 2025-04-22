@@ -2,7 +2,16 @@ from pathlib import Path
 
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 
+from typing import Optional
+
 from app.config import settings
+
+from fastapi import File, UploadFile
+
+from typing import Optional
+
+import mimetypes
+
 
 mail_config = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,
@@ -21,8 +30,27 @@ mail_config = ConnectionConfig(
 mail = FastMail(config=mail_config)
 
 
-def create_message(recipients: list[str], subject: str, context: dict):
-    message = MessageSchema(
-        recipients=recipients, subject=subject, template_body=context, subtype=MessageType.html
-    )
+def create_message(recipients: list[str], subject: str, context: dict, attachment: str | None = None):
+    if attachment:
+        message = MessageSchema(
+            recipients=recipients,
+            subject=subject,
+            template_body=context,
+            subtype=MessageType.html,
+            attachments=[
+                {
+                    "file": attachment,
+                    "headers": {
+                        "Content-ID": f"<{attachment.split('/')[-1]}@fastapi-mail>",  # Dynamically generate content ID
+                        "Content-Disposition": f"attachment; filename=\"{attachment.split('/')[-1]}\"",
+                    },
+                    "mime_type": mimetypes.guess_type(attachment)[0] or "application/octet-stream",  # Guess MIME type
+                    "mime_subtype": mimetypes.guess_type(attachment)[0].split("/")[1] if mimetypes.guess_type(attachment)[0] else "octet-stream",
+                }
+            ]
+        )
+    else:
+        message = MessageSchema(
+            recipients=recipients, subject=subject, template_body=context, subtype=MessageType.html
+        )
     return message

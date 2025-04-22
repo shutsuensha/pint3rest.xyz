@@ -1,6 +1,8 @@
 <template>
   <div class="bg-black text-white font-sans z-50">
+
     <nav class="fixed top-0 left-0 w-full bg-black bg-opacity-50 backdrop-blur-lg p-6 z-50">
+
       <div class="flex justify-center items-center max-w-5xl mx-auto">
         <a href="#hero"
           class="text-white text-xl font-bold hover:text-indigo-400 px-10 py-2 rounded-md transition-colors"
@@ -29,14 +31,22 @@
       class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden"
       data-aos="fade-up">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1920 1080"
-        class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse">
+        class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse scale-150">
         <defs>
           <linearGradient id="grad-hero" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#6366F1" stop-opacity="1" />
             <stop offset="100%" stop-color="#EC4899" stop-opacity="1" />
           </linearGradient>
+          <!-- Добавление эффекта свечения -->
+          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
-        <g stroke="url(#grad-hero)" stroke-width="3" stroke-opacity="0.5" fill="none">
+        <g stroke="url(#grad-hero)" stroke-width="3" stroke-opacity="0.5" fill="none" filter="url(#neon-glow)">
           <path d="M0,600 Q480,300 960,600 T1920,600" />
           <path d="M0,700 Q480,400 960,700 T1920,700" />
         </g>
@@ -55,6 +65,8 @@
         Download CV
       </a>
     </section>
+
+
 
     <section id="about" class="px-6 py-20 w-full" data-aos="fade-up">
       <h2
@@ -317,36 +329,103 @@
       </div>
     </section>
 
-    <div id="contacts"
-      class="px-6 py-20 w-full bg-black text-white flex flex-col items-center justify-center space-y-10">
-      <div class="flex justify-center space-x-6">
-        <!-- GitHub -->
-        <a href="https://github.com/shutsuensha" target="_blank"
-          class="z-10 inline-block mt-4 px-6 py-3 border border-indigo-400 rounded-full hover:bg-indigo-600 transition">
-          GitHub
-        </a>
-
-        <!-- Telegram -->
-        <a href="https://www.linkedin.com/in/daniil-kupryianchyk-960594322" target="_blank"
-          class="z-10 inline-block mt-4 px-6 py-3 border border-indigo-400 rounded-full hover:bg-indigo-600 transition">
-          LinkedIn
-        </a>
-
-        <!-- LinkedIn -->
-        <a href="https://t.me/evalshine" target="_blank"
-          class="z-10 inline-block mt-4 px-6 py-3 border border-indigo-400 rounded-full hover:bg-indigo-600 transition">
-          Telegram
-        </a>
-
-        <!-- Email -->
-        <a href="mailto:dankupr21@gmail.com" target="_blank"
-          class="z-10 inline-block mt-4 px-6 py-3 border border-indigo-400 rounded-full hover:bg-indigo-600 transition">
-          Gmail
-        </a>
+    <footer class="bg-black text-white font-sans relative overflow-hidden">
+      <!-- Neon Gradient Background -->
+      <div class="absolute inset-0 pointer-events-none">
+        <svg class="w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 1920 1080">
+          <defs>
+            <linearGradient id="grad-footer" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#8b5cf6" />
+              <stop offset="100%" stop-color="#ec4899" />
+            </linearGradient>
+          </defs>
+          <rect width="1920" height="1080" fill="url(#grad-footer)" filter="url(#footer-blur)" />
+          <filter id="footer-blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="100" />
+          </filter>
+        </svg>
       </div>
-    </div>
 
+      <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Контакты -->
+        <div class="space-y-6">
+          <h3 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+            Связаться со мной
+          </h3>
+          <div class="flex space-x-4">
+            <!-- GitHub -->
+            <a href="https://github.com/shutsuensha" target="_blank" class="hover:text-purple-400 transition">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.799 8.207 11.387.6.111.793-.261.793-.58 0-.285-.011-1.04-.016-2.04-3.338.725-4.042-1.61-4.042-1.61-.546-1.386-1.333-1.754-1.333-1.754-1.089-.745.083-.729.083-.729 1.205.085 1.838 1.237 1.838 1.237 1.07 1.835 2.809 1.305 3.495.997.108-.775.418-1.305.762-1.605-2.665-.304-5.466-1.332-5.466-5.931 0-1.31.469-2.381 1.236-3.221-.124-.303-.536-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.5 11.5 0 0 1 3.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.655 1.653.243 2.873.119 3.176.77.84 1.235 1.911 1.235 3.221 0 4.61-2.804 5.625-5.475 5.921.43.372.823 1.103.823 2.222 0 1.604-.014 2.896-.014 3.293 0 .321.192.694.8.576C20.565 21.796 24 17.296 24 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+            </a>
 
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/in/daniil-kupryianchyk-960594322" target="_blank"
+              class="hover:text-purple-400 transition">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M19 0h-14c-2.761 0-5 2.238-5 5v14c0 2.762 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.762-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.271c-.966 0-1.75-.791-1.75-1.765s.784-1.765 1.75-1.765 1.75.791 1.75 1.765-.784 1.765-1.75 1.765zm13.5 11.271h-3v-5.604c0-1.337-.027-3.058-1.865-3.058-1.866 0-2.151 1.46-2.151 2.969v5.693h-3v-10h2.881v1.367h.041c.401-.757 1.379-1.554 2.84-1.554 3.037 0 3.6 1.999 3.6 4.599v5.588z" />
+              </svg>
+            </a>
+
+            <!-- Telegram -->
+            <a href="https://t.me/evalshine" target="_blank" class="hover:text-purple-400 transition">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M9.993 15.447l-.405 4.192c.58 0 .83-.25 1.133-.551l2.72-2.604 5.63 4.113c1.03.57 1.761.271 2.03-.951l3.68-17.262c.374-1.73-.631-2.403-1.662-2.009L1.57 9.407c-1.708.682-1.69 1.659-.29 2.107l4.724 1.474 10.953-6.904c.516-.35.99-.158.602.192L9.993 15.447z" />
+              </svg>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:dankupr21@gmail.com" class="hover:text-purple-400 transition">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 13.065L.857 4.5h22.286L12 13.065zM0 5.932v12.636h24V5.932l-12 9.429L0 5.932z" />
+              </svg>
+            </a>
+          </div>
+          <p class="text-gray-400">
+            Или отправьте мне сообщение прямо здесь:
+          </p>
+        </div>
+
+        <form @submit.prevent="sendMessage" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" for="name">Имя</label>
+            <input v-model="form.name" id="name" type="text" required
+              class="w-full px-4 py-2 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2" for="email">Email</label>
+            <input v-model="form.email" id="email" type="email" required
+              class="w-full px-4 py-2 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2" for="message">Сообщение</label>
+            <textarea v-model="form.message" id="message" rows="4" required
+              class="w-full px-4 py-2 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition resize-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2" for="attachment">Вложение</label>
+            <input id="attachment" type="file" @change="handleFileUpload"
+              class="w-full px-4 py-2 rounded-xl bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" />
+          </div>
+
+          <button type="submit"
+            class="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition shadow-lg">
+            Отправить письмо
+          </button>
+        </form>
+      </div>
+
+      <div class="text-center text-gray-600 text-sm pb-6">
+        © {{ new Date().getFullYear() }} Daniil Kupryianchyk. Все права защищены.
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -354,6 +433,19 @@
 import { onMounted, ref } from 'vue'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import axios from 'axios'
+
+
+import { reactive } from 'vue'
+
+
+const form = ref({
+  name: '',
+  email: '',
+  message: '',
+  attachment: null,
+})
+
 
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -362,7 +454,44 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
 
-// import { Pagination } from 'swiper/modules'
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    form.value.attachment = file
+  }
+}
+
+const sendMessage = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('name', form.value.name)
+    formData.append('email', form.value.email)
+    formData.append('message', form.value.message)
+
+    // Проверяем, если файл существует, добавляем его в formData
+    if (form.value.attachment) {
+      formData.append('file', form.value.attachment)
+    }
+
+    const response = await axios.post('/api/contact/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Указание типа контента для отправки файлов
+      },
+    })
+
+    alert('Сообщение отправлено!')
+    form.value.name = ''
+    form.value.email = ''
+    form.value.message = ''
+    form.value.attachment = null
+  } catch (error) {
+    console.error('Error:', error)
+    alert('Произошла ошибка при отправке сообщения.')
+  }
+}
+
+
 
 onMounted(() => {
   document.title = "Resume - Daniil Kupryianchyk"
@@ -393,6 +522,8 @@ const projects = ref([
     demo: null, // нет live demo
   }
 ])
+
+
 
 function scrollTo(selector) {
   const target = document.querySelector(selector)
