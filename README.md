@@ -34,54 +34,6 @@
 
 🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
 
-
-## 🛠️ Technologies Used
-
-### 🧩 Backend  
-- **FastAPI** – REST & GraphQL API  
-- **SQLAlchemy** – ORM for database interactions  
-- **Pydantic** – data validation & environment management  
-- **JWT** – access/refresh tokens with revocation support  
-- **OAuth2** – Google authentication  
-- **httpx** – interaction with external APIs  
-- **FastAPI-Cache** – API-level caching  
-- **FastAPI-Mail** – sending emails via FastAPI  
-- **GraphQL (Strawberry)** – GraphQL API layer  
-
-### 🗄 Databases  
-- **PostgreSQL**, **MySQL**, **MongoDB** – relational & non-relational databases  
-- **Redis** – caching, token revocation, Celery broker/results, RedBeat  
-
-### ⏱ Async Tasks & Realtime  
-- **Celery** – async tasks: email sending, image processing  
-- **Celery Beat** – periodic tasks (e.g., promo emails)  
-- **Redis Stream** – message transport between Celery and FastAPI  
-- **WebSockets** – real-time chat with `FastAPI.websockets`  
-- **SSE (Server-Sent Events)** – real-time notifications  
-- **Asyncio**, **Aiofiles** – asynchronous operations  
-
-### 🧪 Testing & Code Quality  
-- **Pytest** – testing framework  
-- **Ruff** – linting & formatting  
-- **Alembic** – database migrations  
-
-### 📦 Deployment  
-- **Docker**, **Docker Compose** – containerization & orchestration  
-- **Nginx** – reverse proxy with API & WebSocket routing  
-- **SSL** – secure HTTPS  
-- **VPS** – deployment on virtual server  
-- **GitLab CI/CD** – automated build, lint, test, deploy pipeline  
-- **Yandex S3** – media file storage (Yandex Object Storage)
-
-### 🎨 Frontend  
-- **Vue 3** – modern JavaScript frontend framework  
-- **Pinia** – state management  
-- **Vue Router** – routing  
-- **Tailwind CSS** – utility-first CSS framework  
-- **Axios** – HTTP client  
-- **Party.js** – click-based UI animations  
-
-
 ## 🌸 Feed
 ### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
 <p align="center">
@@ -158,26 +110,84 @@
 ## Project Architecture
 ![Architecture](.github/assets/architecture-pint3rest.jpg)
 
+
+## 🛠️ Technologies Used
+
+### 🧩 Backend  
+- **FastAPI** – REST & GraphQL API  
+- **SQLAlchemy** – ORM for database interactions  
+- **Pydantic** – data validation & environment management  
+- **JWT** – access/refresh tokens with revocation support  
+- **OAuth2** – Google authentication  
+- **httpx** – interaction with external APIs  
+- **FastAPI-Cache** – API-level caching  
+- **FastAPI-Mail** – sending emails via FastAPI  
+- **GraphQL (Strawberry)** – GraphQL API layer  
+
+### 🗄 Databases  
+- **PostgreSQL**, **MySQL**, **MongoDB** – relational & non-relational databases  
+- **Redis** – caching, token revocation, Celery broker/results, RedBeat  
+
+### ⏱ Async Tasks & Realtime  
+- **Celery** – async tasks: email sending, image processing  
+- **Celery Beat** – periodic tasks (e.g., promo emails)  
+- **Redis Stream** – message transport between Celery and FastAPI  
+- **WebSockets** – real-time chat with `FastAPI.websockets`  
+- **SSE (Server-Sent Events)** – real-time notifications  
+- **Asyncio**, **Aiofiles** – asynchronous operations  
+
+### 🧪 Testing & Code Quality  
+- **Pytest** – testing framework  
+- **Ruff** – linting & formatting  
+- **Alembic** – database migrations  
+
+### 📦 Deployment  
+- **Docker**, **Docker Compose** – containerization & orchestration  
+- **Nginx** – reverse proxy with API & WebSocket routing  
+- **SSL** – secure HTTPS  
+- **VPS** – deployment on virtual server  
+- **GitLab CI/CD** – automated build, lint, test, deploy pipeline  
+- **Yandex S3** – media file storage (Yandex Object Storage)
+
+### 🎨 Frontend  
+- **Vue 3** – modern JavaScript frontend framework  
+- **Pinia** – state management  
+- **Vue Router** – routing  
+- **Tailwind CSS** – utility-first CSS framework  
+- **Axios** – HTTP client  
+- **Party.js** – click-based UI animations  
+
 ## ⚙️ CI/CD Pipeline
 
-This project uses **GitLab CI/CD** for continuous integration and delivery. The pipeline automates the following stages:
+This project uses **GitLab CI/CD** to automate the entire delivery process. The pipeline includes the following stages:
 
-- ✅ **Lint & Format**  
-  Ensures code quality using `ruff`.
-
-- 🧪 **Testing**  
-  Runs unit and integration tests using `pytest`.
+- 🧮 **Check Disk Space**  
+  Before anything starts, it checks available disk space. If it's less than **3 GB**, it automatically runs `docker system prune` to free space.
 
 - 🐳 **Docker Build**  
-  Builds Docker images for frontend and backend.
+  Builds separate Docker images for:
+  - **FastAPI** backend (`Dockerfile-fastapi`)
+  - **Vue 3** frontend (`Dockerfile-vuejs`)
 
-- 📦 **Deploy**  
-  Automatically deploys the latest version to a **VPS** via SSH after successful testing. It uses `docker-compose` to bring up services.
+- ✅ **Lint & Format**  
+  - Runs `ruff check` to detect linting issues.
+  - Runs `ruff format --check` to ensure formatting consistency.
 
-- 📬 **Notifications**  
-  The pipeline sends status notifications (success/failure) to Telegram.
+- 🛠️ **Database Migrations**  
+  - Applies **PostgreSQL migrations** via `alembic upgrade head`.
+  - Initializes **MySQL database** via custom script (`app.mysql.init_db`).
 
-You can view the CI/CD configuration in [`.gitlab-ci.yml`](.gitlab-ci.yml).
+- 🧪 **Testing**  
+  Runs `pytest` inside a container (with `pinterest-network`) and mounts log files to `${LOGS_PATH}`.
+
+- 🚀 **Deploy**  
+  Uses `docker-compose up -d` to start all services after successful testing.
+
+🔒 **Secrets & Env Handling:**  
+Before any job runs, the pipeline copies environment variables from a predefined `${ENV}` file and exports them for the scripts.
+
+You can view the complete CI/CD configuration in [`.gitlab-ci.yml`](.gitlab-ci.yml).
+
 
 ## Discussion  
 Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/discussions)!
