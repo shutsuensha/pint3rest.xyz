@@ -35,6 +35,52 @@
 🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
 
 
+## 🛠️ Technologies Used
+
+### 🧩 Backend  
+- **FastAPI** – REST & GraphQL API  
+- **SQLAlchemy** – ORM for database interactions  
+- **Pydantic** – data validation & environment management  
+- **JWT** – access/refresh tokens with revocation support  
+- **OAuth2** – Google authentication  
+- **httpx** – interaction with external APIs  
+- **FastAPI-Cache** – API-level caching  
+- **FastAPI-Mail** – sending emails via FastAPI  
+- **GraphQL (Strawberry)** – GraphQL API layer  
+
+### 🗄 Databases  
+- **PostgreSQL**, **MySQL**, **MongoDB** – relational & non-relational databases  
+- **Redis** – caching, token revocation, Celery broker/results, RedBeat  
+
+### ⏱ Async Tasks & Realtime  
+- **Celery** – async tasks: email sending, image processing  
+- **Celery Beat** – periodic tasks (e.g., promo emails)  
+- **Redis Stream** – message transport between Celery and FastAPI  
+- **WebSockets** – real-time chat with `FastAPI.websockets`  
+- **SSE (Server-Sent Events)** – real-time notifications  
+- **Asyncio**, **Aiofiles** – asynchronous operations  
+
+### 🧪 Testing & Code Quality  
+- **Pytest** – testing framework  
+- **Ruff** – linting & formatting  
+- **Alembic** – database migrations  
+
+### 📦 Deployment  
+- **Docker**, **Docker Compose** – containerization & orchestration  
+- **Nginx** – reverse proxy with API & WebSocket routing  
+- **SSL** – secure HTTPS  
+- **VPS** – deployment on virtual server  
+- **GitLab CI/CD** – automated build, lint, test, deploy pipeline  
+- **Yandex S3** – media file storage (Yandex Object Storage)
+
+### 🎨 Frontend  
+- **Vue 3** – modern JavaScript frontend framework  
+- **Pinia** – state management  
+- **Vue Router** – routing  
+- **Tailwind CSS** – utility-first CSS framework  
+- **Axios** – HTTP client  
+- **Party.js** – click-based UI animations  
+
 
 ## 🌸 Feed
 ### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
