@@ -16,6 +16,7 @@ from app.api.rest.admin.routes import router as admin_router
 from app.api.rest.boards.routes import router as boards_router
 from app.api.rest.chats.routes import router as chats_router
 from app.api.rest.comments.routes import router as comment_router
+from app.api.rest.contact.routes import router as contact_router
 from app.api.rest.likes.routes import router as like_router
 from app.api.rest.messages.routes import router as messages_router
 from app.api.rest.notauth.routes import router as notauth_router
@@ -34,12 +35,9 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
-from app.api.rest.contact.routes import router as contact_router
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
-from app.mongodb.database import mongo
-from app.mysql.test_connection import connect as mysql_connect
 from app.postgresql.test_connection import connect as postgre_connect
 from app.redis.redis_cache import close_redis_cache, init_redis_cache
 from app.redis.redis_revoke_tokens import (

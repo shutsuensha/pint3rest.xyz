@@ -25,14 +25,6 @@ from app.postgresql.models import (
     users_view_pins,
 )
 
-
-from fastapi import File, UploadFile
-
-from typing import Optional
-from email.mime.base import MIMEBase
-from email import encoders
-
-
 redis_client = redis.Redis.from_url(settings.REDIS_URL_CELERY_BROKER, decode_responses=True)
 
 
@@ -67,9 +59,17 @@ def send_email_adds():
 
 
 @celery_instance.task
-def send_email(recipients: list[str], subject: str, context: dict, template_name: str, attachment: str | None = None):
+def send_email(
+    recipients: list[str],
+    subject: str,
+    context: dict,
+    template_name: str,
+    attachment: str | None = None,
+):
     try:
-        message = create_message(recipients=recipients, subject=subject, context=context, attachment=attachment)
+        message = create_message(
+            recipients=recipients, subject=subject, context=context, attachment=attachment
+        )
         async_to_sync(mail.send_message)(message, template_name=template_name)
     except Exception as e:
         logger.error(f"Ошибка при отправке email: {e}", exc_info=True)

@@ -1,30 +1,25 @@
-from fastapi import FastAPI, Form, File, UploadFile, APIRouter
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-import shutil
-from pathlib import Path
-from .schemas import ContactForm
-
 import uuid
-
-from app.celery.tasks import send_email
-
-from app.config import settings
-
-from app.api.rest.utils import save_file
+from pathlib import Path
 from typing import Optional
 
+from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
+from app.api.rest.utils import save_file
+from app.celery.tasks import send_email
+from app.config import settings
+
 router = APIRouter(prefix="/contact", tags=["contact"])
+
 
 @router.post("/")
 async def send_contact_form(
     name: str = Form(...),
     email: str = Form(...),
     message: str = Form(...),
-    file: Optional[UploadFile] = File(None)
+    file: Optional[UploadFile] = File(None),
 ):
-
     image_path = None
     if file:
         file_extension = Path(file.filename).suffix
@@ -37,7 +32,7 @@ async def send_contact_form(
         "name": name,
         "email": email,
         "message": message,
-        "attachment": image_path if image_path else None
+        "attachment": image_path if image_path else None,
     }
 
     context = {"name": name, "email": email, "message": message}
@@ -46,4 +41,6 @@ async def send_contact_form(
     subject = "Ryply email from Resume site"
     send_email.delay(emails, subject, context, "reply_from_resume.html", attachment=image_path)
 
-    return JSONResponse(content=jsonable_encoder({"status": "success", "data": form_data}), status_code=200)
+    return JSONResponse(
+        content=jsonable_encoder({"status": "success", "data": form_data}), status_code=200
+    )
