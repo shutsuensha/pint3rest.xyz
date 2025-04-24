@@ -641,10 +641,13 @@ function setScrollbarColor(color) {
 <template>
   <div v-if="userConnected"
     class="left-20 fixed inset-0 flex items-center justify-center bg-indigo-200 z-50 bg-opacity-50">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-lg mx-4 animate-fadeInUp">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md mx-4 animate-fadeInUp">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Oops!</h1>
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+      <h1 class="text-xl  font-bold text-gray-800 mb-6">
         It looks like you already have an active connection!
+      </h1>
+      <h1 class="text-xl  font-bold text-gray-800 mb-6">
+        Or u have testusername profile account!
       </h1>
       <p class="text-lg md:text-xl text-gray-600 mb-8">
         Check your open tabs

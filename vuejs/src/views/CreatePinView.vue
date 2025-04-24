@@ -437,18 +437,24 @@ function checkPinAded(name) {
               placeholder="Add link (any website link)" />
           </div>
           <!-- Tags Field -->
+
           <div>
             <div class="mt-5">
               <!-- Heading -->
+
               <h3 class="text-md mb-2 text-gray-600">Add Tags to Pin</h3>
 
-              <div class="flex items-center space-x-2 mb-2">
+              <div class="flex items-center space-x-2 mb-4">
+                <button type="button" @click="addTag"
+                  class="bg-purple-500 hover:bg-purple-600 transition duration-100 text-white font-medium rounded-3xl text-sm px-4 py-2">
+                  Create
+                </button>
 
-                <!-- Tags Input -->
-                <input v-model="tagToAdd" @keydown.enter="addTag" type="text" name="tags" id="tags" autocomplete="off"
+                <input v-model="tagToAdd" type="text" name="tags" id="tags" autocomplete="off" @keydown.enter="addTag"
                   class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl flex-grow py-3 px-5 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="Create Tag" />
               </div>
+
 
               <input v-model="searchValue" type="text" placeholder="Search Tag"
                 class="hover:bg-purple-100 transition duration-100 cursor-pointer bg-gray-50 border border-gray-900 text-black text-sm rounded-3xl w-full py-3 px-5 focus:ring-purple-500 focus:border-purple-500 mb-4" />

@@ -761,6 +761,10 @@ async def update_user_information(user_model: UserPatch, user_id: user_id, db: d
     - 409: User with this ID not found.
     """
     if user_model.username:
+        user = await db.scalar(select(UsersOrm).where(UsersOrm.id == user_id))
+        if user.username == 'testusername':
+            raise HTTPException(status_code=403, detail="u cannot change username of test account")
+
         user = await db.scalar(select(UsersOrm).where(UsersOrm.username == user_model.username))
         if user:
             raise HTTPException(status_code=409, detail="user already exists")

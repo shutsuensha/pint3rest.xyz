@@ -367,6 +367,8 @@ async function handleTestLogin() {
   formLogin.username = 'testusername'
   formLogin.password = 'testusername'
 
+  addQueryToCurrentRoute()
+
   submitLogin()
 }
 

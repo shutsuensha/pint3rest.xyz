@@ -294,6 +294,7 @@ const goBack = () => {
   router.back();
 };
 
+const userHasTestAcc = ref(false)
 
 async function editProfile() {
 
@@ -357,6 +358,10 @@ async function editProfile() {
       if (error.response.status === 409) {
         updateInformation.value = false
         userAlreadyExistsError.value = true
+      }
+      if (error.response.status === 403) {
+        updateInformation.value = false
+        userHasTestAcc.value = true
       }
     }
   }
@@ -800,6 +805,28 @@ async function redirectToChat() {
       </div>
     </div>
   </div>
+
+  
+  <div v-if="userHasTestAcc"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+    <div class="relative p-4 w-full max-w-md max-h-full ml-20">
+      <div class="relative bg-white rounded-3xl shadow">
+        <div class="p-5 text-center">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-black"> U cannot change username of test profile </h3>
+          <button @click="userHasTestAcc = false" type="button"
+            class="text-white bg-red-600 hover:bg-red-800  font-medium rounded-3xl text-sm inline-flex items-center px-5 py-2.5 text-center">
+            Ok, understand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 
   <div v-if="errorUpdateProfileImage"
