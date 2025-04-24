@@ -84,7 +84,7 @@
       <h2 class="z-10 text-3xl font-semibold text-indigo-400 mb-6">
         Python Backend Developer
       </h2>
-      <a href="/cv.pdf" download
+      <a href="/CV_Daniil_Kupryianchyk_Python_Backend.pdf" download
         class="z-50 inline-block mt-4 px-6 py-3 rounded-full border border-indigo-400 bg-indigo-500 text-white font-semibold shadow-md hover:bg-indigo-600 hover:shadow-lg transition duration-300">
         📄 Download CV
       </a>
@@ -282,7 +282,7 @@
       <Swiper :modules="[Navigation]" :slides-per-view="1" :loop="true" :navigation="true"
         class="max-w-full mx-auto custom-swiper">
         <SwiperSlide v-for="(project, index) in projects" :key="index"
-          class="bg-gray-900 p-8 rounded-xl shadow-xl hover:shadow-indigo-500/50 transition cursor-grab active:cursor-grabbing">
+          class="rounded-xl shadow-xl hover:shadow-indigo-500/50 transition cursor-grab active:cursor-grabbing">
 
           <!-- Image Slider -->
           <img :src="project.image" alt="Project Image" class="w-full h-screen object-cover rounded-lg">
@@ -322,7 +322,7 @@
       <div class="border-l-2 border-indigo-500 pl-6">
         <div class="mb-10 border-pink-500 pl-6 border-l-2">
           <h3 class="text-xl font-semibold">Full-Stack Developer – Pinterest Clone</h3>
-          <span class="text-sm text-gray-400">Dec 2024 – Apr 2025 (4 months)</span>
+          <span class="text-sm text-gray-400">Dec 2024 – Present (5 months)</span>
           <p class="text-gray-300 mt-2">
             Developed a Pinterest-like platform with a Vue 3 frontend and FastAPI backend, using PostgreSQL
             (SQLAlchemy, Alembic), MongoDB, and MySQL for databases. Integrated real-time chat wuth websockets, dynamic
@@ -336,7 +336,7 @@
           </p>
           <br />
           <div class="flex flex-row items-center gap-4 ">
-            <a href="https://github.com/shutsuensha/pinterest-clone-vue3-fastapi" target="_blank"
+            <a href="https://github.com/shutsuensha/pint3rest.xyz" target="_blank"
               class="text-indigo-400  hover:underline">
               View on GitHub →
             </a>
@@ -348,14 +348,17 @@
         </div>
 
         <div class="border-pink-500 pl-6 border-l-2">
-          <h3 class="text-xl font-semibold">Backend Developer – Krossovki By (TeachMeSkills Diploma Project)</h3>
-          <span class="text-sm text-gray-400">Mar 2025 – Apr 2025 (1 month)</span>
+          <h3 class="text-xl font-semibold">Python Developer – TeachMeSkills (Graduation Project)</h3>
+          <span class="text-sm text-gray-400">Sep 2024 – Mar 2025 (7 months)</span>
           <p class="text-gray-300 mt-2">
-            Created an e-commerce backend with Django. Implemented product filtering, order
-            management,
-            Telegram bot notifications, and custom admin tools. Integrated Google One Tap and social auth for
-            streamlined user onboarding.
-            Used PostgreSQL for relational data.
+            Built a full-featured e-commerce platform using Django and PostgreSQL as part of a diploma project at
+            TeachMeSkills.
+            Integrated Google authentication and notifications, developed a custom admin panel, and applied best
+            practices in database design and user experience.
+            Gained hands-on experience with Django REST Framework, SQLAlchemy, FastAPI, and asynchronous Python
+            (asyncio, Aiohttp).
+            Practiced unit testing with Pytest and unittest, and collaborated through Git and GitHub workflows
+            (branches, pull requests).
           </p>
           <br />
           <div>
@@ -505,7 +508,7 @@
         </form>
       </div>
 
-      <div class="text-center text-gray-600 text-sm pb-6">
+      <div class="text-center text-white text-sm pb-6">
         © {{ new Date().getFullYear() }} Daniil Kupryianchyk. Все права защищены.
       </div>
     </footer>
@@ -595,146 +598,146 @@ const sendMessage = async () => {
     form.value.email = ''
     form.value.message = ''
     form.value.attachment = null
-    } catch (error) {
-      console.error('Error:', error)
-      alert('Произошла ошибка при отправке сообщения.')
-    }
+  } catch (error) {
+    console.error('Error:', error)
+    alert('Произошла ошибка при отправке сообщения.')
   }
+}
 
 
 
 onMounted(() => {
-    document.title = "Portfolio - Daniil Kupryianchyk";
+  document.title = "Portfolio - Daniil Kupryianchyk";
 
-    // Устанавливаем иконку как эмодзи кролика
-    const link = document.querySelector("link[rel='icon']") || document.createElement('link');
-    link.rel = 'icon';
-    link.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text x="0" y="26" font-size="30">🐰</text></svg>';
-    document.head.appendChild(link);
+  // Устанавливаем иконку как эмодзи кролика
+  const link = document.querySelector("link[rel='icon']") || document.createElement('link');
+  link.rel = 'icon';
+  link.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text x="0" y="26" font-size="30">🐰</text></svg>';
+  document.head.appendChild(link);
 
-    AOS.init({ once: false, duration: 2000 });
-
-
-    scene = new THREE.Scene()
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
-    camera.position.z = 50
-
-    renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.value,
-      alpha: true,
-      antialias: true,
-    })
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(window.devicePixelRatio)
-
-    const geometry = new THREE.BufferGeometry()
-    const vertices = []
-
-    const particleCount = 10000
-    for (let i = 0; i < particleCount; i++) {
-      const x = (Math.random() - 0.5) * 200
-      const y = (Math.random() - 0.5) * 200
-      const z = (Math.random() - 0.5) * 200
-      vertices.push(x, y, z)
-    }
-
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
-
-    const material = new THREE.PointsMaterial({
-      color: 0x00ffff,
-      size: 0.5,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    })
-
-    points = new THREE.Points(geometry, material)
-    scene.add(points)
-
-    animate()
-    window.addEventListener('resize', onWindowResize)
+  AOS.init({ once: false, duration: 2000 });
 
 
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+  camera.position.z = 50
 
-  });
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvasRef.value,
+    alpha: true,
+    antialias: true,
+  })
+  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setPixelRatio(window.devicePixelRatio)
 
-  const projects = ref([
-    {
-      title: 'Pinterest Clone',
-      description: 'Full-featured FastAPI backend and Vue3 frontend with real-time chat, real-time updates, media uploads, boards, pins, comments, likes, recommendations and more.',
-      link: 'https://github.com/shutsuensha/pinterest-clone-vue3-fastapi',
-      image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
-      stack: [
-        'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'SQLAlchemy', 'Pydantic', 'pydantic-settings', 'JWT',
-        'OAuth2', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker',
-        'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'httpx', 'Websockets', 'SSE',
-        'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
-        'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
-      ],
-      demo: 'https://pint3rest.xyz'
-    },
-    {
-      title: 'Krossovki By - Diploma project from TeachMeSkills',
-      description: 'Django e-commerce backend, user auth, order tracking, and admin dashboard.',
-      link: 'https://github.com/shutsuensha/online-store',
-      image: 'https://raw.githubusercontent.com/shutsuensha/online-store/refs/heads/main/assets/screenshots/logo.png',
-      stack: ['Django', 'PostgreSQL', 'Tailwind CSS'],
-      demo: null, // нет live demo
-    }
-  ])
+  const geometry = new THREE.BufferGeometry()
+  const vertices = []
 
-
-
-  function scrollTo(selector) {
-    const target = document.querySelector(selector)
-    if (!target) return
-
-    const offset = 80 // если у тебя фиксированное меню
-    const targetPosition = target.offsetTop - offset
-    const startPosition = window.pageYOffset
-    const distance = targetPosition - startPosition
-    const duration = 1000 // время анимации в миллисекундах
-    let startTime = null
-
-    function animation(currentTime) {
-      if (startTime === null) startTime = currentTime
-      const timeElapsed = currentTime - startTime
-      const run = ease(timeElapsed, startPosition, distance, duration)
-      window.scrollTo(0, run)
-      if (timeElapsed < duration) {
-        requestAnimationFrame(animation)
-      }
-    }
-
-    // Эasing функция для плавности (с задержкой в начале и конце)
-    function ease(t, b, c, d) {
-      const ts = (t /= d) * t
-      const tc = ts * t
-      return b + c * (tc + -3 * ts + 3 * t)
-    }
-
-    requestAnimationFrame(animation)
+  const particleCount = 10000
+  for (let i = 0; i < particleCount; i++) {
+    const x = (Math.random() - 0.5) * 200
+    const y = (Math.random() - 0.5) * 200
+    const z = (Math.random() - 0.5) * 200
+    vertices.push(x, y, z)
   }
 
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
 
-  onBeforeUnmount(() => {
-    cancelAnimationFrame(animationId)
-    window.removeEventListener('resize', onWindowResize)
+  const material = new THREE.PointsMaterial({
+    color: 0x00ffff,
+    size: 0.5,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
   })
 
+  points = new THREE.Points(geometry, material)
+  scene.add(points)
 
-  function animate() {
-    animationId = requestAnimationFrame(animate)
-    points.rotation.x += 0.0005
-    points.rotation.y += 0.001
-    renderer.render(scene, camera)
+  animate()
+  window.addEventListener('resize', onWindowResize)
+
+
+
+});
+
+const projects = ref([
+  {
+    title: 'Pinterest Clone',
+    description: 'Full-featured FastAPI backend and Vue 3 frontend with real-time chat, live updates, media uploads, boards, pins, comments, likes, recommendations, and more. Dockerized with CI/CD pipeline. Deployed on VPS with SSL via Nginx.',
+    link: 'https://github.com/shutsuensha/pint3rest.xyz',
+    image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
+    stack: [
+      'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'SQLAlchemy', 'Pydantic', 'pydantic-settings', 'JWT',
+      'OAuth2', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker',
+      'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'httpx', 'Websockets', 'SSE',
+      'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
+      'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
+    ],
+    demo: 'https://pint3rest.xyz'
+  },
+  {
+    title: 'Diploma project from TeachMeSkills',
+    description: 'Django e-commerce backend, user auth, order tracking, and admin dashboard.',
+    link: 'https://github.com/shutsuensha/online-store',
+    image: 'https://raw.githubusercontent.com/shutsuensha/online-store/refs/heads/main/assets/screenshots/logo.png',
+    stack: ['Django', 'PostgreSQL', 'Tailwind CSS'],
+    demo: null, // нет live demo
+  }
+])
+
+
+
+function scrollTo(selector) {
+  const target = document.querySelector(selector)
+  if (!target) return
+
+  const offset = 80 // если у тебя фиксированное меню
+  const targetPosition = target.offsetTop - offset
+  const startPosition = window.pageYOffset
+  const distance = targetPosition - startPosition
+  const duration = 1000 // время анимации в миллисекундах
+  let startTime = null
+
+  function animation(currentTime) {
+    if (startTime === null) startTime = currentTime
+    const timeElapsed = currentTime - startTime
+    const run = ease(timeElapsed, startPosition, distance, duration)
+    window.scrollTo(0, run)
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animation)
+    }
   }
 
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
-    camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+  // Эasing функция для плавности (с задержкой в начале и конце)
+  function ease(t, b, c, d) {
+    const ts = (t /= d) * t
+    const tc = ts * t
+    return b + c * (tc + -3 * ts + 3 * t)
   }
+
+  requestAnimationFrame(animation)
+}
+
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(animationId)
+  window.removeEventListener('resize', onWindowResize)
+})
+
+
+function animate() {
+  animationId = requestAnimationFrame(animate)
+  points.rotation.x += 0.0005
+  points.rotation.y += 0.001
+  renderer.render(scene, camera)
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+}
 </script>
 
 <style scoped>
@@ -778,37 +781,71 @@ body {
 </style>
 
 <style>
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+
+
 .swiper-button-next,
 .swiper-button-prev {
-  background-color: rgba(0, 0, 0, 0.5);
-  /* Добавить полупрозрачный фон */
+  background-color: rgba(255, 255, 255, 0.15);
+  /* Более светлый фон */
+  backdrop-filter: blur(4px);
+  /* Размытие фона */
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  /* Контрастная рамка */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  /* Свечение */
   border-radius: 50%;
   width: 100px;
   height: 100px;
   top: 50%;
-  /* Центрирование по вертикали */
   transform: translateY(-50%);
   z-index: 10;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+
+  animation: pulse-glow 2.5s infinite ease-in-out;
 }
 
 .swiper-button-next {
   right: 50px;
-  /* Отступ от правого края */
 }
 
 .swiper-button-prev {
   left: 50px;
-  /* Отступ от левого края */
 }
 
-/* Стиль для стрелочек (увеличение) */
+/* Плавное движение при наведении */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  /* Ещё ярче */
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  transform: translateY(-50%) scale(1.05);
+  /* Немного увеличить */
+}
+
+/* Увеличенные стрелки */
 .swiper-button-next:after,
 .swiper-button-prev:after {
-  font-size: 2rem;
-  color: white;
+  font-size: 3rem;
+  color: #6366f1;
+  /* Indigo-500 */
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
-/* Контейнер для описания проекта */
+/* Контейнер описания */
 .swiper-slide {
   position: relative;
 }
