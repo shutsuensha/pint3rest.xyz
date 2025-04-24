@@ -178,7 +178,6 @@
 - **Vue Router** – routing  
 - **Tailwind CSS** – utility-first CSS framework  
 - **Axios** – HTTP client  
-- **Party.js** – click-based UI animations  
 
 ## ⚙️ CI/CD Pipeline
 
@@ -201,7 +200,7 @@ This project uses **GitLab CI/CD** to automate the entire delivery process. The 
   - Initializes **MySQL database** via custom script (`app.mysql.init_db`).
 
 - 🧪 **Testing**  
-  Runs `pytest` inside a container (with `pinterest-network`) and mounts log files to `${LOGS_PATH}`.
+  Runs `pytest` inside a container.
 
 - 🚀 **Deploy**  
   Uses `docker-compose up -d` to start all services after successful testing.
