@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" alt="Pinterest Logo" width="100" />
   <h1> 
     Pinterest Clone
   </h1>
