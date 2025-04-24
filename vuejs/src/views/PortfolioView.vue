@@ -52,7 +52,7 @@
 
     <section id="hero"
       class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50"
-      data-aos="fade-up">
+      data-aos="zoom-in">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1920 1080"
         class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse scale-150">
         <defs>
@@ -282,13 +282,38 @@
       <Swiper :modules="[Navigation]" :slides-per-view="1" :loop="true" :navigation="true"
         class="max-w-full mx-auto custom-swiper">
         <SwiperSlide v-for="(project, index) in projects" :key="index"
-          class="rounded-xl shadow-xl hover:shadow-indigo-500/50 transition cursor-grab active:cursor-grabbing">
+          class="rounded-xl shadow-xl hover:shadow-indigo-500/50 transition cursor-grab active:cursor-grabbing relative">
+          <!-- Изображение -->
+          <img :src="project.image" alt="Project Image" class="w-full h-screen object-cover rounded-lg" />
 
-          <!-- Image Slider -->
-          <img :src="project.image" alt="Project Image" class="w-full h-screen object-cover rounded-lg">
-
+          <!-- Информация -->
           <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-transparent to-transparent">
-            <h3 class="text-2xl font-bold mb-3 text-indigo-400">{{ project.title }}</h3>
+            <h3 class="text-2xl font-bold mb-3 text-indigo-400 flex items-center gap-4">
+              {{ project.title }}
+              <div class="flex items-center gap-4 text-sm text-gray-300"
+                v-if="project.stars !== null && project.forks !== null">
+
+                <!-- Звезды -->
+                <div class="flex items-center gap-1">
+                  <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 0 0 .95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 0 0-.364 1.118l1.285 3.958c.3.922-.755 1.688-1.54 1.118L10 13.347l-3.37 2.448c-.784.57-1.838-.196-1.54-1.118l1.286-3.958a1 1 0 0 0-.364-1.118L2.642 9.385c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 0 0 .95-.69l1.286-3.958z" />
+                  </svg>
+                  {{ project.stars }}
+                </div>
+
+                <!-- Форки -->
+                <div class="flex items-center gap-1">
+                  <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M5 3a3 3 0 1 0 0 6c.35 0 .687-.06 1-.17v2.34a3 3 0 0 0 2 2.83v3.17A3.001 3.001 0 0 0 6 21a3 3 0 1 0 3-3v-3.17a3.001 3.001 0 0 0 2-2.83V8.83A3.001 3.001 0 0 0 15 6a3 3 0 1 0-3-3c0 .35.06.687.17 1H9.83A3.001 3.001 0 0 0 7 6a2.99 2.99 0 0 0-2-.17V3z" />
+                  </svg>
+                  {{ project.forks }}
+                </div>
+
+              </div>
+            </h3>
+
             <p class="text-lg text-white mb-4">{{ project.description }}</p>
 
             <!-- Технологии -->
@@ -299,6 +324,7 @@
               </span>
             </div>
 
+            <!-- Ссылки -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
               <a :href="project.link" target="_blank" class="text-indigo-400 text-xl hover:underline">
                 View on GitHub →
@@ -469,6 +495,15 @@
                 <path d="M12 13.065L.857 4.5h22.286L12 13.065zM0 5.932v12.636h24V5.932l-12 9.429L0 5.932z" />
               </svg>
             </a>
+
+            <a href="https://drive.google.com/file/d/1gkMx7bBNnDl95wmoXoW6aj7aF-6VDcPJ/view?usp=sharing" target="_blank"
+              class="hover:text-purple-400 transition" title="Скачать CV">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16c0 1.103.897 2 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 7H8V8h7v1zm-1 3H8v-1h6v1zm3-6h-5V3.003L17.003 6zM8 15h8v1H8v-1zm0 3h8v1H8v-1z" />
+              </svg>
+            </a>
+
           </div>
           <p class="text-gray-400">
             Или отправьте мне сообщение прямо здесь:
@@ -605,8 +640,29 @@ const sendMessage = async () => {
 }
 
 
+async function fetchRepoStats(repoUrl) {
+  try {
+    const repoPath = new URL(repoUrl).pathname.slice(1) // 'user/repo'
+    const res = await fetch(`https://api.github.com/repos/${repoPath}`)
+    if (!res.ok) throw new Error('GitHub API error')
+    const data = await res.json()
+    return {
+      stars: data.stargazers_count,
+      forks: data.forks_count
+    }
+  } catch (err) {
+    console.error('Ошибка при получении статистики GitHub:', err)
+    return {
+      stars: 0,
+      forks: 0
+    }
+  }
+}
 
-onMounted(() => {
+
+
+
+onMounted(async () => {
   document.title = "Portfolio - Daniil Kupryianchyk";
 
   // Устанавливаем иконку как эмодзи кролика
@@ -616,6 +672,12 @@ onMounted(() => {
   document.head.appendChild(link);
 
   AOS.init({ once: false, duration: 2000 });
+
+  for (const project of projects.value) {
+    const stats = await fetchRepoStats(project.link)
+    project.stars = stats.stars
+    project.forks = stats.forks
+  }
 
 
   scene = new THREE.Scene()
@@ -674,7 +736,9 @@ const projects = ref([
       'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
       'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
     ],
-    demo: 'https://pint3rest.xyz'
+    demo: 'https://pint3rest.xyz',
+    stars: null,
+    forks: null
   },
   {
     title: 'Diploma project from TeachMeSkills',
@@ -683,6 +747,8 @@ const projects = ref([
     image: 'https://raw.githubusercontent.com/shutsuensha/online-store/refs/heads/main/assets/screenshots/logo.png',
     stack: ['Django', 'PostgreSQL', 'Tailwind CSS'],
     demo: null, // нет live demo
+    stars: null,
+    forks: null
   }
 ])
 
