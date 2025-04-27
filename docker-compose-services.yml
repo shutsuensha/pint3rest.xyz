@@ -59,6 +59,18 @@ services:
     volumes:
       - redis-data:/data
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ${RABBITMQ_HOST}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    networks:
+      - pinterest-network
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-logs:/var/log/rabbitmq
+
 networks:
   pinterest-network:
     external: true
@@ -69,3 +81,5 @@ volumes:
   mongodb-data:
   mysql-data:
   redis-data:
+  rabbitmq-data:
+  rabbitmq-logs:
