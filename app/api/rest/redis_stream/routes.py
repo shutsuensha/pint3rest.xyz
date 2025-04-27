@@ -33,7 +33,9 @@ async def add_message_to_stream(
     message: str, stream_name: str = Query("mystream"), redis: aioredis.Redis = Depends(get_redis)
 ):
     message_id = await redis.xadd(stream_name, {"text": message})
-    return {"message": f"Сообщение '{message}' добавлено в поток '{stream_name}' с ID {message_id}."}
+    return {
+        "message": f"Сообщение '{message}' добавлено в поток '{stream_name}' с ID {message_id}."
+    }
 
 
 async def stream_worker(stream_name: str, group_name: str, consumer_name: str):
@@ -78,10 +80,7 @@ async def get_stream_messages(
     try:
         # Получаем сообщения с самого начала потока
         messages = await redis.xrange(stream_name, count=count)
-        formatted_messages = [
-            {"id": message_id, "data": data}
-            for message_id, data in messages
-        ]
+        formatted_messages = [{"id": message_id, "data": data} for message_id, data in messages]
         return {"stream": stream_name, "messages": formatted_messages}
     except RedisError as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении сообщений: {str(e)}")

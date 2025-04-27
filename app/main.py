@@ -23,6 +23,7 @@ from app.api.rest.notauth.routes import router as notauth_router
 from app.api.rest.pins.routes import router as pin_router
 from app.api.rest.pins_cache.routes import router as pins_cache_router
 from app.api.rest.rabbitmq_pub_sub.routes import router as rabbitmq_pub_sub
+from app.api.rest.rabbitmq_stream.routes import router as rabbitmq_stream_router
 from app.api.rest.recommendations.routes import router as recommendations_router
 from app.api.rest.redis_stream.routes import router as redis_stream_router
 from app.api.rest.search.routes import router as search_router
@@ -37,11 +38,14 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
-from app.api.rest.rabbitmq_stream.routes import router as rabbitmq_stream_router
+from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
+from app.mongodb.database import mongo
+from app.mysql.test_connection import connect as mysql_connect
 from app.postgresql.test_connection import connect as postgre_connect
+from app.rabbitmq.app import close_rabbitmq, init_rabbitmq
 from app.redis.redis_cache import close_redis_cache, init_redis_cache
 from app.redis.redis_revoke_tokens import (
     close_redis_revoke_tokens,
@@ -52,18 +56,11 @@ from .api_metadata import description, license_info, tags_metadata, title, versi
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
-from app.mongodb.database import mongo
-from app.mysql.test_connection import connect as mysql_connect
-
-from app.config import settings
-
-from app.rabbitmq.app import init_rabbitmq, close_rabbitmq
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.DEV_MODE:
-        #DEVELOPMENT MODE
+        # DEVELOPMENT MODE
         try:
             await init_redis_revoke_tokens()
             redis_cache = await init_redis_cache()
@@ -80,7 +77,7 @@ async def lifespan(app: FastAPI):
             await close_httpx_client()
             await close_rabbitmq()
     else:
-        #PRODUCTION MODE
+        # PRODUCTION MODE
         try:
             await init_redis_revoke_tokens()
             redis_cache = await init_redis_cache()

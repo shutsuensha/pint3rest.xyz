@@ -1,18 +1,17 @@
 import asyncio
+
 import aio_pika
-from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import StreamingResponse, HTMLResponse
-
-from app.config import settings
-
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
-from fastapi import BackgroundTasks
+from app.config import settings
 
 router = APIRouter(prefix="/rabbitmq-pub-sub", tags=["rabbitmq-pub-sub"])
 
 # Хранилище для всех сообщений в памяти
 subscribers = {}  # {queue_name: asyncio.Queue()}
+
 
 # Подключение и публикация сообщений
 async def publish_message(message: str):
@@ -84,6 +83,9 @@ async def message_stream(request: Request, queue: str):
 
 templates = Jinja2Templates(directory="app/templates")
 
+
 @router.get("/", response_class=HTMLResponse)
 async def get_sse_client(request: Request):
-    return templates.TemplateResponse("sse_rabbitmq_pub_sub.html", {"request": request, "API_DOMAIN": settings.API_DOMAIN})
+    return templates.TemplateResponse(
+        "sse_rabbitmq_pub_sub.html", {"request": request, "API_DOMAIN": settings.API_DOMAIN}
+    )

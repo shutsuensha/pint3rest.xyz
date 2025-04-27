@@ -179,7 +179,7 @@ tags_metadata = [
         "name": "rabbitmq-stream",
         "description": "🚀 **RabbitMQ Stream (Example)**:\n"
         "- 🔹 Publish messages to a RabbitMQ queue\n"
-        "- 🔹 Consume messages from RabbitMQ queue\n"
+        "- 🔹 Consume messages from RabbitMQ queue\n",
     },
     {
         "name": "graphql",

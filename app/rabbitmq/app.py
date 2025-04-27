@@ -1,9 +1,11 @@
 import aio_pika
+
 from app.config import settings
 from app.logger import logger
 
 rabbitmq_connection = None
 rabbitmq_channel = None
+
 
 async def init_rabbitmq():
     """Инициализация подключения к RabbitMQ."""
@@ -36,6 +38,7 @@ async def close_rabbitmq():
             logger.info("🔴 Соединение с RabbitMQ закрыто")
         except Exception as e:
             logger.error(f"Ошибка при закрытии соединения с RabbitMQ: {e}")
+
 
 async def get_rabbitmq_connection_and_channel():
     """Получить текущее соединение и канал RabbitMQ."""
