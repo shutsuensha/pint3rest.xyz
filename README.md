@@ -146,7 +146,7 @@
 - **httpx** – interaction with external APIs  
 - **FastAPI-Cache** – API-level caching  
 - **FastAPI-Mail** – sending emails via FastAPI  
-- **GraphQL (Strawberry)** – GraphQL API layer  
+- **GraphQL (Strawberry)** – GraphQL API layer
 
 ### 🗄 Databases  
 - **PostgreSQL**, **MySQL**, **MongoDB** – relational & non-relational databases  
@@ -155,7 +155,11 @@
 ### ⏱ Async Tasks & Realtime  
 - **Celery** – async tasks: email sending, image processing  
 - **Celery Beat** – periodic tasks (e.g., promo emails)  
-- **Redis Stream** – message transport between Celery and FastAPI  
+- **Redis Stream** – Consumer Groups, message streaming, background worker processing
+- **Redis pub/sub** – message passing between Celery and FastAPI
+- **RabbitMQ** – task and result passing between Celery and FastAPI
+- **RabbitMQ pub/sub** – message publication to exchange, queue subscription, SSE message transfer
+- **RabbitMQ stream** – message publishing and consumption from RabbitMQ queues
 - **WebSockets** – real-time chat with `FastAPI.websockets`  
 - **SSE (Server-Sent Events)** – real-time notifications  
 - **Asyncio**, **Aiofiles** – asynchronous operations  
@@ -163,14 +167,15 @@
 ### 🧪 Testing & Code Quality  
 - **Pytest** – testing framework  
 - **Ruff** – linting & formatting  
-- **Alembic** – database migrations  
+- **Alembic** – database migrations
+- **Logging** – error logging (client-side, server-side, request logging)
 
 ### 📦 Deployment  
 - **Docker**, **Docker Compose** – containerization & orchestration  
 - **Nginx** – reverse proxy with API & WebSocket routing  
 - **SSL** – secure HTTPS  
 - **VPS** – deployment on virtual server  
-- **GitLab CI/CD** – automated build, lint, test, deploy pipeline  
+- **GitLab CI/CD** – automated build, lint/format, migrations, test, deploy pipeline  
 - **Yandex S3** – media file storage (Yandex Object Storage)
 
 ### 🎨 Frontend  
