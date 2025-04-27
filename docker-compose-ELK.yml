@@ -24,15 +24,19 @@ services:
   logstash:
     image: docker.io/bitnami/logstash:7.17.10
     container_name: logstash
+    environment:
+      - LS_JAVA_OPTS="-Xms256m -Xmx512m"  # Ограничиваем кучу памяти для JVM
     ports:
-      - "5044:5044"  # Для получения логов
-      - "9600:9600"  # Для мониторинга
+      - "5044:5044"
+      - "9600:9600"
     volumes:
       - ./logstash.conf:/bitnami/logstash/pipeline/logstash.conf
-      - ${LOGS_PATH}:${LOGS_PATH}  # Монтируем логи FastAPI
-      - /var/log/nginx:/var/log/nginx  # Монтируем логи Nginx
+      - ${LOGS_PATH}:${LOGS_PATH}
+      - /var/log/nginx:/var/log/nginx
     networks:
       - elk
+    mem_limit: 512m
+    cpus: "0.5"
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
