@@ -29,12 +29,12 @@ services:
       - "9600:9600"  # Для мониторинга
     volumes:
       - ./logstash.conf:/bitnami/logstash/pipeline/logstash.conf
-      - ${LOGS_PATH}:${LOGS_PATH}:ro  # Монтируем логи FastAPI
-      - /var/log/nginx:/var/log/nginx:ro  # Монтируем логи Nginx
+      - ${LOGS_PATH}:${LOGS_PATH}  # Монтируем логи FastAPI
+      - /var/log/nginx:/var/log/nginx  # Монтируем логи Nginx
     networks:
       - elk
-    mem_limit: 256m  # Ограничиваем использование памяти
-    cpus: "0.5"  # Ограничиваем использование CPU
+    mem_limit: 512m   # Ограничиваем использование памяти
+    cpus: 1  # Ограничиваем использование CPU
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
