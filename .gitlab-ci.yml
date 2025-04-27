@@ -1,66 +1,66 @@
-# stages:
-#   - check-disk-space
-#   - build
-#   - lint-format
-#   - migrations
-#   - test
-#   - deploy
+stages:
+  - check-disk-space
+  - build
+  - lint-format
+  - migrations
+  - test
+  - deploy
 
-# before_script:
-#   - cp ${ENV} .env
-#   - export $(grep -v '^#' .env | xargs)
+before_script:
+  - cp ${ENV} .env
+  - export $(grep -v '^#' .env | xargs)
 
-# check-disk-space:
-#   stage: check-disk-space
-#   script:
-#     - |
-#       FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
-#       echo "Available space: ${FREE_SPACE}GB"
-#       if [ "$FREE_SPACE" -lt 3 ]; then
-#         echo "Low disk space, running docker system prune..."
-#         docker system prune -af
-#       fi
+check-disk-space:
+  stage: check-disk-space
+  script:
+    - |
+      FREE_SPACE=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
+      echo "Available space: ${FREE_SPACE}GB"
+      if [ "$FREE_SPACE" -lt 3 ]; then
+        echo "Low disk space, running docker system prune..."
+        docker system prune -af
+      fi
 
-# build-fastapi:
-#   stage: build
-#   script:
-#     - docker build -t fastapi-image -f Dockerfile-fastapi .
+build-fastapi:
+  stage: build
+  script:
+    - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 
-# build-vuejs:  
-#   stage: build
-#   script:
-#     - docker build -t vuejs-image -f Dockerfile-vuejs .
+build-vuejs:  
+  stage: build
+  script:
+    - docker build -t vuejs-image -f Dockerfile-vuejs .
 
-# lint:
-#   stage: lint-format
-#   script:
-#     - docker run --rm fastapi-image ruff check
+lint:
+  stage: lint-format
+  script:
+    - docker run --rm fastapi-image ruff check
 
-# format:
-#   stage: lint-format
-#   script:
-#     - docker run --rm fastapi-image ruff format --check
+format:
+  stage: lint-format
+  script:
+    - docker run --rm fastapi-image ruff format --check
 
-# migrations-postgresql:
-#   stage: migrations
-#   script:
-#     - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
+migrations-postgresql:
+  stage: migrations
+  script:
+    - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
 
-# migrations-mysql:
-#   stage: migrations
-#   script:
-#     - docker run --rm --network pinterest-network fastapi-image python -m app.mysql.init_db
+migrations-mysql:
+  stage: migrations
+  script:
+    - docker run --rm --network pinterest-network fastapi-image python -m app.mysql.init_db
 
-# tests:
-#   stage: test
-#   script:
-#     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+tests:
+  stage: test
+  script:
+    - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-# deploy:
-#   stage: deploy
-#   script:
-#     - docker-compose up -d
+deploy:
+  stage: deploy
+  script:
+    - docker-compose up -d
 
 
 
@@ -72,15 +72,15 @@
 
 
 
-stages:
-  - reload-services
+# stages:
+#   - reload-services
 
-reload-services:
-  stage: reload-services
-  before_script:
-    - cp ${ENV} .env
-  script:
-    - docker-compose -f docker-compose-services.yml up -d
+# reload-services:
+#   stage: reload-services
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-services.yml up -d
 
 
 # stages:
