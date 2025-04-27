@@ -27,7 +27,7 @@ services:
     image: docker.io/bitnami/logstash:7.17.10
     container_name: logstash
     environment:
-      - LS_JAVA_OPTS="-Xms256m -Xmx512m"  # Ограничиваем кучу памяти для JVM
+      - LS_JAVA_OPTS=-Xms256m -Xmx512m  # Правильный формат без кавычек
     ports:
       - "5044:5044"
       - "9600:9600"
@@ -37,8 +37,8 @@ services:
       - /var/log/nginx:/var/log/nginx
     networks:
       - elk
-    mem_limit: 512m  # Ограничиваем использование памяти
-    cpus: "0.5"  # Ограничиваем использование CPU
+    mem_limit: 512m
+    cpus: "0.5"
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
