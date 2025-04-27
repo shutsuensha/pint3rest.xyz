@@ -4,22 +4,35 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - "ELASTICSEARCH_NODE_NAME=elasticsearch"
+      - "cluster.name=elasticsearch"
+      - "network.host=0.0.0.0"
+      - "http.port=9200"
+      - "transport.tcp.port=9300"
+      - "path.data=/bitnami/elasticsearch/data"
+      - "path.logs=/bitnami/elasticsearch/logs"
+      - "index.number_of_shards=1"  # Уменьшаем количество шардов
+      - "index.number_of_replicas=0"  # Отключаем репликацию индексов
     ports:
       - "9200:9200"
     networks:
       - elk
+    mem_limit: 256m
+    cpus: "0.5"
 
   logstash:
     image: docker.io/bitnami/logstash:7.17.10
     container_name: logstash
     ports:
-      - "5044:5044" # Для получения логов
-      - "9600:9600" # Monitoring
+      - "5044:5044"
+      - "9600:9600"
     volumes:
       - ./logstash.conf:/bitnami/logstash/pipeline/logstash.conf
     networks:
       - elk
+    mem_limit: 256m
+    cpus: "0.5"
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
@@ -30,6 +43,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     networks:
       - elk
+    mem_limit: 256m
+    cpus: "0.5"
 
 networks:
   elk:
