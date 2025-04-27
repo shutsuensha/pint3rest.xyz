@@ -1,10 +1,12 @@
+version: '3'
+
 services:
   elasticsearch:
     image: docker.io/bitnami/elasticsearch:7.17.10
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms128m -Xmx128m  # Уменьшаем память для Elasticsearch
+      - ES_JAVA_OPTS=-Xms128m -Xmx128m  # Ограничение памяти для Elasticsearch
       - "ELASTICSEARCH_NODE_NAME=elasticsearch"
       - "cluster.name=elasticsearch"
       - "network.host=0.0.0.0"
@@ -18,7 +20,7 @@ services:
       - "9200:9200"
     networks:
       - elk
-    mem_limit: 256m  # Ограничиваем использование памяти
+    mem_limit: 512m  # Уменьшаем использование памяти
     cpus: "0.5"  # Ограничиваем использование CPU
 
   logstash:
@@ -35,8 +37,8 @@ services:
       - /var/log/nginx:/var/log/nginx
     networks:
       - elk
-    mem_limit: 512m
-    cpus: "0.5"
+    mem_limit: 512m  # Ограничиваем использование памяти
+    cpus: "0.5"  # Ограничиваем использование CPU
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
