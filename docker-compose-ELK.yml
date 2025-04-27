@@ -33,8 +33,6 @@ services:
       - /var/log/nginx:/var/log/nginx  # Монтируем логи Nginx
     networks:
       - elk
-    mem_limit: 512m   # Ограничиваем использование памяти
-    cpus: 1  # Ограничиваем использование CPU
 
   kibana:
     image: docker.io/bitnami/kibana:7.17.10
