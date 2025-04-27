@@ -1,14 +1,14 @@
-stages:
-  # - check-disk-space
-  - build
-  # - lint-format
-  # - migrations
-  # - test
-  - deploy
+# stages:
+#   # - check-disk-space
+#   - build
+#   # - lint-format
+#   # - migrations
+#   # - test
+#   - deploy
 
-before_script:
-  - cp ${ENV} .env
-  - export $(grep -v '^#' .env | xargs)
+# before_script:
+#   - cp ${ENV} .env
+#   - export $(grep -v '^#' .env | xargs)
 
 # check-disk-space:
 #   stage: check-disk-space
@@ -21,16 +21,16 @@ before_script:
 #         docker system prune -af
 #       fi
 
-build-fastapi:
-  stage: build
-  script:
-    - docker build -t fastapi-image -f Dockerfile-fastapi .
+# build-fastapi:
+#   stage: build
+#   script:
+#     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 
-build-vuejs:  
-  stage: build
-  script:
-    - docker build -t vuejs-image -f Dockerfile-vuejs .
+# build-vuejs:  
+#   stage: build
+#   script:
+#     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 # lint:
 #   stage: lint-format
@@ -55,12 +55,12 @@ build-vuejs:
 # tests:
 #   stage: test
 #   script:
-#     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+# #     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-deploy:
-  stage: deploy
-  script:
-    - docker-compose up -d
+# deploy:
+#   stage: deploy
+#   script:
+#     - docker-compose up -d
 
 
 
@@ -99,3 +99,12 @@ deploy:
 
 
 
+stages:
+  - reload-ELK
+
+reload-monitoring:
+  stage: reload-ELK
+  before_script:
+    - cp ${ENV} .env
+  script:
+    - docker-compose -f docker-compose-ELK.yml up -d
