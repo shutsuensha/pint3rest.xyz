@@ -22,7 +22,9 @@ from app.api.rest.messages.routes import router as messages_router
 from app.api.rest.notauth.routes import router as notauth_router
 from app.api.rest.pins.routes import router as pin_router
 from app.api.rest.pins_cache.routes import router as pins_cache_router
+from app.api.rest.rabbitmq_pub_sub.routes import router as rabbitmq_pub_sub
 from app.api.rest.recommendations.routes import router as recommendations_router
+from app.api.rest.redis_stream.routes import router as redis_stream_router
 from app.api.rest.search.routes import router as search_router
 from app.api.rest.sse.routes import router as sse_router
 from app.api.rest.subscription.routes import router as subscription_router
@@ -86,6 +88,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
+app.include_router(rabbitmq_pub_sub)
+app.include_router(redis_stream_router)
 app.include_router(contact_router)
 app.include_router(updates_router)
 app.include_router(recommendations_router)

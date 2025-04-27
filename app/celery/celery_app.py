@@ -8,7 +8,7 @@ celery_instance = Celery(
     include=["app.celery.tasks"],
 )
 
-celery_instance.config_from_object("app.celery.celeryconfig")
+celery_instance.config_from_object("app.celery.celeryconfig-redis")
 
 celery_instance.conf.beat_schedule = {
     "mail-adds": {

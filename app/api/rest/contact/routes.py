@@ -10,7 +10,7 @@ from app.api.rest.utils import save_file
 from app.celery.tasks import send_email
 from app.config import settings
 
-router = APIRouter(prefix="/contact", tags=["contact"])
+router = APIRouter(prefix="/contact", tags=["contact"], include_in_schema=False)
 
 
 @router.post("/")

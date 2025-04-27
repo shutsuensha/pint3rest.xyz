@@ -140,7 +140,7 @@ tags_metadata = [
     {
         "name": "users-mysql",
         "description": "🛢 **MySQL Users (Example)**:\n"
-        "- 🔹 CRUD operations using PostgreSQL + Aiomysql\n",
+        "- 🔹 CRUD operations using sqlalchemy + aiomysql\n",
     },
     {
         "name": "users-mongodb",

@@ -1,9 +1,9 @@
 stages:
-  # - check-disk-space
+  - check-disk-space
   - build
-  # - lint-format
+  - lint-format
   # - migrations
-  # - test
+  - test
   - deploy
 
 before_script:

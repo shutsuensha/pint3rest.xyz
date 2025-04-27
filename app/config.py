@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY_RESULT: int
     REDIS_DB_CELERY_REDBEAT: int
 
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int = 5672
+    RABBITMQ_USER: str = "guest"
+    RABBITMQ_PASSWORD: str = "guest"
+
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
@@ -71,6 +76,14 @@ class Settings(BaseSettings):
     GOOGLE_OAUTH2_REDIRECT_URI: str
 
     PATH_VIDEO_STREAM: str
+
+    @property
+    def RABBITMQ_URL_BROKER(self):
+        return f"pyamqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}//"
+
+    @property
+    def RABBITMQ_URL_RESULT(self):
+        return f"rpc://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}//"
 
     @property
     def MYSQL_URL_ASYNC(self):
