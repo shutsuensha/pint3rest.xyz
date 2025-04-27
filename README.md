@@ -132,7 +132,7 @@
 
 
 ## Project Architecture
-![Architecture](.github/assets/architecture-pint3rest.jpg)
+![Architecture](.github/assets/architecture.jpg)
 
 
 ## 🛠️ Technologies Used
