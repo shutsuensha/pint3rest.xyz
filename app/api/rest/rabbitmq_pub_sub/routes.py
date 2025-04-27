@@ -1,18 +1,25 @@
+import asyncio
 import aio_pika
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse, HTMLResponse
 
 from app.config import settings
 
-router = APIRouter(prefix="/rabbitmq-pub-sub", tags=["rabbitmq-pub-sub"], include_in_schema=False)
+from fastapi.templating import Jinja2Templates
 
+from fastapi import BackgroundTasks
 
-# Публикация сообщения в RabbitMQ
+router = APIRouter(prefix="/rabbitmq-pub-sub", tags=["rabbitmq-pub-sub"])
+
+# Хранилище для всех сообщений в памяти
+subscribers = {}  # {queue_name: asyncio.Queue()}
+
+# Подключение и публикация сообщений
 async def publish_message(message: str):
     connection = await aio_pika.connect_robust(settings.RABBITMQ_URL_BROKER)
     async with connection:
         channel = await connection.channel()
         exchange = await channel.declare_exchange("test_exchange", aio_pika.ExchangeType.FANOUT)
-        # Убедитесь, что routing_key пустой, так как для FANOUT он не требуется
         await exchange.publish(aio_pika.Message(body=message.encode()), routing_key="")
 
 
@@ -25,35 +32,58 @@ async def publish(text: str):
         raise HTTPException(status_code=500, detail=f"Failed to publish message: {e}")
 
 
-# Прослушивание сообщений
+# Прослушивание сообщений и запись их в очередь для SSE
 async def listen_for_messages(queue_name: str):
     try:
         connection = await aio_pika.connect_robust(settings.RABBITMQ_URL_BROKER)
         async with connection:
             channel = await connection.channel()
             exchange = await channel.declare_exchange("test_exchange", aio_pika.ExchangeType.FANOUT)
-            queue = await channel.declare_queue(
-                queue_name, durable=True
-            )  # Убедитесь, что очередь durable
+            queue = await channel.declare_queue(queue_name, durable=True)
             await queue.bind(exchange)
 
-            print("Subscriber started listening to messages...")
+            # Инициализируем очередь сообщений для этой подписки
+            subscribers[queue_name] = asyncio.Queue()
 
-            # Обработка сообщений
             async for message in queue:
                 async with message.process():
-                    print(f"{queue_name} - Received message: {message.body.decode()}")
+                    decoded_message = message.body.decode()
+                    print(f"[{queue_name}] Получено сообщение: {decoded_message}")
+                    await subscribers[queue_name].put(decoded_message)
     except Exception as e:
-        print(f"Error listening to messages: {e}")
+        print(f"Ошибка при прослушивании очереди {queue_name}: {e}")
 
 
-# Функция для асинхронного запуска подписчика
-async def run_subscriber(queue: str):
-    await listen_for_messages(queue)
-
-
+# Эндпоинт для запуска подписчика (в фоне)
 @router.post("/subscribe")
 async def subscribe(queue: str, background_tasks: BackgroundTasks):
-    # Запускаем подписчика в фоне
-    background_tasks.add_task(run_subscriber, queue)
-    return {"message": "Subscriber started listening to messages!"}
+    background_tasks.add_task(listen_for_messages, queue)
+    return {"message": f"Подписчик для очереди '{queue}' запущен!"}
+
+
+# SSE Эндпоинт для получения сообщений в реальном времени
+@router.get("/subscribe/stream")
+async def message_stream(request: Request, queue: str):
+    if queue not in subscribers:
+        raise HTTPException(status_code=404, detail="Подписчик на такую очередь не запущен")
+
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                print(f"Клиент отключился от очереди {queue}")
+                break
+
+            try:
+                message = await subscribers[queue].get()
+                yield f"data: {message}\n\n"
+            except asyncio.CancelledError:
+                break
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+templates = Jinja2Templates(directory="app/templates")
+
+@router.get("/", response_class=HTMLResponse)
+async def get_sse_client(request: Request):
+    return templates.TemplateResponse("sse_rabbitmq_pub_sub.html", {"request": request, "API_DOMAIN": settings.API_DOMAIN})

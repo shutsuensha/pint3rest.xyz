@@ -37,6 +37,7 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.api.rest.rabbitmq_stream.routes import router as rabbitmq_stream_router
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
@@ -51,25 +52,53 @@ from .api_metadata import description, license_info, tags_metadata, title, versi
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
+from app.mongodb.database import mongo
+from app.mysql.test_connection import connect as mysql_connect
+
+from app.config import settings
+
+from app.rabbitmq.app import init_rabbitmq, close_rabbitmq
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    try:
-        await init_redis_revoke_tokens()
-        redis_cache = await init_redis_cache()
-        FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
-        # await mongo.connect()
-        await postgre_connect()
-        # await mysql_connect()
-        await init_httpx_client()
-        yield
-    except Exception as e:
-        logger.error(f"❌ Ошибка при инициализации приложения: {e}")
-    finally:
-        await close_redis_revoke_tokens()
-        await close_redis_cache()
-        # await mongo.close()
-        await close_httpx_client()
+    if settings.DEV_MODE:
+        #DEVELOPMENT MODE
+        try:
+            await init_redis_revoke_tokens()
+            redis_cache = await init_redis_cache()
+            FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+            await postgre_connect()
+            await init_httpx_client()
+            await init_rabbitmq()
+            yield
+        except Exception as e:
+            logger.error(f"❌ Ошибка при инициализации приложения: {e}")
+        finally:
+            await close_redis_revoke_tokens()
+            await close_redis_cache()
+            await close_httpx_client()
+            await close_rabbitmq()
+    else:
+        #PRODUCTION MODE
+        try:
+            await init_redis_revoke_tokens()
+            redis_cache = await init_redis_cache()
+            FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+            await mongo.connect()
+            await postgre_connect()
+            await mysql_connect()
+            await init_httpx_client()
+            await init_rabbitmq()
+            yield
+        except Exception as e:
+            logger.error(f"❌ Ошибка при инициализации приложения: {e}")
+        finally:
+            await close_redis_revoke_tokens()
+            await close_redis_cache()
+            await mongo.close()
+            await close_httpx_client()
+            await close_rabbitmq()
 
 
 app = FastAPI(
@@ -88,6 +117,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
+
+app.include_router(rabbitmq_stream_router)
 app.include_router(rabbitmq_pub_sub)
 app.include_router(redis_stream_router)
 app.include_router(contact_router)

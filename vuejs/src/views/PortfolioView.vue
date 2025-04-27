@@ -51,8 +51,7 @@
 
 
     <section id="hero"
-      class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50"
-      data-aos="zoom-in">
+      class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50" data-aos="zoom-in">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1920 1080"
         class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse scale-150">
         <defs>
@@ -75,13 +74,12 @@
         </g>
       </svg>
 
-
-      <h1
+      <h1  
         class="z-50 text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500 mb-4 "
         style="line-height: 1.2;">
         Daniil Kupryianchyk
       </h1>
-      <h2 class="z-10 text-3xl font-semibold text-indigo-400 mb-6">
+      <h2  class="z-10 text-3xl font-semibold text-indigo-400 mb-6">
         Python Backend Developer
       </h2>
       <a href="/CV_Daniil_Kupryianchyk_Python_Backend.pdf" download

@@ -2,6 +2,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    DEV_MODE: bool
+
     POSTGRES_DB_HOST: str
     POSTGRES_DB_PORT: int
     POSTGRES_DB_USER: str
@@ -35,10 +37,10 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY_RESULT: int
     REDIS_DB_CELERY_REDBEAT: int
 
-    RABBITMQ_HOST: str = "localhost"
-    RABBITMQ_PORT: int = 5672
-    RABBITMQ_USER: str = "guest"
-    RABBITMQ_PASSWORD: str = "guest"
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: int
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
