@@ -64,11 +64,11 @@ deploy:
 
 
 
-
 # clear-images:
 #   stage: clear-images
 #   script:
-#     - docker image prune -f
+#     - docker image prune -af
+
 
 
 
@@ -83,6 +83,10 @@ deploy:
 #     - docker-compose -f docker-compose-services.yml up -d
 
 
+
+
+
+
 # stages:
 #   - reload-monitoring
 
@@ -91,5 +95,7 @@ deploy:
 #   before_script:
 #     - cp ${ENV} .env
 #   script:
-#     - docker-compose -f docker-compose-monitoring.yml down
-#     - docker-compose -f docker-compose-monitoring.yml up -d
+#     - docker-compose -f docker-compose-services-monitoring.yml up -d
+
+
+
