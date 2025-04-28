@@ -61,6 +61,7 @@ deploy:
   stage: deploy
   script:
     - docker-compose up -d
+    - docker restart vuejs-container
 
 
 
