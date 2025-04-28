@@ -169,6 +169,7 @@
 - **Ruff** – linting & formatting  
 - **Alembic** – database migrations
 - **Logging** – error logging (client-side, server-side, request logging)
+- **Sentry** – real-time error tracking, exception capturing, and performance monitoring
 
 ### 📦 Deployment  
 - **Docker**, **Docker Compose** – containerization & orchestration  
