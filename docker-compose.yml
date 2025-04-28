@@ -1,3 +1,5 @@
+version: '2.4'  # <--- добавил!
+
 services:
   fastapi-app:
     image: fastapi-image:latest
