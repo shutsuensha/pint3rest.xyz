@@ -10,6 +10,9 @@ from app.logger import requests_logger, logger
 
 import json
 
+
+from sentry_sdk import capture_exception, capture_message
+
 async def log_requests_and_server_http_exception_handler(request: Request, call_next):
     """Логирование входящих запросов с измерением времени выполнения и обработка ошибок сервера в обработке запросов"""
 
@@ -31,6 +34,8 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
 
             requests_logger.info(json.dumps(log_data, ensure_ascii=False))
 
+            capture_message(json.dumps(log_data, ensure_ascii=False))
+
         return response
     except Exception as e:
         elapsed_time = time.time() - start_time  # Записываем время даже в случае ошибки
@@ -38,6 +43,8 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
             f"Ошибка при обработке запроса {request.method} {request.url} {request.client.host} : {e}",
             exc_info=True,
         )
+
+        capture_exception(e)
 
         if settings.LOGGING_REQUESTS:
             log_data = {

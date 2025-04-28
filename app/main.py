@@ -38,6 +38,7 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.api.rest.sentry_test.routes import router as sentry_test_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
@@ -55,6 +56,9 @@ from app.redis.redis_revoke_tokens import (
 from .api_metadata import description, license_info, tags_metadata, title, version
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
+
+import sentry_sdk
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 
 @asynccontextmanager
@@ -115,6 +119,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
 
+app.include_router(sentry_test_router)
 app.include_router(rabbitmq_stream_router)
 app.include_router(rabbitmq_pub_sub)
 app.include_router(redis_stream_router)
@@ -143,9 +148,22 @@ app.include_router(notauth_router)
 app.include_router(sse_router)
 
 
+
 register_middleware(app)
 register_websocket(app)
 register_exception_handlers(app)
+
+
+sentry_sdk.init(
+    dsn=settings.SENTRY_DSN,  
+    traces_sample_rate=1.0,  
+    environment="development" if settings.DEV_MODE else "production",
+    send_default_pii=True,
+)
+
+
+app.add_middleware(SentryAsgiMiddleware)
+
 
 
 @app.get("/favicon.ico", include_in_schema=False)

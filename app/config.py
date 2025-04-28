@@ -4,6 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     DEV_MODE: bool
 
+    SENTRY_DSN: str
+
     POSTGRES_DB_HOST: str
     POSTGRES_DB_PORT: int
     POSTGRES_DB_USER: str
