@@ -107,5 +107,5 @@ reload-ELK:
   before_script:
     - cp ${ENV} .env
   script:
-    - docker-compose -f docker-compose-ELK.yml down -d
+    - docker-compose -f docker-compose-ELK.yml down
     - docker system prune -af
