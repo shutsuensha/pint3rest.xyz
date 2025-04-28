@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - pinterest-network
+
+  # loki:
+  #   image: grafana/loki:2.9.4
+  #   container_name: loki
+  #   ports:
+  #     - "3100:3100"
+  #   volumes:
+  #     - ./loki-config.yml:/etc/loki/local-config.yaml
+
+  # promtail:
+  #   image: grafana/promtail:2.9.4
+  #   container_name: promtail
+  #   volumes:
+  #     - ./promtail-config.yml:/etc/promtail/config.yml
+  #     - ./logs:/logs
+  #   command: -config.file=/etc/promtail/config.yml
+
+  # grafana:
+  #   image: grafana/grafana:10.2.3
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   depends_on:
+  #     - prometheus
+  #     - loki
+
+
+networks:
+  pinterest-network:
+    external: true

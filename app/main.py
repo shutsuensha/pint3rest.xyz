@@ -60,9 +60,13 @@ from .websockets.chat import register_websocket
 import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
     if settings.DEV_MODE:
         # DEVELOPMENT MODE
         try:
@@ -161,9 +165,9 @@ sentry_sdk.init(
     send_default_pii=True,
 )
 
-
 app.add_middleware(SentryAsgiMiddleware)
 
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
