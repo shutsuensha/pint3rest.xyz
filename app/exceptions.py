@@ -5,33 +5,30 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
-from app.logger import logger
+from app.logger import logger, client_errors_logger
 
 
 def register_exception_handlers(app: FastAPI):
     @app.exception_handler(StarletteHTTPException)
     async def client_http_exception_handler(request: Request, exc: StarletteHTTPException):
-        """Обработчик клиенских ошибок"""
+        """Обработчик клиентских ошибок"""
         if settings.LOGGING_CLIENT_ERRORS:
+            # Prepare the request data to be logged
             request_data = {
                 "method": request.method,
                 "url": str(request.url),
                 "client_ip": request.client.host,
                 "headers": dict(request.headers),
                 "body": None,
+                "status_code": exc.status_code,
+                "detail": exc.detail,
             }
 
-            with open(settings.LOGS_PATH + "client_errors.log", "a", encoding="utf-8") as log_file:
-                log_file.write(f"Client HTTP Error {exc.status_code}: {exc.detail}\n")
-                log_file.write(f"Метод: {request_data['method']}\n")
-                log_file.write(f"URL: {request_data['url']}\n")
-                log_file.write(f"IP клиента: {request_data['client_ip']}\n")
-                log_file.write(
-                    f"Заголовки: {json.dumps(request_data['headers'], ensure_ascii=False)}\n"
-                )
-                log_file.write("-" * 80 + "\n")
+            # Log the error using the client_errors_logger
+            client_errors_logger.warning(json.dumps(request_data, ensure_ascii=False))
 
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):

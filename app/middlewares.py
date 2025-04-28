@@ -6,8 +6,9 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.logger import logger
+from app.logger import requests_logger, logger
 
+import json
 
 async def log_requests_and_server_http_exception_handler(request: Request, call_next):
     """Логирование входящих запросов с измерением времени выполнения и обработка ошибок сервера в обработке запросов"""
@@ -18,12 +19,18 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
         response: Response = await call_next(request)
         elapsed_time = time.time() - start_time  # Вычисляем время выполнения
 
-        # Запись в файл
+        # Запись в файл в формате JSONL
         if settings.LOGGING_REQUESTS:
-            with open(settings.LOGS_PATH + "requests.log", "a", encoding="utf-8") as log_file:
-                log_file.write(
-                    f"{request.method} {request.url} {request.client.host} | Status: {response.status_code} | Time: {elapsed_time:.4f} сек.\n"
-                )
+            log_data = {
+                "method": request.method,
+                "url": str(request.url),
+                "client_ip": request.client.host,
+                "status_code": response.status_code,
+                "elapsed_time": round(elapsed_time, 4),
+            }
+
+            requests_logger.info(json.dumps(log_data, ensure_ascii=False))
+
         return response
     except Exception as e:
         elapsed_time = time.time() - start_time  # Записываем время даже в случае ошибки
@@ -33,10 +40,16 @@ async def log_requests_and_server_http_exception_handler(request: Request, call_
         )
 
         if settings.LOGGING_REQUESTS:
-            with open(settings.LOGS_PATH + "requests.log", "a", encoding="utf-8") as log_file:
-                log_file.write(
-                    f"{request.method} {request.url} {request.client.host} | Status: ERROR | Time: {elapsed_time:.4f} сек. | Error: {e}\n"
-                )
+            log_data = {
+                "method": request.method,
+                "url": str(request.url),
+                "client_ip": request.client.host,
+                "status_code": "ERROR",
+                "elapsed_time": round(elapsed_time, 4),
+                "error": str(e),
+            }
+
+            requests_logger.info(json.dumps(log_data, ensure_ascii=False))
 
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

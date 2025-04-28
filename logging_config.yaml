@@ -1,11 +1,23 @@
 version: 1
 disable_existing_loggers: False
+
 formatters:
   detailed:
     format: '%(levelname)s | %(asctime)s | %(message)s'
     datefmt: '%H:%M'
-  simple:
-    format: '%(levelname)s - %(message)s'
+
+  server_error_json:
+    format: '{"level": "%(levelname)s", "timestamp": "%(asctime)s", "message": "%(message)s"}'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+
+  request_json:
+    format: '{"timestamp": "%(asctime)s", "message": %(message)s}'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+
+  client_error_json:
+    format: '{"timestamp": "%(asctime)s", "message": %(message)s}'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+
 
 handlers:
   console:
@@ -13,19 +25,59 @@ handlers:
     level: INFO
     formatter: detailed
     stream: ext://sys.stdout
-  file:
-    class: logging.FileHandler
+
+  server_error_file:
+    class: logging.handlers.RotatingFileHandler 
     level: ERROR
-    formatter: detailed
-    filename: 
+    formatter: server_error_json
+    filename:                                       # <-- будет установлен в коде через config["handlers"]["file"]["filename"]
+    mode: a
+    maxBytes: 10485760    # 10 MB
+    backupCount: 5        # Храним 5 резервных файлов
+    encoding: utf-8
+
+  requests_file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: request_json
+    filename:    # <-- будет установлен в коде через config["handlers"]["requests_file"]["filename"]
+    mode: a
+    maxBytes: 10485760    # 10 MB
+    backupCount: 5
+    encoding: utf-8
+    
+  client_errors_file:
+    class: logging.handlers.RotatingFileHandler
+    level: WARNING
+    formatter: client_error_json
+    filename:    # <-- будет установлен в коде через config["handlers"]["client_errors_file"]["filename"]
+    mode: a
+    maxBytes: 10485760
+    backupCount: 5
+    encoding: utf-8
+
+
 
 loggers:
   pinterest_api_logger:
     level: INFO
     handlers:
       - console
-      - file
+      - server_error_file
     propagate: no
+
+  requests_logger:
+    level: INFO
+    handlers:
+      - requests_file
+    propagate: no
+
+  client_errors_logger:
+    level: WARNING
+    handlers:
+      - client_errors_file
+    propagate: no
+
 
 root:
   level: WARNING
