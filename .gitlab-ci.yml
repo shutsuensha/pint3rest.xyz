@@ -116,8 +116,10 @@ reload-PLG:
   stage: reload-PLG
   before_script:
     - cp ${ENV} .env
+    - ls -l ./prometheus  # Отладка: проверка содержимого папки prometheus
   script:
     - cp -r ./prometheus /tmp/prometheus
+    - ls -l /tmp/prometheus  # Отладка: проверка содержимого папки /tmp/prometheus
     - docker-compose -f docker-compose-PLG.yml up -d
   artifacts:
     paths:
