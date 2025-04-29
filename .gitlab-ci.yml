@@ -115,8 +115,9 @@ stages:
 reload-PLG:
   stage: reload-PLG
   before_script:
-    - cp ${ENV} .env  # если используешь переменную ENV
+    - cp ${ENV} .env    # если нужно
   script:
+    - docker-compose -f docker-compose-PLG.yml down -v --remove-orphans
     - docker-compose -f docker-compose-PLG.yml up -d
 
 
