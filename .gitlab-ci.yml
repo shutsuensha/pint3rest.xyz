@@ -106,15 +106,19 @@
 
 
 
-volumes:
- - $CI_PROJECT_DIR:$CI_PROJECT_DIR
-
 stages:
   - reload-PLG
 
-reload-ELK:
+reload-PLG:
   stage: reload-PLG
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   before_script:
+    - apk add --no-cache docker-compose
     - cp ${ENV} .env
   script:
     - docker-compose -f docker-compose-PLG.yml up -d
