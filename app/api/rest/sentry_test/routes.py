@@ -1,8 +1,4 @@
 from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import select
-
-from app.api.rest.dependencies import db, user_id
-from app.postgresql.models import SearchOrm
 
 router = APIRouter(prefix="/sentry-test", tags=["sentry-test"])
 
@@ -40,6 +36,7 @@ async def trigger_key_error():
 @router.get("/sentry-custom-error")
 async def trigger_custom_exception():
     """Искусственная пользовательская ошибка"""
+
     class CustomError(Exception):
         pass
 

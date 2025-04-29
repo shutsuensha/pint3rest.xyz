@@ -184,8 +184,8 @@ tags_metadata = [
     {
         "name": "sentry-test",
         "description": "🛡️ **Sentry Test (Example)**:\n"
-                    "- 🔹 Route for triggering and testing server-side errors\n"
-                    "- 🔹 Used to verify error capturing and monitoring with Sentry\n",
+        "- 🔹 Route for triggering and testing server-side errors\n"
+        "- 🔹 Used to verify error capturing and monitoring with Sentry\n",
     },
     {
         "name": "graphql",

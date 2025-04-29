@@ -2,12 +2,11 @@ import json
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from sentry_sdk import capture_exception
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
-from app.logger import logger, client_errors_logger
-
-from sentry_sdk import capture_exception
+from app.logger import client_errors_logger, logger
 
 
 def register_exception_handlers(app: FastAPI):
@@ -34,10 +33,8 @@ def register_exception_handlers(app: FastAPI):
             # Регистрация ошибки в Sentry
             capture_exception(exc, level="warning", extra=request_data)
 
-
         # Возврат клиенту с ошибкой
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):

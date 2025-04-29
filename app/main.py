@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -10,6 +11,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from prometheus_fastapi_instrumentator import Instrumentator
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from app.api.graphql.users.router import graphql_app
 from app.api.rest.admin.routes import router as admin_router
@@ -27,6 +30,7 @@ from app.api.rest.rabbitmq_stream.routes import router as rabbitmq_stream_router
 from app.api.rest.recommendations.routes import router as recommendations_router
 from app.api.rest.redis_stream.routes import router as redis_stream_router
 from app.api.rest.search.routes import router as search_router
+from app.api.rest.sentry_test.routes import router as sentry_test_router
 from app.api.rest.sse.routes import router as sse_router
 from app.api.rest.subscription.routes import router as subscription_router
 from app.api.rest.tags.routes import router as tag_router
@@ -38,7 +42,6 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
-from app.api.rest.sentry_test.routes import router as sentry_test_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
@@ -57,16 +60,9 @@ from .api_metadata import description, license_info, tags_metadata, title, versi
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
-import sentry_sdk
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-
-from prometheus_fastapi_instrumentator import Instrumentator
-
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
     if settings.DEV_MODE:
         # DEVELOPMENT MODE
         try:
@@ -152,15 +148,14 @@ app.include_router(notauth_router)
 app.include_router(sse_router)
 
 
-
 register_middleware(app)
 register_websocket(app)
 register_exception_handlers(app)
 
 
 sentry_sdk.init(
-    dsn=settings.SENTRY_DSN,  
-    traces_sample_rate=1.0,  
+    dsn=settings.SENTRY_DSN,
+    traces_sample_rate=1.0,
     environment="development" if settings.DEV_MODE else "production",
     send_default_pii=True,
 )

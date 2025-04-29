@@ -1,17 +1,15 @@
+import json
 import time
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+from sentry_sdk import capture_exception, capture_message
 
 from app.config import settings
-from app.logger import requests_logger, logger
+from app.logger import logger, requests_logger
 
-import json
-
-
-from sentry_sdk import capture_exception, capture_message
 
 async def log_requests_and_server_http_exception_handler(request: Request, call_next):
     """Логирование входящих запросов с измерением времени выполнения и обработка ошибок сервера в обработке запросов"""
