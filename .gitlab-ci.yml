@@ -92,25 +92,25 @@
 
 
 
-stages:
-  - reload-ELK
-
-reload-ELK:
-  stage: reload-ELK
-  before_script:
-    - cp ${ENV} .env
-  script:
-    - docker-compose -f docker-compose-ELK.yml up -d
-
-
-
-
 # stages:
-#   - reload-PLG
+#   - reload-ELK
 
-# reload-PLG:
-#   stage: reload-PLG
+# reload-ELK:
+#   stage: reload-ELK
 #   before_script:
 #     - cp ${ENV} .env
 #   script:
-#     - docker-compose -f docker-compose-PLG.yml up -d
+#     - docker-compose -f docker-compose-ELK.yml up -d
+
+
+
+
+stages:
+  - reload-PLG
+
+reload-PLG:
+  stage: reload-PLG
+  before_script:
+    - cp ${ENV} .env
+  script:
+    - docker-compose -f docker-compose-PLG.yml up -d
