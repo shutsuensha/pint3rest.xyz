@@ -105,6 +105,9 @@
 
 
 
+volumes:
+  - $CI_PROJECT_DIR:$CI_PROJECT_DIR
+
 stages:
   - reload-PLG
 
@@ -120,7 +123,4 @@ reload-PLG:
     - apk add --no-cache docker-compose
     - cp ${ENV} .env
   script:
-    - docker-compose -f docker-compose-PLG.yml up -d
-  # ВАЖНО!
-  volumes:
-    - $CI_PROJECT_DIR:$CI_PROJECT_DIR
+    - docker-compose -f docker-compose-PLG.yml up -
