@@ -116,8 +116,7 @@ reload-PLG:
   stage: reload-PLG
   before_script:
     - cp ${ENV} .env
-    - echo "$CI_PROJECT_DIR"
-    - ls -la $CI_PROJECT_DIR/prometheus
+    - cp prometheus.yml ./prometheus.yml
   script:
     - docker-compose -f docker-compose-PLG.yml up -d
 
