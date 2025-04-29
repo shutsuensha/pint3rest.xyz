@@ -114,3 +114,6 @@ reload-ELK:
     - cp ${ENV} .env
   script:
     - docker-compose -f docker-compose-PLG.yml up -d
+
+
+    
