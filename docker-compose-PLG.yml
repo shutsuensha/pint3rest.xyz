@@ -4,8 +4,12 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--web.external-url=https://pint3rest.xyz/prometheus/'
+      - '--web.route-prefix=/prometheus'
     networks:
       - pinterest-network
+
 
 
 
