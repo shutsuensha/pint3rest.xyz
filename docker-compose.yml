@@ -50,6 +50,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
       - /var/lib/letsencrypt:/var/lib/letsencrypt
       - /var/log/nginx:/var/log/nginx
+      - /home/auth:/etc/nginx/auth:ro
 
 networks:
   pinterest-network:
