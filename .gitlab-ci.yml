@@ -105,22 +105,12 @@
 #   script:
 #     - docker-compose -f docker-compose-ELK.yml up -d
 
-
-
-
 stages:
   - reload-PLG
 
 reload-PLG:
   stage: reload-PLG
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_TLS_CERTDIR: ""
   before_script:
-    - apk add --no-cache docker-compose
-    - ls -l $CI_PROJECT_DIR/prometheus
+    - cp ${ENV} .env
   script:
     - docker-compose -f docker-compose-PLG.yml up -d

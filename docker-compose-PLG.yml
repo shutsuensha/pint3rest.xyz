@@ -1,13 +1,9 @@
-version: '3'
-
 services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ${CI_PROJECT_DIR}/prometheus:/etc/prometheus
-    ports:
-      - "9090:9090"
+      - ./prometheus:/etc/prometheus
 
   # loki:
   #   image: grafana/loki:2.9.4
