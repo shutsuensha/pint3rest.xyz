@@ -11,7 +11,7 @@ services:
     networks:
       - pinterest-network
 
-  node_exporter:
+  node-exporter:
     image: prom/node-exporter
     container_name: node_exporter
     networks:
