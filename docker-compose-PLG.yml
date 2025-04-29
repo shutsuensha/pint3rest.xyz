@@ -5,7 +5,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - prometheus.yml:/etc/prometheus/prometheus.yml
+      - /builds/shutsuensha/pinterest-clone-vue3-fastapi/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - pinterest-network
 
