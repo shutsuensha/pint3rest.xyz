@@ -5,9 +5,9 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./prometheus:/etc/prometheus  # Монтируем локальную папку ./prometheus
-    networks:
-      - pinterest-network
+      - ${CI_PROJECT_DIR}/prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
 
   # loki:
   #   image: grafana/loki:2.9.4

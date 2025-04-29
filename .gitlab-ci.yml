@@ -113,12 +113,16 @@ stages:
 
 reload-PLG:
   stage: reload-PLG
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    COMPOSE_PROJECT_NAME: plg_test
   before_script:
-    - cp ${ENV} .env
-    - ls -l ./prometheus  # Проверка содержимого папки prometheus
+    - apk add --no-cache docker-compose
+    - echo "Project dir: $CI_PROJECT_DIR"
+    - ls -l $CI_PROJECT_DIR/prometheus
   script:
-    - ls -l ./prometheus  # Проверка содержимого папки prometheus
     - docker-compose -f docker-compose-PLG.yml up -d
-  artifacts:
-    paths:
-      - ./prometheus  # Указываем путь внутри проекта
