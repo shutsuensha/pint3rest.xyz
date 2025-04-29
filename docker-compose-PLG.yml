@@ -1,11 +1,9 @@
-version: "3.8"
-
 services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - /builds/shutsuensha/pinterest-clone-vue3-fastapi/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/etc/prometheus
     networks:
       - pinterest-network
 
