@@ -5,6 +5,11 @@ services:
     volumes:
       - ./prometheus:/etc/prometheus
 
+
+
+
+
+
   # loki:
   #   image: grafana/loki:2.9.4
   #   container_name: loki
