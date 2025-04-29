@@ -111,7 +111,7 @@
 stages:
   - reload-PLG
 
-reload-PLG:
+reload-plg:
   stage: reload-PLG
   image: docker:latest
   services:
