@@ -13,3 +13,4 @@ scrape_configs:
   - job_name: 'nginx'
     static_configs:
       - targets: ['nginx-exporter:9113']
+
