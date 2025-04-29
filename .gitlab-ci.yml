@@ -117,7 +117,6 @@ reload-PLG:
   before_script:
     - cp ${ENV} .env  # если используешь переменную ENV
   script:
-    - cp prometheus.yml ./prometheus.yml  # копируем prometheus.yml (если нужно)
     - docker-compose -f docker-compose-PLG.yml up -d
 
 
