@@ -109,11 +109,6 @@
 
 
 
-
-variables:
-  GIT_STRATEGY: clone
-
-
 stages:
   - reload-PLG
 
@@ -122,4 +117,8 @@ reload-PLG:
   before_script:
     - cp ${ENV} .env
   script:
+    - cp -r ./prometheus /tmp/prometheus
     - docker-compose -f docker-compose-PLG.yml up -d
+  artifacts:
+    paths:
+      - /tmp/prometheus

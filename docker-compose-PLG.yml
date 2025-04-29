@@ -3,7 +3,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./prometheus:/etc/prometheus
+      - /tmp/prometheus:/etc/prometheus
     networks:
       - pinterest-network
 
