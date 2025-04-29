@@ -1,11 +1,11 @@
 version: '3.8'
+
 services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      # Монтируем файл конфигурации Prometheus корректно
-      - ${CI_PROJECT_DIR}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ${CI_PROJECT_DIR}/prometheus:/etc/prometheus:ro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.external-url=https://pint3rest.xyz/prometheus/'
