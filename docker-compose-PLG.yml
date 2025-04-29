@@ -4,8 +4,10 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    # CI_PROJECT_DIR указывает на /builds/<group>/<project> внутри DIND,
+    # поэтому здесь подставляем именно его
     volumes:
-      - /builds/${CI_PROJECT_PATH}/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ${CI_PROJECT_DIR}/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.external-url=https://pint3rest.xyz/prometheus/'

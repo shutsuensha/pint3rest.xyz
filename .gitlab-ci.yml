@@ -103,11 +103,7 @@
 image: docker/compose:latest
 
 services:
-  - name: docker:dind
-    alias: docker
-    # монтируем рабочую папку джобы внутрь DIND
-    volumes:
-      - $CI_PROJECT_DIR:/builds/$CI_PROJECT_PATH:rw
+  - docker:dind
 
 variables:
   DOCKER_HOST: tcp://docker:2375
@@ -119,7 +115,6 @@ stages:
 reload-PLG:
   stage: reload-PLG
   before_script:
-    # если у вас есть окружение в ${ENV}
     - cp ${ENV} .env
   script:
     - docker-compose -f docker-compose-PLG.yml up -d
