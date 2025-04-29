@@ -11,20 +11,6 @@ services:
     networks:
       - pinterest-network
 
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node_exporter
-    networks:
-      - pinterest-network
-
-  nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:latest
-    container_name: nginx-exporter
-    command:
-      - '--nginx.scrape-uri=http://vuejs-container/stub_status'
-    networks:
-      - pinterest-network
-
 
 
 

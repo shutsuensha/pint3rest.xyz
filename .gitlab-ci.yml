@@ -77,9 +77,6 @@
 
 
 
-
-
-
 # stages:
 #   - reload-monitoring
 
@@ -105,15 +102,23 @@
 
 
 
-stages:
-  - reload-PLG
+# stages:
+#   - reload-PLG
 
-reload-ELK:
-  stage: reload-PLG
+# reload-PLG:
+#   stage: reload-PLG
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-PLG.yml up -d
+
+
+stages:
+  - reload-exporters-prometheus
+
+reload-exporters-prometheus:
+  stage: reload-exporters-prometheus
   before_script:
     - cp ${ENV} .env
   script:
-    - docker-compose -f docker-compose-PLG.yml up -d
-
-
-    
+    - docker-compose -f docker-compose-exporters-prometheus.yml up -d
