@@ -176,6 +176,11 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/123", include_in_schema=False)
+def health():
+    return {"status": "ok"}
+
+
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
