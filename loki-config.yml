@@ -4,41 +4,41 @@ server:
   http_listen_port: 3100
   grpc_listen_port: 9095
 
-frontend:
-  query_timeout: 30s
-
-limits_config:
-  max_query_parallelism: 32
-  max_entries_limit_per_query: 5000
-  max_streams_per_user: 1000
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h  # 7 дней
-
-storage_config:
-  boltdb_shipper:
-    active_index_directory: /loki/index
-    cache_location: /loki/cache
-    shared_store: filesystem
-  filesystem:
-    directory: /loki/chunks
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  chunk_idle_period: 5m
+  max_chunk_age: 1h
+  chunk_target_size: 1048576
 
 schema_config:
   configs:
-    - from: 2020-10-24
-      store: boltdb-shipper
+    - from: 2024-01-01
+      store: boltdb
       object_store: filesystem
       schema: v11
       index:
         prefix: index_
         period: 24h
 
-compactor:
-  working_directory: /loki/compactor
-  shared_store: filesystem
+storage_config:
+  boltdb:
+    directory: /loki/index
+
+  filesystem:
+    directory: /loki/chunks
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
 
 chunk_store_config:
   max_look_back_period: 168h
 
 table_manager:
   retention_deletes_enabled: true
-  retention_period: 7d
+  retention_period: 168h
