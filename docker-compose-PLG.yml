@@ -44,6 +44,7 @@ services:
     volumes:
       - loki_data:/loki
       - ./loki-config.yml:/etc/loki/loki-config.yml
+      - loki_wal:/wal
     command: 
       - -config.file=/etc/loki/loki-config.yml
     networks:
@@ -89,3 +90,4 @@ volumes:
   grafana_data:
   promtail-positions:
   loki_data:
+  loki_wal:
