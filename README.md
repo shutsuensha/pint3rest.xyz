@@ -173,11 +173,13 @@
 
 ### 📦 Deployment  
 - **Docker**, **Docker Compose** – containerization & orchestration  
-- **Nginx** – reverse proxy with API & WebSocket routing  
+- **Nginx** – reverse proxy with routing for API, WebSocket, Vue.js, SSE, and Prometheus with basic auth  
 - **SSL** – secure HTTPS  
 - **VPS** – deployment on virtual server  
 - **GitLab CI/CD** – automated build, lint/format, migrations, test, deploy pipeline  
 - **Yandex S3** – media file storage (Yandex Object Storage)
+- **Prometheus** – monitoring & metrics collection for FastAPI, VPS (via node-exporter), and Nginx (via nginx-exporter)
+
 
 ### 🎨 Frontend  
 - **Vue 3** – modern JavaScript frontend framework  

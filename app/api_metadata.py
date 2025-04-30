@@ -225,7 +225,7 @@ This API is designed to work with **Pinterest** – a platform for sharing image
 - **Celery Beat** – for sending promotional emails.
 - **Docker** – for containerizing applications.
 - **Docker Compose** – for managing multi-container applications.
-- **Nginx** – for proxying requests (`/api`, `/ws`) and ensuring security.
+- **Nginx** – reverse proxy with routing for API, WebSocket, Vue.js, SSE, and Prometheus with basic auth
 - **SSL** – for secure HTTPS connections.
 - **VPS** – for hosting the application on a virtual server.
 - **Yandex S3** – for file storage and retrieval (Yandex bucket).
@@ -240,12 +240,13 @@ This API is designed to work with **Pinterest** – a platform for sharing image
 - **Alembic** – for database migrations.
 - **GitLab CI/CD** – for configuring the CI/CD pipeline (build, lint/format, migrations, testing, deployment).
 - **GraphQL (Strawberry)** – for building the GraphQL API.
-- Использование **Redis pub/sub** — для передачи сообщений между Celery и FastAPI.
-- Использование **Redis Stream** — для создания Consumer Group, добавления сообщений в поток, запуска фонового воркера для обработки сообщений и получения всех сообщений из потока.
-- Использование **RabbitMQ** — для передачи задач и получения результатов между Celery и FastAPI через брокер сообщений и систему результатов.
-- Использование **RabbitMQ как pub/sub** — для публикации сообщений в обменник, подписки на очередь, передачи сообщений через SSE и тестирования клиентской страницы.
-- Использование **RabbitMQ Stream** — для публикации сообщений в очередь и потребления сообщений из очереди RabbitMQ.
-- Использование **Sentry** — для централизованного мониторинга ошибок приложения, автоматической фиксации исключений, логирования нестандартных событий (например, клиентских ошибок 4xx) и отслеживания производительности запросов.
+- **Redis pub/sub** — для обмена сообщениями между Celery и FastAPI.
+- **Redis Stream** — для обработки сообщений с помощью Consumer Group и фоновых воркеров.
+- **RabbitMQ** — как broker/result + celery.
+- **RabbitMQ как pub/sub** — для публикации сообщений и подписки на очереди с передачей через SSE.
+- **RabbitMQ Stream** — для публикации и потребления сообщений из очереди RabbitMQ
+- **Sentry** — для мониторинга ошибок, логирования исключений и отслеживания производительности.
+- **Prometheus** — для сбора метрик с FastAPI (через prometheus_fastapi_instrumentator), VPS (через node-exporter) и Nginx (через nginx-exporter) для мониторинга производительности и состояния системы.
 
 
 
