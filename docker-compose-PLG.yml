@@ -46,6 +46,7 @@ services:
       - ./loki-config.yaml:/etc/loki/loki-config.yaml
     command:
       - -config.file=/etc/loki/loki-config.yaml
+      - -config.expand-env=true
     networks:
       - pinterest-network
 
