@@ -6,6 +6,9 @@ ingester:
   chunk_idle_period: 5m
   max_chunk_age: 1h
 
+limits_config:
+  allow_structured_metadata: false
+
 storage_config:
   filesystem:
     directory: /loki/chunks
