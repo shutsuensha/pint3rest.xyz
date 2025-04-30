@@ -41,6 +41,7 @@ services:
   loki:
     image: grafana/loki:latest
     container_name: loki
+    user: "0:0"
     volumes:
       - loki_data:/loki
       - ./loki-config.yml:/etc/loki/loki-config.yml
