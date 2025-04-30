@@ -102,7 +102,7 @@
 stages:
   - reload-PLG
 
-reload-ELK:
+reload-PLG:
   stage: reload-PLG
   before_script:
     - cp ${ENV} .env
