@@ -179,7 +179,7 @@
 - **GitLab CI/CD** – automated build, lint/format, migrations, test, deploy pipeline  
 - **Yandex S3** – media file storage (Yandex Object Storage)
 - **Prometheus** – monitoring & metrics collection for FastAPI, VPS (via node-exporter), and Nginx (via nginx-exporter)
-
+- **Grafana** – visualization of metrics collected by Prometheus for monitoring system performance and health
 
 ### 🎨 Frontend  
 - **Vue 3** – modern JavaScript frontend framework  
