@@ -12,12 +12,18 @@ services:
     networks:
       - pinterest-network
 
-
-
-
-
-
-
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_SERVER_ROOT_URL=https://pint3rest.xyz/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - pinterest-network
 
 
 
@@ -56,3 +62,4 @@ networks:
 
 volumes:
   prometheus_data:
+  grafana_data:
