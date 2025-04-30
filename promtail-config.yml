@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: fastapi
-          __path__: /logs/fastapi/*.log
+          __path__: /logs/fastapi/*.jsonl  # Путь к логам FastAPI
 
   - job_name: nginx_logs
     static_configs:
@@ -23,4 +23,4 @@ scrape_configs:
           - localhost
         labels:
           job: nginx
-          __path__: /logs/nginx/*.log
+          __path__: /var/log/nginx/*.log  # Путь к логам Nginx

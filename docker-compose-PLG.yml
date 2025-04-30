@@ -25,6 +25,18 @@ services:
     networks:
       - pinterest-network
 
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yml
+      - /var/log/nginx/:/var/log/nginx/                        
+      - ${LOGS_PATH}:/logs/fastapi
+      - promtail-positions:/tmp               
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - pinterest-network
+
 
 
   # loki:
@@ -63,3 +75,4 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  promtail-positions:
