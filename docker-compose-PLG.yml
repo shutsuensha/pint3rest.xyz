@@ -43,10 +43,9 @@ services:
     container_name: loki
     volumes:
       - loki_data:/loki
-      - ./loki-config.yaml:/etc/loki/loki-config.yaml
-    command:
-      - -config.file=/etc/loki/loki-config.yaml
-      - -config.expand-env=true
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+    command: 
+      - -config.file=/etc/loki/loki-config.yml
     networks:
       - pinterest-network
 
