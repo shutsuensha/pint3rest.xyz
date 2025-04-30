@@ -38,6 +38,18 @@ services:
       - pinterest-network
 
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    volumes:
+      - loki_data:/loki
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml
+    command:
+      - -config.file=/etc/loki/loki-config.yaml
+    networks:
+      - pinterest-network
+
+
 
   # loki:
   #   image: grafana/loki:2.9.4
@@ -76,3 +88,4 @@ volumes:
   prometheus_data:
   grafana_data:
   promtail-positions:
+  loki_data:
