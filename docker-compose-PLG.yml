@@ -51,7 +51,6 @@ services:
     networks:
       - pinterest-network
 
-
 networks:
   pinterest-network:
     external: true
