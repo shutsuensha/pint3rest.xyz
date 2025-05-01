@@ -7,8 +7,8 @@ positions:
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
-    http_config:
-      headers:
+    client_config:
+      http_headers:
         X-Grafana-Org-Id: "1"  # Добавить заголовок Org Id
 
 scrape_configs:
