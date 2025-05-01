@@ -7,9 +7,6 @@ positions:
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
-    # Здесь добавляем заголовок X-Grafana-Org-Id
-    headers:
-      X-Grafana-Org-Id: "1"
 
 scrape_configs:
   - job_name: fastapi_logs
@@ -27,3 +24,5 @@ scrape_configs:
         labels:
           job: nginx
           __path__: /var/log/nginx/*.log  # Путь к логам Nginx
+
+
