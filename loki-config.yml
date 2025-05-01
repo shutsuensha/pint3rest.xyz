@@ -25,26 +25,16 @@ query_range:
 
 schema_config:
   configs:
-    - from: 2020-10-24
-      store: boltdb-shipper
+    - from: 2023-01-01  # Обновлена дата для схемы v13
+      store: tsdb        # Используем tsdb вместо boltdb-shipper
       object_store: filesystem
-      schema: v11
+      schema: v13        # Обновление на схему v13
       index:
         prefix: index_
         period: 24h
 
+limits_config:
+  allow_structured_metadata: false  # Отключение поддержки структурированных метаданных
+
 ruler:
   alertmanager_url: http://localhost:9093
-
-# By default, Loki will send anonymous, but uniquely-identifiable usage and configuration
-# analytics to Grafana Labs. These statistics are sent to https://stats.grafana.org/
-#
-# Statistics help us better understand how Loki is used, and they show us performance
-# levels for most users. This helps us prioritize features and documentation.
-# For more information on what's sent, look at
-# https://github.com/grafana/loki/blob/main/pkg/usagestats/stats.go
-# Refer to the buildReport method to see what goes into a report.
-#
-# If you would like to disable reporting, uncomment the following lines:
-#analytics:
-#  reporting_enabled: false
