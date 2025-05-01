@@ -28,6 +28,15 @@
   <a href="https://pint3rest.xyz/api/redoc" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📖 ReDoc
   </a>
+
+  <div style="margin-top: 30px;">
+    <a href="https://pint3rest.xyz/prometheus" target="_blank" rel="noopener noreferrer" style="display: block; margin: 10px 0; font-size: 1.3em; font-weight: bold; color: #27AE60; text-decoration: none; transition: color 0.3s ease;">
+      📊 Prometheus - admin/admin
+    </a>
+    <a href="https://pint3rest.xyz/grafana" target="_blank" rel="noopener noreferrer" style="display: block; margin: 15px 0 5px 0; font-size: 1.3em; font-weight: bold; color: #F39C12; text-decoration: none; transition: color 0.3s ease;">
+      📈 Grafana - observer/grafana2025!
+    </a>
+  </div>
 </div>
 
 ![Logo](.github/assets/overview.png)
@@ -180,6 +189,10 @@
 - **Yandex S3** – media file storage (Yandex Object Storage)
 - **Prometheus** – monitoring & metrics collection for FastAPI, VPS (via node-exporter), and Nginx (via nginx-exporter)
 - **Grafana** – visualization of metrics collected by Prometheus for monitoring system performance and health
+- **Loki** – centralized log aggregation system for collecting logs
+- **Promtail** – agent for gathering and shipping logs to Loki
+
+
 
 ### 🎨 Frontend  
 - **Vue 3** – modern JavaScript frontend framework  
