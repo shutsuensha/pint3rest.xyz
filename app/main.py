@@ -42,6 +42,7 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
+from app.api.rest.SoC_example.routes import router as SoC_example_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
@@ -119,6 +120,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
 
+app.include_router(SoC_example_router)
 app.include_router(sentry_test_router)
 app.include_router(rabbitmq_stream_router)
 app.include_router(rabbitmq_pub_sub)
