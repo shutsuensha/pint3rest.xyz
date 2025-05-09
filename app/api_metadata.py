@@ -128,6 +128,11 @@ tags_metadata = [
         "- 🔹 Clear cache when a pin is created/deleted\n",
     },
     {
+        "name": "pins-limiter",
+        "description": "🗄 **Pins Limiter (Example)**:\n"
+        "- 🔹 Retrieve list of pins with rate limiting 5 times in minute\n"
+    },
+    {
         "name": "users-google-auth",
         "description": "🔑 **Google OAuth2 (Example)**:\n"
         "- 🔹 Authentication via Google\n"
@@ -186,6 +191,10 @@ tags_metadata = [
         "description": "🛡️ **Sentry Test (Example)**:\n"
         "- 🔹 Route for triggering and testing server-side errors\n"
         "- 🔹 Used to verify error capturing and monitoring with Sentry\n",
+    },
+    {
+        "name": "SoC",
+        "description": "**SoC Router for understanding SoC Architecture Proejct (Example)**:\n"
     },
     {
         "name": "graphql",

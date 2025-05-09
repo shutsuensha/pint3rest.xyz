@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY_BROKER: int
     REDIS_DB_CELERY_RESULT: int
     REDIS_DB_CELERY_REDBEAT: int
+    REDIS_DB_LIMITER: int
 
     RABBITMQ_HOST: str
     RABBITMQ_PORT: int
@@ -117,6 +118,12 @@ class Settings(BaseSettings):
     def REDIS_URL_CACHE(self):
         return (
             f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_CACHE}"
+        )
+    
+    @property
+    def REDIS_URL_LIMITER(self):
+        return (
+            f"redis://:{self.REDIS_PASS}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB_LIMITER}"
         )
 
     @property

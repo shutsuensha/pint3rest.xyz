@@ -43,6 +43,7 @@ from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
 from app.api.rest.SoC_example.routes import router as SoC_example_router
+from app.api.rest.pins_limiter.routes import router as pins_limiter_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
@@ -61,6 +62,11 @@ from .api_metadata import description, license_info, tags_metadata, title, versi
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
 
+from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiter
+
+from app.redis.redis_limiter import init_redis_limiter, close_redis_limiter
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -70,6 +76,8 @@ async def lifespan(app: FastAPI):
             await init_redis_revoke_tokens()
             redis_cache = await init_redis_cache()
             FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+            reids_limiter = await init_redis_limiter()
+            await FastAPILimiter.init(reids_limiter)
             await postgre_connect()
             await init_httpx_client()
             await init_rabbitmq()
@@ -79,6 +87,7 @@ async def lifespan(app: FastAPI):
         finally:
             await close_redis_revoke_tokens()
             await close_redis_cache()
+            await close_redis_limiter()
             await close_httpx_client()
             await close_rabbitmq()
     else:
@@ -87,6 +96,8 @@ async def lifespan(app: FastAPI):
             await init_redis_revoke_tokens()
             redis_cache = await init_redis_cache()
             FastAPICache.init(RedisBackend(redis_cache), prefix="fastapi-cache")
+            reids_limiter = await init_redis_limiter()
+            await FastAPILimiter.init(reids_limiter)
             await mongo.connect()
             await postgre_connect()
             await mysql_connect()
@@ -98,6 +109,7 @@ async def lifespan(app: FastAPI):
         finally:
             await close_redis_revoke_tokens()
             await close_redis_cache()
+            await close_redis_limiter()
             await mongo.close()
             await close_httpx_client()
             await close_rabbitmq()
@@ -120,6 +132,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(graphql_app, prefix="/graphql", tags=["graphql"])
 
 
+app.include_router(pins_limiter_router)
 app.include_router(SoC_example_router)
 app.include_router(sentry_test_router)
 app.include_router(rabbitmq_stream_router)
