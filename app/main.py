@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from fastapi_limiter import FastAPILimiter
 from prometheus_fastapi_instrumentator import Instrumentator
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
@@ -25,12 +26,14 @@ from app.api.rest.messages.routes import router as messages_router
 from app.api.rest.notauth.routes import router as notauth_router
 from app.api.rest.pins.routes import router as pin_router
 from app.api.rest.pins_cache.routes import router as pins_cache_router
+from app.api.rest.pins_limiter.routes import router as pins_limiter_router
 from app.api.rest.rabbitmq_pub_sub.routes import router as rabbitmq_pub_sub
 from app.api.rest.rabbitmq_stream.routes import router as rabbitmq_stream_router
 from app.api.rest.recommendations.routes import router as recommendations_router
 from app.api.rest.redis_stream.routes import router as redis_stream_router
 from app.api.rest.search.routes import router as search_router
 from app.api.rest.sentry_test.routes import router as sentry_test_router
+from app.api.rest.SoC_example.routes import router as SoC_example_router
 from app.api.rest.sse.routes import router as sse_router
 from app.api.rest.subscription.routes import router as subscription_router
 from app.api.rest.tags.routes import router as tag_router
@@ -42,8 +45,6 @@ from app.api.rest.users_httpx.routes import router as users_httpx_router
 from app.api.rest.users_mongodb.routes import router as users_mongodb_router
 from app.api.rest.users_mysql.routes import router as users_mysql_router
 from app.api.rest.users_yandex_s3.routes import router as users_yandex_s3_router
-from app.api.rest.SoC_example.routes import router as SoC_example_router
-from app.api.rest.pins_limiter.routes import router as pins_limiter_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
@@ -53,6 +54,7 @@ from app.mysql.test_connection import connect as mysql_connect
 from app.postgresql.test_connection import connect as postgre_connect
 from app.rabbitmq.app import close_rabbitmq, init_rabbitmq
 from app.redis.redis_cache import close_redis_cache, init_redis_cache
+from app.redis.redis_limiter import close_redis_limiter, init_redis_limiter
 from app.redis.redis_revoke_tokens import (
     close_redis_revoke_tokens,
     init_redis_revoke_tokens,
@@ -61,11 +63,6 @@ from app.redis.redis_revoke_tokens import (
 from .api_metadata import description, license_info, tags_metadata, title, version
 from .middlewares import register_middleware
 from .websockets.chat import register_websocket
-
-from fastapi_limiter import FastAPILimiter
-from fastapi_limiter.depends import RateLimiter
-
-from app.redis.redis_limiter import init_redis_limiter, close_redis_limiter
 
 
 @asynccontextmanager

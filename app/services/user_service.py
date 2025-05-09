@@ -1,6 +1,7 @@
-from .exceptions import UserNotFoundError
 from app.api.rest.dependencies import db
 from app.repositories import user_repo
+
+from .exceptions import UserNotFoundError
 
 
 async def get_user_by_id(db: db, user_id: int):

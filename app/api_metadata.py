@@ -130,7 +130,7 @@ tags_metadata = [
     {
         "name": "pins-limiter",
         "description": "🗄 **Pins Limiter (Example)**:\n"
-        "- 🔹 Retrieve list of pins with rate limiting 5 times in minute\n"
+        "- 🔹 Retrieve list of pins with rate limiting 5 times in minute\n",
     },
     {
         "name": "users-google-auth",
@@ -194,7 +194,7 @@ tags_metadata = [
     },
     {
         "name": "SoC",
-        "description": "**SoC Router for understanding SoC Architecture Proejct (Example)**:\n"
+        "description": "**SoC Router for understanding SoC Architecture Proejct (Example)**:\n",
     },
     {
         "name": "graphql",

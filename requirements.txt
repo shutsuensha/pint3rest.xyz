@@ -59,6 +59,7 @@ frozenlist==1.5.0
 google-auth==2.38.0
 graphql-core==3.2.5
 greenlet==3.1.1
+gunicorn==23.0.0
 h11==0.14.0
 httpcore==1.0.6
 httptools==0.6.4

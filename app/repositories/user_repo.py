@@ -1,6 +1,7 @@
+from sqlalchemy import select
+
 from app.api.rest.dependencies import db
 from app.postgresql.models import UsersOrm
-from sqlalchemy import select
 
 
 async def get_by_id(db: db, user_id: int) -> UsersOrm | None:

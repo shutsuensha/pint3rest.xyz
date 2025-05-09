@@ -1,9 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, HTTPException
 
-from app.api.rest.dependencies import db, user_id
-from app.postgresql.models import SearchOrm
-
+from app.api.rest.dependencies import db
 from app.services import user_service
 from app.services.exceptions import UserNotFoundError
 
