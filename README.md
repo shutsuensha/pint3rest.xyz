@@ -148,7 +148,7 @@
 
 
 ## Project Architecture
-![Architecture](.github/assets/proejct_arch.jpg)
+![Architecture](.github/assets/architecture.jpg)
 
 
 ## 🛠️ Technologies Used
