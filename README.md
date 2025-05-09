@@ -161,6 +161,7 @@
 - **OAuth2** – Google authentication  
 - **httpx** – interaction with external APIs  
 - **FastAPI-Cache** – API-level caching  
+- **FastAPI-Limiter** – API-level rate limiting  
 - **FastAPI-Mail** – sending emails via FastAPI  
 - **GraphQL (Strawberry)** – GraphQL API layer
 

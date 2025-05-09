@@ -223,6 +223,7 @@ This API is designed to work with **Pinterest** – a platform for sharing image
 #### 🛠️ Technologies Used:
 - **FastAPI** – REST and GraphQL API.
 - **FastAPI-Cache** – for API-level caching.
+- **FastAPI-Limiter** – for API-level rate limiting.
 - **FastAPI-Mail** – for sending emails via FastAPI.
 - **SQLAlchemy** – ORM for database management.
 - **Pydantic** – for request/response validation and **pydantic-settings** for managing environment variables.
