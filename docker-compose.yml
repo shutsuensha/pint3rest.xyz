@@ -53,8 +53,7 @@ services:
       - /home/auth:/etc/nginx/auth:ro
 
   nextjs:
-    build:
-      context: nextjs-image:latest
+    image: nextjs-image:latest
     container_name: nextjs-container
     environment:
       - NODE_ENV=production
