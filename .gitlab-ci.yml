@@ -1,14 +1,14 @@
 stages:
   # - check-disk-space
-  - build
+  # - build
   # - lint-format
   # - migrations
   # - test
-  - deploy
+  # - deploy
 
-before_script:
-  - cp ${ENV} .env
-  - export $(grep -v '^#' .env | xargs)
+# before_script:
+#   - cp ${ENV} .env
+#   - export $(grep -v '^#' .env | xargs)
 
 # check-disk-space:
 #   stage: check-disk-space
@@ -21,22 +21,22 @@ before_script:
 #         docker system prune -af
 #       fi
 
-build-fastapi:
-  stage: build
-  script:
-    - docker build -t fastapi-image -f Dockerfile-fastapi .
+# build-fastapi:
+#   stage: build
+#   script:
+#     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 
-build-vuejs:  
-  stage: build
-  script:
-    - docker build -t vuejs-image -f Dockerfile-vuejs .
+# build-vuejs:  
+#   stage: build
+#   script:
+#     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 
-build-nextjs:  
-  stage: build
-  script:
-    - docker build -t nextjs-image -f Dockerfile-nextjs .
+# build-nextjs:  
+#   stage: build
+#   script:
+#     - docker build -t nextjs-image -f Dockerfile-nextjs .
 
 # lint:
 #   stage: lint-format
@@ -63,26 +63,26 @@ build-nextjs:
 #   script:
 #     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
-deploy:
-  stage: deploy
-  script:
-    - docker-compose up -d
-    - docker restart vuejs-container
-
-
-
-
-
-
-# stages:
-#   - reload-services
-
-# reload-services:
-#   stage: reload-services
-#   before_script:
-#     - cp ${ENV} .env
+# deploy:
+#   stage: deploy
 #   script:
-#     - docker-compose -f docker-compose-services.yml up -d
+#     - docker-compose up -d
+#     - docker restart vuejs-container
+
+
+
+
+
+
+stages:
+  - reload-services
+
+reload-services:
+  stage: reload-services
+  before_script:
+    - cp ${ENV} .env
+  script:
+    - docker-compose -f docker-compose-services.yml up -d
 
 
 
