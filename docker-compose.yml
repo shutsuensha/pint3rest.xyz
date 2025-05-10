@@ -52,6 +52,14 @@ services:
       - /var/log/nginx:/var/log/nginx
       - /home/auth:/etc/nginx/auth:ro
 
+  nextjs:
+    build:
+      context: nextjs-image:latest
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+
+
 networks:
   pinterest-network:
     external: true

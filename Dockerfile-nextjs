@@ -1,0 +1,23 @@
+# Используем официальный Node.js образ
+FROM node:18
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем package.json и package-lock.json
+COPY package*.json ./
+
+# Устанавливаем зависимости
+RUN npm install
+
+# Копируем остальной код
+COPY . .
+
+# Строим Next.js проект
+RUN npm run build
+
+# Указываем порт
+EXPOSE 3000
+
+# Запускаем сервер
+CMD ["npm", "start"]
