@@ -55,9 +55,11 @@ services:
   nextjs:
     build:
       context: nextjs-image:latest
-    restart: unless-stopped
+    container_name: nextjs-container
     environment:
       - NODE_ENV=production
+    networks:
+      - pinterest-network
 
 
 networks:
