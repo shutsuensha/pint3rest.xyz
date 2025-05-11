@@ -14,6 +14,7 @@ const nextConfig = {
     silenceDeprecations: ["legacy-js-api"],
   },
   basePath: "/magic/portfolio",
+  assetPrefix: "/magic/portfolio", // <--- ВАЖНО ДЛЯ СТАТИКИ
   trailingSlash: true,
 };
 
