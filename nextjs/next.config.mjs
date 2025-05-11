@@ -13,6 +13,8 @@ const nextConfig = {
     compiler: "modern",
     silenceDeprecations: ["legacy-js-api"],
   },
+  basePath: "/magic/portfolio",
+  trailingSlash: true,
 };
 
 export default withMDX(nextConfig);
