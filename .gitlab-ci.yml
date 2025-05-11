@@ -33,10 +33,10 @@ build-vuejs:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 
-# build-nextjs:  
-#   stage: build
-#   script:
-#     - docker build -t nextjs-image -f Dockerfile-nextjs .
+build-nextjs:  
+  stage: build
+  script:
+    - docker build -t nextjs-image -f Dockerfile-nextjs .
 
 
 

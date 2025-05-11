@@ -15,7 +15,7 @@ const nextConfig = {
   },
   basePath: "/magic/portfolio",
   assetPrefix: "/magic/portfolio",
-  // trailingSlash: true,
+  trailingSlash: true,
   images: {
     unoptimized: true, // отключаем серверную оптимизацию изображений
   },
