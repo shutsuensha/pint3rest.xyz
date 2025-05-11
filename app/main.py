@@ -49,8 +49,8 @@ from app.config import settings
 from app.exceptions import register_exception_handlers
 from app.httpx.app import close_httpx_client, init_httpx_client
 from app.logger import logger
-from app.mongodb.database import mongo
-from app.mysql.test_connection import connect as mysql_connect
+from app.mongodb.database import mongo 
+# from app.mysql.test_connection import connect as mysql_connect # noqa
 from app.postgresql.test_connection import connect as postgre_connect
 from app.rabbitmq.app import close_rabbitmq, init_rabbitmq
 from app.redis.redis_cache import close_redis_cache, init_redis_cache
@@ -97,7 +97,7 @@ async def lifespan(app: FastAPI):
             await FastAPILimiter.init(reids_limiter)
             await mongo.connect()
             await postgre_connect()
-            await mysql_connect()
+            # await mysql_connect()  # noqa
             await init_httpx_client()
             await init_rabbitmq()
             yield

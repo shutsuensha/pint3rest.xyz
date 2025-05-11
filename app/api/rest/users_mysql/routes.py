@@ -13,7 +13,7 @@ from .schemas import *
 db = Annotated[AsyncSession, Depends(get_db)]
 
 
-router = APIRouter(prefix="/mysql", tags=["users-mysql"])
+router = APIRouter(prefix="/mysql", tags=["users-mysql"], include_in_schema=False)
 
 
 @router.post("/users/", response_model=UserInDB)
