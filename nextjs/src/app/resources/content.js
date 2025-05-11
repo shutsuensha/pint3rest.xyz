@@ -56,6 +56,7 @@ const social = [
 
 const home = {
   path: "/",
+  image: "",
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
