@@ -52,14 +52,6 @@ services:
       - /var/log/nginx:/var/log/nginx
       - /home/auth:/etc/nginx/auth:ro
 
-  nextjs:
-    image: nextjs-image:latest
-    container_name: nextjs-container
-    environment:
-      - NODE_ENV=production
-    networks:
-      - pinterest-network
-
 
 networks:
   pinterest-network:
