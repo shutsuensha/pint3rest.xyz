@@ -8,7 +8,8 @@ filterwarnings = ["ignore::DeprecationWarning"]
 line-length = 100
 target-version = "py310"
 src = ["app", "tests"] 
-exclude = ["app/migrations"]  
+include = ["*.py"]
+exclude = [".venv", ".git", ".ruff_cache", ".pytest_cache", "__pycache__", ]
 
 [tool.ruff.format]
 quote-style = "double"
