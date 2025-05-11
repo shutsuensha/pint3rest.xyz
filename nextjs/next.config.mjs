@@ -1,7 +1,9 @@
-// next.config.mjs
 import mdx from "@next/mdx";
 
-const withMDX = mdx({ extension: /\.mdx?$/, options: {} });
+const withMDX = mdx({
+  extension: /\.mdx?$/,
+  options: {},
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -13,8 +15,10 @@ const nextConfig = {
   },
   basePath: "/magic/portfolio",
   assetPrefix: "/magic/portfolio",
-  trailingSlash: true,
-  images: { unoptimized: true },
+  // trailingSlash: true,
+  images: {
+    unoptimized: true, // отключаем серверную оптимизацию изображений
+  },
 };
 
 export default withMDX(nextConfig);
