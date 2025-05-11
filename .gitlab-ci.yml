@@ -74,15 +74,15 @@ deploy:
 
 
 
-stages:
-  - reload-services
+# stages:
+#   - reload-services
 
-reload-services:
-  stage: reload-services
-  before_script:
-    - cp ${ENV} .env
-  script:
-    - docker-compose -f docker-compose-services.yml up -d
+# reload-services:
+#   stage: reload-services
+#   before_script:
+#     - cp ${ENV} .env
+#   script:
+#     - docker-compose -f docker-compose-services.yml up -d
 
 
 
