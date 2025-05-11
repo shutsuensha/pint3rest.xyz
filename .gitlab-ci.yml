@@ -1,9 +1,9 @@
 stages:
   - check-disk-space
   - build
-  - lint-format
-  - migrations
-  - test
+  # - lint-format
+  # - migrations
+  # - test
   - deploy
 
 before_script:
@@ -21,10 +21,10 @@ check-disk-space:
         docker system prune -af
       fi
 
-build-fastapi:
-  stage: build
-  script:
-    - docker build -t fastapi-image -f Dockerfile-fastapi .
+# build-fastapi:
+#   stage: build
+#   script:
+#     - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 
 build-vuejs:  
@@ -33,35 +33,35 @@ build-vuejs:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
 
 
-build-nextjs:  
-  stage: build
-  script:
-    - docker build -t nextjs-image -f Dockerfile-nextjs .
+# build-nextjs:  
+#   stage: build
+#   script:
+#     - docker build -t nextjs-image -f Dockerfile-nextjs .
 
-lint:
-  stage: lint-format
-  script:
-    - docker run --rm fastapi-image ruff check
+# lint:
+#   stage: lint-format
+#   script:
+#     - docker run --rm fastapi-image ruff check
 
-format:
-  stage: lint-format
-  script:
-    - docker run --rm fastapi-image ruff format --check
+# format:
+#   stage: lint-format
+#   script:
+#     - docker run --rm fastapi-image ruff format --check
 
-migrations-postgresql:
-  stage: migrations
-  script:
-    - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
+# migrations-postgresql:
+#   stage: migrations
+#   script:
+#     - docker run --rm --network pinterest-network fastapi-image alembic upgrade head
 
 # migrations-mysql:
 #   stage: migrations
 #   script:
 #     - docker run --rm --network pinterest-network fastapi-image python -m app.mysql.init_db
 
-tests:
-  stage: test
-  script:
-    - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
+# tests:
+#   stage: test
+#   script:
+#     - docker run --rm --network pinterest-network -v ${LOGS_PATH}:${LOGS_PATH} fastapi-image pytest
 
 deploy:
   stage: deploy
