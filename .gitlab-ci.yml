@@ -38,6 +38,9 @@ build-nextjs:
   script:
     - docker build -t nextjs-image -f Dockerfile-nextjs .
 
+
+    
+
 # lint:
 #   stage: lint-format
 #   script:
