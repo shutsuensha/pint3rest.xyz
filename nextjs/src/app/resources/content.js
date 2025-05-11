@@ -7,7 +7,7 @@ const person = {
     return `${this.firstName} ${this.lastName}`;
   },
   role: "Python Backend Developer (junior)",
-  avatar: "/images/avatar.jpg",
+  avatar: "/magic/portfolio/images/avatar.jpg",
   email: "dankupr21@gmail.com",
   location: "Europe/Minsk", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
   languages: ["English", "Russian"], // optional: Leave the array empty if you don't want to display languages
@@ -56,7 +56,6 @@ const social = [
 
 const home = {
   path: "/",
-  image: "/images/og/home.jpg",
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
@@ -120,13 +119,13 @@ const about = {
         images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-01/welcome.png",
+            src: "/magic/portfolio/images/projects/project-01/welcome.png",
             alt: "Pinterest Clone - welcome",
             width: 16,
             height: 9,
           },
                     {
-            src: "/images/projects/project-01/boards.png",
+            src: "/magic/portfolio/images/projects/project-01/boards.png",
             alt: "Pinterest Clone - Feed",
             width: 16,
             height: 9,
@@ -148,13 +147,13 @@ const about = {
                 images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-02/logo.png",
+            src: "/magic/portfolio/images/projects/project-02/logo.png",
             alt: "Django e-commerce",
             width: 16,
             height: 9,
           },
                     {
-            src: "/images/projects/project-02/TMS-1.png",
+            src: "/magic/portfolio/images/projects/project-02/TMS-1.png",
             alt: "TMS certificate",
             width: 16,
             height: 9,
@@ -187,19 +186,19 @@ const about = {
         // optional: leave the array empty if you don't want to display images
         images: [
           {
-            src: "/images/projects/project-01/fastapi.svg",
+            src: "/magic/portfolio/images/projects/project-01/fastapi.svg",
             alt: "Project image",
             width: 9,
             height: 9,
           },
           {
-            src: "/images/projects/project-01/Postgresql_elephant.svg.png",
+            src: "/magic/portfolio/images/projects/project-01/Postgresql_elephant.svg.png",
             alt: "Project image",
             width: 9,
             height: 9,
           },
                     {
-            src: "/images/projects/project-01/DOCKER.png",
+            src: "/magic/portfolio/images/projects/project-01/DOCKER.png",
             alt: "Project image",
             width: 9,
             height: 9,
@@ -212,13 +211,13 @@ const about = {
         // optional: leave the array empty if you don't want to display images
         images: [
           {
-            src: "/images/projects/devops/nginx.png",
+            src: "/magic/portfolio/images/projects/devops/nginx.png",
             alt: "Project image",
             width: 9,
             height: 9,
           },
           {
-            src: "/images/projects/devops/grafana.jpg",
+            src: "/magic/portfolio/images/projects/devops/grafana.jpg",
             alt: "Project image",
             width: 9,
             height: 9,
@@ -232,13 +231,13 @@ description: <>Developed modern, responsive web applications using Vue.js 🌐 w
         // optional: leave the array empty if you don't want to display images
         images: [
           {
-            src: "/images/projects/frontend/vue.png",
+            src: "/magic/portfolio/images/projects/frontend/vue.png",
             alt: "Project image",
             width: 9,
             height: 9,
           },
                     {
-            src: "/images/projects/frontend/pinia.svg",
+            src: "/magic/portfolio/images/projects/frontend/pinia.svg",
             alt: "Project image",
             width: 9,
             height: 9,
