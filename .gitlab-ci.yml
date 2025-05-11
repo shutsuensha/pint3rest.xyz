@@ -21,23 +21,16 @@ check-disk-space:
         docker system prune -af
       fi
 
-# build-fastapi:
-#   stage: build
-#   script:
-#     - docker build -t fastapi-image -f Dockerfile-fastapi .
+build-fastapi:
+  stage: build
+  script:
+    - docker build -t fastapi-image -f Dockerfile-fastapi .
 
 
 build-vuejs:  
   stage: build
   script:
     - docker build -t vuejs-image -f Dockerfile-vuejs .
-
-
-build-nextjs:  
-  stage: build
-  script:
-    - docker build -t nextjs-image -f Dockerfile-nextjs .
-
 
 
 
