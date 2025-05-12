@@ -51,7 +51,8 @@
 
 
     <section id="hero"
-      class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50" data-aos="zoom-in">
+      class="min-h-screen  flex flex-col items-center justify-center text-center px-6 py-20 overflow-hidden z-50"
+      data-aos="zoom-in">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1920 1080"
         class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 animate-pulse scale-150">
         <defs>
@@ -74,12 +75,12 @@
         </g>
       </svg>
 
-      <h1  
+      <h1
         class="z-50 text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500 mb-4 "
         style="line-height: 1.2;">
         Daniil Kupryianchyk
       </h1>
-      <h2  class="z-10 text-3xl font-semibold text-indigo-400 mb-6">
+      <h2 class="z-10 text-3xl font-semibold text-indigo-400 mb-6">
         Python Backend Developer
       </h2>
       <a href="/CV_Daniil_Kupryianchyk_Python_Backend.pdf" download
@@ -119,108 +120,98 @@
     -webkit-mask-image: linear-gradient(to bottom, transparent, white 10%, white 90%, transparent);
     mask-image: linear-gradient(to bottom, transparent, white 10%, white 90%, transparent);
   " data-aos="fade-up">
-      <h2 class="text-5xl font-extrabold mb-16 text-center">
-        Skills
-      </h2>
+      <h2 class="text-5xl font-extrabold mb-16 text-center">Skills</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-left z-10">
-        <!-- Backend (Main Stack) -->
-
-        <!-- Deployment & Infrastructure (Main Stack) -->
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Backend -->
         <div
-          class="bg-black p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 border-2 border-indigo-500">
+          class="bg-black p-6 rounded-2xl shadow-lg border-2 border-indigo-500 hover:shadow-2xl hover:scale-[1.02] transition">
           <h3 class="text-2xl font-bold text-indigo-400 mb-4">
-            🚀 Deployment <span class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span>
+            🐍 Backend
+            <span class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span>
           </h3>
-          <hr class="border-indigo-500 mb-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-7 gap-y-3">
-            <div class="space-y-3">
-              <div class="text-xl">🐳 Docker</div>
-              <div class="text-xl">📦 Docker Compose</div>
-              <div class="text-xl">🌐 Nginx</div>
-              <div class="text-xl">⚙️ GitLab CI/CD</div>
-            </div>
-            <div class="space-y-3">
-              <div class="text-xl">☁️ Google Cloud</div>
-              <div class="text-xl">☁️ Yandex Cloud</div>
-              <div class="text-xl">🌀 Git</div>
-              <div class="text-xl">🌍 VPS</div>
-              <div class="text-xl">🔒 SSL</div>
-            </div>
-          </div>
-        </div>
-
-
-        <div
-          class="bg-black p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 border-2 border-indigo-500">
-          <h3 class="text-2xl font-bold text-indigo-400 mb-4">
-            🐍 Backend <span class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span>
-          </h3>
-          <hr class="border-indigo-500 mb-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
-            <div class="space-y-3">
-              <div class="text-xl">⚡ FastAPI</div>
-              <div class="text-xl">🛠️ SQLAlchemy</div>
-              <div class="text-xl">🏛️ Alembic</div>
-              <div class="text-xl">🐍 Celery</div>
-              <div class="text-xl">⏱️ Celery Beat</div>
-              <div class="text-xl">🔑 Jwt</div>
-              <div class="text-xl">🌐 Httpx</div>
-            </div>
-            <div class="space-y-3">
-              <div class="text-xl">📜 Pydantic</div>
-              <div class="text-xl">🧪 Pytest</div>
-              <div class="text-xl">🌀 AsyncIO</div>
-              <div class="text-xl">🦊 Ruff</div>
-              <div class="text-xl">🔗 WebSockets</div>
-              <div class="text-xl">🌀 Redis Streams</div>
-              <div class="text-xl">🍓 Strawberry</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Databases (Main Stack) -->
-        <div
-          class="bg-black p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 border-2 border-indigo-500">
-          <h3 class="text-2xl font-bold text-indigo-400 mb-4">🗄️ Databases <span
-              class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span></h3>
           <hr class="border-indigo-500 mb-4">
-          <ul class="space-y-3">
-            <li class="text-xl">🐘 PostgreSQL</li>
-            <li class="text-xl">💾 MySQL</li>
-            <li class="text-xl">🔴 Redis</li>
-            <li class="text-xl">🍃 MongoDB</li>
+          <ul class="space-y-2 text-lg">
+            <li>⚡ FastAPI, Mail, Cache, Limiter</li>
+            <li>🛠️ SQLAlchemy, Alembic, Pydantic</li>
+            <li>🐍 Celery + Beat, RabbitMQ</li>
+            <li>🔑 JWT + OAuth2</li>
+            <li>🌀 AsyncIO, Redis (Pub/Sub, Streams), Httpx</li>
+            <li>🍓 Strawberry GraphQL, SSE, WebSockets</li>
+            <li>🧪 Pytest, 🦊 Ruff, Logging</li>
+          </ul>
+        </div>
+
+        <!-- Deployment -->
+        <div
+          class="bg-black p-6 rounded-2xl shadow-lg border-2 border-indigo-500 hover:shadow-2xl hover:scale-[1.02] transition">
+          <h3 class="text-2xl font-bold text-indigo-400 mb-4">
+            🚀 Deployment
+            <span class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span>
+          </h3>
+          <hr class="border-indigo-500 mb-4">
+          <ul class="space-y-2 text-lg">
+            <li>🐳 Docker, Compose</li>
+            <li>🌐 Nginx, VPS/VDS</li>
+            <li>⚙️ GitLab CI/CD, GitHub CI/CD</li>
+            <li>🔒 SSL, Sentry</li>
+            <li>📈 Prometheus, Grafana, Loki, Promtail</li>
+            <li>☁️ Yandex Cloud (S3), Google Cloud (OAuth2)</li>
+            <li>🌀 Git</li>
+          </ul>
+        </div>
+
+        <!-- Databases -->
+        <div
+          class="bg-black p-6 rounded-2xl shadow-lg border-2 border-indigo-500 hover:shadow-2xl hover:scale-[1.02] transition">
+          <h3 class="text-2xl font-bold text-indigo-400 mb-4">
+            🗄️ Databases
+            <span class="text-sm bg-indigo-500 text-white px-2 py-1 rounded-full ml-2">Main Stack</span>
+          </h3>
+          <hr class="border-indigo-500 mb-4">
+          <ul class="space-y-2 text-lg">
+            <li>🐘 PostgreSQL</li>
+            <li>💾 MySQL</li>
+            <li>🔴 Redis</li>
+            <li>🍃 MongoDB</li>
           </ul>
         </div>
 
         <!-- Frontend -->
-        <div class="bg-black p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105">
+        <div
+          class="bg-black p-6 rounded-2xl shadow-lg border border-indigo-400 hover:shadow-2xl hover:scale-[1.02] transition">
           <h3 class="text-2xl font-bold text-indigo-400 mb-4">🎨 Frontend</h3>
           <hr class="border-indigo-400 mb-4">
-          <ul class="space-y-3">
-            <li class="text-xl">🌐 Vue.js</li>
-            <li class="text-xl">🛣️ Vue Router</li>
-            <li class="text-xl">💨 Tailwind CSS</li>
-            <li class="text-xl">📦 Pinia</li>
-            <li class="text-xl">📡 Axios</li>
+          <ul class="space-y-2 text-lg">
+            <li>🌐 Vue.js + Router</li>
+            <li>📦 Pinia, 💨 Tailwind CSS</li>
+            <li>📡 Axios</li>
           </ul>
         </div>
 
         <!-- Other Experience -->
-        <div class="bg-black p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105">
+        <div
+          class="bg-black p-6 rounded-2xl shadow-lg border border-indigo-400 hover:shadow-2xl hover:scale-[1.02] transition">
           <h3 class="text-2xl font-bold text-indigo-400 mb-4">🛠️ Other Experience</h3>
           <hr class="border-indigo-400 mb-4">
-          <ul class="space-y-3">
-            <li class="text-xl">🎭 Django</li>
-            <li class="text-xl">🔗 Django REST Framework</li>
-            <li class="text-xl">🍶 Flask</li>
-            <li class="text-xl">⚙️ GitHub CI/CD</li>
-            <li class="text-xl">🌍 Aiohttp</li>
-            <li class="text-xl">🤖 Aiogram</li>
+          <ul class="space-y-2 text-lg">
+            <li>🎭 Django, DRF</li>
+            <li>🍶 Flask</li>
+            <li>🌍 Aiohttp</li>
+            <li>🤖 Aiogram</li>
           </ul>
+        </div>
+
+        <!-- English -->
+        <div
+          class="bg-black p-6 rounded-2xl shadow-lg border border-indigo-400 hover:shadow-2xl hover:scale-[1.02] transition">
+          <h3 class="text-2xl font-bold text-indigo-400 mb-4">🗣️ English Level</h3>
+          <hr class="border-indigo-400 mb-4">
+          <p class="text-lg">A2+ (Pre-Intermediate)</p>
         </div>
       </div>
     </section>
+
 
     <section id="services" class="bg-gradient-to-br  bg-black/50 text-white py-2 px-6" data-aos="fade-up">
       <div class="max-w-7xl mx-auto">
@@ -728,11 +719,12 @@ const projects = ref([
     link: 'https://github.com/shutsuensha/pint3rest.xyz',
     image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
     stack: [
-      'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'SQLAlchemy', 'Pydantic', 'pydantic-settings', 'JWT',
-      'OAuth2', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker',
-      'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'httpx', 'Websockets', 'SSE',
-      'Asyncio', 'Aiofiles', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
-      'GraphQL (Strawberry)', 'Redis Stream', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios'
+      'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'FastAPI-Limiter', 'SQLAlchemy', 'Pydantic', 'Pydantic-Settings', 'JWT + OAuth2',
+      'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker', 'RabbitMQ', 
+      'Docker Compose', 'Nginx', 'SSL', 'VPS', 'Yandex S3', 'Httpx', 'WebSockets', 'SSE',
+      'AsyncIO', 'Logging', 'Pytest', 'Ruff', 'Alembic', 'GitLab CI/CD',
+      'GraphQL (Strawberry)', 'Redis Stream', 'Redis Pub/Sub', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios', 'Git', 'Sentry', 'Prometheus',
+      'Grafana', 'Loki', 'Promtail'
     ],
     demo: 'https://pint3rest.xyz',
     stars: null,
