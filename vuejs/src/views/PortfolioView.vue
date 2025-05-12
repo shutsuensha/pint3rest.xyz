@@ -76,7 +76,7 @@
       </svg>
 
       <h1
-        class="z-50 text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500 mb-4 "
+        class="z-50 text-6xl font-extrabold bg-clip-text   text-indigo-400 mb-4 "
         style="line-height: 1.2;">
         Daniil Kupryianchyk
       </h1>
@@ -95,14 +95,14 @@
 
     <section id="about" class="px-6 py-20 w-full" data-aos="fade-up">
       <h2
-        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
+        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">
         About Me
       </h2>
       <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
         <div
-          class="bg-gradient-to-r from-indigo-500 to-pink-500 p-6 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300 ease-in-out max-w-3xl w-full">
+          class="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300 ease-in-out max-w-3xl w-full">
           <div class="flex justify-center mb-6">
-            <img src="https://i.pinimg.com/originals/fe/0a/04/fe0a0428f7b2db2154cf9ced998e9617.gif" alt="Profile"
+            <img src="/avatar.png" alt="Profile"
               class="w-48 h-48 object-cover rounded-full shadow-xl border-4 border-indigo-400">
           </div>
           <p class="text-xl text-white font-semibold text-center leading-relaxed">
@@ -215,7 +215,7 @@
 
     <section id="services" class="bg-gradient-to-br  bg-black/50 text-white py-2 px-6" data-aos="fade-up">
       <div class="max-w-7xl mx-auto">
-        <h2 class="text-5xl font-extrabold text-center text-pink-400 mb-16 tracking-wide mt-20">My Services</h2>
+        <h2 class="text-5xl font-extrabold text-center text-purple-400 mb-16 tracking-wide mt-20">My Services</h2>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
@@ -264,7 +264,7 @@
 
     <section id="projects" class="px-0 py-20 bg-black/50 min-h-screen" data-aos="fade-up">
       <h2
-        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
+        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
         Projects
       </h2>
 
@@ -331,7 +331,7 @@
 
     <section id="experience" class="px-6 py-20 max-w-5xl mx-auto bg-black/80" data-aos="fade-right">
       <h2
-        class="text-5xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
+        class="text-5xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
         Experience
       </h2>
       <div class="border-l-2 border-indigo-500 pl-6">
@@ -389,7 +389,7 @@
 
     <section id="achievements" class="px-6 py-20" data-aos="fade-up">
       <h2
-        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-500">
+        class="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
         Achievements
       </h2>
 
@@ -428,7 +428,7 @@
       </Swiper>
     </section>
 
-    <footer id="contact" class="bg-black/40 text-white font-sans relative overflow-hidden">
+    <footer id="contact" class="bg-black text-white font-sans relative overflow-hidden">
       <!-- Neon Gradient Background -->
       <div class="absolute inset-0 pointer-events-none">
         <svg class="w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 1920 1080">
@@ -449,7 +449,7 @@
         class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-center gap-12">
         <!-- Контакты -->
         <div class="space-y-6 text-center md:text-left md:flex-1">
-          <h3 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+          <h3 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-500">
             Связаться со мной
           </h3>
           <div class="flex justify-center md:justify-start space-x-4">
@@ -526,7 +526,7 @@
           </div>
 
           <button type="submit"
-            class="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition shadow-lg">
+            class="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-500 text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition shadow-lg">
             Отправить письмо
           </button>
         </form>
