@@ -471,7 +471,7 @@
             </a>
 
             <!-- Telegram -->
-            <a href="https://t.me/evalshine" target="_blank" class="hover:text-purple-400 transition">
+            <a href="https://t.me/daniilkupryianchyk" target="_blank" class="hover:text-purple-400 transition">
               <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                 <path
                   d="M9.993 15.447l-.405 4.192c.58 0 .83-.25 1.133-.551l2.72-2.604 5.63 4.113c1.03.57 1.761.271 2.03-.951l3.68-17.262c.374-1.73-.631-2.403-1.662-2.009L1.57 9.407c-1.708.682-1.69 1.659-.29 2.107l4.724 1.474 10.953-6.904c.516-.35.99-.158.602.192L9.993 15.447z" />
@@ -485,7 +485,7 @@
               </svg>
             </a>
 
-            <a href="https://drive.google.com/file/d/1gkMx7bBNnDl95wmoXoW6aj7aF-6VDcPJ/view?usp=sharing" target="_blank"
+            <a href="https://drive.google.com/file/d/1oiZf0OsMBFnQlBwvGv1IqDOyVkA4pU1y/view?usp=sharing" target="_blank"
               class="hover:text-purple-400 transition" title="Скачать CV">
               <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                 <path
