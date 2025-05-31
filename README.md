@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" alt="Pinterest Logo" width="100" />
+  <div style="font-size: 4rem;">🐰</div>
   <h1> 
     Pinterest Clone
   </h1>
@@ -9,37 +9,37 @@
 </div>
 
 <div align="center" style="margin-top: 30px; font-family: 'Arial', sans-serif;">
-  <a href="https://pint3rest.xyz" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease, transform 0.3s ease;">
+  <a href="https://shutsuensha.ru" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease, transform 0.3s ease;">
     🌐 Explore Pinterest
   </a>
   <p style="font-size: 1.1em; color: #555; margin-top: 10px;">Quick try with test account and get started!</p>
 </div>
 
 <div align="center" style="margin-top: 20px;">
-  <a href="https://pint3rest.xyz/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/api/docs" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📚 API Docs
   </a>
-  <a href="https://pint3rest.xyz/api/graphql" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/api/graphql" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     🔥 GraphQL API
   </a>
-  <a href="https://pint3rest.xyz/api/openapi.json" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/api/openapi.json" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📄 OpenAPI JSON
   </a>
-  <a href="https://pint3rest.xyz/api/redoc" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/api/redoc" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📖 ReDoc
   </a>
 </div>
 
 
 <div align="center" style="margin-top: 20px;">
-  <a href="https://pint3rest.xyz/prometheus" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/prometheus" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📊 Prometheus - admin/admin
   </a>
 </div>
 
 
 <div align="center" style="margin-top: 20px;">
-  <a href="https://pint3rest.xyz/grafana" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
+  <a href="https://shutsuensha.ru/grafana" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📈 Grafana - observer/grafana2025!
   </a>
 </div>
@@ -242,7 +242,7 @@ You can view the complete CI/CD configuration in [`.gitlab-ci.yml`](.gitlab-ci.y
 
 
 ## Discussion  
-Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/pinterest-clone-vue3-fastapi/discussions)!
+Have suggestions or improvements for the project? Feel free to discuss them in the [Discussion section](https://github.com/shutsuensha/shutsuensha.ru/discussions)!
 
 ## License 
 MIT License – free to use & share!
