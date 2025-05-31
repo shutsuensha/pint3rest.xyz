@@ -82,9 +82,9 @@ watch(
       let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
       if (totalUnread > 0) {
-        document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+        document.title = `(${totalUnread}) Pinterest Clone`; // Если есть непрочитанные уведомления
       } else {
-        document.title = 'Pinterest'; // Если уведомлений нет
+        document.title = 'Pinterest Clone'; // Если уведомлений нет
       }
       const chat_id_redirect = route.query.chat_id || null;
       const new_chat = route.query.new_chat || null;

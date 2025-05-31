@@ -45,7 +45,7 @@ def send_email_adds():
         emails = unique_emails
         subject = "Pinterest - create your ideas!"
 
-        send_email(emails, subject, context, "mail_adds.html")
+        # send_email(emails, subject, context, "mail_adds.html")
     except Exception as e:
         db.rollback()
         logger.error(f"Celery error using sync db connection: {e}", exc_info=True)

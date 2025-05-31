@@ -113,7 +113,9 @@ const cachedViews = computed(() =>
 
   <!-- <ClipLoader v-if="loadingProfile" :color="color" :size="size" class="flex items-center justify-center h-screen" /> -->
   <div v-if="loadingProfile" class="flex items-center justify-center h-screen">
-    <img src="/logo.png" alt="Logo" class="logo w-24 h-24" />
+    <span class="text-8xl logo">
+         🐰
+    </span>
   </div>
   <Aside v-if="!loadingProfile" @logout="emit('logout')" :me="me" :meImage="meImage" />
 

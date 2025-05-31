@@ -128,9 +128,9 @@ onMounted(async () => {
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
   if (totalUnread > 0) {
-    document.title = `(${totalUnread}) Pinterest`;
+    document.title = `(${totalUnread}) Pinterest Clone`;
   } else {
-    document.title = 'Pinterest';
+    document.title = 'Pinterest Clone';
   }
 
   loadPins();
@@ -200,9 +200,9 @@ onActivated(() => {
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
   if (totalUnread > 0) {
-    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+    document.title = `(${totalUnread}) Pinterest Clone`; // Если есть непрочитанные уведомления
   } else {
-    document.title = 'Pinterest'; // Если уведомлений нет
+    document.title = 'Pinterest Clone'; // Если уведомлений нет
   }
   if (selectedTag.value === 'Everything' && searchValue.value === '') {
     window.addEventListener('scroll', handleScroll);
@@ -443,7 +443,9 @@ const isActive = ref(false)
 
   <div v-if="redirecting"
     class="fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center flex flex-col gap-20">
-    <img src="/logo.png" alt="Logo" class="w-24 h-24 logo bg-white rounded-full" />
+    <span class="text-8xl logo">
+      🐰
+    </span>
   </div>
 
   <!-- Контейнер с тегами -->

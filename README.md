@@ -258,5 +258,5 @@ MIT License – free to use & share!
 Feel free to reach out if you have any questions, suggestions, or collaboration ideas:
 
 - Email: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- Telegram: [@evalshine](https://t.me/evalshine)
+- Telegram: [@daniilkupryianchyk](https://t.me/daniilkupryianchyk)
 - Linkedin: [daniil-kupryianchyk](https://www.linkedin.com/in/daniil-kupryianchyk-960594322)

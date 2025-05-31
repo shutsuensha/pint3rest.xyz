@@ -204,7 +204,14 @@ tags_metadata = [
 
 description = """
 ### 🖼️ API Description
-This API is designed to work with **Pinterest** – a platform for sharing images, videos, and ideas.
+
+This API is designed for a **Pinterest Clone** — an educational and non-commercial project inspired by the Pinterest platform.  
+It provides endpoints for managing pins, boards, users, chats, real-time updates, and more.
+
+⚠️ **Disclaimer:**  
+This project is created **for educational and demonstration purposes only**.  
+It is **not affiliated with or endorsed by Pinterest** in any way.  
+All trademarks, logos, and brand names are the property of their respective owners.
 
 #### 🔑 Core Functionality:
 - **Users**: registration, login, logout, Google authentication, email verification, password reset, JWT authentication (access/refresh tokens), token revocation, image upload, profile update, and retrieval of all user profiles.
@@ -267,21 +274,21 @@ This API is designed to work with **Pinterest** – a platform for sharing image
 
 #### 📬 Contacts:
 - 📧 **Email**: [dankupr21@gmail.com](mailto:dankupr21@gmail.com)
-- 💬 **Telegram**: [@evalshine](https://t.me/evalshine)
+- 💬 **Telegram**: [@daniilkupryianchyk](https://t.me/daniilkupryianchyk)
 - 🐙 **GitHub**: [shutsuensha](https://github.com/shutsuensha)
 
 #### 🔗 Useful Links:
-- 🚀 **GraphQL API**: [`pint3rest.xyz/api/graphql`](https://pint3rest.xyz/api/graphql)
-- 📜 **Documentation (Swagger UI)**: [`pint3rest.xyz/api/docs`](https://pint3rest.xyz/api/docs)
-- 📑 **Documentation (ReDoc)**: [`pint3rest.xyz/api/redoc`](https://pint3rest.xyz/api/redoc)
-- 📜 **OpenAPI JSON**: [`pint3rest.xyz/api/openapi.json`](https://pint3rest.xyz/api/openapi.json)
-- 🌐 **Homepage**: [`pint3rest.xyz`](https://pint3rest.xyz)
+- 🚀 **GraphQL API**: [`shutsuensha.ru/api/graphql`](https://shutsuensha.ru/api/graphql)
+- 📜 **Documentation (Swagger UI)**: [`shutsuensha.ru/api/docs`](https://shutsuensha.ru/api/docs)
+- 📑 **Documentation (ReDoc)**: [`shutsuensha.ru/api/redoc`](https://shutsuensha.ru/api/redoc)
+- 📜 **OpenAPI JSON**: [`shutsuensha.ru/api/openapi.json`](https://shutsuensha.ru/api/openapi.json)
+- 🌐 **Homepage**: [`shutsuensha.ru`](https://shutsuensha.ru)
 """
 
-title = "Pinterest Rest API"
+title = "Pinterest Clone Rest API"
 version = "1.0.0"
 
 license_info = {
     "name": "MIT LICENSE",
-    "url": "https://github.com/shutsuensha/pint3rest.xyz/blob/main/LICENSE",
+    "url": "https://github.com/shutsuensha/shutsuensha.ru/blob/main/LICENSE",
 }

@@ -10,7 +10,7 @@ import { initializeKinesis } from "@amineyarman/kinesis"; // Import the functio
 
 import Overview from '@/components/NotAuth/Overview.vue'
 
-import logo from '@/assets/logo.png'
+
 
 
 import { useRouter, useRoute } from 'vue-router'
@@ -175,7 +175,7 @@ const loading = ref(true)
 const color = ref('red')
 const size = ref('100px')
 
-const textWelcome = ref('Welcome to Pinterest 🩸')
+const textWelcome = ref('Welcome to Pinterest Clone 🩸')
 
 const images = ref([])
 
@@ -547,7 +547,7 @@ onUnmounted(() => {
 onMounted(async () => {
   scrollContainer.value.addEventListener('wheel', onWheel, { passive: false })
 
-  document.title = 'Pinterest'
+  document.title = 'Pinterest Clone'
   initializeKinesis()
 
 
@@ -596,7 +596,7 @@ const overview = ref(
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <!-- Logo -->
-          <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest 😇</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Sign Up to Pinterest Clone 😇</h3>
           <button @click="showSignUp = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -668,7 +668,7 @@ const overview = ref(
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <!-- Logo -->
           <h3 class="text-lg font-semibold text-gray-900">
-            Log In to Pinterest 🤫
+            Log In to Pinterest Clone 🤫
           </h3>
           <button @click="showLogin = false" type="button"
             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
@@ -872,7 +872,9 @@ const overview = ref(
       <!-- <img src="/screen.jpg" class="absolute top-0 right-0 h-screen w-[700px] opacity-40 mask-gradient" /> -->
       <div class="relative z-10 max-w-7xl mx-auto px-6 py-12 flex flex-col items-center">
         <!-- Логотип и заголовки -->
-        <img :src="logo" alt="Pinterest Logo" class="w-24 h-24 mb-6" />
+        <span class="text-8xl">
+          🐰
+        </span>
 
         <h1
           class="text-6xl font-semibold mb-4 text-center bg-gradient-to-r from-indigo-600 to-red-700 text-transparent bg-clip-text">
@@ -894,6 +896,12 @@ const overview = ref(
             class="w-full mt-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-3xl transition">
             Login as Test User
           </button>
+        </div>
+        <div class="mt-12 text-center text-sm text-gray-500 px-6 max-w-3xl mx-auto">
+          This project is a <strong>Pinterest Clone</strong> built solely for <strong>educational and demonstration
+            purposes</strong>.<br>
+          It is not affiliated with or endorsed by Pinterest in any way. All trademarks and logos belong to their
+          respective owners.
         </div>
       </div>
 

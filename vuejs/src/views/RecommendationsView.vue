@@ -83,9 +83,9 @@ onMounted(async () => {
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
   if (totalUnread > 0) {
-    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+    document.title = `(${totalUnread}) Pinterest Clone`; // Если есть непрочитанные уведомления
   } else {
-    document.title = 'Pinterest'; // Если уведомлений нет
+    document.title = 'Pinterest Clone'; // Если уведомлений нет
   }
   try {
     const response = await axios.get(`/api/updates/${updatesId}`, { withCredentials: true })
@@ -108,9 +108,9 @@ onActivated(() => {
   let totalUnread = unreadMessagesCount + unreadUpdatesCount;
 
   if (totalUnread > 0) {
-    document.title = `(${totalUnread}) Pinterest`; // Если есть непрочитанные уведомления
+    document.title = `(${totalUnread}) Pinterest Clone`; // Если есть непрочитанные уведомления
   } else {
-    document.title = 'Pinterest'; // Если уведомлений нет
+    document.title = 'Pinterest Clone'; // Если уведомлений нет
   }
   window.addEventListener('scroll', handleScroll);
 });
