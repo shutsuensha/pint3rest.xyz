@@ -1,18 +1,18 @@
 <div align="center">
-  <div style="font-size: 4rem;">🐰</div>
   <h1> 
-    Pinterest Clone
+    🐰 Pinterest Clone
   </h1>
   <h3> 
     1536 × 864 / Vue 3 & FastAPI
   </h3>
+  <p><em>Clone for educational purposes only</em></p>
 </div>
 
 <div align="center" style="margin-top: 30px; font-family: 'Arial', sans-serif;">
   <a href="https://shutsuensha.ru" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.4em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease, transform 0.3s ease;">
-    🌐 Explore Pinterest
+    🐰 Try it right now!
   </a>
-  <p style="font-size: 1.1em; color: #555; margin-top: 10px;">Quick try with test account and get started!</p>
+  <p style="font-size: 1.1em; color: #555; margin-top: 10px;">Quick try with test account and get started</p>
 </div>
 
 <div align="center" style="margin-top: 20px;">
@@ -31,6 +31,8 @@
 </div>
 
 
+
+
 <div align="center" style="margin-top: 20px;">
   <a href="https://shutsuensha.ru/prometheus" target="_blank" rel="noopener noreferrer" style="margin: 0 20px; font-size: 1.3em; font-weight: bold; color: #8E44AD; text-decoration: none; transition: color 0.3s ease;">
     📊 Prometheus - admin/admin
@@ -46,7 +48,13 @@
 
 
 
+
 ![Logo](.github/assets/overview.png)
+
+> ⚠️ **Disclaimer:**  
+> This project is an unofficial Pinterest clone created solely for educational purposes.  
+> It is not affiliated with, endorsed by, or sponsored by Pinterest Inc.  
+> Use responsibly and respect copyright and trademark laws.
 
 ## 🔥 Features at a Glance
 
