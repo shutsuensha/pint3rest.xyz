@@ -351,12 +351,12 @@
           </p>
           <br />
           <div class="flex flex-row items-center gap-4 ">
-            <a href="https://github.com/shutsuensha/pint3rest.xyz" target="_blank"
+            <a href="https://github.com/shutsuensha/shutsuensha.ru" target="_blank"
               class="text-indigo-400  hover:underline">
               View on GitHub →
             </a>
             <br />
-            <a href="https://pint3rest.xyz" target="_blank" class="text-pink-400 hover:underline">
+            <a href="https://shutsuensha.ru/" target="_blank" class="text-pink-400 hover:underline">
               Live Demo →
             </a>
           </div>
@@ -485,7 +485,7 @@
               </svg>
             </a>
 
-            <a href="https://drive.google.com/file/d/1oiZf0OsMBFnQlBwvGv1IqDOyVkA4pU1y/view?usp=sharing" target="_blank"
+            <a href="https://drive.google.com/file/d/1Ts9eZRC3gKWF8a0n0AORavhKU-MUxRaD/view?usp=sharing" target="_blank"
               class="hover:text-purple-400 transition" title="Скачать CV">
               <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                 <path
@@ -716,8 +716,8 @@ const projects = ref([
   {
     title: 'Pinterest Clone',
     description: 'Full-featured FastAPI backend and Vue 3 frontend with real-time chat, live updates, media uploads, boards, pins, comments, likes, recommendations, and more. Dockerized with CI/CD pipeline. Deployed on VPS with SSL via Nginx.',
-    link: 'https://github.com/shutsuensha/pint3rest.xyz',
-    image: 'https://raw.githubusercontent.com/shutsuensha/pinterest-clone-vue3-fastapi/refs/heads/main/.github/assets/feed.png',
+    link: 'https://github.com/shutsuensha/shutsuensha.ru',
+    image: 'https://raw.githubusercontent.com/shutsuensha/shutsuensha.ru/refs/heads/main/.github/assets/feed.png',
     stack: [
       'FastAPI', 'FastAPI-Cache', 'FastAPI-Mail', 'FastAPI-Limiter', 'SQLAlchemy', 'Pydantic', 'Pydantic-Settings', 'JWT + OAuth2',
       'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'Celery Beat', 'Docker', 'RabbitMQ', 
@@ -726,7 +726,7 @@ const projects = ref([
       'GraphQL (Strawberry)', 'Redis Stream', 'Redis Pub/Sub', 'Vue 3', 'Vue Router', 'Tailwind CSS', 'Pinia', 'Axios', 'Git', 'Sentry', 'Prometheus',
       'Grafana', 'Loki', 'Promtail'
     ],
-    demo: 'https://pint3rest.xyz',
+    demo: 'https://shutsuensha.ru/',
     stars: null,
     forks: null
   },
