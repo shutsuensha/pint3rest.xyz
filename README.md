@@ -78,9 +78,6 @@
 - Use the project as a boilerplate for social media apps
 - Practice advanced CI/CD & real-time data techniques
 
-## 📽 Overview
-
-🎬 **[Watch the demo video on YouTube](https://youtu.be/3NwWrd8uvFQ)**
 
 ### 🌸 Feed
 #### The feed is the main page featuring search and tags, displaying pins in the form of gifs, videos, and images. It shows users who have posted these pins. The layout follows a masonry grid design with infinite scrolling.
