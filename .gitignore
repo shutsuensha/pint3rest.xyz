@@ -7,4 +7,4 @@ NOTES.md
 .env-ci
 .vscode
 ci.sh
-.secret
+.theory
